@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="popuptblSalesReplace" type="checkBox">
+     <table>tblSalesReplace,tblCompany,tblDepartment,tblEmployee</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblSalesReplace.id f1,
+      tblSalesReplace.BillDate f2,
+      tblSalesReplace.BillNo f3,
+      tblCompany.ComFullName f4,
+      tblDepartment.DeptFullName f5,
+      tblEmployee.EmpFullName f6,
+      tblSalesReplace.TotalTaxAmount f7,
+      tblSalesReplace.CurTotalAmount f8,
+	  tblSalesReplace.InVoiceType f9
+  from tblSalesReplace 
+  left join tblCompany on tblSalesReplace.CompanyCode=tblCompany.classCode
+  left join tblDepartment on tblSalesReplace.DepartmentCode=tblDepartment.classCode
+  left join tblEmployee on tblSalesReplace.EmployeeID=tblEmployee.id
+     </defineSQL>
+     <classCode></classCode>
+     <condition>tblSalesReplace.workFlowNodeName ='finish' and LEN(ISNULL(CertificateNo,''))=0 and (AccountAmount!=0 or DiscountAmount!=0 or TotalTaxAmount!=0)</condition>
+     <changeCond></changeCond>
+     <orderBy>tblSalesReplace.BillDate,tblSalesReplace.BillNo</orderBy>
+     <displayFields>
+          <field name="tblSalesReplace.BillDate" width="90" searchType="scope" parentDisplay="false" orderBy="升"/>
+          <field name="tblSalesReplace.BillNo" width="120" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"/>
+          <field name="tblCompany.ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="false" display="tblSalesReplace.CompanyCode" />
+          <field name="tblDepartment.DeptFullName" width="80" searchType="match" keySearch="true" parentDisplay="false" display="tblSalesReplace.DepartmentCode" />
+          <field name="tblEmployee.EmpFullName" width="80" searchType="match" keySearch="true" parentDisplay="false" display="tblSalesReplace.EmployeeID" />
+          <field name="tblSalesReplace.TotalTaxAmount" width="100" parentDisplay="false" />
+          <field name="tblSalesReplace.CurTotalAmount" width="100" parentDisplay="false" />
+		  <field name="tblSalesReplace.InVoiceType" width="75" searchType="equal" parentDisplay="false" inputType="1" inputValue="InvoiceType"/>
+     </displayFields>
+     <saveFields>
+          <field name="tblSalesReplace.id" parentName="ID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

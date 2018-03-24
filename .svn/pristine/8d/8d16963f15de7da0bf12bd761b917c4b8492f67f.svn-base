@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="model_queryGoodByCode"  desc="手机端根据code查商品"  belongTableName="tblGoods" > 
+		<orderBy>tblGoods.GoodsNumber</orderBy>
+		<defineSQL>
+from tblGoods as tblGoods
+where tblGoods.isCatalog = 0 and tblGoods.statusId = 0 and tblGoods.classCode ='@ValueofDB:GoodCode'
+		</defineSQL>
+		<displayFields>
+			<field name="tblGoods.GoodsNumber" asName="GoodsNumber" parentDisplay="false" width="0" />
+			<field name="tblGoods.GoodsFullName" asName="GoodsFullName" parentDisplay="false" width="0" />
+			<field name="tblGoods.GoodsSpec" asName="GoodsSpec" parentDisplay="false" width="0" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+</popupSelect>

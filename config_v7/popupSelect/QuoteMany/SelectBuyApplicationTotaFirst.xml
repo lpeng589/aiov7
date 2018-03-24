@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SelectBuyApplicationTotaFirst"  type="checkBox" > 
+		<orderBy>tblBuyApplicationTotal.BillDate,tblBuyApplicationTotal.BillNo</orderBy>
+		<defineSQL>
+from tblBuyApplicationTotal
+ left join tblDepartment on tblDepartment.classCode=tblBuyApplicationTotal.DepartmentCode
+ left join tblEmployee on tblEmployee.id=tblBuyApplicationTotal.EmployeeID
+		</defineSQL>
+		<changeCond>(tblBuyApplicationTotal.BillDate&lt;='@ValueofDB:BillDate')</changeCond>
+		<displayFields>
+			<field name="tblBuyApplicationTotal.BillDate" parentDisplay="false" width="70" searchType="scope" />
+			<field name="tblBuyApplicationTotal.BillNo" display="@TABLENAME.BuyAppTotalID" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblDepartment.DeptFullName" parentDisplay="false" width="100" />
+			<field name="tblEmployee.EmpFullName" parentDisplay="false" width="100" />
+		</displayFields>
+		<saveFields>
+			<field name="tblBuyApplicationTotal.id" parentName="@TABLENAME.BuyAppTotalID" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

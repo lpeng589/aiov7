@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelecttblFixedAssetChange" type="checkBox">
+     <table>tblFixedAssetChange,tblDepartment,tblFixedAssetAccType,tblFixedAssetType,tblAccTypeInfo,tblAccTypeInfo</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblFixedAssetChange.id f1,
+      tblFixedAssetChange.BillDate f2,
+      tblFixedAssetChange.BillNo f3,
+      tblFixedAssetChange.GoodsNumber f4,
+      tblFixedAssetChange.GoodsName f5,
+      tblFixedAssetChange.GoodsSpec f6,
+      tblDepartment.DeptFullName f7,
+      tblFixedAssetChange.StockCode f8,
+      tblFixedAssetChange.Billpate f9,
+      tblFixedAssetType.TypeName f10,
+      tblFixedAssetChange.originalWorth f11,
+      tblFixedAssetChange.totalDeprecia f12,
+      tblFixedAssetChange.depreciaArrange f13,
+      tblFixedAssetChange.netWorth f14,
+      tblFixedAssetChange.planReWorthRate f15,
+      tblFixedAssetChange.planReWorth f16,
+      tblFixedAssetChange.depreciaMonth f17,
+      tblFixedAssetChange.planUseMonth f18,
+      tblFixedAssetChange.referWork f19,
+      tblFixedAssetChange.workunitDeprecAmt f20,
+      tblFixedAssetChange.workUnit f21,
+      d.@Sess:Local f22,
+      c.@Sess:Local f23,
+      tblFixedAssetChange.statusId f24
+  from tblFixedAssetChange
+left join tbldepartment on tblFixedAssetChange.DepartmentCode=tblDepartment.classcode
+left join tblFixedAssetAccType on tblFixedAssetAccType.id=tblFixedAssetChange.AssetsAccType
+left join tblFixedAssetType on tblFixedAssetType.id=tblFixedAssetChange.AssetsType
+left join tblAccTypeInfo a on a.AccNumber=tblFixedAssetChange.DevalueAccCode
+left join tblAccTypeInfo b on b.AccNumber=tblFixedAssetChange.deprecAccCode
+left join tblLanguage c on c.id=a.AccName
+left join tblLanguage d on d.id=b.AccName
+     </defineSQL>
+     <classCode></classCode>
+     <remark></remark>
+     <condition>tblFixedAssetChange.workFlowNodeName='finish' and tblFixedAssetChange.id NOT IN (SELECT RefBillID FROM tblAccMain WHERE RefBillType ='tblFixedAssetChange')</condition>
+     <changeCond></changeCond>
+     <orderBy>tblFixedAssetChange.BillDate desc,tblFixedAssetChange.BillNo desc</orderBy>
+     <displayFields>
+          <field name="tblFixedAssetChange.BillDate" width="90" searchType="scope" keySearch="true" parentDisplay="false" orderBy="降" />
+          <field name="tblFixedAssetChange.BillNo" width="115" searchType="match" keySearch="true" parentDisplay="false" orderBy="降" />
+          <field name="tblFixedAssetChange.GoodsNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblFixedAssetChange.GoodsName" width="100" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblFixedAssetChange.GoodsSpec" width="80" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblDepartment.DeptFullName" width="100" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblFixedAssetChange.StockCode" width="80" searchType="match" parentDisplay="false" />
+          <field name="tblFixedAssetChange.Billpate" width="100" parentDisplay="false" />
+          <field name="tblFixedAssetType.TypeName" asName="tblFixedAssetChange.AssetsType" width="80" parentDisplay="false" display="tblFixedAssetChange.AssetsType" />
+          <field name="tblFixedAssetChange.originalWorth" width="80" parentDisplay="false" />
+          <field name="tblFixedAssetChange.totalDeprecia" width="80" parentDisplay="false" />
+          <field name="tblFixedAssetChange.depreciaArrange" width="80" parentDisplay="false" />
+          <field name="tblFixedAssetChange.netWorth" width="80" parentDisplay="false" />
+          <field name="tblFixedAssetChange.planReWorthRate" width="100" parentDisplay="false" />
+          <field name="tblFixedAssetChange.planReWorth" width="100" parentDisplay="false" />
+          <field name="tblFixedAssetChange.depreciaMonth" width="100" parentDisplay="false" />
+          <field name="tblFixedAssetChange.planUseMonth" width="100" parentDisplay="false" />
+          <field name="tblFixedAssetChange.referWork" width="100" parentDisplay="false" />
+          <field name="tblFixedAssetChange.workunitDeprecAmt" width="100" parentDisplay="false" />
+          <field name="tblFixedAssetChange.workUnit" width="100" parentDisplay="false" />
+          <field name="d.@Sess:Local" asName="tblFixedAssetChange.deprecAccCode" width="100" parentDisplay="false" display="tblFixedAssetChange.deprecAccCode" />
+          <field name="c.@Sess:Local" asName="tblFixedAssetChange.DevalueAccCode" width="100" parentDisplay="false" display="tblFixedAssetChange.DevalueAccCode" />
+          <field name="tblFixedAssetChange.statusId" width="50" searchType="equal" inputType="1" inputValue="statuschange" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblFixedAssetChange.id" parentName="ID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="quote_CRMsalesQuot">
+     <table>CRMClientInfo</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+	      CRMsalesQuot.id f1,
+	      CRMClientInfo.ClientName f2,
+	      CRMsalesQuot.BillNO f3,
+	      CRMsalesQuot.BillDate f4
+				from CRMsalesQuot
+				left join CRMClientInfo on CRMsalesQuot.f_brother=CRMClientInfo.id
+     </defineSQL>
+     <classCode></classCode>
+     <remark>销售订单引用CRM客户报价</remark>
+     <condition>CRMsalesQuot.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <hasChild>quote_CRMsalesQuot2</hasChild>
+     <orderBy>CRMClientInfo.ClientName,CRMsalesQuot.BillNO</orderBy>
+     <displayFields>
+          <field name="CRMClientInfo.ClientName" width="200" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="CRMsalesQuot.BillNO" width="75" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="CRMsalesQuot.BillDate" width="100" searchType="scope" keySearch="true" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="CRMsalesQuot.id" parentName="@TABLENAME.CRMIDS" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

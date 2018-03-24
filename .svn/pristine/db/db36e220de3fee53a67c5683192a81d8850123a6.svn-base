@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<!--销售出库单开票管理商品选择出库单-->
+	<select name = "SalesInvoiceSelectGoods" type="checkBox">
+		<table>tblSalesOutStock</table>
+		<relation></relation>
+		<defineSQL>
+ 		 from viewSalesInvoiceSelectGoods as tblSalesOutStock
+		</defineSQL>
+		<changeCond>(tblSalesOutStock.CompanyCode='@ValueofDB:CompanyCode' and (tblSalesOutStock.InVoiceType=2 or tblSalesOutStock.InVoiceType=1) and tblSalesOutStock.InvoiceAmount&lt;tblSalesOutStock.AfterChangeAmt and tblSalesOutStock.WorkFlowNodeName='finish' and tblSalesOutStock.BillDate&lt;='@ValueofDB:BillDate') and (tblSalesOutStock.NoInvoiceAmount)>0 and tblSalesOutStock.BillNo='@ValueofDB:@TABLENAME_RefBillNo' and tblSalesOutStock.CompanyCode='@ValueofDB:@TABLENAME_CompanyCode'</changeCond>
+		<condition></condition>
+		<orderBy>tblSalesOutStock.BillDate desc,tblSalesOutStock.BillNo desc</orderBy>
+		<displayFields>
+			<field name="tblSalesOutStock.BillNo" display="@TABLENAME.RefBillNo" keySearch="true" width="120" searchType="match" parentDisplay="false" />
+			<field name="tblSalesOutStock.BillDate" width="90" searchType="scope" parentDisplay="false" />
+			<field name="tblSalesOutStock.ComFullName" display="tblCompany.ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="false" />
+			<field name="tblSalesOutStock.GoodsNumber" display="tblGoods.GoodsNumber" width="120" searchType="match" keySearch="true"  parentDisplay="true" />
+			<field name="tblSalesOutStock.GoodsFullName" display="tblGoods.GoodsFullName" width="120" searchType="match" keySearch="true"  parentDisplay="true" />
+			<field name="tblSalesOutStock.GoodsSpec" display="tblGoods.GoodsSpec" width="120" searchType="match" keySearch="true"  parentDisplay="true" />
+			<field name="tblSalesOutStock.BaseUnit" display="tblGoods.BaseUnit" width="120" searchType="match" keySearch="true"  parentDisplay="true" />
+			<field name="tblSalesOutStock.TaxAmount" display="tblSalesOutStockDet.TaxAmount" width="100" searchType="no" parentDisplay="false" />
+			<field name="tblSalesOutStock.DisBackAmt" display="tblSalesOutStockDet.DisBackAmt" width="100" searchType="no" parentDisplay="false" />
+			<field name="tblSalesOutStock.PreferAmount" display="tblSalesOutStockDet.PreferAmount" width="100" searchType="no" parentDisplay="false" />
+			<field name="tblSalesOutStock.AfterChangeAmt" display="@TABLENAME.BillAmt" width="100" searchType="no" parentDisplay="false" />
+			<field name="tblSalesOutStock.InvoiceAmount" display="@TABLENAME.InvoiceAmount" width="100" searchType="no" parentDisplay="false" />
+			<field name="tblSalesOutStock.NoInvoiceAmount" display="@TABLENAME.NeedReturnAmt" width="100" parentDisplay="false" />
+			<field name="tblSalesOutStock.Remark" display="@TABLENAME.Remark" width="100" searchType="no" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+		  <field name="tblSalesOutStock.BillNo" parentName="@TABLENAME.RefBillNo" relationKey="false" hidden="false"/>
+		  <field name="tblSalesOutStock.id" parentName="@TABLENAME.RefBillID" relationKey="false" hidden="false"/>
+			<field name="tblSalesOutStock.classCode" display="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true"/>
+			<field name="tblSalesOutStock.AfterChangeAmt" display="tblSalesOutStockDet.AfterChangeAmt" parentName="@TABLENAME.BillAmt" relationKey="false" hidden="false"/>
+			<field name="tblSalesOutStock.InvoiceAmount" display="tblSalesOutStockDet.InvoiceAmount" parentName="@TABLENAME.InvoiceAmount" relationKey="false" hidden="false"/>
+			<field name="tblSalesOutStock.NoInvoiceAmount" display="tblSalesOutStockDet.NoInvoiceAmount" parentName="@TABLENAME.NeedReturnAmt" relationKey="false" hidden="false"/>
+			<field name="tblSalesOutStock.NoInvoiceAmount" display="tblSalesOutStockDet.NoInvoiceAmount" parentName="@TABLENAME.ExeBalAmt" relationKey="false" hidden="false"/>
+			<field name="tblSalesOutStock.Remark" display="@TABLENAME.Remark" parentName="@TABLENAME.Remark" relationKey="false" hidden="false"/>
+			<field name="tblSalesOutStock.DetId" display="tblSalesOutStockDet.id" parentName="@TABLENAME.SourceID" relationKey="false" hidden="false"/>
+		</saveFields>
+	</select>
+</popupSelect>

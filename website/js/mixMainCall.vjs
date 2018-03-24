@@ -1,0 +1,125 @@
+mixinterface();
+function mixOnInit(){	
+	mixConnect(ccIP,ccPort);	
+}
+
+function mixOnConnectError(){
+	alert("呼叫中心连接失败，请检查IP:"+ccIP+",端口："+ccPort+"配置是否正确");
+	$("#connState").html("连接失败");
+}
+function mixOnConnect(){  	
+	$("#connState").html("连接成功");
+	if(telPop){
+		//注册弹弹事件
+		mixSetPopScreen(extension,"dialin","RING",extension);
+	}
+	
+}
+var curCallerid=""; 
+function mixOnPopScreen(str){
+	//Callerid RecordFile
+	Callerid = parseStr(str,"Callerid");
+	if(Callerid != extension && curCallerid != Callerid){
+		curCallerid = Callerid;
+		if(Callerid.substr(0,1)!="0" && Callerid.substr(0,1)!="1" ){
+			Callerid = Callerid.substr(1);
+		}
+		window.open("/ClientServiceAction.do?keyWord="+Callerid,"_blank","fullscreen");
+	}
+}
+var curDND= "-1";
+function mixOnResult(str){
+    type = parseStr(str,"ActionType");
+    if("mixSetPopScreen" == type){
+	    //取分机状态
+		mixGetDND(extension, '888');
+	}    
+    if("mixGetDND" == type || "mixSetDND" == type){
+    	state = parseStr(str,"Value");
+    	if(state == "-1"){
+    		$("#telState").html("已示闲");
+    		$("#DNDBt").val("分机示忙");
+    		curDND = "-1";
+    	}else{
+    		$("#telState").html("已示忙");
+    		$("#DNDBt").val("分机示闲");
+    		curDND = "0";
+    	}
+    }
+}
+function parseStr(str,key){
+	pos = str.indexOf(key)+key.length+2;
+	if(pos == -1){ 
+		return "";
+	}
+	ss = str.substring(pos,str.indexOf("\r",pos));	
+	return ss;
+}
+function doDND(){
+	if(curDND == "0"){
+		mixSetDND(extension,-1,"888");
+		$("#telState").html("已示闲");
+		$("#DNDBt").val("分机示忙");
+		curDND = "-1";
+	}else{
+		mixSetDND(extension,0,"888");
+		$("#telState").html("已示忙");
+		$("#DNDBt").val("分机示闲");
+		curDND = "0";
+	}
+}
+function telHang(){
+	mixHangup(extension,extension+tel);
+}
+function telCall(){
+	showInput("doTelCall()","请输入呼叫号码",100,40);
+}
+
+
+function doTelCall(){
+	tel = $("#inputObj").val();
+	mixDial(extension, ccPrex+tel, extension+tel);	
+}
+function doHold(){
+	mixHold(extension,70,"8888");
+}
+function telMove(){
+	showInput("doTelMove()","请输入转入分机",100,40);
+}
+function doTelMove(){
+	tel = $("#inputObj").val();
+	mixTransfer(extension, tel, extension+tel);	
+}
+function telQiang(){
+	mixPickUp(extension,"");
+}
+
+var curInputFun="";
+function showInput(fun,title,right,bottom){
+	$("#inputDiv").show();
+	$("#inputDiv").css("right",right);
+	$("#inputDiv").css("bottom",bottom);
+	$("#inputDiv_title").html(title);
+	curInputFun = fun;
+	
+}
+function doInputOk(){
+	if($("#inputObj").val() == ""){
+		alert("输入值不能为空");
+		return;
+	}
+	$("#inputDiv").hide();
+	eval(curInputFun);	
+	
+}
+function doInputCancel(){
+	$("#inputDiv").hide();
+}
+
+function showTel(){
+	if($("#telDiv").css("display") == "none"){
+		$("#telDiv").show();
+	}else{
+		$("#telDiv").hide();
+	}
+}

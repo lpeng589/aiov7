@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<state>
+	<sql name="Receive_Amount">select sum(score) as SumScore from tblEmployeeScore where clientId=@ClientId</sql>
+	<sql name="Contract_Amount">select sum(TotalAmount) as TotalAmount from CRMSaleContract where f_brother=@ClientId</sql>
+</state>

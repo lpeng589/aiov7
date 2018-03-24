@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="tblReports">
+     <table>tblReports</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblReports.ReportNumber f1,
+      tblReports.ReportName f2
+  from tblReports
+     </defineSQL>
+     <classCode></classCode>
+     <remark></remark>
+     <condition>statusId != 2</condition>
+     <changeCond></changeCond>
+     <orderBy>tblReports.ReportNumber,tblReports.ReportName</orderBy>
+     <displayFields>
+          <field name="tblReports.ReportNumber" width="100" searchType="match" parentDisplay="true" orderBy="升" />
+          <field name="tblReports.ReportName" width="100" searchType="match" parentDisplay="true" orderBy="升" />
+     </displayFields>
+     <saveFields>
+          <field name="tblReports.ReportNumber" parentName="@TABLENAME.ReportNumber" relationKey="true" hidden="false" orderBy="升" />
+     </saveFields>
+</select>
+</popupSelect>

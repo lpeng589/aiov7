@@ -1,0 +1,315 @@
+$(document).ready(function(){
+   if(typeof(top.junblockUI)!="undefined"){
+	  top.junblockUI();
+   }
+   $("#queryCondition").click(function() { $('#condtionsList').OpenDiv(); });
+   $("#draftCondition").click(function() {
+   		  $("#draftConfirmSCA").show() ;
+   		  $("#btnConfirmSCA").hide() ;
+   	  	  $('#condtionsList').OpenDiv(); 
+   	  });
+   $("#btnConfirmSCA").click(function() {
+   		if(typeof(top.jblockUI)!="undefined"){
+			top.jblockUI({ message: " <img src='/js/loading.gif'/>",css:{ background: 'transparent'}}); 
+		}
+   		form.submit() ;
+   		$("#condtionsList").CloseDiv();
+   	});
+   $("#btnCancelSCA").click(function() { $("#condtionsList").CloseDiv(); });
+   $("#closeDiv").click(function() { $("#condtionsList").CloseDiv();});
+});
+
+function beforeSubmit(){
+	if(typeof(top.jblockUI)!="undefined"){
+		top.jblockUI({ message: " <img src='/js/loading.gif'/>",css:{ background: 'transparent'}}); 
+	}
+	form.submit() ;
+}
+
+function mdiwin(url,title){
+	top.showreModule(title,url);
+}
+function beforeDelete(){
+	if(sureDel('keyId')){
+		form.operation.value=$globals.getOP('OP_QUERY') ;
+		form.type.value = "delete" ;
+		if(typeof(top.jblockUI)!="undefined"){
+			top.jblockUI({ message: " <img src='/js/loading.gif'/>",css:{ background: 'transparent'}}); 
+		}
+		form.submit();
+	}
+}
+function mm(obj){
+	return document.getElementById(obj) ;
+}
+function mdiwin(url,title){
+	top.showreModule(title,url);
+}
+function openInputDate(obj){
+	WdatePicker({lang:'$globals.getLocale()'});
+}
+function importData(target){
+	
+	var strURL = "/importDataAction.do?operation=91&tableName="+"CRMClientInfo"+"&NoBack=NoBack" ;
+	mdiwin(strURL,"$text.get('excel.list.updata')") ;
+}
+
+function exportData(){
+	if(!isChecked("keyId")){
+		alert('$text.get("common.msg.mustSelectOne")');
+		return false;
+	}
+	form.action="/UserFunctionQueryAction.do"
+	form.operation.value=25;
+	mm("ButtonType").value = "billExport" ;
+	if(typeof(top.jblockUI)!="undefined"){
+		top.jblockUI({ message: " <img src='/js/loading.gif'/>",css:{ background: 'transparent'}}); 
+	}
+	form.submit() ;
+}
+
+function handOver(){
+	if(!isChecked("keyId")){
+		alert('$text.get("common.msg.mustSelectOne")');
+		return false;
+	}
+	var varValue = window.showModalDialog("/vm/crm/client/handOver.jsp","","dialogWidth=650px;dialogHeight=430px") ;
+	if(typeof(varValue)=="undefined")return ;
+	var values = varValue.split("@koron@") ;
+	mm("newCreateBy").value = values[0] ;
+	mm("handContent").value = values[1] ;
+	mm("type").value = "handOver" ;
+	if(typeof(top.jblockUI)!="undefined"){
+		top.jblockUI({ message: " <img src='/js/loading.gif'/>",css:{ background: 'transparent'}}); 
+	}
+	form.submit() ;
+}
+
+function selectCreateBy(varName){
+	var displayName = "" ;
+	if("createBy" == varName){
+		displayName = encodeURI("$text.get('crm.pie3d.createBy')") ;
+	}else{
+		displayName = encodeURI("$text.get('common.lb.follower')") ;
+	}
+	var varURL = "/UserFunctionAction.do?&selectName=CRMClientSelectEmployee&operation=$globals.getOP("OP_POPUP_SELECT")"
+	var varValue = window.showModalDialog(varURL+"&MOID=$MOID&MOOP=add&LinkType=@URL:&displayName="+displayName,"","dialogWidth=750px;dialogHeight=430px") ;
+	if(typeof(varValue)=="undefined")return ;
+	mm(varName).value = varValue.split(";")[0] ;
+}
+
+function selectDept(){
+	var displayName = encodeURI("$text.get('oa.common.department')") ;
+	var varURL = "/UserFunctionAction.do?&selectName=CRMClientSelectDept&operation=$globals.getOP("OP_POPUP_SELECT")"
+	var varValue = window.showModalDialog(varURL+"&MOID=$MOID&MOOP=add&LinkType=@URL:&displayName="+displayName,"","dialogWidth=750px;dialogHeight=430px") ;
+	if(typeof(varValue)=="undefined")return ;
+	mm("deptName").value = varValue.split(";")[1] ;
+	mm("deptCode").value = varValue.split(";")[0] ;
+}
+
+function updateStatus(){
+	if(!isChecked("keyId")){
+		alert('$text.get("common.msg.mustSelectOne")');
+		return false;
+	}
+	var status = window.showModalDialog("/vm/crm/client/selectStatus.jsp","","dialogWidth=350px;dialogHeight=330px") ;
+	if(typeof(status)=="undefined")return ;
+	mm("type").value = "updateClientStatus" ;
+	mm("strStatus").value = status ;
+	if(typeof(top.jblockUI)!="undefined"){
+		top.jblockUI({ message: " <img src='/js/loading.gif'/>",css:{ background: 'transparent'}}); 
+	}
+	form.submit() ;
+}
+
+function stopClient(clientStatus){
+	if(!isChecked("keyId")){
+		alert('$text.get("common.msg.mustSelectOne")');
+		return false;
+	}
+	mm("type").value = "stopClient" ;
+	mm("clientStatus").value = clientStatus ;
+	if(typeof(top.jblockUI)!="undefined"){
+		top.jblockUI({ message: " <img src='/js/loading.gif'/>",css:{ background: 'transparent'}}); 
+	}
+	form.submit() ;
+}
+
+function synchMember(){
+	mm("type").value = "synchMember" ;
+	form.submit() ;
+}
+
+function changeColor(varName,varValue){
+	mm(varName).value = varValue ;
+	form.submit() ;
+}
+function telCall()
+{
+	var allCheckBoxs=document.getElementsByName("keyId");
+		var keyIds="";
+		for(var i=0;i<allCheckBoxs.length;i++)
+		{
+			if(allCheckBoxs[i].type=="checkbox")
+			{
+				if(allCheckBoxs[i].checked==true)
+				{
+					var value = allCheckBoxs[i].value;
+					keyIds+=value+","
+				}
+			}
+		}
+		if(keyIds!="" && keyIds.length!=0)
+		{
+			keyIds = keyIds.substr(0,keyIds.length-1);
+			if(keyIds.indexOf(",") >0 ){
+				alert("$text.get('common.msg.callConfine.chooseOneNote')");		
+			}else{
+				var str  = window.showModalDialog("/TelAction.do?operator=callTel&from=CRMClientInfo&keyId="+keyIds,"","dialogWidth=600px;dialogHeight=350px");	
+			}		
+		}else
+		{
+			alert("$text.get('common.msg.mustSelectOne')");		
+		} 
+}
+
+function chooseRow(varValue){
+	var keyIds = document.getElementsByName("keyId") ;
+	for(var i=0;i<keyIds.length;i++){
+		if(keyIds[i].value==varValue){
+			keyIds[i].checked = !keyIds[i].checked ;
+			break ;
+		}
+	}
+}
+
+function sendMessage(msgType){
+	var allCheckBoxs=document.getElementsByName("keyId");
+	var keyIds="";
+	for(var i=0;i<allCheckBoxs.length;i++){
+		if(allCheckBoxs[i].type=="checkbox"){
+			if(allCheckBoxs[i].checked==true){
+				var value = allCheckBoxs[i].getAttribute("no");
+				keyIds+=value+","
+			}
+		}
+	}
+
+	if(keyIds!="" && keyIds.length!=0){
+		keyIds = keyIds.substr(0,keyIds.length-1);
+		
+		if(msgType == "email"){
+			var left = 200;  
+			var top = screen.height/2 - 200;	
+			var str  = window.open("/EMailAction.do?operation=6&type=main&crmclient="+keyIds+"&noback=true",null,'menubar=no,toolbar=no,resizable=no,scrollbars=no,loaction=no,status=yes,width=900,height=500,left='+left+',top='+top);
+		}else{
+			var left = 200;  
+			var top = screen.height/2 - 200; 
+			var str  = window.open("/ClientAction.do?type=sendPrepare&msgType="+msgType+"&keyId="+keyIds,null,'menubar=no,toolbar=no,scrollbars=no,loaction=no,status=yes,width=750,height=400,left='+left+',top='+top);
+		}
+	}else{
+		alert("$text.get('common.msg.mustSelectOne')");		
+	} 
+}
+
+function setIframSrc2(srcUrl,obj){
+	if(window.event.srcElement.type != ""){ 
+		var keyIds=document.getElementsByName("keyId");
+		var keyVal="";
+		var f_brother="" ;
+		if(window.event.srcElement.type != "checkbox"){
+			for(var i=0;i<keyIds.length;i++){
+				keyIds[i].checked=''; 
+				keyVal=keyIds[i].value;	
+				if(srcUrl.indexOf(keyVal)!=-1){
+					keyIds[i].checked='true' ;
+					f_brother = keyVal ;
+				}
+			}
+		}else{
+			for(var i=0;i<keyIds.length;i++){
+				keyVal=keyIds[i].value;	
+				if(srcUrl.indexOf(keyVal)!=-1){
+					f_brother = keyVal ;
+				}
+			}
+		}
+		if(window.parent.document.getElementById("bottomFrame")){
+			var checkItem = window.parent.document.getElementById("moddiFrame").contentWindow.document.getElementById("checkItem").value;
+			if("CRMClientInfo"!=checkItem){
+				var srcUrl2 = window.parent.document.getElementById("moddiFrame").src ;
+				srcUrl2=srcUrl2.replace("&tabIndex=&","&") ;
+				if(srcUrl2.indexOf("tabIndex=")!= -1){
+					var re = /tabIndex=\w+/g; 
+					srcUrl2 = srcUrl2.replace(re,"tabIndex="+checkItem);
+				}else{
+					srcUrl2+="&tabIndex="+checkItem ;
+				}
+				if(srcUrl2.indexOf("keyId")==-1){
+					window.parent.document.getElementById("moddiFrame").src = srcUrl2+"&keyId="+f_brother ;
+				}else{
+					window.parent.document.getElementById("moddiFrame").src = srcUrl2.substring(0,srcUrl2.indexOf("&keyId"))+"&keyId="+f_brother ;
+				}
+			}else{
+				window.parent.document.getElementById("moddiFrame").contentWindow.document.getElementById("mainKeyId").value=f_brother;
+				window.parent.document.getElementById("bottomFrame").src = srcUrl ;
+				//setIframSrc(srcUrl,obj);
+			}
+		}
+	}
+}
+
+function showDivCustomSetTable(){  
+	var returnValue = window.showModalDialog("/vm/crm/client/clientListConfig.jsp","","dialogWidth=670px;dialogHeight=450px") ;
+	if(typeof(returnValue)!="undefined"){
+		var strType = returnValue.split("@@") ;
+		if(strType[0]=="colWidth"){
+			colConfigForm.action = "/ColDisplayAction.do?operation=1" ;
+		}else if(strType[0]=="defaultWidth"){
+			colConfigForm.action = "/ColDisplayAction.do?operation=6" ;
+		}else if(strType[0]=="defaultConfig"){
+			colConfigForm.action = "/ColConfigAction.do" ;
+		}
+		colConfigForm.colSelect.value=strType[1] ;
+		colConfigForm.submit() ;
+	}
+}
+
+function showCondition(){
+	var oDiv=document.getElementById("list_id");
+	var dHeight=document.body.clientHeight;
+	var varListid = document.getElementById("listid") ;
+	varListid.style.display = "block" ;
+	var varListid2 = document.getElementById("listid2") ;
+	varListid2.style.display = "none" ;
+	var sHeight = document.getElementById("listid").clientHeight;
+	oDiv.style.height=dHeight-sHeight-68+"px";;
+}
+
+function hiddenCondition(){
+	var oDiv=document.getElementById("list_id");
+	var dHeight=document.body.clientHeight;
+	var varListid2 = document.getElementById("listid2") ;
+	varListid2.style.display = "block" ;
+	var varListid = document.getElementById("listid") ;
+	varListid.style.display = "none" ;
+	var sHeight = document.getElementById("listid2").clientHeight;
+	oDiv.style.height=dHeight-sHeight-68+"px";;
+}
+
+function printData(){
+	window.showModalDialog("/UserFunctionQueryAction.do?tableName=CRMClientInfo&reportNumber=CRMClientInfoList&operation=$globals.getOP("OP_PRINT")&parentTableName=CRMClientInfo&winCurIndex=$!winCurIndex",window,"dialogWidth=258px;dialogHeight=248px,scroll=no;")
+}
+function addClientInfo(strURL){
+	var height = screen.height;
+	var width  = screen.width;
+	window.open(strURL,"_blank",'height='+(height-65)+', width='+width+'toolbar =no,menubar=no,scrollbars=no,resizable=no, location=no, status=no,Top=0,Left=0'); 
+}
+
+function showPie3D(){
+	window.showModalDialog("/ClientAction.do?type=pie3D&from=client",window,"dialogWidth=908px;dialogHeight=405px,scroll=no;") ;
+}
+
+function showLine2D(){
+	window.showModalDialog("/ClientAction.do?type=line2D&from=client",window,"dialogWidth=908px;dialogHeight=405px,scroll=no;") ;
+}

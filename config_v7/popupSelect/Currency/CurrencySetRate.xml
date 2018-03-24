@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="CurrencySetRate">
+     <table>tblCurrency</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblCurrency.CurrencyName f1,
+      tblCurrency.CurrencySign f2,
+      tblCurrency.id f3
+  from tblCurrency
+     </defineSQL>
+     <classCode></classCode>
+     <remark></remark>
+     <condition>IsBaseCurrency != 1</condition>
+     <changeCond></changeCond>
+     <orderBy>tblCurrency.CurrencyName</orderBy>
+     <displayFields>
+          <field name="tblCurrency.CurrencyName" width="100" searchType="match" parentDisplay="true" display="@TABLENAME.CurrencyName" orderBy="升" />
+          <field name="tblCurrency.CurrencySign" width="100" searchType="match" parentDisplay="true" orderBy="  " />
+     </displayFields>
+     <saveFields>
+          <field name="tblCurrency.CurrencyName" parentName="@TABLENAME.CurrencyName" display="@TABLENAME.CurrencyName" relationKey="true" hidden="false" orderBy="升" />
+          <field name="tblCurrency.CurrencySign" parentName="@TABLENAME.CurrencySign" relationKey="false" hidden="false" orderBy="  " />
+          <field name="tblCurrency.id" parentName="@TABLENAME.Currency" display="@TABLENAME.CurrencyName" relationKey="false" hidden="false" />
+     </saveFields>
+</select>
+</popupSelect>

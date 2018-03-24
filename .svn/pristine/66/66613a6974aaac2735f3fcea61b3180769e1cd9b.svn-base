@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="SelectCertificateBuyIn_Acc"  type="checkBox" > 
+		<orderBy>tblBuyInStock.BillDate,tblBuyInStock.BillNo</orderBy>
+		<defineSQL>
+from tblBuyInStock 
+left join tblCompany on tblBuyInStock.CompanyCode = tblCompany.classCode 
+left join tblEmployee on tblEmployee.id= tblBuyInStock.employeeid
+left join tblDepartment on tblDepartment.classcode=tblBuyInStock.departmentcode
+      where 1=1  and (PayAmount!=0 or DiscountAmount!=0 or TotalTaxAmount!=0) and tblBuyInStock.workFlowNodeName = 'finish' and LEN(CertificateNo)=0 and (InvoiceAmount&gt;0 or TotalTaxAmount=0 or tblBuyInStock.InVoiceType=3 )
+		</defineSQL>
+		<displayFields>
+			<field name="tblBuyInStock.BillDate" parentDisplay="false" width="100" searchType="scope" keySearch="true" />
+			<field name="tblBuyInStock.BillNo" parentDisplay="false" width="120" searchType="match" keySearch="true" />
+			<field name="tblBuyInStock.InVoiceType" parentDisplay="false" width="80" searchType="match" />
+			<field name="tblCompany.ComFullName" display="tblBuyInStock.CompanyCode" parentDisplay="false" width="150" searchType="match" />
+			<field name="tblEmployee.EmpFullName" display="tblBuyInStock.EmployeeID" parentDisplay="false" width="85" searchType="match" />
+			<field name="tblDepartment.DeptFullName" display="tblBuyInStock.DepartmentCode" parentDisplay="false" width="85" searchType="match" />
+			<field name="tblBuyInStock.TotalTaxAmount" parentDisplay="false" width="90" />
+			<field name="tblBuyInStock.CurTotalAmount" parentDisplay="false" width="90" />
+			<field name="tblBuyInStock.AlreadyPayAmt" parentDisplay="false" width="110" />
+			<field name="tblBuyInStock.CurAlreadyPayAmt" parentDisplay="false" width="110" />
+		</displayFields>
+		<saveFields>
+			<field name="tblBuyInStock.id" parentName="@TABLENAME.id" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

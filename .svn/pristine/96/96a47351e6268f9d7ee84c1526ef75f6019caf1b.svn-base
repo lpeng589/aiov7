@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="model_getEnumBykey"  desc="手机端根据key获取枚举"  belongTableName="tblDBEnumeration" > 
+		<defineSQL>
+from tblDBEnumeration
+left join tblDBEnumerationItem  on tblDBEnumerationItem.enumId = tblDBEnumeration.id
+left join tblLanguage  on tblLanguage.id = tblDBEnumerationItem.languageId
+where tblDBEnumeration.enumName = '@ValueofDB:EnumKey'
+		</defineSQL>
+		<displayFields>
+			<field name="tblDBEnumeration.enumName" asName="enumName" parentDisplay="false" width="0" />
+			<field name="tblDBEnumerationItem.enumValue" asName="enumValue" parentDisplay="false" width="0" />
+			<field name="tblLanguage.zh_CN" asName="zhCN" parentDisplay="false" width="0" />
+			<field name="tblDBEnumerationItem.enumOrder" asName="enumOrder" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+</popupSelect>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<!--====手工生成业务凭证，用到的弹出窗 -->
+	<select name = "SelectCertificateBuyInStock_zengzhi" type="checkBox">
+     <table>tblBuyInStock,tblBuyOrder</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      tblBuyInStock.id f1,
+      tblBuyInStock.BillDate f2,
+      tblBuyInStock.BillNo f3,
+      tblCompany.ComFullName f4,
+      tblCompany.ComName f5,
+      tblBuyInStock.InVoiceType f6,
+      tblBuyInStock.TotalTaxAmount f7,
+      tblStock.StockFullName f9,
+      tblBuyInStock.AlreadyPayAmt f10,
+      tblBuyInStock.BackAmount f11,
+      tblEmployee1.EmpFullName f12,
+      tblDepartment.DeptFullName f13,
+      tblBuyOrder.BillNo f14,
+      tblEmployee2.EmpFullName f15,
+      tblGoods.GoodsNumber f16,
+      tblGoods.GoodsFullName f17,
+      tblGoods.GoodsSpec f18,
+      tblBuyInStock.Remark f19
+  from tblBuyInStock 
+join tblCompany on tblCompany.classCode=tblBuyInStock.CompanyCode
+join tblBuyInStockDet on (tblBuyInStock.id=tblBuyInStockDet.f_ref and tblBuyInStockDet.id=(select top 1 a.id from tblBuyInStockDet a where a.f_ref=tblBuyInStock.id ))
+join tblGoods on tblGoods.classCode=tblBuyInStockDet.GoodsCode
+join tblStock on tblStock.classCode=(case when len(tblBuyInStockDet.StockCode)=0 then tblBuyInStock.StockCode else tblBuyInStockDet.StockCode end)
+join tblDepartment on tblDepartment.classCode=tblBuyInStock.DepartmentCode
+join tblEmployee tblEmployee1 on tblEmployee1.id=tblBuyInStock.EmployeeID 
+join tblEmployee tblEmployee2 on tblEmployee2.id=tblBuyInStock.createBy
+ left join tblBuyOrder on tblBuyOrder.id=tblBuyInStockDet.BuyOrderID
+     </defineSQL>
+     <condition>tblBuyInStock.workflowNodeName='finish' and len(isnull(tblBuyInStock.CertificateNo,''))=0 and tblBuyInStock.InVoiceType=2</condition>
+     <changeCond>     </changeCond>
+     <orderBy>tblBuyInStock.BillDate,tblBuyInStock.BillNo</orderBy>
+     <displayFields>
+          <field name="tblBuyInStock.BillDate" width="90" searchType="scope" parentDisplay="false" />
+          <field name="tblBuyInStock.BillNo" width="120" searchType="match" parentDisplay="false" />
+          <field name="tblCompany.ComFullName" width="200" searchType="match" parentDisplay="false" />
+          <field name="tblCompany.ComName" width="100" searchType="match" parentDisplay="false" hiddenInput="true" />
+          <field name="tblBuyInStock.InVoiceType" width="75" searchType="equal" parentDisplay="false" />
+          <field name="tblBuyInStock.TotalTaxAmount" width="110" parentDisplay="false" />
+          <field name="tblStock.StockFullName" width="150" searchType="match" parentDisplay="false" />
+          <field name="tblBuyInStock.AlreadyPayAmt" width="100" parentDisplay="false" />
+          <field name="tblBuyInStock.BackAmount" width="100" parentDisplay="false" />
+          <field name="tblEmployee1.EmpFullName" width="65" parentDisplay="false" display="tblBuyInStock.EmployeeID" />
+          <field name="tblDepartment.DeptFullName" width="75" parentDisplay="false" />
+          <field name="tblBuyOrder.BillNo" width="120" parentDisplay="false" />
+          <field name="tblEmployee2.EmpFullName" width="65" parentDisplay="false" display="tblBuyInStock.createBy" />
+          <field name="tblGoods.GoodsNumber" width="120" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullName" width="150" parentDisplay="false" />
+          <field name="tblGoods.GoodsSpec" width="100" parentDisplay="false" />
+          <field name="tblBuyInStock.Remark" width="100" parentDisplay="false" hiddenInput="true" /> 
+     </displayFields>
+     <saveFields>
+          <field name="tblBuyInStock.id" parentName="@TABLENAME.id" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

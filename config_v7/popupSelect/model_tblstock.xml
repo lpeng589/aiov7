@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="model_tblstock"  desc="手机端仓库列表"  belongTableName="tblstock" > 
+		<defineSQL>
+from tblstock
+where tblstock.workFlowNodeName='finish'
+		</defineSQL>
+		<displayFields>
+			<field name="tblstock.StockNumber" asName="StockNumber" parentDisplay="false" width="0" />
+			<field name="tblstock.StockFullName" asName="StockFullName" parentDisplay="false" width="0" />
+			<field name="tblstock.classCode" asName="classCode" parentDisplay="false" width="0" />
+			<field name="tblstock.StockFullNamePYM" asName="StockFullNamePYM" parentDisplay="false" width="0" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+</popupSelect>

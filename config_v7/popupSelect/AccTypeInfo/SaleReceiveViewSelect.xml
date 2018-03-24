@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="SaleReceiveViewSelect"  type="checkBox" > 
+		<orderBy>ViewRefReceive.BillNo,ViewRefReceive.BillDate</orderBy>
+		<defineSQL>
+from ViewRefReceive
+      where 1=1  and ViewRefReceive.CompanyCode='@ValueofDB:CompanyCode' and (ViewRefReceive.Receivemark in (case '@ValueofDB:AcceptTypeID' when 'Receive' then '0' when 'PreReceive' then '10' when 'RetrunReceive' then '1' when 'ReturnPay' then '2' when 'RepReceive' then '3' when 'OtherReceive' then '4' when 'CRMReceive' then '9' when 'DeputyRec' then '13' end ))
+		</defineSQL>
+		<changeCond>ViewRefReceive.BillDate &lt;= '@ValueofDB:BillDate'</changeCond>
+		<displayFields>
+			<field name="ViewRefReceive.BillNo" display="tblSaleReceiveDet.RefbillNo" parentDisplay="true" width="120" searchType="match" keySearch="true" />
+			<field name="ViewRefReceive.TotalTaxAmount" display="tblSaleReceiveDet.BillAmt" parentDisplay="true" width="100" />
+			<field name="ViewRefReceive.TotalAlrAccAmt" display="tblSaleReceiveDet.SettledAmt" parentDisplay="false" width="80" />
+			<field name="ViewRefReceive.BackAmount" display="tblSaleReceiveDet.BackAmt" parentDisplay="false" width="80" />
+			<field name="ViewRefReceive.NeedReturnAmt" display="tblSaleReceiveDet.WexeBalAmt" parentDisplay="false" width="80" />
+			<field name="ViewRefReceive.CurTotalAmount" display="tblSaleReceiveDet.CurBillAmt" parentDisplay="false" width="80" keySearch="true" />
+			<field name="ViewRefReceive.CurTotalAlrAccAmt" display="tblSaleReceiveDet.CurSettledAmt" parentDisplay="false" width="80" keySearch="true" />
+			<field name="ViewRefReceive.CurBackAmount" display="tblSaleReceiveDet.CurBackAmt" parentDisplay="false" width="80" keySearch="true" />
+			<field name="ViewRefReceive.CurNeedReturnAmt" display="tblSaleReceiveDet.CurWexeBalAmt" parentDisplay="false" width="80" keySearch="true" />
+			<field name="ViewRefReceive.BillName" parentDisplay="false" width="90" searchType="match" />
+			<field name="ViewRefReceive.BillDate" parentDisplay="false" width="90" searchType="scope" />
+			<field name="ViewRefReceive.ComFullName" parentDisplay="false" width="200" searchType="match" />
+		</displayFields>
+		<saveFields>
+			<field name="ViewRefReceive.BillNo" parentName="@TABLENAME.RefbillNo" relationKey="true" display="tblSaleReceiveDet.RefbillNo" width="0" />
+			<field name="ViewRefReceive.TotalTaxAmount" parentName="@TABLENAME.BillAmt" display="tblSaleReceiveDet.BillAmt" width="0" />
+			<field name="ViewRefReceive.TotalAlrAccAmt" parentName="@TABLENAME.SettledAmt" hidden="true" display="tblSaleReceiveDet.SettledAmt" width="0" />
+			<field name="ViewRefReceive.BackAmount" parentName="@TABLENAME.BackAmt" hidden="true" display="tblSaleReceiveDet.BackAmt" width="0" />
+			<field name="ViewRefReceive.NeedReturnAmt" parentName="@TABLENAME.WexeBalAmt" hidden="true" display="tblSaleReceiveDet.WexeBalAmt" width="0" />
+			<field name="ViewRefReceive.NeedReturnAmt" parentName="@TABLENAME.ExeBalAmt" hidden="true" display="tblSaleReceiveDet.ExeBalAmt" width="0" />
+			<field name="ViewRefReceive.BillName" parentName="@TABLENAME.BillName" hidden="true" width="0" />
+			<field name="ViewRefReceive.BillDate" parentName="@TABLENAME.RefBillDate" hidden="true" width="0" />
+			<field name="ViewRefReceive.id" parentName="@TABLENAME.RefbillID" hidden="true" width="0" />
+			<field name="ViewRefReceive.SalesOrderNo" parentName="@TABLENAME.SalesOrderNo" hidden="true" width="0" />
+			<field name="ViewRefReceive.BillType" parentName="@TABLENAME.ReceiveBillType" hidden="true" width="0" />
+			<field name="ViewRefReceive.SalesOrderID" parentName="@TABLENAME.SalesOrderID" hidden="true" width="0" />
+			<field name="ViewRefReceive.Companycode" parentName="@TABLENAME.CompanyCode" hidden="true" width="0" />
+			<field name="ViewRefReceive.SubCode" parentName="@TABLENAME.SubCode" hidden="true" display="tblAccTypeInfo.AccNumber" width="0" />
+			<field name="ViewRefReceive.CurTotalAmount" parentName="@TABLENAME.CurBillAmt" compare="false" width="0" />
+			<field name="ViewRefReceive.CurTotalAlrAccAmt" parentName="@TABLENAME.CurSettledAmt" compare="false" width="0" />
+			<field name="ViewRefReceive.CurBackAmount" parentName="@TABLENAME.CurBackAmt" compare="false" width="0" />
+			<field name="ViewRefReceive.CurNeedReturnAmt" parentName="@TABLENAME.CurWexeBalAmt" compare="false" width="0" />
+			<field name="ViewRefReceive.CurNeedReturnAmt" parentName="@TABLENAME.ExeBalFcAmt" compare="false" width="0" />
+			<field name="ViewRefReceive.Currency" parentName="@TABLENAME.Currency" compare="false" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

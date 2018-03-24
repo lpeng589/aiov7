@@ -1,0 +1,81 @@
+[INFO ] 2017-12-28 08:49:50,594 Line:206 系统开始启动，最大内存：1792;目前总内存：257;目前空闲内存：181
+ [INFO ] 2017-12-28 08:49:50,710 Line:284 ===========Tomcat Port=8888
+ [INFO ] 2017-12-28 08:49:55,513 Line:2660 ---------------------------------first read dog =======-----------
+ [DEBUG] 2017-12-28 08:49:55,839 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canJxc=1 
+ [DEBUG] 2017-12-28 08:49:55,864 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canOa=1 
+ [DEBUG] 2017-12-28 08:49:55,870 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canCrm=1 
+ [DEBUG] 2017-12-28 08:49:55,875 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canHr=1 
+ [DEBUG] 2017-12-28 08:49:55,894 Line:594 select AccPeriod,AccMonth,AccYear,scompanyId,statusId,isBegin from tblAccPeriod where statusId=1 or isBegin=1
+ [DEBUG] 2017-12-28 08:49:55,909 Line:626 ------Init initAccPeriod record:1
+ [DEBUG] 2017-12-28 08:49:57,204 Line:1061 ------Init Enumeration record:391
+ [DEBUG] 2017-12-28 08:49:57,247 Line:1091 ------Init WorkProfession record:58
+ [DEBUG] 2017-12-28 08:49:57,281 Line:1121 ------Init District record:3984
+ [DEBUG] 2017-12-28 08:49:57,295 Line:1152 ------Init deptMap record:1
+ [DEBUG] 2017-12-28 08:49:58,469 Line:1832 ------Init ModuleList record:
+ [DEBUG] 2017-12-28 08:49:58,469 Line:2855 --------Init ModuleList Successful---------------
+ [DEBUG] 2017-12-28 08:49:59,080 Line:297  select * from tblDBTableInfo order by TableName 
+ [DEBUG] 2017-12-28 08:49:59,157 Line:370 select * from tblDBFieldInfo order by tableId,listOrder
+ [DEBUG] 2017-12-28 08:50:00,598 Line:538 ------Init TableInfo record:639
+ [DEBUG] 2017-12-28 08:50:00,652 Line:651  select cataName,disName,module,tableName,nameField,codeField from tblScopeCataData order by orderby 
+ [DEBUG] 2017-12-28 08:50:00,664 Line:682 ------Init TableInfo record:4
+ [DEBUG] 2017-12-28 08:50:00,687 Line:775 ------Init initModuleField record:0
+ [DEBUG] 2017-12-28 08:50:00,725 Line:702  select tableName,sentence from tblPopDisSentence where statusId=0 order by tableName 
+ [DEBUG] 2017-12-28 08:50:00,736 Line:721 ------Init TableInfo record:26
+ [DEBUG] 2017-12-28 08:50:00,817 Line:891 ------Init PropInfo record:7
+ [DEBUG] 2017-12-28 08:50:04,829 Line:2947 --------Init Config File ---------------
+ [ERROR] 2017-12-28 08:50:05,235 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\12bbe4d0_1309251420149973794.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,238 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\16498250_1107301011023635761.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,240 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\1696218b_1303071432056211826.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,243 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\1e49ec73_1310141513554302768.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,246 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\2b637a85_1301151535291656265.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,248 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\2b637a85_1301161408119037671.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,251 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\3222e73f_1303110904036610349.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,253 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\33eaec0d_1301050950293021694.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,255 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\33eaec0d_1301061557287273935.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,257 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\33eaec0d_1301061608391253982.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,307 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\41c430d2_1208141805027402835.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,330 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\46a78652_1210151349025782027.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,358 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\4f7f6b1e_1303221111597339437.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,422 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\5fcf5f77_1304021554367043609.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,425 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\5fcf5f77_1304071406166069339.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,428 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\5fcf5f77_1304090927277926103.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,431 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\5fcf5f77_1304091008228756401.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,484 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\634bf574_1209071615094958205.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,486 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\634bf574_1209080902548768433.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,489 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\634bf574_1209121614089763945.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,492 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\6b602213_1205210942199878477.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,496 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\6b602213_1205221639204860973.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,499 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\6b602213_1205301613391641532.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,565 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\73eed876_1309241732076726431.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,636 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\8161d7ca_1312251105052885382.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,639 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\84e5c0c2_1203162038085610023.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,642 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\93da24a1_1205160946069131222.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,645 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\948d1bcf_1203241057415520350.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,649 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\978c0b22_1204191406175403275.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,652 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\978c0b22_1204251048517142444.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,720 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\a348895a_1306281020552880950.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,724 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\a348895a_1307010903526496874.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,727 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\a95dce41_1204281406032060703.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,821 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\ad48c0ba_1204141758384922624.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,867 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\c60c0a1d_1305161604424726111.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,914 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\eae3edac_0906121936590150223.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,917 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\eb548c0f_1203161107216570078.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,920 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\eb548c0f_1203162014422750845.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-28 08:50:05,954 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\ffd4bcdd_1701241708235230006.xml (系统找不到指定的文件。)
+ [DEBUG] 2017-12-28 08:50:05,974 Line:1873 ------Init RefreshTime 
+ [DEBUG] 2017-12-28 08:50:06,052 Line:2994 --------Init SMS Start ---------------
+ [INFO ] 2017-12-28 08:50:06,833 Line:3011 -------System init Secussful Set Normal status--------------
+ [DEBUG] 2017-12-28 08:50:06,834 Line:3855 --------Init Dog Successful---------------
+ [INFO ] 2017-12-28 08:50:08,626 Line:89 SAFE 数据库第一个备份任务启动，时间2017-12-28 00:00:00
+ [INFO ] 2017-12-28 08:50:08,626 Line:144 SAFE 备份任务开始执行，时间2017-12-28 08:50:08
+ [INFO ] 2017-12-28 08:50:08,629 Line:137 SAFE 碎片任务启动，时间2017-12-31 00:00:00
+ [INFO ] 2017-12-28 08:50:14,031 Line:148 SAFE 备份任务执行成功，时间2017-12-28 08:50:14
+ [DEBUG] 2017-12-28 08:51:07,298 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2017-12-28 09:21:28,787 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2017-12-28 09:51:45,941 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2017-12-28 10:22:06,055 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2017-12-28 10:52:27,992 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2017-12-28 11:22:48,158 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2017-12-28 11:53:06,994 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2017-12-28 12:23:24,480 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ 

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectProjectInfo">
+     <table>tblProject</table>
+     <forwardModel>tblProject</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblProject.id f1,
+      tblProject.ProjectNo f2,
+      tblProject.ProjectName f3
+from tblProject
+     </defineSQL>
+     <classCode></classCode>
+     <remark></remark>
+     <condition>tblProject.workFlowNodeName='finish'</condition>
+     <changeCond>(tblProject.statusId!='-1')</changeCond>
+     <orderBy>tblProject.ProjectNo,tblProject.ProjectName</orderBy>
+     <displayFields>
+          <field name="tblProject.ProjectNo" width="110" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblProject.ProjectName" width="150" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.ProjectCode" orderBy="升" />
+     </displayFields>
+     <saveFields>
+          <field name="tblProject.id" parentName="@TABLENAME.ProjectCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

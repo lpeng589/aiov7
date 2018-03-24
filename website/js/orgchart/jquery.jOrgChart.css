@@ -1,0 +1,41 @@
+html{background:url(/style/images/client/html_bg_f.jpg) repeat 0 0;}
+body,h1,h2,h3,h4,h5,h6,hr,p,ul,ol,li,pre,form,fieldset,button,input,nav {margin:0;padding:0;}
+body{font:normal 12px/1.5 Microsoft Yahei;color:#000;-webkit-tap-highlight-color:-webkit-tap-highlight-color;overflow-x:hidden;}
+em,i{font-style:normal;}
+li{list-style:none;}
+img{border:none;}
+a{text-decoration:none;}
+input,textarea{outline:0;font-family:Microsoft Yahei;}
+
+
+
+.clear {clear: both;}
+.brand{color:#E05E00 !important;}
+#org{background-color:white;margin:10px;padding:10px;}
+#show-list{cursor:pointer;}
+.alert-message{margin:2px 0;}
+.topbar{position:absolute;}
+.jOrgChart{margin-top:3px;padding:0px;cursor:move;}
+.jOrgChart .node{font-size:14px;background-color:#8a92ef;display:inline-block;z-index:10;margin:0 5px;}
+.jOrgChart .node:hover{background-color:#fc4f5f;}
+.jOrgChart .node a{color:#fff;display:block;width:20px;padding:5px;overflow:hidden;text-overflow:ellipsis;line-height:16px;}
+.jOrgChart>table{margin:0 auto;}
+.jOrgChart>table>tbody>tr.node-cells .node a{width:auto;}
+.node p{font-family:tahoma;font-size:10px;line-height:11px;padding:2px;}
+.jOrgChart .line{height:20px;width:4px;}
+.jOrgChart .down{background-color:#95caec;margin:0 auto;}
+.jOrgChart .top {border-top:3px solid #95caec;}
+.jOrgChart .left {border-right:2px solid #95caec;}
+.jOrgChart .right{border-left:2px solid #95caec;}
+.jOrgChart td {text-align:center;vertical-align:top;padding:0;}
+
+.drag-active {border-style:dotted !important;}
+.drop-hover {border-style:solid;border-color: #E05E00;}
+#main{display:none;background:#999; width:330px; height:360px; position:fixed; top:100px; left:100px; z-index:1000; overflow-y:scroll;}
+#main table{ border:none; margin:0; padding:0px; float:left; }
+#main td{ border:none; margin:0; padding:0px; }
+#main li{  margin:5px; padding:0px; }
+#main ul{ margin:0; padding:0px; list-style:none;}
+#buttondiv{position:fixed; top:10px; right:30px; z-index:1000; width:300px; height:30px;}
+#buttondiv input{font-size:18px;}
+.tip-inner {color:#8c3901;}

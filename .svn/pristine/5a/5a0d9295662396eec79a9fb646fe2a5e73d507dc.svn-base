@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>left.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3"/>
+    <meta http-equiv="description" content="this is my page"/>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="/style/css/controlPanel.css" type="text/css"/>
+    
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+
+  </head>
+  
+  <body >
+  	<table cellpadding="0" cellspacing="0" class="framework">
+		<tr><!--左边菜单开始-->
+			<td class="leftMenu">
+				<div class="TopTitle"><span><img src="/style/images/controlPanel/ti_003.gif" /></span><span>控制面板</span></div>
+				<div class="LeftBorder" style="border-top:none;">
+					<ul class="LeftMenu_list control">
+						<li><span class="up_inod_01">界面设置</span>
+							<ul>
+								<li>界面主题</li>
+								<li>门户设置</li>
+								<li>菜单快捷组</li>
+								<li>自定义桌面</li>
+								<li>windows快捷组</li>
+								<li>个人网址</li>
+								<li>收藏夹</li>
+							</ul>
+						</li>
+						<li><span class="up_inod_02">个人信息</span>
+							<ul>
+								<li>个人资料</li>
+								<li><a href="/ControlPanelAction.do?operation=7&isnickUpdate=1" target="mainFrame">昵称与头像</a></li>
+								<li>   自定义用户组</li>
+								<li>人员关注</li>
+							</ul>
+						</li>
+						<li><span class="up_inod_03">帐号与安全</span>
+							<ul>
+								<li><a href="/ControlPanelAction.do?operation=7&type=updateUser" target="mainFrame"> 我的帐号</a></li>
+ 								<li><a href="/vm/oa/controlPanel/updatePwd.jsp" target="mainFrame">修改密码</a></li>	
+						<!-- 	<li><a href="/UserManageAction.do?operation=101&src=menu&winCurIndex=4" target="mainFrame">修改密码</a></li>-->
+							</ul>
+						</li>
+					</ul>
+				</div>				
+			</td><!--左边菜单结束-->
+		</tr>
+	</table>
+  </body>
+</html>

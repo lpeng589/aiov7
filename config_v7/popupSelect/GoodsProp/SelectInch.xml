@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectInch">
+     <table>tblStocks</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      isnull(tblStocks.Inch,'') f1
+  from tblStocks 
+  group by isnull(Inch,''),tblStocks.GoodsCode,tblStocks.StockCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>尺寸</remark>
+     <condition>tblStocks.GoodsCode='@ValueofDB:@TABLENAME_GoodsCode' and tblStocks.StockCode='@ValueofDB:StockCode' and LEN(isnull(Inch,''))&gt;0</condition>
+     <changeCond></changeCond>
+     <orderBy>isnull(tblStocks.Inch,'')</orderBy>
+     <displayFields>
+          <field name="isnull(tblStocks.Inch,'')" width="70" searchType="match" parentDisplay="true" asName="@TABLENAME.Inch" display="@TABLENAME.Inch" orderBy="升" />
+     </displayFields>
+     <saveFields>
+          <field name="isnull(tblStocks.Inch,'')" parentName="@TABLENAME.Inch" display="@TABLENAME.Inch" relationKey="true" hidden="false" orderBy="升" />
+     </saveFields>
+</select>
+</popupSelect>

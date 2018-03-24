@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="assetTypeAcc"  desc="资产类别科目" > 
+		<defineSQL>
+from
+tblAccTypeInfo 
+where 1=1 
+and isCatalog=0 and  isCalculate !=1
+		</defineSQL>
+		<changeCond>(tblAccTypeInfo.accNumber like '1601%')</changeCond>
+		<displayFields>
+			<field name="tblAccTypeInfo.AccNumber" parentDisplay="false" width="200" searchType="match" keySearch="true" />
+			<field name="tblAccTypeInfo.AccFullName" display="@TABLENAME.AssetAcc" parentDisplay="true" width="300" />
+		</displayFields>
+		<saveFields>
+			<field name="tblAccTypeInfo.AccNumber" parentName="@TABLENAME.AssetAcc" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="tblFixedAssetChangeDet_quote_FixedAssetAddDet">
+     <table>tblFixedAssetAddDet,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblFixedAssetAddDet.id f1,
+      tblGoods.GoodsNumber f2,
+      tblGoods.GoodsFullName f3,
+      tblGoods.GoodsSpec f4,
+      tblGoods.GoodsFullNamePYM f5,
+      tblFixedAssetAddDet.Qty f6,
+      tblFixedAssetAddDet.Amount f7
+  from tblFixedAssetAddDet
+  left join tblGoods  on tblGoods.classCode=tblFixedAssetAddDet.GoodsCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>固定资产变更明细引用资产变更明细</remark>
+     <condition></condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.GoodsNumber" width="120"  parentDisplay="false" orderBy="升" />
+          <field name="tblGoods.GoodsFullName" width="150"  parentDisplay="false" orderBy="升" />
+          <field name="tblGoods.GoodsSpec" width="150"  parentDisplay="false" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100"  parentDisplay="false" hiddenInput="true" />
+          <field name="tblFixedAssetAddDet.Qty" width="100" parentDisplay="false" />
+          <field name="tblFixedAssetAddDet.Amount" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblFixedAssetAddDet.id" parentName="@TABLENAME.SourceID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

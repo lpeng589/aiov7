@@ -1,0 +1,897 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+	<!--=====================================客户日程==================================================-->
+	<define name="OACalendar_add">
+		<sql>update CRMClientInfo set NextFollowTime=substring(OACalendar.stratTime,1,10) from OACalendar where OACalendar.id=@ValueofDB:id and CRMClientInfo.id=OACalendar.clientId</sql>
+	</define>
+	
+	<!-- 删除论坛 版块的时候 -->
+	<define name="OABBSTopics_del_before">
+    <sql type="condition">
+		<condition>
+		<select>select count(id) as asCount from OABBSSends where sortId=@ValueofDB:id</select>	
+		<select>select sortname as asName FROM OABBSTopic where id=@ValueofDB:id</select>
+		</condition>
+	    <exec condition="@SqlReturn:asCount &gt; 0">
+		<error>oa.bbs.exist.forum,@SqlReturn:asName</error>
+		</exec>
+		
+		<exec condition="true">
+		<sql>delete from OABBSTopicUser where f_ref=@ValueofDB:OABBSTopic_id</sql>
+		<sql>delete from OABBSTopicWDet where f_ref=@ValueofDB:OABBSTopic_id</sql>
+		</exec>
+	</sql>	
+	</define>
+	
+	
+	
+
+	<!-- 新增论坛 版块的时候 -->
+	<define name="OABBSTopics_Add">
+	<!--先检查版主-->
+    <sql type="condition">
+		<condition>
+			<select>select bbsUserId  from OABBSTopic as a where a.bbsuserId not in (select userID from OABBSUsers) and id=@ValueofDB:OABBSTopic_id</select>
+			<select>select id as EmpID,EmpFullName  from tblemployee where id=(select bbsUserId from OABBSTopic where id=@ValueofDB:OABBSTopic_id)</select>
+			<select>select count(id) as asCount from OABBSTopic where id=@ValueofDB:OABBSTopic_id and photo like '%;%'</select>
+		</condition>
+	    <!--<exec condition="&quot;@SqlReturn:bbsUserId&quot;== &quot;null&quot; || &quot;@SqlReturn:bbsUserId&quot;.length == 0">-->
+		<exec condition="&quot;@SqlReturn:bbsUserId&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:bbsUserId&quot;.length != 0">
+		<sql>insert into OABBSUsers(id,userscore,userID,nickname,createBy,lastUpdateTime,statusId,fullName)
+values(subString(cast(newid() as varchar(36)),1,30),0,@SqlReturn:EmpID,@SqlReturn:EmpFullName,@ValueofDB:OABBSTopic_createBy,@ValueofDB:OABBSTopic_lastUpdateTime,0,@SqlReturn:EmpFullName)</sql>
+		</exec>
+		<exec condition="true">
+				<sql>update OABBSTopic set lastUpdateTime='' where id=@ValueofDB:OABBSTopic_id</sql>
+		</exec>
+		<exec condition="@SqlReturn:asCount &gt; 0">
+			<error>common.oabbs.upload.photo</error>
+		</exec>
+	</sql>	
+	<!--再检查副版主-->
+	    <sql type="condition">
+		<condition>
+			<select>select bbsUserId2  from OABBSTopic a where a.bbsuserId2 not in (select userID from OABBSUsers) and id=@ValueofDB:OABBSTopic_id</select>
+			<select>select id as EmpID,EmpFullName  from tblemployee where id=(select bbsUserId2 from OABBSTopic where id=@ValueofDB:OABBSTopic_id)</select>
+		</condition>
+	    <!--<exec condition="&quot;@SqlReturn:bbsUserId&quot;== &quot;null&quot; || &quot;@SqlReturn:bbsUserId&quot;.length == 0">-->
+		<exec condition="&quot;@SqlReturn:bbsUserId2&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:bbsUserId2&quot;.length != 0">
+		<sql>insert into OABBSUsers(id,userscore,userID,nickname,createBy,lastUpdateTime,statusId,fullName)
+values(subString(cast(newid() as varchar(36)),1,30),0,@SqlReturn:EmpID,@SqlReturn:EmpFullName,@ValueofDB:OABBSTopic_createBy,@ValueofDB:OABBSTopic_lastUpdateTime,0,@SqlReturn:EmpFullName)</sql>
+		</exec>
+	</sql>	
+	</define>
+	
+	<!-- 添加版块的时候 判断是否已有帖子-->
+	<define name="OABBSTopics_add_before">
+    <sql type="condition">
+		<condition>
+			<select>select id as topicId from OABBSTopic where classCode=substring(@ValueofDB:classCode,0,len(@ValueofDB:classCode)-4)</select>	
+			<select>select count(id) as asCount from OABBSSends where sortId=@SqlReturn:topicId</select>	
+		</condition>
+	    <exec condition="@SqlReturn:asCount &gt; 0">
+		  	<error>oa.bbs.exist.forum2</error>
+		</exec>
+	</sql>	
+	</define>
+	
+	
+	<!-- 等级积分 设置-->
+	<define name="OABBSSetting_update">
+    <sql type="condition">
+		<condition>
+			<select>select isNull(gradeName,'') as gradeName from OABBSGrade where gradeScopeS&gt;GradeScopeE</select>	
+			<select>select count(id) as asCount from OABBSSends where sortId=@SqlReturn:topicId</select>
+			<!-- 判断不连续积分 -->
+			<select>select count(id) as continueGrade from OABBSGrade where GradeScopeS not in (select GradeScopeE+1 from OABBSGrade)</select>
+			<!-- 判断积分小于0 -->
+			<select>select count(id) as zeroGrade from OABBSGrade where GradeScopeS&lt;0 or GradeScopeE&lt;0</select>
+			<!-- 判断主表积分小于0 -->
+			<select>select count(id) as mainGrade from OABBSSetting where addNewTopic&lt;0 or addResponseTopic&lt;0 or addMainTopic&lt;0 or addTopTopic&lt;0 or delScoreTopic&lt;0 and id=@ValueofDB:id</select>	
+		</condition>
+	    <exec condition="&quot;@SqlReturn:gradeName&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:gradeName&quot;.length &gt; 0">
+		  	<error>oa.bbs.grade.scopeS.lenthan.socpeE,@SqlReturn:gradeName</error>
+		</exec>
+		<exec condition="@SqlReturn:continueGrade&gt;1">
+		  	<error>oa.bbs.grade.scopeS.continue.Scope</error>
+		</exec>
+		<exec condition="@SqlReturn:zeroGrade&gt;0">
+		  	<error>oa.bbs.grade.scopeS.Zero.scope</error>
+		</exec>
+		<exec condition="@SqlReturn:mainGrade&gt;0">
+		  	<error>oa.bbs.grade.scopeS.Main.scope</error>
+		</exec>
+	</sql>	
+	</define>
+	
+	<!--删除知识中心目录，判断目录是否被引用-->
+	<define name="knowledgeFolder_del_before">
+    <sql type="condition">
+			<condition>
+				<select>select count(*) as countFolder from OAKnowledgeCenterFile where folderId=(select classCode from OAKnowledgeCenterFolder where id=@ValueofDB:id)</select>	
+			</condition>
+	    <exec condition="@SqlReturn:countFolder &gt; 0">
+		  	<error>common.oa.folder.hasuse</error>
+		  </exec>
+		</sql>	
+	</define>
+	
+	<!--删除规章制度目录，判断目录是否被引用-->
+	<define name="OAOrdainGroup_del_before">
+    <sql type="condition">
+			<condition>
+				<select>select count(*) as countFolder from OAOrdainInfo where groupId=@ValueofDB:id</select>	
+			</condition>
+	    <exec condition="@SqlReturn:countFolder &gt; 0">
+		  	<error>common.oa.folder.hasuse</error>
+		  </exec>
+		</sql>	
+	</define>
+	
+	<!--删除通讯录目录，判断目录是否被引用-->
+	<define name="OACommunicationNoteGroup_del_before">
+    <sql type="condition">
+			<condition>
+				<select>select count(*) as countFolder from OACommunicationNoteInfo where groupId=@ValueofDB:id</select>	
+			</condition>
+	    <exec condition="@SqlReturn:countFolder &gt; 0">
+		  	<error>common.oa.folder.hasuse</error>
+		  </exec>
+		</sql>	
+	</define>
+	
+	  <!--我的资料夹新增-->
+	<define name="OAFolder_add_Bef">
+    <sql type="condition">
+    <exec condition="&quot;@ValueofDB:OAFolder_classCode&quot;.length==5 || &quot;@ValueofDB:OAFolder_classCode&quot;.substr(0,5)== &quot;00001&quot;">
+         <error>oa.OAFolder.add</error>
+    </exec>
+    </sql>
+	</define>
+ <!--我的资料夹删除-->
+	<define name="OAFolder_del_Bef">
+    <sql type="condition">
+	    <condition>
+	    <select>select classCode from OAFolder where id=@ValueofDB:OAFolder_id</select>
+	    <select>select count(*) as countFolder from OAFile where folderId=@SqlReturn:classCode</select>	
+	    </condition>
+	    <exec condition="&quot;@SqlReturn:classCode&quot;.length==5">
+	         <error>oa.group.delete</error>
+	    </exec>
+	    <!--删除我的资料目录，判断目录是否被引用-->
+	    <exec condition="@SqlReturn:countFolder &gt; 0">
+			  	<error>common.oa.folder.hasuse</error>
+			</exec>
+    </sql>
+	</define>
+    <!--我的收藏夹新增-->
+	<define name="OAFavorite_add_Bef">
+    <sql type="condition">
+    <exec condition="&quot;@ValueofDB:OAFavoriteGroup_classCode&quot;.length==5 &amp;&amp; &quot;@ValueofDB:OAFavoriteGroup_classCode&quot;.substr(0,5)== &quot;00001&quot;">
+         <error>oa.OAFavorite.add</error>
+    </exec>
+    </sql>
+	</define>
+ 	<!--我的收藏夹删除-->
+	<define name="OAFavorite_del_Bef">
+    <sql type="condition">
+    <condition>
+    <select>select classCode from OAFavoriteGroup where id=@ValueofDB:OAFavoriteGroup_id</select>
+    <select>select count(*) as countFolder from OAFavorite where groupId=@SqlReturn:classCode</select>	
+    </condition>
+    <exec condition="&quot;@SqlReturn:classCode&quot;.length==5">
+         <error>oa.group.delete</error>
+    </exec>
+    <!--删除我的收藏夹目录，判断目录是否被引用-->
+    <exec condition="@SqlReturn:countFolder &gt; 0">
+		  	<error>common.oa.folder.hasuse</error>
+		  </exec>
+    </sql>
+	</define>
+    <!--我的好友新增-->
+	<define name="OAUserGroup_add_Bef">
+    <sql type="condition">
+    <exec condition="&quot;@ValueofDB:OAFolder_classCode&quot;.length==5">
+         <error>oa.OAUserGroup.add</error>    
+    </exec>
+    </sql>
+	</define>
+	<!--我的好友删除-->
+	<define name="OAUserGroup_del_Bef">
+    <sql type="condition">
+    <condition>
+    <select>select classCode from OAUserGroup where id=@ValueofDB:OAUserGroup_id</select>
+    </condition>
+    <exec condition="&quot;@SqlReturn:classCode&quot;.length==5">
+         <error>oa.group.delete</error>
+    </exec>
+    </sql>
+	</define>
+	
+<!--新增论坛目录-->	
+<define name="OABBSList_add">
+	<sql type="condition">
+		<condition>
+			<select>select zh_CN as Lcn from tblLanguage where id in (select languageId from tblDBEnumerationItem where enumId=(select id from tblDBEnumeration where enumName='OABBSList')) and zh_CN=(select zh_CN from tblLanguage where id=@ValueofDB:OABBSList_list)</select>
+			<select>select id from OABBSList where id=@ValueofDB:OABBSList_id</select>
+			<select>select id as enumId from tblDBEnumeration where enumName='OABBSList'</select>
+			<select>select 'Menu'+cast(count(id) as varchar(10)) as enumNo from tblDBEnumerationItem where enumId=(select id from tblDBEnumeration where enumName='OABBSList')</select>
+			<select>select zh_CN,zh_TW,en from tblLanguage where id=(select list from OABBSList where id=@ValueofDB:OABBSList_id)</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:Lcn&quot;!=&quot;null&quot;">
+			<error>existname.reselect.error</error>
+		</exec>
+
+		<exec condition="true">
+			<sql>insert tblDBEnumerationItem(id,enumValue,enumId,languageId,enumOrder) values(@ValueofDB:OABBSList_id,@SqlReturn:enumNo,@SqlReturn:enumId,'0'+@ValueofDB:OABBSList_id,isnull(@ValueofDB:OrderNo,0))</sql>
+			<sql>insert into tblLanguage(id,zh_CN,zh_TW,en) values('0'+@ValueofDB:OABBSList_id,@SqlReturn:zh_CN,@SqlReturn:zh_TW,@SqlReturn:en)</sql>
+			<sql>update tblInitTime set lastTime=@MEM:currentTimeMillis where initName='Enumeration'</sql>			
+			<sql>update OABBSList set EnumMenu=@SqlReturn:enumNo where id=@ValueofDB:OABBSList_id</sql>
+			<sql type="class">com.menyi.aio.dyndb.DDLOperation.refreshEnumeration(OABBSList,conn)</sql>
+		</exec>
+	</sql>
+</define>
+	
+<!--删除论坛目录-->
+<define name="OABBSList_delete">
+	<sql type="condition">
+		<condition>
+			<select>
+			select list from OABBSList a,tblDBEnumerationItem b where a.EnumMenu=b.enumValue and b.enumId=(select id from tblDBEnumeration where enumName='OABBSList')
+		and b.enumValue in (select BelongMenu from OABBSTopic) and a.id=@ValueofDB:OABBSList_id
+			</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:list&quot;!=&quot;null&quot;">
+			<error>usedname.reselect.error</error>
+		</exec>
+	
+		<exec condition="true">
+			<sql>delete from tblLanguage where id=(select languageId from tblDBEnumerationItem where id=@ValueofDB:OABBSList_id)</sql>
+			<sql>delete from tblDBEnumerationItem where id=@ValueofDB:OABBSList_id</sql>
+			<sql>update tblInitTime set lastTime=@MEM:currentTimeMillis where initName='Enumeration'</sql>
+			<sql type="class">com.menyi.aio.dyndb.DDLOperation.refreshEnumeration(OABBSList,conn)</sql>
+		</exec>
+	</sql>
+</define>
+	
+
+<!--修改论坛目录-->
+<define name="OABBSList_update">
+	<sql type="condition">
+		<condition>
+			<select>select zh_CN,zh_TW,en from tblLanguage where id=(select list from OABBSList where id=@ValueofDB:OABBSList_id)</select>
+			<select>select OrderNo,EnumMenu from OABBSList where id=@ValueofDB:OABBSList_id</select>
+		</condition>
+		<exec condition="true">
+			<sql>
+			update tblLanguage set zh_CN=@SqlReturn:zh_CN,zh_TW=@SqlReturn:zh_CN,en=@SqlReturn:en where id=(select languageId from tblDBEnumerationItem where enumValue=@SqlReturn:EnumMenu and enumId=(select id as enumId from tblDBEnumeration where enumName='OABBSList'))
+			</sql>
+			<sql>update tblDBEnumerationItem set enumOrder=@SqlReturn:OrderNo where enumValue=@SqlReturn:EnumMenu and enumId=(select id as enumId from tblDBEnumeration where enumName='OABBSList')</sql>
+			<sql>update tblInitTime set lastTime=@MEM:currentTimeMillis where initName='Enumeration'</sql>
+			<sql type="class">com.menyi.aio.dyndb.DDLOperation.refreshEnumeration(OABBSList,conn)</sql>
+		</exec>
+	</sql>
+</define>
+	
+		<!--修改工作计划保存历史记录-->
+	<define name="tblDayWorkPlan_UpdateBefore">
+    <sql type="condition">
+		<condition>
+			<select>select content  from tblDayWorkPlan where id=@ValueofDB:tblDayWorkPlan_id</select>
+		</condition>
+		<exec condition="true">
+		<sql>update tblDayWorkPlan set history=history+'----'+@MEM:sysLongDate+'----  '+@Locale:OA.difineOA.UpdateWorkPlan+'|' where id=@ValueofDB:tblDayWorkPlan_id</sql>
+		<!--删除关联人工作计划-->
+		<sql>delete from tblDayWorkPlan where assID=@ValueofDB:tblDayWorkPlan_id</sql>
+		</exec>
+	</sql>	
+	</define>
+			<!--修改工作计划保存历史记录-->
+	<define name="tblDayWorkPlan_Add">
+    <sql type="condition">
+		<condition>
+			<select>select BeginDate,tblDayWorkPlan.createBy,tblEmployee.DepartmentCode  from tblDayWorkPlan left join tblEmployee on tblDayWorkPlan.createBy=tblEmployee.id where tblDayWorkPlan.id=@ValueofDB:tblDayWorkPlan_id</select>
+			<select>select OAAssMan.EmployeeID from OAAssMan where f_ref=@ValueofDB:tblDayWorkPlan_id</select>
+		</condition>
+		<exec condition="true">
+		<sql>update tblDayWorkPlan set EmployeeID=@SqlReturn:createBy,DepartmentCode=@SqlReturn:DepartmentCode,workDate=@SqlReturn:BeginDate where id=@ValueofDB:tblDayWorkPlan_id</sql>
+		</exec>
+			<!--如果目标小于0，提示错误--> 
+		<exec condition="@ValueofDB:tblDayWorkPlan_KPIAim &lt; 0 || @ValueofDB:tblDayWorkPlan_ReceiveAmt  &lt; 0 ">	 			
+		<error>negtive.Aim.error</error>
+		</exec>
+		<!--工作计划选择关联人向其他关联人插入工作计划-->
+		<exec condition="&quot;@SqlReturn:EmployeeID&quot; !=&quot;null&quot;">
+		<sql>
+			insert into tblDayWorkPlan(id,departmentCode,EmployeeId,workDate,title,content,kind,assPeople,assClient,assBuss,time,state,eventType,event,createBy,lastUpdateBy,createTime,lastupdateTime,statusId,ScompanyID,BeginDate,EndDate,KPIItem,GoodsCode,ReceiveAmt,SalesAmt,Customers,Products,SecondSales,assItem,assContract,assQuote,assFee,assDefine1,assDefine3,UserDefine1,UserDefine2,UserDefine3,UserDefine4,UserDefine5,UserDefine6,UserDefine7,UserDefine8,UserDefine9,UserDefine10,UserDefine11,UserDefine12,UserDefine13,UserDefine14,UserDefine15,UserDefine16,UserDefine17,UserDefine18,UserDefine19,UserDefine20,ReComplete,ReScale,SalesComplete,SalesScale,CuComplete,CuScale,ProComplete,ProScale,SecComplete,SecScale,KPIAim,KPIScale,PlanType,assID)
+
+			select lower(substring(replace(newid(),'-',''),1,28)) as id,OAAssMan.departmentCode,OAAssMan.EmployeeId,workDate,title,content,kind,assPeople,assClient,assBuss,time,state,eventType,event,OAAssMan.EmployeeId as createBy,OAAssMan.EmployeeId as lastUpdateBy,tblDayWorkPlan.createTime,tblDayWorkPlan.lastupdateTime,tblDayWorkPlan.statusId,tblDayWorkPlan.ScompanyID,BeginDate,EndDate,KPIItem,GoodsCode,ReceiveAmt,SalesAmt,Customers,Products,SecondSales,assItem,assContract,assQuote,assFee,assDefine1,assDefine3,UserDefine1,UserDefine2,UserDefine3,UserDefine4,UserDefine5,UserDefine6,UserDefine7,UserDefine8,UserDefine9,UserDefine10,UserDefine11,UserDefine12,UserDefine13,UserDefine14,UserDefine15,UserDefine16,UserDefine17,UserDefine18,UserDefine19,UserDefine20,ReComplete,ReScale,SalesComplete,SalesScale,CuComplete,CuScale,ProComplete,ProScale,SecComplete,SecScale,KPIAim,KPIScale,PlanType,tblDayWorkPlan.id as assID from tblDayWorkPlan
+			left join OAAssMan on OAAssMan.f_ref=tblDayWorkPlan.id where  tblDayWorkPlan.id=@ValueofDB:tblDayWorkPlan_id and OAAssMan.EmployeeID!=tblDayWorkPlan.createBy
+		</sql>
+		</exec>
+	</sql>	
+	</define>
+	<!--项目信息激活-->
+<define name="OAItemrStatusStop_reverse">
+<sql type="condition">
+<condition>
+	<select>select statusid from OAItemInfo where id=@ValueofDB:OAItemInfo_id</select>
+</condition>
+<exec condition="&quot;@SqlReturn:statusid&quot; == &quot;0&quot; ">
+	<error>common.alert.reverse</error>
+</exec>
+<exec condition="true">
+<sql>update OAItemInfo set Statusid=0 where id=@ValueofDB:OAItemInfo_id</sql>
+</exec>
+</sql>
+</define>
+	<!--项目信息完成-->
+<define name="OAItenStatus_finish">
+<sql type="condition">
+<condition>
+</condition>
+<exec condition="true">
+<sql>update OAItemInfo set Statusid=1 where id=@ValueofDB:OAItemInfo_id</sql>
+</exec>
+</sql>
+</define>
+   <!--不允许删除工作流类型默认类型-->
+	<define name="tblWorkFlowType_Delete">
+    <sql type="condition">
+		<condition>
+		<select>select classCode from tblWorkFlowType where id=@ValueofDB:tblWorkFlowType_id</select>	
+		</condition>
+	    <exec condition="(&quot;@SqlReturn:classCode&quot;==&quot;00002&quot; || &quot;@SqlReturn:classCode&quot;==&quot;0000200001&quot; || &quot;@SqlReturn:classCode&quot;==&quot;0000200002&quot;) &amp;&amp; &quot;@Sess:BillOper&quot; == &quot;delete&quot;">
+		<error>tblWorkFlowType.default.error</error>
+		</exec>
+	</sql>	
+	</define>
+	
+	
+	<!--MAC地址过滤-->
+<define name="OpenValue_SysInfo_tblMacFilter">
+    <sql type="condition">
+		<condition>			
+		</condition>
+		<exec condition="true">
+			<sql>update tblMacFilter set statusId=0 where id=@ValueofDB:tblmacfilter_id</sql>
+		</exec>
+    </sql>
+</define>
+
+<!--MAC地址过滤-->
+<define name="StopValue_SysInfo_tblMacFilter">
+	<sql type="condition">
+		<condition>			
+		</condition>
+		<exec condition="true">
+			<sql>update tblMacFilter set statusId=-1 where id=@ValueofDB:tblmacfilter_id</sql>
+		</exec>
+	</sql>
+</define>
+<!--计划关联项-->
+	<define name="tblPlanAssociate_Add">
+    <sql type="condition">
+		<condition>
+			<select>select id ,statusId,popSelect,linkAddress,name from tblPlanAssociate </select>
+		</condition>
+		<exec condition="&quot;@ValueofDB:popSelect&quot;==&quot;@ValueofDB:linkAddress&quot;||&quot;@ValueofDB:popSelect&quot;==&quot;@ValueofDB:name&quot;||&quot;@ValueofDB:linkAddress&quot;==&quot;@ValueofDB:name&quot;">
+			 <error>tblPlanAssociate.add.error</error>
+		</exec>
+	</sql>	
+	</define>
+<!--协同人(id=1)不允许修改-->
+	<define name="tblPlanAssociate_Delete">
+    <sql type="condition">
+		<condition>
+			<select>select id ,statusId from tblPlanAssociate </select>
+		</condition>
+		<exec condition="&quot;@ValueofDB:tblPlanAssociate_id&quot; == &quot;1&quot; &amp;&amp; &quot;@ValueofDB:tblPlanAssociate_statusId&quot;== &quot;1&quot;">
+			 <error>tblPlanAssociate.delete.error</error>
+		</exec>
+	</sql>	
+	</define>
+	
+<!--协同人(id=1)不允许删除-->
+	<define name="tblPlanAssociate_Delete1">
+    <sql type="condition">
+		<condition>
+			<select>select id from tblPlanAssociate </select>
+		</condition>
+		<exec condition="&quot;@ValueofDB:tblPlanAssociate_id&quot; == &quot;1&quot; ">
+			 <error>tblPlanAssociate.delete.error</error>
+		</exec>
+	</sql>	
+	</define>
+	
+<!--计划关联项启用-->
+<define name="OpenValue_PlanAssociate">
+    <sql type="condition">
+		<condition>
+		</condition>
+		<exec condition="true">
+			<sql>update tblPlanAssociate set statusId=0 where id=@ValueofDB:tblPlanAssociate_id</sql>
+		</exec>
+    </sql>
+</define>
+
+<!--计划关联项停用-->
+<define name="StopValue_PlanAssociate">
+	<sql type="condition">
+		<condition>
+		</condition>
+		<exec condition="true">
+      <sql>update tblPlanAssociate set statusId=-1 where id=@ValueofDB:tblPlanAssociate_id</sql>
+		</exec>
+		<!-- <exec condition="&quot;@ValueofDB:tblPlanAssociate_id&quot; == &quot;1&quot; ">
+      <error>tblPlanAssociate.delete.error</error>
+		</exec> -->
+	</sql>
+</define>
+
+<!--项目合同 合同开始时间和合同结束时间 add  -->
+<define name="OAContract_time_add">
+	<sql type="condition">
+		<condition>
+			<select>select ExecuteDate,OverdueDate from OAContract where id=@ValueofDB:id</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:ExecuteDate&quot;&gt;&quot;@SqlReturn:OverdueDate&quot;">
+			<error>StartTime.EndTime.error</error>
+		</exec>
+	</sql>
+</define>
+<!--项目合同 合同开始时间和合同结束时间 update  -->
+<define name="OAContract_time_update">
+	<sql type="condition">
+		<condition>
+			<select>select ExecuteDate,OverdueDate from OAContract where id=@ValueofDB:id</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:ExecuteDate&quot;&gt;&quot;@SqlReturn:OverdueDate&quot;">
+			<error>StartTime.EndTime.error</error>
+		</exec>
+	</sql>
+</define>
+<!--项目信息 add -->
+<define name="OAItemInfo_time_add">
+	<sql type="condition">
+		<condition>
+			<select>select StartDate,EndDate from OAItemInfo where id=@ValueofDB:id</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:StartDate&quot;&gt;&quot;@SqlReturn:EndDate&quot;">
+			<error>StartTime.EndTime.error</error>
+		</exec>
+	</sql>
+</define>
+<!--项目信息 update -->
+<define name="OAItemInfo_time_update">
+	<sql type="condition">
+		<condition>
+			<select>select StartDate,EndDate from OAItemInfo where id=@ValueofDB:id</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:StartDate&quot;&gt;&quot;@SqlReturn:EndDate&quot;">
+			<error>StartTime.EndTime.error</error>
+		</exec>
+	</sql>
+</define>
+<!--项目洽谈 add  -->
+<define name="OAItemConsults_time_add">
+	<sql type="condition">
+		<condition>
+			<select>select ConsultDate,NextConsultDate from OAItemConsults</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:ConsultDate&quot;&gt;&quot;@SqlReturn:NextConsultDate&quot;">
+			<error>ConsultDate.NextConsultDate.error</error>
+		</exec>
+	</sql>
+</define>
+<!--项目洽谈 update  -->
+<define name="OAItemConsults_time_update">
+	<sql type="condition">
+		<condition>
+			<select>select ConsultDate,NextConsultDate from OAItemConsults</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:ConsultDate&quot;&gt;&quot;@SqlReturn:NextConsultDate&quot;">
+			<error>ConsultDate.NextConsultDate.error</error>
+		</exec>
+	</sql>
+</define>
+
+
+
+
+
+
+
+<!--  ========================================================= ******* =========================================================-->
+<!--  ========================================================= ******* =========================================================-->
+<!--  ========================================================= ******* =========================================================-->
+
+<!--=========================================================== 办公用品  开 始 ===========================================================-->
+	<define name="tblLsOfficeGoods_Add">
+		
+		<!-- 不启用审核流 -->
+		<sql type="condition">
+			<exec condition="&quot;@MEM:tblLsOfficeGoods_IsStatart&quot; == &quot;0&quot;">
+				<sql type="define">tblLsOfficeGoods_Add_One</sql>
+			</exec>
+		</sql>
+		
+	</define>
+	
+	<define name="tblLsOfficeGoods_Add_One">
+		
+		
+	</define>
+	
+	<define name="tblLsOfficeGoods_Delete">
+		<!--办公用品被使用，不允许删除-->
+		<sql type="condition">
+			<condition>
+				<select>SELECT a.GoodsName FROM tblLsOfficeGoods a JOIN (SELECT GoodsCode FROM OAOfficeBuyDet UNION SELECT GoodsCode FROM OAOfficeBorrowDet UNION SELECT GoodsCode FROM OAOfficeReturnsDet) b ON a.classCode = b.GoodsCode WHERE a.id = @ValueofDB:id</select>
+			</condition>
+			<!--exec condition="&quot;@SqlReturn:GoodsName&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:GoodsName&quot;.length != 0&amp;&amp;&quot;@Sess:BillOper&quot;==&quot;delete&quot;&quot;-->
+			<exec condition="&quot;@SqlReturn:GoodsName&quot; != &quot;null&quot;">
+				<error>GoodsName.IsUsed.Deleted,@SqlReturn:GoodsName</error>
+			</exec>
+		</sql>
+		<!-- 不启用审核流 -->
+		<sql type="condition">
+			<exec condition="&quot;@MEM:tblLsOfficeGoods_IsStatart&quot; == &quot;0&quot;">
+				<sql type="define">tblLsOfficeGoods_Delete_One</sql>
+			</exec>
+		</sql>
+		
+	</define>
+	<define name="tblLsOfficeGoods_Delete_One">
+		<!--办公用品被使用，不允许被反审核-->
+		<sql type="condition">
+			<condition>
+				<select>SELECT a.GoodsName FROM tblLsOfficeGoods a JOIN (SELECT GoodsCode FROM OAOfficeBuyDet UNION SELECT GoodsCode FROM OAOfficeBorrowDet UNION SELECT GoodsCode FROM OAOfficeReturnsDet) b ON a.classCode = b.GoodsCode WHERE a.id = @ValueofDB:id</select>
+			</condition>
+			<exec condition="&quot;@SqlReturn:GoodsName&quot; != &quot;null&quot;">
+				<error>GoodsName.Ret.com</error>
+			</exec>
+		</sql>
+	</define>
+<!--===========================================================  办公用品  结 束 ===========================================================-->
+
+
+<!--===========================================================  办公用品采购  开始 ===========================================================-->
+<!-- 老代码在 conifg_gm/define.xml  OA_add_Buy-->
+		
+	<define name="OAOfficeBuy_Add">
+		<sql type="condition">
+			<condition>
+				<select>SELECT b.GoodsName FROM OAOfficeBuyDet a JOIN tblLsOfficeGoods b ON a.GoodsCode = b.classCode WHERE a.f_ref = @ValueofDB:id AND (a.Number&lt;=0 OR a.Price&lt;=0)</select>
+			</condition>
+			<exec condition="&quot;@SqlReturn:GoodsName&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:GoodsName&quot;.length != 0">
+				<error>GoodsName.Buy.PriceOrQtyNegatie,@SqlReturn:GoodsName</error>
+			</exec>
+		</sql>
+		<sql type="condition">
+			<!-- 默认可领用数量 为采购数量 -->
+			<exec condition="true">
+				<sql>
+					UPDATE B SET B.Numberleft=B.Number,B.Amountleft=B.Amount FROM OAOfficeBuy A ,OAOfficeBuyDet B WHERE A.id=B.f_ref AND A.id=@ValueofDB:OAOfficeBuy_id
+				</sql>
+			</exec>
+		</sql>
+		
+		<!-- 判断同一办公用品，同一天只能录一条记录 -->
+		<sql type="condition">
+			<condition>
+				<select>
+					SELECT a.GoodsCode as GoodsCode FROM OAOfficeBuyDet a JOIN OAOfficeBuy b ON a.f_ref = b.id WHERE b.BorrowDate = @ValueofDB:BorrowDate GROUP BY a.GoodsCode HAVING COUNT(1)&gt;=2
+				</select>
+			</condition>
+			<exec condition="&quot;@SqlReturn:GoodsCode&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:GoodsCode&quot;.length != 0">
+				 <error>OAOfficeBuy.Unvalid.GoodsCode</error>
+			</exec>
+		</sql>
+		
+		<!-- 不启用审核流 -->
+		<sql type="condition">
+			<exec condition="&quot;@MEM:OAOfficeBuy_IsStatart&quot; == &quot;0&quot;">
+				<sql type="define">OAOfficeBuy_Add_One</sql>
+			</exec>
+		</sql>
+	</define>
+	
+	<define name="OAOfficeBuy_Add_One">
+	
+	</define>
+	
+	<define name="OAOfficeBuy_Delete">
+	
+		<!-- 办公用品已被领用 不能再被删除修改 -->
+		<sql type="condition">
+			<condition>
+				<select>
+					select 'UnableModify' as UnableModify from OAOfficeBorrowDet a join OAOfficeBuy b on a.OAOfficeBuyBillNo=b.BIllNo WHERE b.id=@ValueofDB:OAOfficeBuy_id
+				</select>
+			</condition>
+			<exec condition="&quot;@SqlReturn:UnableModify&quot;==&quot;UnableModify&quot;">
+				<error>OAOfficeBuy.UnableModify.warning</error>
+			</exec>
+		</sql>
+		
+		<!-- 不启用审核流 -->
+		<sql type="condition">
+			<exec condition="&quot;@MEM:OAOfficeBuy_IsStatart&quot; == &quot;0&quot;">
+				<sql type="define">OAOfficeBuy_Delete_One</sql>
+			</exec>
+		</sql>
+	</define>
+	
+	<define name="OAOfficeBuy_Delete_One">
+	<!-- 办公用品被领用，不能被反审核 -->
+		<sql type="condition">
+			<condition>
+				<select>
+					SELECT count(c.OAOfficeBuyDetID) as asCount FROM OAOfficeBuy ob INNER JOIN OAOfficeBuyDet obd ON obd.f_ref = ob.id INNER JOIN OAOfficeBorrowDet c ON c.OAOfficeBuyDetID=obd.id WHERE ob.id=@ValueofDB:OAOfficeBuy_id
+				</select>
+			</condition>
+			<exec condition="&quot;@SqlReturn:asCount&quot; != &quot;0&quot;">
+				<error>asCount.OAOfficeBuyDetID.com</error>
+			</exec>
+		</sql>
+	</define>
+
+
+<!--===========================================================  办公用品采购  结束 ===========================================================-->
+
+
+<!--===========================================================  办公用品领用  开始  ===========================================================-->
+<!-- 老代码在 conifg_gm/define.xml  OA_add_Borrow_bef -->
+
+
+
+	<define name="OAOfficeBorrow_Add">
+		
+		<!-- 判断领用的数量不能大于采购单中采购的数量  ALAN&amp;  -->
+		<sql type="condition">
+			<condition>
+				<select>
+					SELECT 'UnvalidQuantity' AS UnvalidQuantity FROM OAOfficeBuyDet A ,OAOfficeBorrowDet B WHERE  A.id=B.OAOfficeBuyDetID and B.f_ref=@ValueofDB:OAOfficeBorrow_id  AND A.Numberleft &lt; B.Quantity
+				</select>
+			</condition>
+			<exec condition="&quot;@SqlReturn:UnvalidQuantity&quot;==&quot;UnvalidQuantity&quot;">
+				<error>OAOfficeBorrow.Unvalid.Quantity</error>
+			</exec>
+		</sql>
+		<!-- 办公用品领用数量应大于0 -->
+		<sql type="condition">
+			<condition>
+				<select>
+					SELECT 'a' as  Quantity FROM OAOfficeBuyDet A ,OAOfficeBorrowDet B WHERE  A.id=B.OAOfficeBuyDetID and B.f_ref=@ValueofDB:OAOfficeBorrow_id and B.Quantity &lt;=0.0
+				</select>
+			</condition>
+			<exec condition="&quot;@SqlReturn:Quantity&quot;==&quot;a&quot;">
+				<error>Quantity.must.IsNot0</error>
+			</exec>
+		</sql>
+		<sql type="condition"><!--领用日期不能在采购日期之后。-->
+		<condition>
+			<select>SELECT BillNo,a.BorrowDate AS BuyDate FROM OAOfficeBuy a join OAOfficeBorrowDet b ON a.BillNo=b.OAOfficeBuyBillNo WHERE a.BorrowDate&gt;@ValueofDB:OAOfficeBorrow_BorrowDate AND b.f_ref=@ValueofDB:id</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:BillNo&quot;!=&quot;null&quot;">
+    		<error>common.QuoteDate.error,@SqlReturn:BillNo,@SqlReturn:BuyDate</error>                     
+  		</exec>
+	</sql>
+		<!-- 默认未归还数量 为领用数量 -->
+		<sql type="condition">
+			<exec condition="true">
+				<sql>
+					UPDATE B SET B.QuantityReturn=B.Quantity  FROM OAOfficeBorrow A ,OAOfficeBorrowDet B WHERE A.id=B.f_ref AND A.id=@ValueofDB:OAOfficeBorrow_id
+				</sql>
+			</exec>
+		</sql>
+	
+		<!-- 不启用审核流 -->
+		<sql type="condition">
+			<exec condition="&quot;@MEM:OAOfficeBorrow_IsStatart&quot; == &quot;0&quot;">
+				<sql type="define">OAOfficeBorrow_Add_One</sql>
+			</exec>
+		</sql>
+		
+	</define>
+	
+	<define name="OAOfficeBorrow_Add_One">
+		
+		<!--审核通过后 减少办公用品采购表中对应记录的剩余数量。状态（如果是消耗品显示为空） ALAN&amp; -->
+		<sql type="condition">
+			<exec condition="true">
+				<sql>
+					UPDATE A SET A.Numberleft=A.Numberleft-B.Quantity FROM OAOfficeBuyDet A,OAOfficeBorrowDet B WHERE A.id=B.OAOfficeBuyDetID and B.f_ref=@ValueofDB:OAOfficeBorrow_id
+				</sql> 
+				<sql>
+					UPDATE A SET A.Amountleft=A.Numberleft*A.Price FROM OAOfficeBuyDet A,OAOfficeBorrowDet B WHERE A.id=B.OAOfficeBuyDetID and B.f_ref=@ValueofDB:OAOfficeBorrow_id
+				</sql>
+			</exec>
+		</sql>
+		
+	</define>
+	
+	<define name="OAOfficeBorrow_Delete">
+		
+		<!-- 办公用品已被归还 不能再被删除修改 -->
+		<sql type="condition">
+			<condition>
+				<select>
+					select 'UnableModify' as UnableModify from OAOfficeReturnsDet a join OAOfficeBorrow b on a.OAOfficeBorrowBillNo=b.BillNo WHERE b.id=@ValueofDB:OAOfficeBorrow_id
+				</select>
+			</condition>
+			<exec condition="&quot;@SqlReturn:UnableModify&quot;==&quot;UnableModify&quot;">
+				<error>OAOfficeReturns.UnableModify.warning</error>
+			</exec>
+		</sql>
+	
+		<!-- 不启用审核流 -->
+		<sql type="condition">
+			<exec condition="&quot;@MEM:OAOfficeBorrow_IsStatart&quot; == &quot;0&quot;">
+				<sql type="define">OAOfficeBorrow_Delete_One</sql>
+			</exec>
+		</sql>
+	</define>
+	
+	<define name="OAOfficeBorrow_Delete_One">
+		
+		<!-- 删除后，增加办公用品采购表中对应记录的剩余数量 ALAN&amp;-->
+		<sql type="condition">
+			<exec condition="true">
+				<sql>
+					UPDATE A SET A.Numberleft=A.Numberleft+B.Quantity FROM OAOfficeBuyDet A,OAOfficeBorrowDet B WHERE A.id=B.OAOfficeBuyDetID and B.f_ref=@ValueofDB:OAOfficeBorrow_id
+				</sql>
+				<sql>
+					UPDATE A SET A.Amountleft=A.Numberleft*A.Price FROM OAOfficeBuyDet A,OAOfficeBorrowDet B WHERE A.id=B.OAOfficeBuyDetID and B.f_ref=@ValueofDB:OAOfficeBorrow_id
+				</sql>
+			</exec>
+		</sql>
+		
+		<sql type="condition">
+		<!-- 办公用品被领用，不能被反审核 -->
+			<condition>
+				<select>
+					SELECT count(ord.OAOfficeBorrowDetID) as asCount FROM OAOfficeBorrow ob INNER JOIN OAOfficeBorrowDet obd ON obd.f_ref = ob.id INNER JOIN OAOfficeReturnsDet ord ON ord.OAOfficeBorrowDetID=obd.id WHERE ob.id=@ValueofDB:OAOfficeBorrow_id
+				</select>
+			</condition>
+			<exec condition="'@SqlReturn:asCount' != '0';">
+				<error>asCount.Ret.OAOfficeBorrowDetID</error>
+			</exec>
+		</sql>
+	</define>
+
+
+<!--===========================================================  办公用品领用  结束 ===========================================================-->
+
+
+
+<!--===========================================================  办公用品归还  开始 ===========================================================-->
+<!-- 老代码 在 conifg_gm/define.xml  OA_add_Returns_bef-->
+
+	
+	<define name="OAOfficeReturns_Add">
+		<sql type="condition"><!--数量小于0不允许保存-->
+			<condition>
+				<select>SELECT b.GoodsName FROM OAOfficeReturnsDet a JOIN tblLsOfficeGoods b ON a.GoodsCode = b.classCode WHERE a.f_ref = @ValueofDB:id AND a.Quantity&lt;=0</select>
+			</condition>
+			<exec condition="&quot;@SqlReturn:GoodsName&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:GoodsName&quot;.length != 0">
+				<error>GoodsName.Return.negativeQty,@SqlReturn:GoodsName</error>
+			</exec>
+		</sql>
+		<sql type="condition"><!--不允许重复选择-->
+			<condition>
+				<select>SELECT OAOfficeBorrowBillNo,GoodsCode FROM OAOfficeReturnsDet WHERE f_ref = @ValueofDB:id GROUP BY OAOfficeBorrowBillNo,GoodsCode HAVING COUNT(1)&gt;=2</select>
+			</condition>
+			<exec condition="&quot;@SqlReturn:OAOfficeBorrowBillNo&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:OAOfficeBorrowBillNo&quot;.length != 0">
+				<error>OAOfficeBorrow.Return.Manys,@SqlReturn:OAOfficeBorrowBillNo</error>
+			</exec>
+		</sql>
+		<sql type="condition">
+			<condition>
+				<select>SELECT 'UnvalidReturnGoods' AS UnvalidReturnGoods FROM OAOfficeReturnsDet WHERE f_ref=@ValueofDB:OAOfficeReturns_id AND OAOfficeBorrowDetID =''</select>
+				<select>SELECT 'UnvalidQuantity' AS UnvalidQuantity  FROM OAOfficeReturnsDet A ,OAOfficeBorrowDet B WHERE  B.id=A.OAOfficeBorrowDetID AND A.f_ref=@ValueofDB:OAOfficeReturns_id  AND B.QuantityReturn &lt; A.Quantity</select>
+			</condition>
+			<!-- 归还的办公用品必须在领用的物品之中  ALAN&amp; -->
+			<exec condition="&quot;@SqlReturn:UnvalidReturnGoods&quot;==&quot;UnvalidReturnGoods&quot;">
+				<error>OAOfficeReturn.Unvalid.GoodsCode</error>
+			</exec>
+			<!-- 判断归还的数量不能大于领用单中采购的数量  ALAN&amp;  -->
+			<exec condition="&quot;@SqlReturn:UnvalidQuantity&quot;==&quot;UnvalidQuantity&quot;">
+				<error>OAOfficeReturn.Unvalid.Quantity</error>
+			</exec>
+		</sql>
+		
+		<!-- 不启用审核流 -->
+		<sql type="condition">
+			<exec condition="&quot;@MEM:OAOfficeReturns_IsStatart&quot; == &quot;0&quot;">
+				<sql type="define">OAOfficeReturns_Add_One</sql>
+			</exec>
+		</sql>
+		
+	</define>
+	
+	<define name="OAOfficeReturns_Add_One">
+			
+		<!--审核通过后 减少办公用品领用表中对应记录的未归还数量 ALAN&amp; -->
+		<sql type="condition">
+			<exec condition="true">
+				<sql>
+					UPDATE A SET A.QuantityReturn=A.QuantityReturn-B.Quantity FROM OAOfficeBorrowDet A,OAOfficeReturnsDet B WHERE A.id=B.OAOfficeBorrowDetID and B.f_ref=@ValueofDB:OAOfficeReturns_id
+				</sql>
+			</exec>
+		</sql>
+		
+		<!--审核通过后 增加办公用品采购中对应记录的剩余数量 ALAN&amp; -->
+		<sql type="condition">
+			<exec condition="true">
+				<sql>
+					UPDATE C SET C.Numberleft = C.Numberleft + A.Quantity FROM OAOfficeReturnsDet A 
+JOIN OAOfficeBorrowDet B ON B.id=A.OAOfficeBorrowDetID AND A.f_ref=@ValueofDB:OAOfficeReturns_id 
+JOIN OAOfficeBuyDet C ON B.OAOfficeBuyDetID=C.id
+				</sql>
+			</exec>
+		</sql>
+		<!--审核通过后 更新办公用品采购中对应记录的剩余金额 ALAN&amp; -->
+		<sql type="condition">
+			<exec condition="true">
+				<sql>
+					UPDATE C SET C.Amountleft = C.Numberleft*C.Price FROM OAOfficeReturnsDet A 
+JOIN OAOfficeBorrowDet B ON B.id=A.OAOfficeBorrowDetID AND A.f_ref=@ValueofDB:OAOfficeReturns_id 
+JOIN OAOfficeBuyDet C ON B.OAOfficeBuyDetID=C.id
+				</sql>
+			</exec>
+		</sql>
+		
+	</define>
+	
+	<define name="OAOfficeReturns_Delete">
+		<!-- 不启用审核流 -->
+		<sql type="condition">
+			<exec condition="&quot;@MEM:OAOfficeReturns_IsStatart&quot; == &quot;0&quot;">
+				<sql type="define">OAOfficeReturns_Delete_One</sql>
+			</exec>
+		</sql>
+	</define>
+	
+	<define name="OAOfficeReturns_Delete_One">
+		
+		<!--反审核后 增加办公用品领用表中对应记录的未归还数量 ALAN&amp; -->
+		<sql type="condition">
+			<exec condition="true">
+				<sql>
+					UPDATE A SET A.QuantityReturn=A.QuantityReturn+B.Quantity FROM OAOfficeBorrowDet A,OAOfficeReturnsDet B WHERE A.id=B.OAOfficeBorrowDetID and B.f_ref=@ValueofDB:OAOfficeReturns_id
+				</sql>
+			</exec>
+		</sql>
+		
+		<!--反审核后 减少办公用品采购中对应记录的剩余数量 ALAN&amp; -->
+		<sql type="condition">
+			<exec condition="true">
+				<sql>
+					UPDATE C SET C.Numberleft = C.Numberleft - A.Quantity FROM OAOfficeReturnsDet A 
+JOIN OAOfficeBorrowDet B ON B.id=A.OAOfficeBorrowDetID AND A.f_ref=@ValueofDB:OAOfficeReturns_id 
+JOIN OAOfficeBuyDet C ON B.OAOfficeBuyDetID=C.id
+				</sql>
+			</exec>
+		</sql>
+		<!--反审核后 更新办公用品采购中对应记录的剩余金额 ALAN&amp; -->
+		<sql type="condition">
+			<exec condition="true">
+				<sql>
+					UPDATE C SET C.Amountleft = C.Numberleft*C.Price FROM OAOfficeReturnsDet A 
+JOIN OAOfficeBorrowDet B ON B.id=A.OAOfficeBorrowDetID AND A.f_ref=@ValueofDB:OAOfficeReturns_id 
+JOIN OAOfficeBuyDet C ON B.OAOfficeBuyDetID=C.id
+				</sql>
+			</exec>
+		</sql>
+		
+	</define>
+	
+<!--===========================================================  办公用品归还  结束 ===========================================================-->
+
+
+
+
+
+	
+</defineSqls>

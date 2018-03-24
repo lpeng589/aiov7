@@ -1,0 +1,1755 @@
+<?xml version="1.0" encoding="gb2312"?>
+      <defineSqls>
+     <!-- 系统预警模板添加相同模板时屏蔽已添加过的模板 -->
+<define name="SysAlertAdd">
+   <sql type="condition">
+    <exec condition="true">
+    <sql>
+     update tblSysAlert set status=1 where SqlDefineName=@ValueofDB:tblSysAlert_SqlDefineName
+    </sql>
+    </exec>
+   </sql>
+</define>
+      
+ <!-- 考勤规则启用 -->
+<define name="OpenValue_workRule_define">
+    <sql type="condition">
+    <exec condition="true">
+    <sql>
+     update tblWorkRule set statusId = 0 where id = @ValueofDB:tblWorkRule_id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+    
+    <!-- 考勤规则不启用 -->
+<define name="StopValue_workRule_define">
+    <sql type="condition">
+    <exec condition="true">
+    <sql>
+     update tblWorkRule set statusId = 1 where id = @ValueofDB:tblWorkRule_id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+	
+<!--车辆每月费用增加一条记录，期初费用表自动更新相应费用-->
+<define name="tblFeeIni_Add">
+   <sql type="condition">
+	<condition>
+	<select>select count(YearMonth) as YM from tblCarFee where CarNo=@ValueofDB:tblCarFee_CarNo and YearMonth= @ValueofDB:tblCarFee_FeeYear*100+@ValueofDB:tblCarFee_FeeMonth
+	</select>
+	<select>select OilMonth,RoadMonth,ParkMonth,WashMonth,OtherMonth from tblCars where CarNo=@ValueofDB:tblCarFee_CarNo
+	</select>
+	<select>select OilIni,RoadIni,ParkIni,WashIni,OtherIni from tblFeeIni where CarNo=@ValueofDB:tblCarFee_CarNo
+	</select>	
+	</condition>
+	<exec condition="@SqlReturn:YM!=0">
+	<error>carfee_YearMonth_error</error>  
+	</exec> 	
+	<exec condition="true"> 
+	 <!-- <sql>update tblCarFee set YearMonth=FeeYear*100+FeeMonth,NextRemainOil=@SqlReturn:OilIni+@SqlReturn:OilMonth-@ValueofDB:tblCarFee_OilFee-@ValueofDB:tblCarFee_OilFeeBill,NextRemainLoad=@SqlReturn:RoadIni+@SqlReturn:RoadMonth-@ValueofDB:tblCarFee_RoadFee-@ValueofDB:tblCarFee_RoadFeeBill,NextRemainPark=@SqlReturn:ParkIni+@SqlReturn:ParkMonth-@ValueofDB:tblCarFee_ParkFee,NextRemainWash=@SqlReturn:WashIni+@SqlReturn:WashMonth-@ValueofDB:tblCarFee_WashFee,NextRemainOther=@SqlReturn:OtherIni+@SqlReturn:OtherMonth-@ValueofDB:tblCarFee_OtherFee where id=@ValueofDB:tblCarFee_id</sql> -->
+	<!--调用存储过程更新车辆管理费用相应本月余额 -->
+	<sql type="procedure">	
+	{call proc_update(tblCarFee,YearMonth=@ValueofDB:tblCarFee_FeeYear*100+@ValueofDB:tblCarFee_FeeMonth@ParamNum:@SPFieldLink:RemainOilFee=@SqlReturn:OilIni+@SqlReturn:OilMonth@ParamNum:@SPFieldLink:NextRemainOil=@SqlReturn:OilIni+@SqlReturn:OilMonth-@ValueofDB:tblCarFee_OilFee-@ValueofDB:tblCarFee_OilFeeBill@ParamNum:@SPFieldLink:RemainRoadFee=@SqlReturn:RoadIni+@SqlReturn:RoadMonth@ParamNum:@SPFieldLink:NextRemainLoad=@SqlReturn:RoadIni+@SqlReturn:RoadMonth-@ValueofDB:tblCarFee_RoadFee-@ValueofDB:tblCarFee_RoadFeeBill@ParamNum:@SPFieldLink:RemainParkFee=@SqlReturn:ParkIni+@SqlReturn:ParkMonth@ParamNum:@SPFieldLink:NextRemainPark=@SqlReturn:ParkIni+@SqlReturn:ParkMonth-@ValueofDB:tblCarFee_ParkFee@ParamNum:@SPFieldLink:RemainWashFee=@SqlReturn:WashIni+@SqlReturn:WashMonth@ParamNum:@SPFieldLink:NextRemainWash=@SqlReturn:WashIni+@SqlReturn:WashMonth-@ValueofDB:tblCarFee_WashFee@ParamNum:@SPFieldLink:RemainOther=@SqlReturn:OtherMonth+(@SqlReturn:OtherIni)@ParamNum:@SPFieldLink:NextRemainOther=@SqlReturn:OtherMonth+(@SqlReturn:OtherIni)-@ValueofDB:tblCarFee_OtherFee@ParamNum:,id=@ValueofDB:tblCarFee_id,retCode,retVal)}
+	</sql>
+    <!--调用存储过程更新车辆期初值（上次余额） -->
+	<sql type="procedure">	
+	{call proc_update(tblFeeIni,OilIni=@SqlReturn:OilIni+@SqlReturn:OilMonth-@ValueofDB:tblCarFee_OilFee-@ValueofDB:tblCarFee_OilFeeBill@ParamNum:@SPFieldLink:RoadIni=@SqlReturn:RoadIni+@SqlReturn:RoadMonth-@ValueofDB:tblCarFee_RoadFee-@ValueofDB:tblCarFee_RoadFeeBill@ParamNum:@SPFieldLink:ParkIni=@SqlReturn:ParkIni+@SqlReturn:ParkMonth-@ValueofDB:tblCarFee_ParkFee@ParamNum:@SPFieldLink:WashIni=@SqlReturn:WashIni+@SqlReturn:WashMonth-@ValueofDB:tblCarFee_WashFee@ParamNum:@SPFieldLink:OtherIni=@SqlReturn:OtherIni+@SqlReturn:OtherMonth-@ValueofDB:tblCarFee_OtherFee@ParamNum:,CarNo=@ValueofDB:tblCarFee_CarNo,retCode,retVal)}
+	</sql>
+	</exec>
+   </sql>
+</define>
+
+<!-- 请货单修改单据状态 -->
+	<define name="billstate_true_applyGoodsBill">
+    <sql type="condition">
+    <exec condition="true">
+    <sql>
+      update tblApplyGoodsBill set OrderStatus = 2 where id = @ValueofDB:tblApplyGoodsBill_id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--某部车辆费用修改记录，期初费用表自动更新回初始状态-->
+<define name="tblFeeIni_Update">
+   <sql type="condition">
+	  <condition>
+    	<select>select RemainOilFee,RemainRoadFee,RemainParkFee,RemainWashFee,RemainOther from tblCarFee where id=@ValueofDB:tblCarFee_id</select>
+    	<select>select OilMonth,RoadMonth,ParkMonth,WashMonth,OtherMonth from tblCars where CarNo=@ValueofDB:tblCarFee_CarNo</select>
+	  </condition>
+	  <exec condition="true">	
+		<!-- 期初费用表自动更新回初始状态-->
+		<sql type="procedure">	
+		{call proc_update(tblFeeIni,OilIni=@SqlReturn:RemainOilFee@SPFieldLink:RoadIni=@SqlReturn:RemainRoadFee@SPFieldLink:ParkIni=@SqlReturn:RemainParkFee@SPFieldLink:WashIni=@SqlReturn:RemainWashFee@SPFieldLink:OtherIni=@SqlReturn:RemainOther@SPFieldLink:,CarNo=@ValueofDB:tblCarFee_CarNo,retCode,retVal)}
+		</sql>
+	   </exec>
+	</sql>
+</define>
+<define name="tblCarfeeandFeeIni_Update">	
+	<sql type="condition">
+  	   <condition>
+		  <select>select OilMonth,RoadMonth,ParkMonth,WashMonth,OtherMonth from tblCars where CarNo=@ValueofDB:tblCarFee_CarNo</select>
+		  <select>select OilIni,RoadIni,ParkIni,WashIni,OtherIni from tblFeeIni where CarNo=@ValueofDB:tblFeeIni_CarNo</select>
+	   </condition>
+	   <exec condition="true"> 
+         <!--重新更新车辆管理费用相应本月余额 -->
+		 <sql type="procedure">			
+			{call proc_update(tblCarFee,NextRemainOil=@SqlReturn:OilIni+@SqlReturn:OilMonth-@ValueofDB:tblCarFee_OilFee-@ValueofDB:tblCarFee_OilFeeBill@ParamNum:@SPFieldLink:NextRemainLoad=@SqlReturn:RoadIni+@SqlReturn:RoadMonth-@ValueofDB:tblCarFee_RoadFee-@ValueofDB:tblCarFee_RoadFeeBill@ParamNum:@SPFieldLink:NextRemainPark=@SqlReturn:ParkIni+@SqlReturn:ParkMonth-@ValueofDB:tblCarFee_ParkFee@ParamNum:@SPFieldLink:NextRemainWash=@SqlReturn:WashIni+@SqlReturn:WashMonth-@ValueofDB:tblCarFee_WashFee@ParamNum:@SPFieldLink:NextRemainOther=@SqlReturn:OtherIni+@SqlReturn:OtherMonth-@ValueofDB:tblCarFee_OtherFee@ParamNum:,id=@ValueofDB:tblCarFee_id,retCode,retVal)}
+		</sql>
+		<!--重新更新车辆期初值（上次余额） -->
+		<sql type="procedure">
+		{call proc_update(tblFeeIni,OilIni=@SqlReturn:OilIni+@SqlReturn:OilMonth-@ValueofDB:tblCarFee_OilFee-@ValueofDB:tblCarFee_OilFeeBill@ParamNum:@SPFieldLink:RoadIni=@SqlReturn:RoadIni+@SqlReturn:RoadMonth-@ValueofDB:tblCarFee_RoadFee-@ValueofDB:tblCarFee_RoadFeeBill@ParamNum:@SPFieldLink:ParkIni=@SqlReturn:ParkIni+@SqlReturn:ParkMonth-@ValueofDB:tblCarFee_ParkFee@ParamNum:@SPFieldLink:WashIni=@SqlReturn:WashIni+@SqlReturn:WashMonth-@ValueofDB:tblCarFee_WashFee@ParamNum:@SPFieldLink:OtherIni=@SqlReturn:OtherIni+@SqlReturn:OtherMonth-@ValueofDB:tblCarFee_OtherFee@ParamNum:,CarNo=@ValueofDB:tblCarFee_CarNo,retCode,retVal)}
+		</sql>	 
+	   </exec>
+	 </sql>						                
+</define>
+
+ <!--某部车辆费用删除记录，期初费用表自动更新相应费用-->
+ <define name="tblFeeIni_ReUpdate">
+	<sql type="condition">
+	<condition>
+    	<select>select CarNo,RemainOilFee,RemainRoadFee,RemainParkFee,RemainWashFee,RemainOther from tblCarFee where id=@ValueofDB:tblCarFee_id</select>
+	</condition>
+	<exec condition="true"> 
+		<!-- 期初费用表自动更新回初始状态-->
+		<sql type="procedure">	
+		{call proc_update(tblFeeIni,OilIni=@SqlReturn:RemainOilFee@SPFieldLink:RoadIni=@SqlReturn:RemainRoadFee@SPFieldLink:ParkIni=@SqlReturn:RemainParkFee@SPFieldLink:WashIni=@SqlReturn:RemainWashFee@SPFieldLink:OtherIni=@SqlReturn:RemainOther@SPFieldLink:,CarNo=@SqlReturn:CarNo,retCode,retVal)}
+		</sql>
+	 </exec>
+	</sql>						                
+ </define>
+
+<!--增加车辆费用期初时,插入相关信息到车辆费用管理表tblCarFee中-->
+<define name="tblFeeIniN_Add">
+<sql type="procedure"><!-- 插入相关信息到车辆费用管理表tblCarFee -->
+{call proc_insert(tblCarFee,id=@ValueofDB:tblFeeIni_id@SPFieldLink:CarNo=@ValueofDB:tblFeeIni_CarNo@SPFieldLink:YearMonth=0@SPFieldLink:FeeYear=-1@SPFieldLink:FeeMonth=-1@SPFieldLink:RemainOilFee=@ValueofDB:tblFeeIni_OilIni@SPFieldLink:OilFee=0@SPFieldLink:OilFeeBill=0@SPFieldLink:NextRemainOil=@ValueofDB:tblFeeIni_OilIni@SPFieldLink:RemainRoadFee=@ValueofDB:tblFeeIni_RoadIni@SPFieldLink:RoadFee=0@SPFieldLink:RoadFeeBill=0@SPFieldLink:NextRemainLoad=@ValueofDB:tblFeeIni_RoadIni@SPFieldLink:RemainParkFee=@ValueofDB:tblFeeIni_ParkIni@SPFieldLink:ParkFee=0@SPFieldLink:NextRemainPark=@ValueofDB:tblFeeIni_ParkIni@SPFieldLink:RemainWashFee=@ValueofDB:tblFeeIni_WashIni@SPFieldLink:WashFee=0@SPFieldLink:NextRemainWash=@ValueofDB:tblFeeIni_WashIni@SPFieldLink:GPSFee=0@SPFieldLink:RemainOther=@ValueofDB:tblFeeIni_OtherIni@SPFieldLink:OtherFee=0@SPFieldLink:NextRemainOther=@ValueofDB:tblFeeIni_OtherIni@SPFieldLink:createBy=@ValueofDB:tblFeeIni_createBy@SPFieldLink:createTime=@ValueofDB:tblFeeIni_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblFeeIni_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblFeeIni_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblFeeIni_SCompanyID,retCode,retVal)}
+		</sql>
+<sql>update tblCarFee set tblCarFee.Employee=tblCars.Manager,tblCarFee.DepartmentCode=tblCars.UseByDepartment from tblCarFee,tblCars where tblCarFee.CarNo=tblCars.CarNo
+</sql>
+
+ </define>
+
+<!--删除某部车辆期初费用记录时,当车辆费用管理中有记录时,弹出不能执行提示,如无记录则可删除-->
+ <define name="tblFeeIni_Delete">
+	<sql type="condition">
+	<condition>
+    	<select>select id,CarNo from tblCarFee where CarNo=@ValueofDB:tblFeeIni_CarNo</select>
+		<select>select count(CarNo) as countRecIni from tblCarFee where YearMonth != -1 and FeeYear != -1 and FeeMonth != -1</select>
+	</condition>
+	<exec condition="@SqlReturn:countRecIni!=0">
+	<error>tblFeeIni.delete.error</error>  
+	 </exec>
+	 <exec condition="@SqlReturn:countRecIni==0">
+	 	  <sql>delete from tblCarFee where id=@SqlReturn:id</sql>
+	  </exec>
+	</sql>						                
+ </define>
+
+ <!--修改某车辆期初费用记录时,当车辆费用管理中有记录时,弹出不能执行提示,如无记录则可执行更新-->
+ <define name="tblFeeIni_ErrorUpdate">
+	<sql type="condition">
+	<condition>
+    	<select>select * from tblCarFee where CarNo=@ValueofDB:tblFeeIni_CarNo</select>
+	</condition>
+	<exec condition="true">
+	<error>tblFeeIni.update.error</error>  
+	 </exec>
+	</sql>						                
+ </define>
+
+  <!--△△△△△△△△△△△△▲▲工作计划模块▲▲△△△△△△△△△△△△△-->
+  <!--工作计划,已审核及已评分的工作计划不能修改或者删除-->
+<define name="tblJobList_Update">
+ 	<sql type="condition">
+	<condition>
+    	<select>select tblJobList.ApproveStatus,tblJobList.JobNo,MarkStatus from tblJobList where tblJobList.id=@ValueofDB:tblJobList_id
+		</select>
+	</condition>
+	<exec condition="@SqlReturn:ApproveStatus ==&quot;1&quot;||@SqlReturn:MarkStatus==&quot;1&quot;">
+	<error>DeleteBill.ApproveStatus.error,@SqlReturn:JobNo</error>  
+	</exec>
+	</sql>
+</define>	
+ <!--工作计划,已审核及已评分的工作计划不能修改或者删除-->
+<define name="tblJobList_Delete">
+ 	<sql type="condition">
+	<condition>
+    	<select>select tblJobList.ApproveStatus,tblJobList.JobNo,MarkStatus from tblJobList where tblJobList.id=@ValueofDB:tblJobList_id
+		</select>
+	</condition>
+	<exec condition="@SqlReturn:ApproveStatus ==&quot;1&quot;||@SqlReturn:MarkStatus==&quot;1&quot;">
+	<error>DeleteBill.ApproveStatus.error,@SqlReturn:JobNo</error>  
+	</exec>
+	</sql>
+</define>	
+
+ <!--工作计划审核-->
+<define name="tblJobListApprove_Add">
+ 	<sql type="condition"><!--回填审核意见、完成标准状态，更新工作计划的审核状态。不回填审核后的计划主题和计划内容-->
+	<condition>
+		<select>select tblJobListApprove.ApproveContent,tblJobListApprove.BILLID from tblJobListApprove where tblJobListApprove.id=@ValueofDB:tblJobListApprove_id
+		</select>
+	</condition>
+	<exec condition="true">
+	<sql>update tblJobList set ApproveContent=@SqlReturn:ApproveContent,ApproveStatus=1 where id=@SqlReturn:BILLID
+	</sql>
+	</exec>
+	</sql>	
+	<sql type="condition"><!--回填实际完成天数-->
+	<condition>
+		<select>select tblJobListApprove.ExactFinishTime,tblJobListApprove.BILLID,tblJobList.PlanFinishTime from tblJobListApprove 
+left join tblJobList on tblJobList.id=tblJobListApprove.JobListID where  tblJobListApprove.id=@ValueofDB:tblJobListApprove_id
+		</select>
+	</condition>
+	<exec condition="true">
+	<sql>update tblJobList set ExactFinishTime=@SqlReturn:ExactFinishTime where id=@SqlReturn:BILLID
+	</sql>
+	</exec>
+	</sql>		
+	                
+ </define>
+ 
+<define name="tblJobListApprove_Delete">
+ 	<sql type="condition"><!--删除已审核的单据时更新工作计划的审核状态-->
+	<condition>
+    	<select>select tblJobListApprove.FInishStatus,tblJobListApprove.BILLID from tblJobListApprove 
+				where  tblJobListApprove.id=@ValueofDB:tblJobListApprove_id
+		</select>
+	</condition>
+	<exec condition="true">
+	<sql>update tblJobList set ApproveStatus=0 where id=@SqlReturn:BILLID
+	</sql>
+	</exec>
+	</sql>	            
+ </define> 
+ 
+ 
+ 
+  <!--工作任务安排自动添加到工作计划-->
+<define name="tblJobListArrange_Add">
+
+	<sql type="condition">
+		<exec condition="true">
+		<sql>
+		insert into tblJobList
+		(id,JobNo,BeginDate,EndDate,JobTitle,JobContent,ApproveBy,createBy,lastUpdateBy,createTime,lastUpdateTime,PlanFinishTime,JobStats,SCompanyID,FInishStatus,MarkStatus) 
+		values  ('0'+@ValueofDB:tblJobListArrange_id,@ValueofDB:tblJobListArrange_JobNo,@ValueofDB:tblJobListArrange_BeginDate,@ValueofDB:tblJobListArange_EndDate,@ValueofDB:tblJobListArrange_JobTitle,@ValueofDB:tbJobListArrange_JobContent,@ValueofDB:tblJobListArrange_createBy,@ValueofDB:tblJobListArrange_ReceiveBy,@ValueofDB:tblJobListArrange_ReceiveBy,@ValueofDB:tblJobListArrange_createTime,@ValueofDB:tblJobListArrange_lastUpdateTime,@ValueofDB:tblJobListArrange_TaskFinishTime,@ValueofDB:tblJobListArrange_jobStatus,@ValueofDB:tblJobListArrange_SCompanyID,'0','0')
+		</sql>
+	 </exec>
+	</sql>
+ </define>
+ <!--工作任务安排,更新工作计划-->
+ <define name="tblJobListArrange_Update">
+ 		<sql type="condition">
+		<condition>
+    	<select>select JobNo,BeginDate,EndDate,JobTitle,JobContent,createBy,lastUpdateBy,createTime,lastUpdateTime,PlanFinishTime,JobStats,SCompanyID,FInishStatus,ApproveStatus,MarkStatus from tblJobList where tblJobList.id='0'+@ValueofDB:tblJobListArrange_id
+			</select>
+		</condition>
+		<exec condition="@SqlReturn:ApproveStatus ==&quot;1&quot;||@SqlReturn:MarkStatus==&quot;1&quot;">
+		<error>DeleteBill.ApproveStatus.error,@SqlReturn:JobNo</error>  
+		</exec>
+		<exec condition="true">
+		<sql>
+			update tblJobList set JobNo=@ValueofDB:tblJobListArrange_JobNo,BeginDate=@ValueofDB:tblJobListArrange_BeginDate,EndDate=@ValueofDB:tblJobListArange_EndDate,JobTitle=@ValueofDB:tblJobListArrange_JobTitle,JobContent=@ValueofDB:tbJobListArrange_JobContent,createBy=@ValueofDB:tblJobListArrange_ReceiveBy,lastUpdateBy=@ValueofDB:tblJobListArrange_ReceiveBy,createTime=@ValueofDB:tblJobListArrange_createTime,lastUpdateTime=@ValueofDB:tblJobListArrange_lastUpdateTime,PlanFinishTime=@ValueofDB:tblJobListArrange_TaskFinishTime,JobStats=@ValueofDB:tblJobListArrange_jobStatus,SCompanyID=@ValueofDB:tblJobListArrange_SCompanyID,FInishStatus='0',MarkStatus='0' where tblJobList.id='0'+@ValueofDB:tblJobListArrange_id
+		</sql>
+	 </exec>
+	</sql>
+ </define>
+ 
+ <!--工作任务安排中,已经接受的不能删除-->
+ <define name="tblJobListArrange_Delete">
+ 	<sql type="condition">
+	<condition>
+    	<select>select tblJobList.ApproveStatus,tblJobList.JobNo,MarkStatus from tblJobList where tblJobList.id='0'+@ValueofDB:tblJobListArrange_id
+		</select>
+	</condition>
+	<exec condition="@SqlReturn:ApproveStatus ==&quot;1&quot;||@SqlReturn:MarkStatus==&quot;1&quot;">
+	<error>DeleteBill.ApproveStatus.error,@SqlReturn:JobNo</error>  
+	</exec>
+	</sql>
+</define>
+  
+ <!--工作任务评分模块-->
+<define name="tblJobListMark_Add">
+ 	<sql type="condition"><!--回填评分批复、完成得分，更新评分状态。-->
+	<condition>
+    <select>select tblJobListMark.FinishMarkContent,tblJobListMark.FinishPoint,tblJobListMark.BILLID from tblJobListMark where  tblJobListMark.id=@ValueofDB:tblJobListMark_id
+		</select>
+		<select>select JobNo from tblJobList where id=@ValueofDB:tblJobListMark.BILLID
+		</select>
+	</condition>
+	<exec condition="true">
+	<sql>update tblJobList set FinishApproveContent=@SqlReturn:FinishMarkContent,FinishPoint=@SqlReturn:FinishPoint,MarkStatus=1 where id=@SqlReturn:BILLID
+	</sql>
+	<sql>update tblJobListMark set MarkStatus=1 where id=@ValueofDB:tblJobListMark_id
+	</sql>
+	</exec>
+	</sql>
+	
+</define>
+<define name="tblJobListMark_Delete">
+ 	<sql type="condition"><!--删除评分时，更新工作计划中的评分状态。-->
+	<condition>
+    	<select>select tblJobListMark.MarkStatus,tblJobListMark.BILLID from tblJobListMark where  tblJobListMark.id=@ValueofDB:tblJobListMark_id
+		</select>
+	</condition>
+	<exec condition="true">
+	<sql>update tblJobList set MarkStatus=0 where id=@SqlReturn:BILLID
+	</sql>
+	</exec>
+	</sql>		
+</define>
+
+
+
+
+
+
+
+<!--部门启用-->
+<define name="OpenValue_BaseInfo_tblDepartment">
+    <sql type="condition">
+		<condition>
+			<select>select classcode as DepartmentCode,case when substring(classCode,1,5)!=classCode then substring(classCode,1,5) else '' end as str1,case when substring(classCode,1,10)!=classCode then substring(classCode,1,10) else '' end as str2,case when substring(classCode,1,15)!=classCode then substring(classCode,1,15) else '' end as str3,case when substring(classCode,1,20)!=classCode then substring(classCode,1,20) else '' end as str4,case when substring(classCode,1,25)!=classCode then substring(classCode,1,25) else '' end as str5 from tblDepartment where tblDepartment.id=@ValueofDB:tblDepartment_id</select>
+		</condition>
+		<exec condition="true">
+			<sql>update tblDepartment set statusId=0 where id=@ValueofDB:tblDepartment_id</sql>
+			<sql>update tblDepartment set statusId=0 where classcode like @SqlReturn:DepartmentCode+'%'</sql>
+			<sql>update tblDepartment set statusId=0 where classCode=@SqlReturn:str1 or classCode=@SqlReturn:str2 or classCode=@SqlReturn:str3 or classCode=@SqlReturn:str4 or classCode=@SqlReturn:str5</sql>
+			<sql>update tblEmployee set statusId=0 where DepartmentCode like (select classCode from tblDepartment where id=@ValueofDB:tblDepartment_id)+'%'</sql>
+		</exec>
+    </sql>
+</define>
+
+<!--部门停用-->
+<define name="StopValue_BaseInfo_tblDepartment">
+    <sql type="condition">
+		<condition>
+			<select>select classcode from tblDepartment where id=@ValueofDB:tblDepartment_id</select>
+			<select>select 'existsEmp' as existsEmp from tblemployee where id='1' and DepartmentCode=@SqlReturn:classcode</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:existsEmp&quot;==&quot;existsEmp&quot;">
+			<error>admin.usedDepartment.error</error>  
+		</exec>
+		<exec condition="true">
+			<sql>update tblDepartment set statusId=-1 where id=@ValueofDB:tblDepartment_id</sql>
+			<sql>update tblDepartment set statusId=-1 where classcode like @SqlReturn:classcode+'%'</sql>
+			<sql>update tblEmployee set statusId=-1 where DepartmentCode like (select classCode from tblDepartment where id=@ValueofDB:tblDepartment_id)+'%'</sql>
+		</exec>
+    </sql>
+</define>
+
+<!--职员启用-->
+<define name="OpenValue_BaseInfo_tblEmployee">
+    <sql type="condition">
+		<condition>
+			<select>select case when substring(classCode,1,5)!=classCode then substring(classCode,1,5) else '' end as str1,case when substring(classCode,1,10)!=classCode then substring(classCode,1,10) else '' end as str2,case when substring(classCode,1,15)!=classCode then substring(classCode,1,15) else '' end as str3,case when substring(classCode,1,20)!=classCode then substring(classCode,1,20) else '' end as str4,case when substring(classCode,1,25)!=classCode then substring(classCode,1,25) else '' end as str5 from tblEmployee where tblEmployee.id=@ValueofDB:tblEmployee_id</select>
+		</condition>
+		<exec condition="true">
+			<sql>update tblEmployee set statusId=0 where id=@ValueofDB:tblEmployee_id</sql>
+			<sql>update tblEmployee set statusId=0 where classCode=@SqlReturn:str1 or classCode=@SqlReturn:str2 or classCode=@SqlReturn:str3 or classCode=@SqlReturn:str4 or classCode=@SqlReturn:str5</sql>
+			<sql>update tblDepartment set statusId=0 where classCode=(select DepartmentCode from tblEmployee where id=@ValueofDB:tblEmployee_id)</sql>
+			<!--同步通讯录启用-->
+			<sql>update OACommunicationNoteInfo set statusId=0 where name=(select EmpFullName from tblEmployee where id=@ValueofDB:tblEmployee_id)</sql>
+		</exec>
+    </sql>
+</define>
+
+<!--职员停用-->
+<define name="StopValue_BaseInfo_tblEmployee">
+	<sql type="condition">
+		<condition>
+			<select>select classcode from tblEmployee where id=@ValueofDB:tblEmployee_id</select>
+		</condition>
+		<exec condition="&quot;@ValueofDB:tblEmployee_id&quot;==&quot;1&quot;">
+			<error>admin.stop.error</error>  
+		</exec>
+		<exec condition="true">
+			<sql>update tblEmployee set statusId=-1 where id=@ValueofDB:tblEmployee_id</sql>
+			<sql>update tblEmployee set statusId=-1 where classcode like @SqlReturn:classcode+'%'</sql>
+			<sql>update tblEmployee set statusId=0 where id='1'</sql>
+			<!--同步通讯录不启用-->
+			<sql>update OACommunicationNoteInfo set statusId=-1 where name=(select EmpFullName from tblEmployee where id=@ValueofDB:tblEmployee_id)</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--往来信用额度启用-->
+<define name="OpenValue_BaseInfo_tblCompanyCredit">
+    <sql type="condition">
+    <condition>
+    <select>select id,statusId from tblCompanyCredit where id=@ValueofDB:tblCompanyCredit_id</select>
+    </condition>
+    <exec condition="true">
+    <sql>update tblCompanyCredit set statusId=0 where id=@SqlReturn:id</sql>
+    </exec>
+    </sql>
+    </define>
+<!--往来信用额度停用-->
+<define name="StopValue_BaseInfo_tblCompanyCredit">
+    <sql type="condition">
+    <condition>
+    <select>select id,statusId from tblCompanyCredit where id=@ValueofDB:tblCompanyCredit_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>update tblCompanyCredit set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+
+<!--区域设置启用-->
+<define name="OpenValue_BaseInfo_tblArea">
+	<sql type="condition">
+		<condition>
+			<select>select classCode as AreaCode,case when substring(classCode,1,5)!=classCode then substring(classCode,1,5) else '' end as str1,case when substring(classCode,1,10)!=classCode then substring(classCode,1,10) else '' end as str2,case when substring(classCode,1,15)!=classCode then substring(classCode,1,15) else '' end as str3,case when substring(classCode,1,20)!=classCode then substring(classCode,1,20) else '' end as str4,case when substring(classCode,1,25)!=classCode then substring(classCode,1,25) else '' end as str5 from tblArea where tblArea.id=@ValueofDB:tblArea_id</select>
+		</condition>
+		<exec condition="true">
+			<sql>update tblArea set statusId=0 where id=@ValueofDB:tblArea_id</sql>
+			<sql>update tblArea set statusId=0 where classcode like @SqlReturn:AreaCode+'%'</sql>
+			<sql>update tblArea set statusId=0 where classCode=@SqlReturn:str1 or classCode=@SqlReturn:str2 or classCode=@SqlReturn:str3 or classCode=@SqlReturn:str4 or classCode=@SqlReturn:str5</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--区域设置停用-->
+<define name="StopValue_BaseInfo_tblArea">
+	<sql type="condition">
+		<condition>
+			<select>select classcode from tblArea where id=@ValueofDB:tblArea_id</select>
+		</condition>
+		<exec condition="true">
+			<sql>update tblArea set statusId=-1 where id=@ValueofDB:tblArea_id</sql>
+			<sql>update tblArea set statusId=-1 where classcode like @SqlReturn:classcode+'%'</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--行业设置启用-->
+<define name="OpenValue_BaseInfo_tblTrade">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblTrade where id=@ValueofDB:tblTrade_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+    update tblTrade set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--行业设置停用-->
+<define name="StopValue_BaseInfo_tblTrade">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblTrade where id=@ValueofDB:tblTrade_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblTrade set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+
+<!--运输公司启用-->
+<define name="OpenValue_BaseInfo_tblFreightCom">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblFreightCom where id=@ValueofDB:tblFreightCom_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblFreightCom set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--运输公司停用-->
+<define name="StopValue_BaseInfo_tblFreightCom">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblFreightCom where id=@ValueofDB:tblFreightCom_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+      update tblFreightCom set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+
+<!--收入类型启用-->
+<define name="OpenValue_BaseInfo_tblInComeType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblInComeType where id=@ValueofDB:tblInComeType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblInComeType set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--收入类型停用-->
+<define name="StopValue_BaseInfo_tblInComeType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblInComeType where id=@ValueofDB:tblInComeType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblInComeType set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+
+<!--出库类型启用-->
+<define name="OpenValue_BaseInfo_tblOutType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblOutType where id=@ValueofDB:tblOutType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblOutType set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--出库类型停用-->
+<define name="StopValue_BaseInfo_tblOutType">
+    <sql type="condition">
+    <condition>
+    <select>
+	 select id,statusId from tblOutType where id=@ValueofDB:tblOutType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+      update tblOutType set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+	
+<!--入库类型启用-->
+<define name="OpenValue_BaseInfo_tblInType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblInType where id=@ValueofDB:tblInType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblInType set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--入库类型停用-->
+<define name="StopValue_BaseInfo_tblInType">
+    <sql type="condition">
+    <condition>
+    <select>
+	 select id,statusId from tblInType where id=@ValueofDB:tblInType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+      update tblInType set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+	
+<!--报损类型启用-->
+<define name="OpenValue_BaseInfo_tblCheckLessType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblCheckLessType where id=@ValueofDB:tblCheckLessType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblCheckLessType set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--报损类型停用-->
+<define name="StopValue_BaseInfo_tblCheckLessType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblCheckLessType where id=@ValueofDB:tblCheckLessType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+      update tblCheckLessType set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+	
+<!--报溢类型启用-->
+<define name="OpenValue_BaseInfo_tblCheckMoreType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblCheckMoreType where id=@ValueofDB:tblCheckMoreType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblCheckMoreType set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--报溢类型停用-->
+<define name="StopValue_BaseInfo_tblCheckMoreType">
+    <sql type="condition">
+    <condition>
+     <select>
+	 select id,statusId from tblCheckMoreType where id=@ValueofDB:tblCheckMoreType_id
+	 </select>
+     </condition>
+    <exec condition="true">
+    <sql>
+      update tblCheckMoreType set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+	
+<!--存货核算方式启用-->
+<define name="OpenValue_BaseInfo_tblGoodsAccProp">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblGoodsAccProp where id=@ValueofDB:tblGoodsAccProp_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblGoodsAccProp set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--存货核算方式停用-->
+<define name="StopValue_BaseInfo_tblGoodsAccProp">
+    <sql type="condition">
+    <condition>
+    <select>
+	 select id,statusId from tblGoodsAccProp where id=@ValueofDB:tblGoodsAccProp_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+      update tblGoodsAccProp set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+	
+<!--调价类型启用-->
+<define name="OpenValue_BaseInfo_tblPriceType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblPriceType where id=@ValueofDB:tblPriceType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblPriceType set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--调价类型停用-->
+<define name="StopValue_BaseInfo_tblPriceType">
+    <sql type="condition">
+    <condition>
+    <select>
+	 select id,statusId from tblPriceType where id=@ValueofDB:tblPriceType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+      update tblPriceType set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+	
+<!--调拨类型启用-->
+<define name="OpenValue_BaseInfo_tblAllotType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblAllotType where id=@ValueofDB:tblAllotType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblAllotType set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--调拨类型停用-->
+<define name="StopValue_BaseInfo_tblAllotType">
+    <sql type="condition">
+    <condition>
+    <select>
+	 select id,statusId from tblAllotType where id=@ValueofDB:tblAllotType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+      update tblAllotType set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+	
+<!--费用类型启用-->
+<define name="OpenValue_BaseInfo_tblFeeType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblFeeType where id=@ValueofDB:tblFeeType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblFeeType set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--费用类型停用-->
+<define name="StopValue_BaseInfo_tblFeeType">
+    <sql type="condition">
+    <condition>
+    <select>
+	 select id,statusId from tblFeeType where id=@ValueofDB:tblFeeType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+      update tblFeeType set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+	
+<!--现金账户设置启用-->
+<define name="OpenValue_BaseInfo_tblCashs">
+	<sql type="condition">
+		<condition>
+			<select>select AccClassCode from tblCashs where id=@ValueofDB:tblCashs_id</select>
+		</condition>
+		<exec condition="true">
+			<sql>update tblCashs set statusId=0 where classCode like (select classCode from tblCashs where id=@ValueofDB:tblCashs_id)+'%'</sql>
+			<sql>update tblAccTypeInfo set statusId=0 where AccNumber like @SqlReturn:AccClassCode+'%'</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--现金账户设置停用-->
+<define name="StopValue_BaseInfo_tblCashs">
+	<sql type="condition">
+		<condition>
+			<select>select AccClassCode from tblCashs where id=@ValueofDB:tblCashs_id</select>
+		</condition>
+		<exec condition="true">
+			<sql>update tblCashs set statusId=-1 where classCode like (select classCode from tblCashs where id=@ValueofDB:tblCashs_id)+'%'</sql>
+			<sql>update tblAccTypeInfo set statusId=-1 where AccNumber like @SqlReturn:AccClassCode+'%'</sql>
+		</exec>
+	</sql>
+</define>
+	
+<!--银行账户设置启用-->
+<define name="OpenValue_BaseInfo_tblBanks">
+	<sql type="condition">
+		<condition>
+			<select>select AccClassCode from tblBanks where id=@ValueofDB:tblBanks_id</select>
+		</condition>
+		<exec condition="true">
+			<sql>update tblBanks set statusId=0 where classCode like (select classCode from tblBanks where id=@ValueofDB:tblBanks_id)+'%'</sql>
+			<sql>update tblAccTypeInfo set statusId=0 where AccNumber like @SqlReturn:AccClassCode+'%'</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--银行账户设置停用-->
+<define name="StopValue_BaseInfo_tblBanks">
+	<sql type="condition">
+		<condition>
+			<select>select AccClassCode from tblBanks where id=@ValueofDB:tblBanks_id</select>
+		</condition>
+		<exec condition="true">
+			<sql>update tblBanks set statusId=-1 where classCode like (select classCode from tblBanks where id=@ValueofDB:tblBanks_id)+'%'</sql>
+			<sql>update tblAccTypeInfo set statusId=-1 where AccNumber like @SqlReturn:AccClassCode+'%'</sql>
+		</exec>
+	</sql>
+</define>
+	
+<!-- 会计科目启用 -->
+<define name="OpenValue_BaseInfo_tblAccTypeInfo">
+	<sql type="condition">
+		<condition>
+			<select>select classcode,AccNumber from tblAccTypeInfo where id=@ValueofDB:tblAccTypeInfo_id</select>
+		</condition>
+		<exec condition="('@SqlReturn:AccNumber'=='1123'||'@SqlReturn:AccNumber'=='2203')&amp;&amp;'@MEM:prerecvpaymarktoneedrecvpay'=='true'">
+			<error>prerecvpaymarktoneedrecvpay.isUsed.error,'预收预付记应收应付'</error>
+		</exec>
+		<exec condition="true">
+			<sql>update tblAccTypeInfo set statusId=0 where id=@ValueofDB:tblAccTypeInfo_id</sql>
+			<sql>update tblAccTypeInfo set statusId=0 where classcode like @SqlReturn:classcode+'%'</sql>
+			<sql>UPDATE tblBanks SET statusId =0 WHERE AccClassCode =@SqlReturn:AccNumber</sql>
+			<sql>UPDATE tblCashs SET statusId =0 WHERE AccClassCode =@SqlReturn:AccNumber</sql>
+		</exec>
+	</sql>
+</define>
+
+<!-- 会计科目停用 -->
+<define name="StopValue_BaseInfo_tblAccTypeInfo">
+	<sql type="condition">
+		<condition>
+			<select>select classcode,AccNumber from tblAccTypeInfo where id=@ValueofDB:tblAccTypeInfo_id</select>
+		</condition>
+		<exec condition="true">
+			<sql>update tblAccTypeInfo set statusId=-1 where id=@ValueofDB:tblAccTypeInfo_id</sql>
+			<sql>update tblAccTypeInfo set statusId=-1 where classcode like @SqlReturn:classcode+'%'</sql>
+			<sql>UPDATE tblBanks SET statusId =-1 WHERE AccClassCode =@SqlReturn:AccNumber</sql>
+			<sql>UPDATE tblCashs SET statusId =-1 WHERE AccClassCode =@SqlReturn:AccNumber</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--裁剪类型启用-->
+<define name="OpenValue_BaseInfo_tblSplitFormType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblSplitFormType where id=@ValueofDB:tblSplitFormType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblSplitFormType set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--裁剪类型停用-->
+<define name="StopValue_BaseInfo_tblSplitFormType">
+    <sql type="condition">
+    <condition>
+    <select>
+	 select id,statusId from tblSplitFormType where id=@ValueofDB:tblSplitFormType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+      update tblSplitFormType set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+	
+<!--分摊类型启用-->
+<define name="OpenValue_BaseInfo_tblPrecessCostType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblPrecessCostType where id=@ValueofDB:tblPrecessCostType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblPrecessCostType set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--分摊类型停用-->
+<define name="StopValue_BaseInfo_tblPrecessCostType">
+    <sql type="condition">
+    <condition>
+    <select>
+	 select id,statusId from tblPrecessCostType where id=@ValueofDB:tblPrecessCostType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+      update tblPrecessCostType set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+	
+<!--组装类型启用-->
+<define name="OpenValue_BaseInfo_tblGoodsAssemblyType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblGoodsAssemblyType where id=@ValueofDB:tblGoodsAssemblyType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblGoodsAssemblyType set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--组装类型停用-->
+<define name="StopValue_BaseInfo_tblGoodsAssemblyType">
+    <sql type="condition">
+    <condition>
+    <select>
+	 select id,statusId from tblGoodsAssemblyType where id=@ValueofDB:tblGoodsAssemblyType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+      update tblGoodsAssemblyType set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+    
+<!-- 以下 单据设置 -->
+<define name="tblBillSet_add">
+	<sql type="condition">
+		<condition>
+			<select>select ModelCode,NameOfTable,DefaultBillNo,Character,isNull(FlowNo,0) as FlowNo,isNull(DefRowCount,0) as DefRowCount,isNull(RowCountSet,0) as RowCountSet from tblBillSet where tblBillSet.id=@ValueofDB:tblBillSet_id</select>
+			<select>select '@'+'CODE:'+Character+(case when Year='0' then ''  when Year='1' then '@y2' else '@y4' end)+(case when Month='0' then '' else '@M' end)+(case when Day='0' then '' else '@d' end)+'@id'+cast(FlowNo as varchar(30))+Character+'@' as BillNoAutoSet from tblBillSet where tblBillSet.id=@ValueofDB:tblBillSet_id</select>
+			<!--<select>select tableName as TableName from tblDBTableInfo where id=@ValueofDB:tblBillSet_BillStyle</select>-->
+		</condition>
+		<!-- 如果用户输入了字符和流水号，系统会生成相应的编号，并设置为此单据编号 -->
+		<exec condition="&quot;@SqlReturn:Character&quot;.length&gt;0&amp;&amp;@SqlReturn:FlowNo!=0">
+			<sql>update tblBillSet set BillNoSet=@SqlReturn:BillNoAutoSet where tblBillSet.id=@ValueofDB:tblBillSet_id</sql>
+					<!-- 设置单号跟踪跟单据编号一样-->
+				<sql>update tblDBFieldInfo set defaultValue=@SqlReturn:BillNoAutoSet from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName=@SqlReturn:NameOfTable) and fieldName='TrackNo'</sql>
+		</exec>
+		<!-- 如果用户没有输入字符或者流水号，系统会把此单据原先的编号设置为此单据编号 -->
+		<exec condition="!((&quot;@SqlReturn:Character&quot;.length&gt;0)&amp;&amp;(@SqlReturn:FlowNo!=0))">
+			<sql>update tblBillSet set BillNoSet=@SqlReturn:DefaultBillNo where tblBillSet.id=@ValueofDB:tblBillSet_id</sql>
+								<!-- 设置单号跟踪跟单据编号一样-->
+			<sql>update tblDBFieldInfo set defaultValue=@SqlReturn:DefaultBillNo from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName=@SqlReturn:NameOfTable) and fieldName='TrackNo'</sql>
+		</exec>
+		<!-- 如果用户输入行数不大于0，则系统会把此单据原来的明细行数设置为此单据行数 -->
+		<!--<exec condition="@SqlReturn:RowCountSet&lt;=0">
+			<sql>update tblBillSet set RowCountSet=@SqlReturn:DefRowCount where tblBillSet.id=@ValueofDB:tblBillSet_id</sql>
+		</exec>-->
+		<!-- 设置经手人部门默认值为当前用户 -->
+		<!--<exec condition="&quot;@ValueofDB:tblBillSet_DefaultEmployee&quot;==&quot;1&quot;">
+			<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:UserId;'+'@'+'Sess:UserName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName=@SqlReturn:TableName) and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:DepartmentCode;'+'@'+'Sess:DepartmentName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName=@SqlReturn:TableName) and fieldName='DepartmentCode'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:UserId;'+'@'+'Sess:UserName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName = @SqlReturn:TableName+';') and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:DepartmentCode;'+'@'+'Sess:DepartmentName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName = @SqlReturn:TableName+';') and fieldName='DepartmentCode'</sql>
+		</exec>-->
+		<!-- 设置经手人部门默认值为空 -->
+		<!--<exec condition="&quot;@ValueofDB:tblBillSet_DefaultEmployee&quot;==&quot;2&quot;">
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName=@SqlReturn:TableName) and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName=@SqlReturn:TableName) and fieldName='DepartmentCode'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName = @SqlReturn:TableName+';') and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName = @SqlReturn:TableName+';') and fieldName='DepartmentCode'</sql>
+		</exec>-->
+	</sql>
+	<sql type="condition"> 
+		<condition>
+			<select>select BillNoSet from tblBillSet where id=@ValueofDB:tblBillSet_id</select>
+		</condition>
+		<!-- 保存此单据默认编号 -->
+		<exec condition="true">
+			<sql>update tblDBFieldInfo set defaultValue=@SqlReturn:BillNoSet where tableid=(select id from tblDBTableInfo where tableName=@ValueofDB:tblBillSet_NameOfTable) and fieldName='BillNo'</sql>
+			<!-- 系统重新加载表信息 -->
+			<sql>update tblInitTime set lastTime=@MEM:currentTimeMillis where initName='tableInfo'</sql>
+			<sql>update tblBillSet set DefaultBillNo=@SqlReturn:BillNoSet where id=@ValueofDB:tblBillSet_id</sql>
+			<!--<sql>update tblDBTableInfo set defRowCount=@SqlReturn:RowCountSet where tableName in (select tableName from tblDBTableInfo where  perantTableName=@SqlReturn:tableName+';')</sql>-->
+		</exec>
+	</sql>
+</define>
+<!-- 以上 单据设置 -->
+
+<!-- 以下 单据行数设置 -->
+<define name="tblBillRowCount_add">
+	<sql type="condition">
+		<condition>
+			<select>select NameOfTable,RowCountSet from tblBillRowCount where id=@ValueofDB:tblBillRowCount_id</select>
+		</condition>
+		<!-- 如果用户输入行数不大于0，则系统会把此单据原来的明细行数设置为此单据行数 -->
+		<exec condition="@SqlReturn:RowCountSet&lt;=0">
+			<error>tblBillRowCount.add.error</error>  
+		</exec>
+		<!-- 更改明细表的行数 -->
+		<exec condition="true">
+			<sql>update tblDBTableInfo set defRowCount=@SqlReturn:RowCountSet where tableName=@SqlReturn:NameOfTable</sql>
+			<!-- 系统重新加载表信息 -->
+			<sql>update tblInitTime set lastTime=@MEM:currentTimeMillis where initName='tableInfo'</sql>
+		</exec>
+	</sql>
+</define>
+<!-- 以上 单据行数设置 -->
+
+<!-- 以下 默认经手人设置 -->
+<define name="tblBillEmployeeDepartment_add">
+	<sql type="condition">
+		<condition>
+			<select>select NameOfTable,IsDefault from tblBillEmployeeDepartment where id=@ValueofDB:tblBillEmployeeDepartment_id</select>
+		</condition>
+		<!-- 设置经手人部门默认值为当前用户 -->
+		<exec condition="&quot;@ValueofDB:tblBillEmployeeDepartment_IsDefault&quot;==&quot;1&quot;">
+			<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:UserId;'+'@'+'Sess:UserName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName=@SqlReturn:NameOfTable) and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:DepartmentCode;'+'@'+'Sess:DepartmentName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName=@SqlReturn:NameOfTable) and fieldName='DepartmentCode'</sql>
+			<!--<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:UserId;'+'@'+'Sess:UserName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName = @SqlReturn:NameOfTable+';') and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:DepartmentCode;'+'@'+'Sess:DepartmentName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName = @SqlReturn:NameOfTable+';') and fieldName='DepartmentCode'</sql>-->
+			<!-- 系统重新加载表信息 -->
+			<sql>update tblInitTime set lastTime=@MEM:currentTimeMillis where initName='tableInfo'</sql>
+		</exec>
+		<!-- 设置经手人部门默认值为空 -->
+		<exec condition="&quot;@ValueofDB:tblBillEmployeeDepartment_IsDefault&quot;==&quot;2&quot;">
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName=@SqlReturn:NameOfTable) and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName=@SqlReturn:NameOfTable) and fieldName='DepartmentCode'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName = @SqlReturn:NameOfTable+';') and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName = @SqlReturn:NameOfTable+';') and fieldName='DepartmentCode'</sql>
+			<!-- 系统重新加载表信息 -->
+			<sql>update tblInitTime set lastTime=@MEM:currentTimeMillis where initName='tableInfo'</sql>
+		</exec>
+	</sql>
+</define>
+
+
+<!-- 设置为是 -->
+<define name="Yes_tblBillEmployeeDepartment">
+	<sql type="condition">
+		<!-- 修改系统配置必须重启系统，否则不允许修改 -->
+		<exec condition="true">
+			<confirm yesDefine="Yes_tblBillEmployeeDepartment_Yes" noDefine="Yes_tblBillEmployeeDepartment_No">tblSysDeploy.update.Alert</confirm>
+		</exec>
+	</sql>
+</define>
+<define name="Yes_tblBillEmployeeDepartment_Yes">
+	<sql type="condition">
+		<exec condition="true">
+			<sql type="define">Yes_tblBillEmployeeDepartment_No</sql>
+		</exec>
+	</sql>
+	<!-- 重启系统 -->
+	<sql type="condition">
+		<exec condition="true">
+			<sql type="define">System_Restart</sql>
+		</exec>
+	</sql>
+</define>	
+<define name="Yes_tblBillEmployeeDepartment_No">
+	<sql type="condition">
+		<condition>
+			<select>select isCatalog,classCode,NameOfTable,IsDefault from tblBillEmployeeDepartment where id=@ValueofDB:tblBillEmployeeDepartment_id</select>
+			<select>select classcode as ModelCode,case when substring(classCode,1,5)!=classCode then substring(classCode,1,5) else '' end as str1,case when substring(classCode,1,10)!=classCode then substring(classCode,1,10) else '' end as str2,case when substring(classCode,1,15)!=classCode then substring(classCode,1,15) else '' end as str3,case when substring(classCode,1,20)!=classCode then substring(classCode,1,20) else '' end as str4,case when substring(classCode,1,25)!=classCode then substring(classCode,1,25) else '' end as str5 from tblBillEmployeeDepartment where tblBillEmployeeDepartment.id=@ValueofDB:tblBillEmployeeDepartment_id</select>
+		</condition>
+		<!-- 更改上下级 启用不启用 -->
+		<exec condition="true">
+			<sql>update tblBillEmployeeDepartment set IsDefault=1 where classcode like @SqlReturn:classCode+'%'</sql>
+			<sql>update tblBillEmployeeDepartment set IsDefault=1 where classCode=@SqlReturn:str1 or classCode=@SqlReturn:str2 or classCode=@SqlReturn:str3 or classCode=@SqlReturn:str4 or classCode=@SqlReturn:str5</sql>
+		</exec>
+		<!-- 设置经手人部门默认值为当前用户 -->
+		<exec condition="@SqlReturn:isCatalog==0">
+			<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:UserId;'+'@'+'Sess:UserName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName=@SqlReturn:NameOfTable) and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:DepartmentCode;'+'@'+'Sess:DepartmentName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName=@SqlReturn:NameOfTable) and fieldName='DepartmentCode'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:UserId;'+'@'+'Sess:UserName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName = @SqlReturn:NameOfTable+';' and tableName!='tblSalesOutStockDet') and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:DepartmentCode;'+'@'+'Sess:DepartmentName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName = @SqlReturn:NameOfTable+';') and fieldName='DepartmentCode'</sql>
+		</exec>
+		<!-- 设置经手人部门默认值为当前用户 -->
+		<exec condition="@SqlReturn:isCatalog==1">
+			<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:UserId;'+'@'+'Sess:UserName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName in (select tblName from tblModules where classCode like @SqlReturn:classCode+'_____%' and isCatalog=0 and tblName is not NULL)) and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:DepartmentCode;'+'@'+'Sess:DepartmentName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName in (select tblName from tblModules where classCode like @SqlReturn:classCode+'_____%' and isCatalog=0 and tblName is not NULL)) and fieldName='DepartmentCode'</sql>
+						<!-- 不更新销售出库明细表的经手人字段的默认值 -->
+			<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:UserId;'+'@'+'Sess:UserName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName in (select tblName+';' from tblModules where classCode like @SqlReturn:classCode+'_____%' and isCatalog=0 and tblName is not NULL) and tableName !='tblSalesOutStockDet') and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='@'+'Sess:DepartmentCode;'+'@'+'Sess:DepartmentName' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName in (select tblName+';' from tblModules where classCode like @SqlReturn:classCode+'_____%' and isCatalog=0 and tblName is not NULL)) and fieldName='DepartmentCode'</sql>
+		</exec>
+		<exec condition="true">
+			<!-- 系统重新加载表信息 -->
+			<sql>update tblInitTime set lastTime=@MEM:currentTimeMillis where initName='tableInfo'</sql>
+		</exec>
+	</sql>
+</define>
+
+<!-- 设置为否 -->
+<define name="No_tblBillEmployeeDepartment">
+	<sql type="condition">
+		<!-- 修改系统配置必须重启系统，否则不允许修改 -->
+		<exec condition="true">
+			<confirm yesDefine="No_tblBillEmployeeDepartment_Yes" noDefine="No_tblBillEmployeeDepartment_No">tblSysDeploy.update.Alert</confirm>
+		</exec>
+	</sql>
+</define>
+<define name="No_tblBillEmployeeDepartment_Yes">
+	<sql type="condition">
+		<exec condition="true">
+			<sql type="define">No_tblBillEmployeeDepartment_No</sql>
+		</exec>
+	</sql>
+	<!-- 重启系统 -->
+	<sql type="condition">
+		<exec condition="true">
+			<sql type="define">System_Restart</sql>
+		</exec>
+	</sql>
+</define>	
+<define name="No_tblBillEmployeeDepartment_No">
+	<sql type="condition">
+		<condition>
+			<select>select isCatalog,classCode,NameOfTable,IsDefault from tblBillEmployeeDepartment where id=@ValueofDB:tblBillEmployeeDepartment_id</select>
+			<select>select classcode as ModelCode,case when substring(classCode,1,5)!=classCode then substring(classCode,1,5) else '' end as str1,case when substring(classCode,1,10)!=classCode then substring(classCode,1,10) else '' end as str2,case when substring(classCode,1,15)!=classCode then substring(classCode,1,15) else '' end as str3,case when substring(classCode,1,20)!=classCode then substring(classCode,1,20) else '' end as str4,case when substring(classCode,1,25)!=classCode then substring(classCode,1,25) else '' end as str5 from tblBillEmployeeDepartment where tblBillEmployeeDepartment.id=@ValueofDB:tblBillEmployeeDepartment_id</select>
+		</condition>
+		<!-- 更改上下级 设置为否 -->
+		<exec condition="true">
+			<sql>update tblBillEmployeeDepartment set IsDefault=2 where classcode like @SqlReturn:classCode+'%'</sql>
+		</exec>
+		<!-- 设置经手人部门默认值为空 -->
+		<exec condition="@SqlReturn:isCatalog==0">
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName=@SqlReturn:NameOfTable) and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName=@SqlReturn:NameOfTable) and fieldName='DepartmentCode'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName = @SqlReturn:NameOfTable+';') and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName = @SqlReturn:NameOfTable+';') and fieldName='DepartmentCode'</sql>
+		</exec>
+		<!-- 设置经手人部门默认值为空 -->
+		<exec condition="@SqlReturn:isCatalog==1">
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName in (select tblName from tblModules where classCode like @SqlReturn:classCode+'_____%' and isCatalog=0 and tblName is not NULL)) and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where tableName in (select tblName from tblModules where classCode like @SqlReturn:classCode+'_____%' and isCatalog=0 and tblName is not NULL)) and fieldName='DepartmentCode'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName in (select tblName+';' from tblModules where classCode like @SqlReturn:classCode+'_____%' and isCatalog=0 and tblName is not NULL)) and fieldName='EmployeeID'</sql>
+			<sql>update tblDBFieldInfo set defaultValue='' from tblDBFieldInfo where tableId in (select id from tblDBTableInfo where perantTableName in (select tblName+';' from tblModules where classCode like @SqlReturn:classCode+'_____%' and isCatalog=0 and tblName is not NULL)) and fieldName='DepartmentCode'</sql>
+		</exec>
+		<exec condition="true">
+			<!-- 系统重新加载表信息 -->
+			<sql>update tblInitTime set lastTime=@MEM:currentTimeMillis where initName='tableInfo'</sql>
+		</exec>
+	</sql>
+</define>
+
+<!-- 以上 默认经手人设置 -->
+
+<!--调价类型启用-->
+<define name="OpenValue_BaseInfo_tblPayAddType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblPayAddType where id=@ValueofDB:tblPayAddType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblPayAddType set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--调价类型停用-->
+<define name="StopValue_BaseInfo_tblPayAddType">
+    <sql type="condition">
+    <condition>
+    <select>
+	 select id,statusId from tblPayAddType where id=@ValueofDB:tblPayAddType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+      update tblPayAddType set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+    <!--调价类型启用-->
+<define name="OpenValue_BaseInfo_tblPayLessType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblPayLessType where id=@ValueofDB:tblPayLessType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblPayLessType set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--调价类型停用-->
+<define name="StopValue_BaseInfo_tblPayLessType">
+    <sql type="condition">
+    <condition>
+    <select>
+	 select id,statusId from tblPayLessType where id=@ValueofDB:tblPayLessType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+      update tblPayLessType set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+    <!--调价类型启用-->
+<define name="OpenValue_BaseInfo_tblReceiveAddType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblReceiveAddType where id=@ValueofDB:tblReceiveAddType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblReceiveAddType set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--调价类型停用-->
+<define name="StopValue_BaseInfo_tblReceiveAddType">
+    <sql type="condition">
+    <condition>
+    <select>
+	 select id,statusId from tblReceiveAddType where id=@ValueofDB:tblReceiveAddType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+      update tblReceiveAddType set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+    <!--调价类型启用-->
+<define name="OpenValue_BaseInfo_tblReceiveLessType">
+    <sql type="condition">
+    <condition>
+    <select>
+	select id,statusId from tblReceiveLessType where id=@ValueofDB:tblReceiveLessType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+     update tblReceiveLessType set statusId=0 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+<!--调价类型停用-->
+<define name="StopValue_BaseInfo_tblReceiveLessType">
+    <sql type="condition">
+    <condition>
+    <select>
+	 select id,statusId from tblReceiveLessType where id=@ValueofDB:tblReceiveLessType_id
+	</select>
+    </condition>
+    <exec condition="true">
+    <sql>
+      update tblReceiveLessType set statusId=-1 where id=@SqlReturn:id
+    </sql>
+    </exec>
+    </sql>
+    </define>
+	
+<!--判断应付增加类型不能删除修改-->
+<define name="tblPayAddType_del">
+	<sql type="condition"> 	
+		<condition>
+			<select>select ChangeType as Code  from tblPayAdjust left join tblPayAddType on tblPayAddType.AccCode=tblPayAdjust.ChangeType where tblPayAddType.id=@ValueofDB:tblPayAddType_id</select>
+		</condition>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="(&quot;@SqlReturn:Code&quot;!=&quot;null&quot;&amp;&amp;&quot;@Sess:BillOper&quot;==&quot;delete&quot;)||(&quot;@SqlReturn:Code&quot;!=&quot;null&quot;&amp;&amp;&quot;@SqlReturn:Code&quot;!=&quot;@ValueofDB:tblPayAddType_AccCode&quot;&amp;&amp;&quot;@Sess:BillOper&quot;==&quot;update&quot;)">
+			<error>modifyType.type.error</error>  
+		</exec>
+	</sql>
+</define>
+
+<!--应付增加类型不能重复增加 -->
+<define name="tblPayAddType_Add">
+<sql type="condition">
+	 <condition>
+		<select>select count(AccCode) as coutcode from tblPayAddType where scompanyid=@Sess:SCompanyID and AccCode=@ValueofDB:tblPayAddType_AccCode</select>
+        </condition>
+	  <exec condition="@SqlReturn:coutcode &gt;=2">
+	  <error>tblFeeType.repeat.error</error>  
+	  </exec>
+	  </sql>
+</define>
+	
+<!--判断应付减少类型不能删除修改-->
+<define name="tblPayLessType_del">
+	<sql type="condition"> 	
+		<condition>
+			<select>select ChangeType as Code  from tblPayAdjust left join tblPayLessType on tblPayLessType.AccCode=tblPayAdjust.ChangeType where tblPayLessType.id=@ValueofDB:tblPayLessType_id</select>
+		</condition>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="(&quot;@SqlReturn:Code&quot;!=&quot;null&quot;&amp;&amp;&quot;@Sess:BillOper&quot;==&quot;delete&quot;)||(&quot;@SqlReturn:Code&quot;!=&quot;null&quot;&amp;&amp;&quot;@SqlReturn:Code&quot;!=&quot;@ValueofDB:tblPayLessType_AccCode&quot;&amp;&amp;&quot;@Sess:BillOper&quot;==&quot;update&quot;)">
+			<error>modifyType.type.error</error>  
+		</exec>
+	</sql>
+</define>
+
+<!--应付减少类型不能重复增加-->
+<define name="tblPayLessType_Add">
+<sql type="condition">
+	 <condition>
+		<select>select count(AccCode) as coutcode from tblPayLessType where scompanyid=@Sess:SCompanyID and AccCode=@ValueofDB:tblPayLessType_AccCode</select>
+        </condition>
+	  <exec condition="@SqlReturn:coutcode &gt;=2">
+	  <error>tblFeeType.repeat.error</error>  
+	  </exec>
+	  </sql>
+</define>
+
+<!--判断应收增加类型不能删除修改-->
+<define name="tblReceiveAddType_del">
+	<sql type="condition"> 	
+		<condition>
+		<select>select ChangeType as Code  from tblAccAdjust left join tblReceiveAddType on tblReceiveAddType.AccCode=tblAccAdjust.ChangeType where tblReceiveAddType.id=@ValueofDB:tblReceiveAddType_id</select>
+		</condition>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="(&quot;@SqlReturn:Code&quot;!=&quot;null&quot;&amp;&amp;&quot;@Sess:BillOper&quot;==&quot;delete&quot;)||(&quot;@SqlReturn:Code&quot;!=&quot;null&quot;&amp;&amp;&quot;@SqlReturn:Code&quot;!=&quot;@ValueofDB:tblReceiveAddType_AccCode&quot;&amp;&amp;&quot;@Sess:BillOper&quot;==&quot;update&quot;)">
+			<error>modifyType.type.error</error>  
+		</exec>
+	</sql>
+</define>
+
+<!--应收增加类型不能重复增加 -->
+<define name="tblReceiveAddType_Add">
+<sql type="condition">
+	 <condition>
+		<select>select count(AccCode) as coutcode from tblReceiveAddType where scompanyid=@Sess:SCompanyID and AccCode=@ValueofDB:tblReceiveAddType_AccCode</select>
+        </condition>
+	  <exec condition="@SqlReturn:coutcode &gt;=2">
+	  <error>tblFeeType.repeat.error</error>  
+	  </exec>
+	  </sql>
+</define>
+	
+<!--判断应收减少类型不能删除修改-->
+<define name="tblReceiveLessType_del">
+	<sql type="condition"> 	
+		<condition>
+			<select>select ChangeType as Code  from tblAccAdjust left join tblReceiveLessType on tblReceiveLessType.AccCode=tblAccAdjust.ChangeType where tblReceiveLessType.id=@ValueofDB:tblReceiveLessType_id</select>
+		</condition>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="(&quot;@SqlReturn:Code&quot;!=&quot;null&quot;&amp;&amp;&quot;@Sess:BillOper&quot;==&quot;delete&quot;)||(&quot;@SqlReturn:Code&quot;!=&quot;null&quot;&amp;&amp;&quot;@SqlReturn:Code&quot;!=&quot;@ValueofDB:tblReceiveLessType_AccCode&quot;&amp;&amp;&quot;@Sess:BillOper&quot;==&quot;update&quot;)">
+			<error>modifyType.type.error</error>  
+		</exec>
+	</sql>
+</define>
+
+<!--应收减少类型不能重复增加 -->
+<define name="tblReceiveLessType_Add">
+<sql type="condition">
+	 <condition>
+		<select>select count(AccCode) as coutcode from tblReceiveLessType where scompanyid=@Sess:SCompanyID and AccCode=@ValueofDB:tblReceiveLessType_AccCode</select>
+        </condition>
+	  <exec condition="@SqlReturn:coutcode &gt;=2">
+	  <error>tblFeeType.repeat.error</error>  
+	  </exec>
+	  </sql>
+</define>
+	
+
+
+
+<!-- 短信模板启用--> 
+<define name="OpenValue_BaseInfo_tblSMSModel">
+<sql type="condition">
+  <condition /> 
+ <exec condition="true">
+  <sql>update tblSMSModel set statusId=0 where id=@ValueofDB:tblSMSModel_id</sql>
+  <sql>update tblInitTime set lastTime=@MEM:currentTimeMillis where initName='smsTemplate'</sql>  
+  </exec>
+  </sql>
+  </define>
+ <!-- 短信模板停用--> 
+ <define name="StopValue_BaseInfo_tblSMSModel">
+ <sql type="condition">
+  <condition /> 
+ <exec condition="true">
+  <sql>update tblSMSModel set statusId=-1 where id=@ValueofDB:tblSMSModel_id</sql> 
+  </exec>
+  </sql>
+  </define>
+<define name="tblVipCardIntegral_Del_One">
+	<sql type="condition">
+		<condition>
+			<select>select CardNo,CardAmount,CardIntegral from tblVipCardIntegral where id=@ValueofDB:tblVipCardIntegral_id</select>
+		</condition>
+		<!-- 更新开卡表tblOpenCard里的积分金额 -->
+		<exec condition="true">
+			<sql>update tblOpenCard set ConsumeIntegral=ConsumeIntegral+@SqlReturn:CardIntegral,Amount=Amount-@SqlReturn:CardAmount where id=@SqlReturn:CardNo</sql>
+		</exec>
+	</sql>
+	<sql type="condition"> 
+		<condition>
+			<select>select CardNo,CardAmount from tblVipCardIntegral where id=@ValueofDB:tblVipCardIntegral_id</select>
+			<select>select AccYear,AccMonth,AccPeriod from tblVipCardIntegral where id=@ValueofDB:tblVipCardIntegral_id and SCompanyID=@Sess:SCompanyID</select>
+		</condition>
+		<!--如果存在生成的凭证已被审核，需将对应凭证反审核后才可以进行本单据的反审核操作-->
+		<exec condition="&quot;@MEM:tblAccMain_IsStatart&quot; == &quot;1&quot; &amp;&amp; &quot;@SqlReturn:workFlowNodeName&quot; != &quot;notApprove&quot; &amp;&amp; &quot;@SqlReturn:workFlowNodeName&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:workFlowNodeName&quot;.length != 0">
+		 	<error>DelBill.RefAccMain.error,@SqlReturn:OrderNo</error>  
+		</exec>
+		<!--如果凭证启用了审核流，则反审核删除记录OAMyWorkFlow 审核人为自己-->
+		<exec condition="&quot;@MEM:tblAccMain_IsStatart&quot; == &quot;1&quot;">
+		  <sql>delete from OAMyWorkFlow where tableName='tblAccMain' and keyId in (select id from tblaccMain where RefBillID=@ValueofDB:tblVipCardIntegral_id)</sql>
+		</exec>
+		<exec condition="true">
+			<sql>delete from tblAccMain where RefBillID=@ValueofDB:tblVipCardIntegral_id</sql>
+			<sql>delete from tblAccDetail where RefBillID=@ValueofDB:tblVipCardIntegral_id</sql>   
+		</exec>
+				
+	</sql>	 
+	<!--根据情况调用另外一个define操作-->	
+	<sql type="condition">
+		<condition>
+			<select>select CardNo,CardAmount from tblVipCardIntegral where id=@ValueofDB:tblVipCardIntegral_id</select>
+		</condition>
+		<!--凭证管理不启用审核流也没有启用开票功能-->
+		<exec condition="&quot;@MEM:tblAccMain_IsStatart&quot; == &quot;0&quot; &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblVipCardIntegral_Del_Balance</sql>
+		</exec>
+	</sql>
+</define>
+
+<define name="tblVipCardIntegral_Del_Balance">
+	<sql type="condition">
+		<condition>
+			<select>select id,'' as RateCurTypeID,CardAmount,SCompanyID,BillDate from tblVipCardIntegral where id=@ValueofDB:tblVipCardIntegral_id</select>
+			<select>select AccYear,AccMonth,AccPeriod from tblAccPeriod where AccMonth = Month(@SqlReturn:BillDate) and AccYear=Year(@SqlReturn:BillDate) and SCompanyID=@Sess:SCompanyID</select>
+		</condition>
+		<exec condition="true"> 
+			<sql type="procedure">
+			<!-- 修改科目余额 -->
+			{call proc_updateAccBalance(@MEM:VIPExpense,@SqlReturn:AccPeriod,@SqlReturn:AccYear,@SqlReturn:AccMonth,(-1)*(@SqlReturn:CardAmount),0,0,0,@SqlReturn:SCompanyID,@SqlReturn:RateCurTypeID,retCode,retVal)}
+			</sql>
+			<!-- 修改科目余额 --> 
+			<sql type="procedure">
+			{call proc_updateAccBalance(2203,@SqlReturn:AccPeriod,@SqlReturn:AccYear,@SqlReturn:AccMonth,0,(-1)*(@SqlReturn:CardAmount),0,0,@SqlReturn:SCompanyID,@SqlReturn:RateCurTypeID,retCode,retVal)}
+			</sql>
+		</exec>
+	</sql>
+</define>
+
+<!-- 礼品管理 增加操作 -->
+<define name="tblGiftSet_Add">
+	<!--根据情况调用另外一个define操作-->	
+	<sql type="condition">
+		<condition>
+			<select>select 'ExistError1' as ExistError1 from tblGiftSet where id=@ValueofDB:tblGiftSet_id and Integral&lt;=0</select>
+			<select>select 'ExistError2' as ExistError2 from tblGiftSet where id=@ValueofDB:tblGiftSet_id and Validity&lt;@Sess:sysShortDate</select>
+		</condition>
+		<!-- 积分必须大于0 -->
+		<exec condition="&quot;@SqlReturn:ExistError1&quot;==&quot;ExistError1&quot;">
+			<error>tblGiftSet.add.ExistError1</error>  
+		</exec>
+		<!-- 有效期不可以小于当前日期 -->
+		<exec condition="&quot;@SqlReturn:ExistError2&quot;==&quot;ExistError2&quot;">
+			<error>tblGiftSet.add.ExistError2</error>  
+		</exec>
+	</sql>
+</define>
+	<!-- 门店设置 增加操作 -->
+<define name="tblShop_Add">
+	<sql type="condition"><!--如果不是多账户收款，要提示用户必须是多账户收款-->
+		<exec condition="@MEM:SalesManyAccount==false">
+			<error>tblShop.mustIsManyAcc.error</error>  
+		</exec>
+	</sql>
+	<sql type="condition"><!--至少选择一个收款账户-->
+		<condition><select>select count(0) as detCount from tblShopAccount where f_ref=@ValueofDB:tblShop_id</select></condition>
+		<exec condition="@SqlReturn:detCount==0">
+			<error>tblShop.NoAcc.error</error>  
+		</exec>
+	</sql>
+	<sql type="condition"><!--至少选择一个店员-->
+		<condition><select>select count(0) as detCount from tblShopDet where f_ref=@ValueofDB:tblShop_id</select></condition>
+		<exec condition="@SqlReturn:detCount==0">
+			<error>tblShop.NoPerson.error</error>  
+		</exec>
+	</sql>
+	<sql type="condition"><!--至少选择一个门店仓库-->
+		<condition><select>select count(0) as detCount from tblShopStock where f_ref=@ValueofDB:tblShop_id</select></condition>
+		<exec condition="@SqlReturn:detCount==0">
+			<error>tblShop.NoStock.error</error>  
+		</exec>
+	</sql>
+	<!--根据情况调用另外一个define操作-->	
+	<sql type="condition">
+		<condition>
+			<select>select count(*) isExist from tblShopDet where f_ref=@ValueofDB:tblShop_id and employeeId = (select principal from tblShop where id=@ValueofDB:tblShop_id)</select>
+			<select>select count(*) as userNum from tblShopDet where f_ref=@ValueofDB:tblShop_id group by f_ref,employeeId having count(*)&gt;1</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:isExist&quot;==&quot;0&quot;">
+			<error>tblShop.add.employeeIds.noExistprincipal</error>  
+		</exec>
+		<exec condition="@SqlReturn:userNum&gt;1">
+			<error>tblShop.add.ExistSomeEmployee</error>  
+		</exec>
+	</sql>
+</define>
+
+<!--会员卡升级规则添加操作-->
+<define name="tblVipCardUpgrade_add">
+<sql type="condition">
+		<condition>
+			<select>select StartIntegral,EndIntegral,StartCarAmt,EndCarAmt from tblVipCardUpgrade where id=@ValueofDB:tblVipCardUpgrade_id</select>
+			<select>select c.ExistsEqual as ExistsEqual,e.ExistsInterval as ExistsInterval,g.ExistsBlank as ExistsBlank from tblVipCardUpgrade a outer apply (select 'Exists' as ExistsEqual from tblVipCardUpgrade b where b.id!=a.id and (b.StartIntegral=a.StartIntegral or b.EndIntegral=a.StartIntegral or b.StartIntegral=a.EndIntegral or b.EndIntegral=a.EndIntegral)) as c outer apply (select 'Exists' as ExistsInterval from tblVipCardUpgrade d where d.id!=a.id and ((d.StartIntegral&gt;a.StartIntegral and a.EndIntegral&gt;d.StartIntegral) or (d.EndIntegral&lt;a.EndIntegral and a.StartIntegral&lt;d.EndIntegral))) as e outer apply (select 'Exists' as ExistsBlank from tblVipCardUpgrade f where f.id!=a.id and (f.StartIntegral=a.EndIntegral+1 or f.EndIntegral=a.StartIntegral-1)) as g where a.id=@ValueofDB:tblVipCardUpgrade_id</select>
+			<select>select c.ExistsEqual as Equal,e.ExistsInterval as Interval,g.ExistsBlank as Blank from tblVipCardUpgrade a outer apply (select 'Exists' as ExistsEqual from tblVipCardUpgrade b where b.id!=a.id and (b.StartCarAmt=a.StartCarAmt or b.EndCarAmt=a.StartCarAmt or b.StartCarAmt=a.EndCarAmt or b.EndCarAmt=a.EndCarAmt)) as c outer apply (select 'Exists' as ExistsInterval from tblVipCardUpgrade d where d.id!=a.id and ((d.StartCarAmt&gt;a.StartCarAmt and a.EndCarAmt&gt;d.StartCarAmt) or (d.EndCarAmt&lt;a.EndCarAmt and a.StartCarAmt&lt;d.EndCarAmt))) as e outer apply (select 'Exists' as ExistsBlank from tblVipCardUpgrade f where f.id!=a.id and (f.StartCarAmt=a.EndCarAmt+1 or f.EndCarAmt=a.StartCarAmt-1)) as g where a.id=@ValueofDB:tblVipCardUpgrade_id</select>
+			<select>select 'ExistData' as ExistData from tblVipCardUpgrade where id!=@ValueofDB:tblVipCardUpgrade_id</select>
+		</condition>
+		<!-- 结束积分必须大于开始积分 -->
+		<exec condition="@SqlReturn:StartIntegral&gt;= @SqlReturn:EndIntegral">
+			<error>tblIntegralDiscount.Add.error</error>  
+		</exec>	 
+		<!-- 结束金额必须大于开始金额 -->
+		<exec condition="@SqlReturn:StartCarAmt&gt;= @SqlReturn:EndCarAmt&amp;&amp;(@SqlReturn:StartCarAmt&gt;0||@SqlReturn:EndCarAmt&gt;0)">
+			<error>tblIntegralCarAmt.Add.error</error>  
+		</exec>	 
+		<!-- 开始分数和结束分数都必须大于0 -->
+		<exec condition="@SqlReturn:StartIntegral&lt;0||@SqlReturn:EndIntegral&lt;0">
+			<error>tblIntegralDiscount.days.error</error>  
+		</exec>	
+		<!-- 开始金额和结束金额都必须大于0 -->
+		<exec condition="@SqlReturn:StartCarAmt&lt;0||@SqlReturn:EndCarAmt&lt;0">
+			<error>tblIntegralCarAmt.days.error</error>  
+		</exec>	
+		<!-- 积分不能够交叉重复 -->
+		<exec condition="&quot;@SqlReturn:ExistsEqual&quot;==&quot;Exists&quot;||&quot;@SqlReturn:ExistsInterval&quot;==&quot;Exists&quot;||(&quot;@SqlReturn:ExistsBlank&quot;!=&quot;Exists&quot;&amp;&amp;&quot;@SqlReturn:ExistData&quot;==&quot;ExistData&quot;)">
+			<error>tblIntegralDiscount.days.repeat.error</error>  
+		</exec>
+		<!-- 金额不能够交叉重复 -->
+		<exec condition="(&quot;@SqlReturn:Equal&quot;==&quot;Exists&quot;||&quot;@SqlReturn:nterval&quot;==&quot;Exists&quot;||(&quot;@SqlReturn:Blank&quot;!=&quot;Exists&quot;&amp;&amp;&quot;@SqlReturn:ExistData&quot;==&quot;ExistData&quot;))&amp;&amp;@SqlReturn:StartCarAmt&gt;0">
+			<error>tblIntegralCarAmt.days.repeat.error</error>  
+		</exec>
+	</sql>
+</define>
+
+<!--会员卡升级规则删除操作-->
+<define name="tblVipCardUpgrade_del">
+	<sql type="condition">
+		<condition>
+			<select>select Y.ExistSmall as ExistSmall,Z.ExistBig as ExistBig from tblVipCardUpgrade X outer apply (select 'ExistSmall' as ExistSmall from tblVipCardUpgrade a where a.id!=X.id and a.StartIntegral&lt;X.StartIntegral) as Y outer apply (select 'ExistBig' as ExistBig from tblVipCardUpgrade a where a.id!=X.id and a.EndIntegral&gt;X.EndIntegral) as Z where id=@ValueofDB:tblVipCardUpgrade_id</select>
+		</condition>
+		<!-- 积分不能够交叉重复 -->
+		<exec condition="&quot;@SqlReturn:ExistSmall&quot;==&quot;ExistSmall&quot;&amp;&amp;&quot;@SqlReturn:ExistBig&quot;==&quot;ExistBig&quot;">
+			<error>tblIntegralDiscount.days.repeat.error</error>  
+		</exec>
+	</sql>
+</define>
+
+<!--模块字段设置 添加修改操作-->
+<define name="tblModuleField_Add">
+	<sql type="condition">
+		<exec condition="true">
+  		<confirm yesDefine="tblModuleField_System_Restart" noDefine="tblModuleField_System_NoRestart">tblSysDeploy.update.Alert</confirm> 
+  	</exec>
+	</sql>
+</define>
+
+<define name="tblModuleField_Save_Operation">
+	<sql type="condition">
+		<condition>
+			 <select>select count(moduleId) + cast(rand()*10+5 as int) as moduleCount from tblMOduleField where moduleId=@ValueofDB:moduleId group by moduleId </select>
+			 <select>select classCode pclassCode,isCatalog pisCatalog,MainModule from tblModules where id=@ValueofDB:MenuPath</select>
+			 <select>select linkAddress from tblModuleField where id=@ValueofDB:id</select>
+		</condition>
+		<exec condition="true">
+			<sql type="procedure">{call proc_getNewClassCode(tblModules,@SqlReturn:pclassCode,retCode,newClassCode)}</sql>
+		</exec>
+		<exec condition="true">
+			 <sql>update tblModuleField set moduleTypeNum=@SqlReturn:moduleCount where id=@ValueofDB:id</sql>
+			 <sql>insert into tblLanguage(id,zh_CN,en,zh_TW) select @ValueofDB:id,zh_CN,en,zh_TW from tblLanguage where id=@SqlReturn:linkAddress</sql>
+		</exec>
+		<exec condition="&quot;@SqlReturn:pisCatalog&quot;==&quot;0&quot;">
+			 <sql>insert into tblModules(id,classCode,tblName,modelName,createBy,statusId,linkAddress,IsUsed,createTime,MainModule,SCompanyId,SystemParam,isHidden,isCatalog)
+			 			values(@ValueofDB:id,@SqlReturn:pclassCode+'00001',@ValueofDB:moduleId,@ValueofDB:id,'1',0,'/UserFunctionQueryAction.do?tableName='+@ValueofDB:moduleId+'&amp;moduleType='+@SqlReturn:moduleCount,1,@ValueofDB:createTime,@SqlReturn:MainModule,@ValueofDB:SCompanyID,'Normal',2,0)
+			 </sql>
+			 <sql>update tblModules set isCatalog=1 where id=@ValueofDB:MenuPath</sql>
+		</exec>
+		<exec condition="&quot;@SqlReturn:pisCatalog&quot;==&quot;1&quot;">
+			 <sql>insert into tblModules(id,classCode,tblName,modelName,createBy,statusId,linkAddress,IsUsed,createTime,MainModule,SCompanyId,SystemParam,isHidden,isCatalog)
+			 			values(@ValueofDB:id,@ProcReturn:newClassCode,@ValueofDB:moduleId,@ValueofDB:id,'1',0,'/UserFunctionQueryAction.do?tableName='+@ValueofDB:moduleId+'&amp;moduleType='+@SqlReturn:moduleCount,1,@ValueofDB:createTime,@SqlReturn:MainModule,@ValueofDB:SCompanyID,'Normal',2,0)
+			 </sql>
+		</exec>
+		<exec condition="true">
+			 <sql>insert into tblModelOperations(f_ref,OperationID,SCompanyID,moduleOpId) values(@ValueofDB:id,1,@ValueofDB:SCompanyID,0)</sql>
+			 <sql>insert into tblModelOperations(f_ref,OperationID,SCompanyID,moduleOpId) values(@ValueofDB:id,2,@ValueofDB:SCompanyID,0)</sql>
+			 <sql>insert into tblModelOperations(f_ref,OperationID,SCompanyID,moduleOpId) values(@ValueofDB:id,3,@ValueofDB:SCompanyID,0)</sql>
+			 <sql>insert into tblModelOperations(f_ref,OperationID,SCompanyID,moduleOpId) values(@ValueofDB:id,4,@ValueofDB:SCompanyID,0)</sql>
+			 <sql>insert into tblModelOperations(f_ref,OperationID,SCompanyID,moduleOpId) values(@ValueofDB:id,6,@ValueofDB:SCompanyID,0)</sql>
+			 <sql> update tblModelOperations set moduleOpId=id where f_ref=@ValueofDB:id </sql>
+		</exec>
+	</sql>
+</define>
+
+
+
+<!--修改前操作-->
+<define name="tblModuleField_update">
+	<sql type="condition">
+			
+	</sql>
+</define>
+
+<!--修改后操作-->
+<define name="tblModuleField_Update_Operation">
+	<sql type="condition">
+			<condition>
+			 <select>select classCode pclassCode,isCatalog pisCatalog,MainModule from tblModules where id=@ValueofDB:MenuPath</select>
+			 <select>select linkAddress from tblModuleField where id=@ValueofDB:id</select>
+		 </condition>
+		 <exec condition="true">
+		 	 <sql>delete from tblLanguage where id=@ValueofDB:id</sql>
+			 <sql>insert into tblLanguage(id,zh_CN,en,zh_TW) select @ValueofDB:id,zh_CN,en,zh_TW from tblLanguage where id=@SqlReturn:linkAddress</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--删除操作-->
+<define name="tblModuleField_Delete_Operation">
+	<sql type="condition">
+		 <condition>
+			 <select>select linkAddress from tblModuleField where id=@ValueofDB:id</select>
+		 </condition>
+		 <exec condition="true">
+		 	 <sql>delete from tblLanguage where id=@ValueofDB:id</sql>
+		 	 <sql>delete from tblModelOperations where f_ref=@ValueofDB:id</sql>
+		 	 <sql>delete from tblModules where id=@ValueofDB:id</sql>
+		</exec>
+	</sql>
+</define>
+
+<define name="tblModuleField_System_Restart">
+	<sql type="condition">
+		<exec condition="&quot;@Sess:BillOper&quot;==&quot;add&quot;">
+  		<sql type="define">tblModuleField_Save_Operation</sql> 
+  	</exec>
+  	<exec condition="&quot;@Sess:BillOper&quot;==&quot;update&quot;">
+  		<sql type="define">tblModuleField_Update_Operation</sql> 
+  	</exec>
+		<exec condition="true">
+  		<sql type="define">System_Restart</sql> 
+  	</exec>
+  </sql>
+</define>
+
+<define name="tblModuleField_System_NoRestart">
+	<sql type="condition">
+		<exec condition="&quot;@Sess:BillOper&quot;==&quot;add&quot;">
+  		<sql type="define">tblModuleField_Save_Operation</sql> 
+  	</exec>
+  	<exec condition="&quot;@Sess:BillOper&quot;==&quot;update&quot;">
+  		<sql type="define">tblModuleField_Update_Operation</sql> 
+  	</exec>
+  </sql>
+</define>
+
+<!-- 任务分派的处理和拒绝 -->
+<define name="task_deal">
+	<sql type="condition">
+		<condition>
+			<select>select taskStatus from CRMTaskAssign where id=@ValueofDB:CRMTaskAssign_id</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:taskStatus&quot;==&quot;0&quot;">
+			<error>common.taskalldeta.error</error>  
+		</exec>
+	</sql>
+	<sql type="condition">
+		<exec condition="true">
+			<sql>update CRMTaskAssign set taskstatus=0 where id=@ValueofDB:CRMTaskAssign_id</sql>
+		</exec>
+	</sql>
+</define>
+<define name="task_round">
+	<sql type="condition">
+		<condition>
+			<select>select 'ExistError1' as ExistError1 from CRMTaskAssign where id=@ValueofDB:CRMTaskAssign_id and taskStatus='0'</select>
+		</condition>
+		<!-- 已处理的任务不允许再拒绝 -->
+		<exec condition="&quot;@SqlReturn:ExistError1&quot;==&quot;ExistError1&quot;">
+			<error>CRMTaskAssign.ExistError2</error>  
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition>
+			<select>select EmpFullName as CreateName,DepartmentCode as CreateDept from tblEmployee where id=@Sess:UserId</select>
+			<select>select lastUpdateBy,createBy from CRMTaskAssign where id=@ValueofDB:CRMTaskAssign_id</select>
+			<select>select '9'+id as workId,convert(varchar(10),getDate(),21) as workDate,Ref_id as ClientId,content,convert(varchar(19),getDate(),21) as createTime,SCompanyID from CRMTaskAssign where id=@ValueofDB:CRMTaskAssign_id</select>
+			<!--客户资料是否存在该跟单人记录-->
+			<select>select 'ExistError2' as ExistError2 from CRMClientInfoEmp where f_ref=@SqlReturn:ClientId and len(@SqlReturn:ClientId)&gt;0 and EmployeeID=@Sess:UserId and DepartmentCode=@SqlReturn:DepartmentCode</select>
+			<select>select userId as OldUser from CRMTaskAssign where userId=@ValueofDB:CRMTaskAssign_userId group by userId,Ref_id having count(Ref_id) &gt; 1</select>
+			<select>select userId as ExistUser from CRMTaskAssign where userId not in (select EmployeeID from CRMClientInfoEmp where f_ref=@SqlReturn:ClientId) and id=@ValueofDB:CRMTaskAssign_id</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:lastUpdateBy&quot;==&quot;@Sess:UserId&quot;">
+			<error>common.lb.taskAllerror</error>  
+		</exec>
+		<!-- 修改任务分配人 -->
+		<exec condition="true">
+			<sql>update CRMTaskAssign set userid='',createBy=@SqlReturn:lastUpdateBy,assignStatus='-1' where id=@ValueofDB:CRMTaskAssign_id</sql>
+		</exec>
+		<!-- 生成工作计划 -->
+		<exec condition="true">
+			<!-- <sql>delete from tblDayWorkPlan where id=@SqlReturn:workId</sql>
+			<sql type="procedure">
+			{call proc_insert(tblDayWorkPlan,id=@SqlReturn:workId@SPFieldLink:DepartmentCode=@SqlReturn:DepartmentCode@SPFieldLink:EmployeeID=@SqlReturn:EmployeeID@SPFieldLink:title=@Locale:CRM.difineCRM.Task @SqlReturn:content@SPFieldLink:content=@SqlReturn:content@SPFieldLink:createBy=@SqlReturn:EmployeeID@SPFieldLink:createTime=@SqlReturn:createTime@SPFieldLink:SCompanyID=@SqlReturn:SCompanyID@SPFieldLink:time=0@SPFieldLink:BeginDate=@SqlReturn:workDate@SPFieldLink:EndDate=@SqlReturn:workDate@SPFieldLink:workFlowNodeName=notApprove@SPFieldLink:grade=3,retCode,retVal)}
+			</sql>
+			 -->
+			<sql>delete from tblAdvice where id=@SqlReturn:workId</sql>
+			<sql type="procedure">
+			{call proc_insert(tblAdvice,id=@SqlReturn:workId@SPFieldLink:relationId=@SqlReturn:workId@SPFieldLink:send=@Sess:UserId@SPFieldLink:Receive=@SqlReturn:createBy@SPFieldLink:title=@Locale:CRM.difineCRM.Task @SqlReturn:CreateName @Locale:common.round.taskassign @SPFieldLink:content=@Locale:CRM.difineCRM.Task @SqlReturn:CreateName @Locale:common.round.taskassign @SPFieldLink:Status=noRead@SPFieldLink:SendName=@SqlReturn:CreateName@SPFieldLink:ReceiveName=@SqlReturn:EmpName@SPFieldLink:exist=all@SPFieldLink:createBy=@Sess:UserId@SPFieldLink:lastUpdateBy=@Sess:UserId@SPFieldLink:createTime=@SqlReturn:createTime@SPFieldLink:lastUpdateTime=@SqlReturn:createTime,retCode,retVal)}
+			</sql>
+		</exec>
+		<!-- <exec condition="&quot;@MEM:tblDayWorkPlan_IsStatart&quot; != &quot;1&quot;">
+			<sql>update tblDayWorkPlan set workFlowNodeName='finish',workFlowNode='-1',checkPersons=''  where id=@SqlReturn:workId</sql>
+		</exec> -->
+		<!--关联客户不为空插入跟单人至客户资料(该客户存在其他业务分配)-->
+		<exec condition="(&quot;@SqlReturn:ClientId&quot;!=&quot;null&quot;||&quot;@SqlReturn:ClientId&quot;.length!=0)&amp;&amp;(&quot;@SqlReturn:ExistUser&quot;==&quot;null&quot; || &quot;@SqlReturn:ExistUser&quot;.length ==0) &amp;&amp; (&quot;@SqlReturn:OldUser&quot;.length ==0 || &quot;@SqlReturn:OldUser&quot; == &quot;null&quot;)">
+		<sql>delete from CRMClientInfoEmp where id='0'+@SqlReturn:workId</sql>
+
+		<sql type="procedure">
+			{call proc_insert(CRMClientInfoEmp,id=@SqlReturn:workId@SPFieldLink:DepartmentCode=@SqlReturn:DepartmentCode@SPFieldLink:EmployeeID=@SqlReturn:EmployeeID@SPFieldLink:SCompanyID=@SqlReturn:SCompanyID@SPFieldLink:f_ref=@SqlReturn:ClientId,retCode,retVal)}
+			</sql>
+		</exec>
+		
+		<!--关联客户不为空插入跟单人至客户资料(该客户没有其他业务分配)-->
+		<exec condition="(&quot;@SqlReturn:ClientId&quot;!=&quot;null&quot;||&quot;@SqlReturn:ClientId&quot;.length!=0)&amp;&amp;&quot;@SqlReturn:ExistError2&quot;!=&quot;ExistError2&quot; &amp;&amp; (&quot;@SqlReturn:OldUser&quot;.length ==0 || &quot;@SqlReturn:OldUser&quot; == &quot;null&quot;) &amp;&amp; (&quot;@SqlReturn:ExistUser&quot;!=&quot;null&quot;  &amp;&amp; &quot;@SqlReturn:ExistUser&quot;.length !=0)">
+		<sql>update CRMClientInfoEmp set DepartmentCode=@SqlReturn:DepartmentCode,EmployeeID=@SqlReturn:EmployeeID where  id=@SqlReturn:workId and f_ref=@SqlReturn:ClientId and SCompanyID=@SqlReturn:SCompanyID</sql>
+		</exec>		
+	<exec condition="true">
+	<sql>delete from CRMClientInfoEmp where id=(select top 1 id from CRMClientInfoEmp where EmployeeId = (select d.EmployeeId from CRMClientInfoEmp d where d.f_ref=@SqlReturn:ClientId group by EmployeeId having count(EmployeeId)&gt;1))</sql>
+	</exec>
+	</sql>
+</define>
+</defineSqls>

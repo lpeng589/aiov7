@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="TblAttendanceClient"  desc="考勤客户" > 
+		<defineSQL>
+from tblAttendanceClientView as AttendanceClientInfo
+		</defineSQL>
+		<displayFields>
+			<field name="AttendanceClientInfo.ClientName" parentDisplay="true" width="200" searchType="match" />
+		</displayFields>
+		<saveFields>
+			<field name="AttendanceClientInfo.ClientId" parentName="@TABLENAME.ClientId" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

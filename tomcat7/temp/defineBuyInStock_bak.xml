@@ -1,0 +1,779 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+
+<!--==============================================采购入库单=========================================================-->
+<define name="tblBuyInStock_Add">
+	<sql type="condition"><!--合格数不能大于缴库数-->
+		<condition><select>select Count(1) as Qty from tblBuyInStockDet where f_ref=@ValueofDB:id and Qty&lt;=0</select>
+				 <select>select Count(1) as Qty1 from tblBuyInStockDet where f_ref=@ValueofDB:id and Qty&gt;isnull(QuaQty,0)</select></condition>
+		<exec condition="@SqlReturn:Qty&gt;0">			
+			<error>合格数不能小于0</error>                  
+		</exec>		 
+		<exec condition="@SqlReturn:Qty1&gt;0">			
+			<error>合格数不能大于缴库数</error>                  
+		</exec>
+	</sql>
+	<sql type="condition"><!--检查礼品是否代购-->
+		<condition>
+			<select>select Count(1) as hasDG from tblBuyInStockDet join tblGoods on tblBuyInStockDet.GoodsCode=tblGoods.classCode where f_ref=@ValueofDB:id and isnull(tblGoods.inType,'') = 'Yes,' </select>
+			<select>select Count(1) as nothasDG from tblBuyInStockDet join tblGoods on tblBuyInStockDet.GoodsCode=tblGoods.classCode where f_ref=@ValueofDB:id and isnull(tblGoods.inType,'') != 'Yes,' </select>
+			<select>select Count(1) as hasDGC from tblBuyInStockDet where f_ref=@ValueofDB:id and StockCode = '0000A' </select>
+			<select>select Count(1) as nothasDGC from tblBuyInStockDet where f_ref=@ValueofDB:id and StockCode != '0000A' </select>
+		</condition>
+		<exec condition=" '@ValueofDB:inType' == 'Yes,' &amp;&amp; @SqlReturn:nothasDG &gt;0  ">			
+			<error>代购入库不能是非代管商品</error>                  
+		</exec>		 
+		<exec condition=" '@ValueofDB:inType' == 'Yes,' &amp;&amp; @SqlReturn:nothasDGC &gt;0  ">			
+			<error>代购入库不能是非代管仓库</error>                  
+		</exec>
+		<exec condition=" '@ValueofDB:inType' != 'Yes,' &amp;&amp; @SqlReturn:hasDG &gt;0  ">			
+			<error>代管商品必须代购</error>                  
+		</exec>		 
+		<exec condition=" '@ValueofDB:inType' != 'Yes,' &amp;&amp; @SqlReturn:hasDGC &gt;0  ">			
+			<error>代管仓库必须代购</error>                  
+		</exec>
+	</sql>
+	<!--===============不用查询数据库的判断(依据主表数据)=================-->
+	<sql type="condition"> 			
+		<!--如果主表优惠后金额为负数 提示错误--> 
+		<exec condition="@ValueofDB:tblBuyInStock_TotalTaxAmount &lt; 0">
+		  <error>common.TotalTaxAmount.negative.error</error>                  
+	  </exec>
+		<!--发票类型是“收据凭证”，税率必须等于0,其他类型税率必须大于等于0-->
+		<exec condition="('@ValueofDB:tblBuyInStock_InVoiceType'=='3'&amp;&amp;@ValueofDB:tblBuyInStock_Tax!=0)||@ValueofDB:tblBuyInStock_Tax&lt;0">
+			<error>common.isReceipt.existsTax.error</error>           
+		</exec>		
+		<!--如果运费金额小于0，提示错误--> 
+		<exec condition="@ValueofDB:tblBuyInStock_freightAmount &lt; 0">
+		  <error>运费金额不能小于0！</error>                  
+	  </exec>
+		<!--如果运费金额大于0，运费科目为空，提示错误-->
+		<exec condition="@ValueofDB:tblBuyInStock_freightAmount&gt;0&amp;&amp;'@ValueofDB:tblBuyInStock_freightAcc'.length==0">
+			<error>请选择运费科目！</error>           
+		</exec>	
+	</sql>	
+	<sql type="condition">
+		<!-- 判断采购订单是否审核完成
+		<condition>
+			<select>select workFlowNodeName workFlowNodeName from tblBuyOrder where id= @ValueofDB:tblBuyInStock_BuyOrderID</select>
+		</condition>	
+		<exec condition="'@SqlReturn:workFlowNodeName'!='finish'">
+			<error>采购订单还未审核完成，不能入库</error>                  
+		</exec>-->
+		<!--如果通过引用按钮引用，将采购订单的ID设置到明细表-->		
+		<exec condition="'@ValueofDB:tblBuyInStock_BuyOrderID'.length&gt;0">
+			<sql>update tblBuyInStockDet set BuyOrderID=@ValueofDB:tblBuyInStock_BuyOrderID where f_ref=@ValueofDB:tblBuyInStock_id and len(isnull(BuyOrderID,''))=0</sql>	
+		</exec>
+		<exec condition="'@ValueofDB:tblBuyInStock_BuyAskPriceID'.length&gt;0">
+			<sql>update tblBuyInStockDet set BuyAskPriceID=@ValueofDB:tblBuyInStock_BuyAskPriceID where f_ref=@ValueofDB:tblBuyInStock_id and len(isnull(BuyAskPriceID,''))=0</sql>	
+		</exec>
+		<exec condition="true"><!--引用采购订单，询价单的控制判断-->
+			<sql type="define">tblBuyInStock_Add_QuoteOrder_Validate</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--启用了系统配置“采购入库单必须引用采购订单”，如果没有引用单据或者引用的商品及属性不匹配给出错误提示-->		
+		<condition><select>select count(0) NoQuote from tblBuyInStockDet a left join tblBuyOrderDet b on isnull(a.BuyOrderID,'')=b.f_ref and a.GoodsCode=b.GoodsCode and (a.BatchNo=b.BatchNo or b.BatchNo='') and (a.Inch=b.Inch or b.Inch='') and (a.Hue=b.Hue or b.Hue='') and (a.yearNo=b.yearNo or b.yearNo='') and (a.ProDate=b.ProDate or b.ProDate='') and (a.Availably=b.Availably or b.Availably='') where @MEM:QuoteOrder ='true' and a.f_ref=@ValueofDB:tblBuyInStock_id and b.id is null</select></condition>		
+		<exec condition="@SqlReturn:NoQuote&gt;0">
+			<error>BuyInStock.quoteOrder.error</error>                  
+		</exec>
+	</sql>
+	<!--==============要查询数据库数据进行判断=================-->
+	<sql type="condition"><!--引用单据发票类型与主表不符-->
+		<condition><select>select tblBuyOrder.BillNo as BuyOrderID from tblBuyInStock left join tblBuyInStockDet on tblBuyInStock.id=tblBuyInStockDet.f_ref left join tblBuyOrderDet on tblBuyOrderDet.id=tblBuyInStockDet.SourceID inner join tblBuyOrder on tblBuyOrder.id=tblBuyOrderDet.f_ref where tblBuyInStockDet.f_ref=@ValueofDB:tblBuyInStock_id and tblBuyInStock.InVoiceType!=tblBuyOrder.InVoiceType</select></condition>
+		<exec condition="'@SqlReturn:BuyOrderID' != 'null'">			
+			<error>tblBuyInStock.InvoiceType.error,@SqlReturn:BuyOrderID</error>                  
+		</exec>
+	</sql>
+	<sql type="condition"><!--生产日期大于保质期限时，给出提示-->
+		<condition><select>select tblGoods.GoodsNumber as GoodsQ from tblBuyInStockDet,tblGoods where len(ProDate)&gt;0 and len(Availably)&gt;0 and ProDate&gt;Availably and tblGoods.classCode=tblBuyInStockDet.GoodsCode and f_ref=@ValueofDB:tblBuyInStock_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>common.proDateAfterAvailably.error,@SqlReturn:GoodsQ</error>                  
+		</exec>
+	</sql>
+	
+
+	<sql type="condition"><!--商品是赠样品时单价不为零，给出错误提示-->
+		<condition><select>select tblGoods.GoodsNumber as GoodsSample from tblBuyInStockDet,tblGoods where f_ref=@ValueofDB:id and tblGoods.classCode=tblBuyInStockDet.GoodsCode and tblBuyInStockDet.PresentSampleType in ('1') and isnull(tblBuyInStockDet.curPrice,0)!=0</select></condition>
+		<exec condition="'@SqlReturn:GoodsSample' != 'null'">	 					
+			<error>@SqlReturn:GoodsSample 是备品，必须0单价</error>                  
+		</exec>
+	</sql>
+	<sql type="condition"><!--启用了价格控制，判断非赠品，样品商品单价是否在价格控制范围内-->
+		<exec condition="@MEM:PriceControl==true">			
+			<sql type="define">tblBuyInStock_Add_PriceControl_Validate</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--折扣不是0到100之间的数值时给出错误提示-->
+		<condition><select>select 'disCountError' as disCountError from tblBuyInStockDet a where a.f_ref=@ValueofDB:tblBuyInStock_id and (Discount&lt;=0 or Discount&gt;100)</select></condition>
+		<exec condition="'@SqlReturn:disCountError' != 'null'">				
+			<error>折扣必须输入大于0并且小于等于100的数值！</error>                   
+		</exec>
+	</sql>
+	<!--  <sql type="condition">明细表的金额不等于数量*单价 由于金额可能是由含税金额推算出来的，可能相差几分钱
+		<condition><select>select b.GoodsNumber,b.GoodsNumber from tblBuyInStockDet a,tblGoods b where a.f_ref=@ValueofDB:tblBuyInStock_id and a.GoodsCode=b.classCode and Amount!=round(Qty*Price,@MEM:DigitsAmount)</select></condition>
+		<exec condition="'@SqlReturn:GoodsNumber'!='null'">			
+			<error>common.AmtPriceQty.NotEqual.error,@SqlReturn:GoodsNumber,@SqlReturn:GoodsFullName</error>                  
+		</exec>
+	</sql>  -->
+	<sql type="condition"><!--主表总金额与明细表不相等-->
+		<condition><select>select dbo.getDigits('tblBuyInStockDet','TaxAmount',sum(tblBuyInStockDet.TaxAmount)) as SumDetAmt,dbo.getDigits('tblBuyInStockDet','TaxAmount',(cast(@ValueofDB:tblBuyInStock_TotalTaxAmount as numeric(18,8))+cast(@ValueofDB:tblBuyInStock_DiscountAmount as numeric(18,8)))) as sumMainAmt from tblBuyInStockDet where  tblBuyInStockDet.f_ref=@ValueofDB:tblBuyInStock_id</select></condition>
+		<exec condition="@SqlReturn:SumDetAmt!=@SqlReturn:sumMainAmt">			
+			<error>common.mainDetilAmt.NotEqual.error,@SqlReturn:sumMainAmt,@SqlReturn:SumDetAmt</error>                  
+		</exec>
+	</sql>
+	<sql type="condition"><!--启用了序列号属性，并且所选择的商品启用了序列号但没有录入序列号给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsSeq from tblBuyInStockDet a left join tblgoods c on c.classCode=a.GoodsCode where c.seqIsUsed=0 and len(isnull(a.seq,''))=0 and (select isUsed from tblGoodsAttribute where propName='Seq')=1 and a.f_ref=@ValueofDB:tblBuyInstock_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsSeq' != 'null'">	
+			<error>enter.seq.error,@SqlReturn:GoodsSeq</error>                  
+	    </exec>
+	</sql>
+	
+	<sql type="condition"><!--自定义:明细订单号与主表不符--> 
+		<condition><select>select GoodsNumber,GoodsFullName from tblBuyInStock a,tblBuyInStockDet b,tblGoods c where a.id=b.f_ref and a.BuyOrderID!=b.BuyOrderID and b.GoodsCode=c.classCode and a.id=@ValueofDB:tblBuyInstock_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsNumber' != 'null'">	
+			<error>明细商品 @SqlReturn:GoodsNumber 所属订单与主表不符</error>                  
+	    </exec>
+	</sql>	
+	<!--启用了多账户，进行多账户的判断提示-->
+	<sql type="define">tblBuyInStock_Add_ManyAccount_Validate</sql>
+	
+	<!--=====================外币的没有做整理==================================-->
+	<sql type="condition">
+		<condition>
+		<!--查询所选的付款帐户对应的科目代码、科目名、是否核算外币、核算的币种信息-->
+		<select>select AccNumber,AccName,IsForCur,Currency as CURD from tblAccTypeInfo where AccNumber=@ValueofDB:tblBuyInStock_PayAccount and SCompanyID=@ValueofDB:tblBuyInStock_SCompanyID</select>
+		<!--多账户付款查询所选的付款帐户对应的科目代码、科目名、是否核算外币、核算的币种信息-->
+		<select>select Account as AnyAccount from tblBuyPayAccount left join tblAccTypeinfo on tblAccTypeinfo.Accnumber=tblBuyPayAccount.Account where f_ref=@ValueofDB:tblBuyInStock_id and ((len(@ValueofDB:tblBuyInStock_Currency) &gt; 0 and tblAccTypeInfo.Currency!=@ValueofDB:tblBuyInStock_Currency) or (len(@ValueofDB:tblBuyInStock_Currency)=0 and len(tblAccTypeInfo.Currency)!=0))</select>
+		</condition>
+		<!--币种和税率存在外币币种时税率必须大于0-->
+		<exec condition="'@ValueofDB:tblBuyInStock_Currency'.length&gt;0 &amp;&amp; @ValueofDB:tblBuyInStock_CurrencyRate &lt;= 0"> 
+			<error>Currency.InputCurrencyRate.error</error>                  
+		</exec>
+		<!--币种为空，付款帐户不为空时，选择的付款多帐户存在核算外币时提示-->
+		<exec condition="'@SqlReturn:AnyAccount' != 'null'">
+			<error>tblAccTypeInfo.SelectCurType.error</error>                  
+		</exec>
+		<!--如果是本位币帐户，不用录入汇率-->	
+		<exec condition=" ('@ValueofDB:tblBuyInStock_Currency'.length == 0 &amp;&amp; @ValueofDB:tblBuyInStock_CurrencyRate&gt;0 &amp;&amp;@ValueofDB:tblBuyInStock_CurrencyRate!=1)">		
+			<error>CurrencyRate.putErrors.error</error>                  
+		</exec>
+	</sql>
+	<!--=====================以上代码：外币的没有做整理==================================-->
+	<sql type="condition"><!--有引用单据，并且启用了控制超订单入库系统配置，判断是否有超订单入库-->
+		<exec condition="'@MEM:OverBuyorder'=='true'">
+			<sql type="define">tblBuyInStock_Add_OverOrderIn_Validate</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--当提示是否超订单入库时，点击确定执行的define-->
+		<exec condition="true">			
+			<sql type="define">tblBuyInStock_Add_AccBefore</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--======当提示是否超订单入库时，点击确定执行的define=====-->
+<define name="tblBuyInStock_Add_AccBefore">
+	<!--更改主表待付金额=总金额-付款金额，累计付款金额=付款金额,未开票金额=优惠后金额-->	
+	<sql>update tblBuyInStock set AfterChangeAmt=TotalTaxAmount,NoInvoiceAmount=TotalTaxAmount,InvoiceAmount=0,InvoiceStatus=0,NeedPayAmt=TotalTaxAmount-PayAmount*CurrencyRate+(case when freightAcc like '2202%' then freightAmount*CurrencyRate else 0 end),CurNeedPayAmt=CurTotalAmount-PayAmount+(case when freightAcc like '2202%' then freightAmount else 0 end),AlreadyPayAmt=PayAmount*CurrencyRate,CurAlreadyPayAmt=PayAmount,BackAmount=0,CertificateNo='' where id=@ValueofDB:tblBuyInStock_id</sql>
+	<!--采购入库单保存时回填明细中优惠后金额-->
+	<sql>update tblBuyInStockDet set PreferBackAmount=case when tblBuyInStock.TotalTaxAmount+tblBuyInStock.DiscountAmount=0 then 0 else round(tblBuyInStock.TotalTaxAmount*tblBuyInStockDet.TaxAmount/(tblBuyInStock.TotalTaxAmount+tblBuyInStock.DiscountAmount),@MEM:DigitsAmount) end  FROM tblBuyInStock where tblBuyInStockDet.f_ref=@ValueofDB:tblBuyInstock_id and tblBuyInstock.id=@ValueofDB:tblBuyInstock_id</sql>
+	<sql>update tblBuyInStockDet set tblBuyInStockDet.PreferAmount=tblBuyInStockDet.TaxAmount-tblBuyInStockDet.PreferBackAmount FROM tblBuyInStock where tblBuyInStockDet.f_ref=@ValueofDB:tblBuyInstock_id and tblBuyInstock.id=@ValueofDB:tblBuyInstock_id</sql>
+	<!--采购入库单保存时回填明细中未开票金额-->
+	<sql>update tblBuyInStockDet set NoInvoiceAmount=PreferBackAmount,InvoiceAmount=0,InvoiceStatus=0,FactInQty=Qty,BackQty=0,InvoiceQty=0,NotInvoiceQty=Qty where f_ref=@ValueofDB:tblBuyInstock_id</sql>
+	<!--采购入库单的运费分摊到明细中-->
+	<sql>update tblBuyInStockDet set freightAmount=case when (tblBuyInstock.TotalTaxAmount+tblBuyInstock.DiscountAmount)=0 then 0 else TaxAmount/(tblBuyInstock.TotalTaxAmount+tblBuyInstock.DiscountAmount)*tblBuyInstock.freightAmount end from tblBuyInstock where tblBuyInstock.id=@ValueofDB:tblBuyInstock_id and f_ref=tblBuyInstock.id</sql>
+	
+	<sql type="condition">
+		<!--自定义取消：没有启用多仓库，用主表的仓库更新明细表上的仓库值
+		<exec condition="'@MEM:ManyStockBuy'=='false'">
+			<sql>update tblBuyInStockDet set StockCode=(select StockCode from tblBuyInStock where id=@ValueofDB:tblBuyInStock_id) where f_ref=@ValueofDB:tblBuyInStock_id</sql>	
+		</exec>-->		
+		<!--如果通过引用按钮引用，将采购订单的ID设置到明细表-->
+		<exec condition="'@ValueofDB:tblBuyInStock_BuyOrderID'.length&gt;0">
+			<sql>update tblBuyInStockDet set BuyOrderID=@ValueofDB:tblBuyInStock_BuyOrderID where f_ref=@ValueofDB:tblBuyInStock_id and len(isnull(BuyOrderID,''))=0</sql>	
+		</exec>	
+	</sql>
+	<sql type="condition">
+		<!--如果启用了系统配置“保质期”，根据情况修改保质期限和生产日期的值-->
+		<exec condition="'@MEM:Availably'=='true'">	
+			<!--商品设置了保质期，没有录入保质期限，根据生产日期更新保质期限-->	
+			<sql>update tblBuyInStockDet set Availably=a.Availably from(select  b.id as id,case when tblGoods.AvailablyType='Day' then convert(varchar(10),dateadd(Day,tblGoods.Validity,ProDate),21) when tblGoods.AvailablyType='Month' then convert(varchar(10),dateadd(Month,tblGoods.Validity,ProDate),21) when tblGoods.AvailablyType='Year' then convert(varchar(10),dateadd(Year,tblGoods.Validity,ProDate),21) else '' end as Availably from tblBuyInStock  a join tblBuyInStockDet b on b.f_ref=a.id join tblGoods on tblGoods.classCode=b.GoodsCode where a.id=@ValueofDB:tblBuyInStock_id and len(Availably)=0 and len(ProDate)!=0 and tblGoods.Validity!=0)a where tblBuyInStockDet.id=a.id</sql>
+			<!--商品设置了保质期，没有录入生产日期，根据保质期限更新生产日期-->
+			<sql>update tblBuyInStockDet set ProDate=a.ProDate from(select  b.id as id,case when tblGoods.AvailablyType='Day' then convert(varchar(10),dateadd(Day,(-1)*tblGoods.Validity,Availably),21) when tblGoods.AvailablyType='Month' then convert(varchar(10),dateadd(Month,(-1)*tblGoods.Validity,Availably),21) when tblGoods.AvailablyType='Year' then convert(varchar(10),dateadd(Year,(-1)*tblGoods.Validity,Availably),21) else '' end as ProDate from tblBuyInStock  a join tblBuyInStockDet b on b.f_ref=a.id join tblGoods on tblGoods.classCode=b.GoodsCode where a.id=@ValueofDB:tblBuyInStock_id and len(ProDate)=0 and len(Availably)!=0 and tblGoods.Validity!=0)a where tblBuyInStockDet.id=a.id</sql>
+		</exec>
+	</sql>
+
+	<sql type="condition">
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblBuyInStock_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblBuyInStockDet.GoodsCode,@StockCode=tblBuyInStockDet.StockCode,@BillType=tblBuyInStock,@InstoreQty=tblBuyInStockDet.Qty,@OutstoreQty=0,@from=tblBuyInStockDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新未审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblBuyInStock_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+		
+		<!--=============过账操作（不启用审核流直接执行，启用审核时通过点击审核按钮调用）===============-->
+		<exec condition="'@MEM:tblBuyInStock_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblBuyInStock_Add_One</sql>
+		</exec>
+	</sql>
+</define>
+<!--=======启用了价格跟踪，向价格管理表中插入数据================-->
+<define name="tblBuyInStock_Add_PriceTracking">
+	<sql type="condition">
+		<condition>
+			<select>select id as CPID from tblCustomerPrice where CompanyCode=@ValueofDB:tblBuyInStock_CompanyCode</select>
+			<select>select lower(substring(replace(newid(),'-',''),1,28)) as CustomerPriceId</select>
+		</condition>
+		<!--判断如果价格管理表中没有此供应商的记录，插入一条主表记录-->
+		<exec condition="'@SqlReturn:CPID'=='null'">
+			<sql>insert into tblCustomerPrice(id,classCode,workFlowNodeName,CompanyCode,createBy,lastUpdateBy,createTime,lastUpdateTime,statusId,SCompanyID) values(@SqlReturn:CustomerPriceId,'','finish',@ValueofDB:tblBuyInStock_CompanyCode,'1','1',@ValueofDB:tblBuyInStock_createTime,@ValueofDB:tblBuyInStock_lastUpdateTime,0,@ValueofDB:tblBuyInStock_SCompanyID)</sql>
+		</exec>
+		<!--查询在价格管理表中存在的商品，并且修改其最近进价，进价折扣-->
+		<exec condition="'@SqlReturn:CPID'!='null'">
+			<sql>update tblCustomerPriceDet set BuyPrice=a.Price,UnitPrice=a.UnitPrice,InDiscount=case when (InDiscount!=100 and @MEM:InDiscountTracke!='true') then InDiscount else a.Discount end from(select b.id as CDetID,(case @MEM:InPriceTrack when 'Price' then a.Price when 'TaxPrice' then a.TaxPrice else a.CurPrice end) as Price,isnull(b.UnitPrice,a.Price) as UnitPrice,(case when @MEM:InDiscountTracke='true' then Discount else 100 end) as Discount from tblBuyInStockDet a,tblCustomerPriceDet b where a.f_ref=@ValueofDB:tblBuyInStock_id and b.f_ref=@SqlReturn:CPID and a.goodsCode=b.goodsCode and a.price&gt;0)a where tblCustomerPriceDet.id=a.CDetID</sql>
+		</exec>
+		<!--查询在价格管理表中不存在的商品，并且插入最近进价，进价折扣-->
+		<exec condition="true">
+			<sql>insert into tblCustomerPriceDet(id,f_ref,GoodsCode,BuyPrice,SecQty,BaseQty,InDiscount,SCompanyID)select m.sdid,m.CID,m.GoodsCode,m.Price,m.SecQty,m.BaseQty,m.Discount,m.CSID from(select substring(replace(newid(),'-',''),1,30) as sdid,a.GoodsCode as GoodsCode,(case @MEM:InPriceTrack when 'Price' then a.Price when 'TaxPrice' then a.TaxPrice else a.CurPrice end) as Price,isnull(a.SecUnit,'') as SecUnit,a.SecQty,a.BaseQty,a.UnitPrice as UnitPrice,(case @SqlReturn:CPID when 'null' then @SqlReturn:CustomerPriceId else @SqlReturn:CPID end) as CID,@ValueofDB:tblBuyInStock_SCompanyID as CSID,(case when @MEM:InDiscountTracke='true' then Discount else 100 end) as Discount from tblBuyInStockDet a where a.f_ref=@ValueofDB:tblBuyInStock_id and a.price&gt;0 and (select count(0) from tblCustomerPriceDet b where b.f_ref=(case @SqlReturn:CPID when 'null' then @SqlReturn:CustomerPriceId else @SqlReturn:CPID end) and a.goodsCode=b.goodsCode)=0 and a.detOrderNo=(select top 1 detOrderNo from tblBuyInStockDet b where b.f_ref=a.f_ref and a.GoodsCode=b.GoodsCode))m</sql>
+		</exec>		
+	</sql>
+</define>
+<!--===========启用了价格控制，判断商品价格是否在控制范围内的判断提示=========-->
+<define name="tblBuyInStock_Add_PriceControl_Validate">
+	<sql type="condition">
+		<condition><select>select c.GoodsNumber as GoodsLH,cast(isnull(b.LowestPrice,0) as decimal(18,4)) as LowestPrice,cast(isnull(b.HighestPrice,0) as decimal(18,4)) as HighestPrice from tblBuyInStockDet a,ViewPriceControl b,tblGoods c where b.GoodsCode=a.GoodsCode and c.classCode=a.GoodsCode and b.ControlType='Buy' and UserID=@ValueofDB:tblBuyInStock_createBy and a.PresentSampleType not in ('1','2') and (a.TaxPrice&lt;b.LowestPrice or (b.HighestPrice&gt;0 and a.TaxPrice&gt;b.HighestPrice)) and a.f_ref=@ValueofDB:tblBuyInStock_id</select></condition>
+		<!--有录入最低价，最高价时，判断要在此范围内-->
+		<exec condition="'@SqlReturn:GoodsLH'!='null'&amp;&amp;@SqlReturn:LowestPrice&gt;0&amp;&amp;@SqlReturn:HighestPrice&gt;0">	
+			<error>common.priceNotScope.error,@SqlReturn:GoodsLH,@SqlReturn:LowestPrice,@SqlReturn:HighestPrice</error>                  
+		</exec>
+		<!--有录入最低价，没有最高价时，判断要大于等于最低价-->
+		<exec condition="'@SqlReturn:GoodsLH'!='null'&amp;&amp;@SqlReturn:LowestPrice&gt;0&amp;&amp;@SqlReturn:HighestPrice==0">	
+			<error>common.priceLessLowest.error,@SqlReturn:GoodsLH,@SqlReturn:LowestPrice</error>                  
+		</exec>
+		<!--有录入最高价，没有最低价时，判断要小于等于最高价-->
+		<exec condition="'@SqlReturn:GoodsLH'!='null'&amp;&amp;@SqlReturn:LowestPrice==0&amp;&amp;@SqlReturn:HighestPrice&gt;0">	
+			<error>common.priceMoreHighest.error,@SqlReturn:GoodsLH,@SqlReturn:HighestPrice</error>                  
+		</exec>
+	</sql>
+</define>
+<!--==============引用采购订单的控制判断=================-->
+<define name="tblBuyInStock_Add_QuoteOrder_Validate">
+	<sql type="condition"><!--判断采购退货的单据日期在引用采购入库单前，给出错误提示-->
+		<condition><select>select a.BillNo,billDate as BuyInDate from tblBuyOrder a,tblBuyInStockDet b where b.f_ref=@ValueofDB:tblBuyInStock_id and b.BuyOrderID=a.id and a.BillDate&gt;@ValueofDB:tblBuyInStock_BillDate</select></condition>
+		<exec condition="'@SqlReturn:BillNo'!='null'">			
+			<error>common.QuoteDate.error,@SqlReturn:BillNo,@SqlReturn:BuyInDate</error>                  
+		</exec>
+	</sql>
+	<sql type="condition"><!--订单供应商不同，给出错误提示-->
+		<condition><select>select a.BillNo,c.ComFullName from tblBuyOrder a,tblBuyInStockDet b,tblCompany c where b.f_ref=@ValueofDB:tblBuyInStock_id and b.BuyOrderID=a.id and a.CompanyCode=c.classCode and a.CompanyCode!=@ValueofDB:tblBuyInStock_CompanyCode</select></condition>
+		<exec condition="'@SqlReturn:BillNo'!='null'">			
+			<error>common.providerQuote.error,@SqlReturn:BillNo,@SqlReturn:ComFullName</error>                  
+		</exec>
+	</sql>
+	<sql type="condition"><!--询价单供应商不同，给出错误提示-->
+		<condition><select>select a.BillNo,c.ComFullName from tblBuyAskPrice a,tblBuyInStockDet b,tblCompany c where b.f_ref=@ValueofDB:tblBuyInStock_id and b.BuyAskPriceID=a.id and a.CompanyCode=c.classCode and a.CompanyCode!=@ValueofDB:tblBuyInStock_CompanyCode</select></condition>
+		<exec condition="'@SqlReturn:BillNo'!='null'">			
+			<error>common.providerQuote.error,@SqlReturn:BillNo,@SqlReturn:ComFullName</error>                  
+		</exec>
+	</sql>
+</define>
+<!--===========启用了多账户，进行多账户的判断提示=========-->
+<define name="tblBuyInStock_Add_ManyAccount_Validate">
+	<!--选择了付款账户没有输入付款金额，或者输入付款金额没有选择付款账户-->
+	<sql type="condition">
+		<condition><select>select 'exisAccErr' as exisAccErr from tblBuyPayAccount where tblBuyPayAccount.f_ref=@ValueofDB:tblBuyInStock_id and (len(isnull(tblBuyPayAccount.Account,''))&gt;0 and isnull(tblBuyPayAccount.Amount,0)=0)</select></condition>
+		<exec condition="'@SqlReturn:exisAccErr'!='null'">
+			<error>common.AccountAmt.input.error</error>                  
+		</exec>
+	</sql>
+	<!--选择了重复的付款账户，给出错误提示-->
+	<sql type="condition">
+		<condition><select>select 'sameAcc' as sameAcc from tblBuyPayAccount where f_ref=@ValueofDB:tblBuyInStock_id group by Account having count(Account)&gt;1</select></condition>
+		<exec condition="'@SqlReturn:sameAcc'=='sameAcc'">
+			<error>tblPay.payAccount.same.error</error>                  
+		</exec>
+	</sql>
+</define>
+
+<!--===========启用了“控制超订单入库”，需判断是否有超出订单入库=========-->
+<define name="tblBuyInStock_Add_OverOrderIn_Validate">
+	<sql type="condition">
+		<condition> 
+			<!--查询此用户是否有权限超订单入库-->
+			<select>select count(0) as allowCount from tblUserSunCompany a,tblRightType b where ((a.userid=@Sess:UserId and a.roleids like '%'+b.id+';%') or b.id=@Sess:UserId) and rightType='allowMoreOrderIn' and hasRight=1</select>
+			<!--查询是否有超订单入库的商品-->
+			<select>select l.BillNo,k.GoodsNumber,dbo.throwZero((select sum(NotInQty) from tblBuyOrderDet b where b.f_ref=a.BuyOrderID and a.GoodsCode=b.GoodsCode and a.BatchNo=b.BatchNo and a.Inch=b.Inch and a.Hue=b.Hue and a.yearNO=b.yearNO)) as NotInQty from tblBuyInStockDet a,tblGoods k,tblBuyOrder l where f_ref=@ValueofDB:tblBuyInStock_id and LEN(BuyOrderID)&gt;0 and a.BuyOrderID=l.id and a.GoodsCode=k.classCode group by BuyOrderID,l.BillNo,GoodsCode,BatchNo,Inch,Hue,yearNO,k.GoodsNumber having SUM(Qty)&gt;(select sum(NotInQty) from tblBuyOrderDet b where b.f_ref=a.BuyOrderID and a.GoodsCode=b.GoodsCode and a.BatchNo=b.BatchNo and a.Inch=b.Inch and a.Hue=b.Hue and a.yearNO=b.yearNO)</select>
+		</condition>
+		<!--查询出有超订单入库的商品，并且此用户没有权限超订单入库，也不是系统管理员给出错误提示-->
+		<exec condition="'@SqlReturn:GoodsNumber'!='null'&amp;&amp;@SqlReturn:allowCount==0&amp;&amp;'@Sess:UserId'!='1'">
+			<error>tblBuyInStock.add.GoodsQty.error,@SqlReturn:BillNo,@SqlReturn:GoodsNumber,@SqlReturn:NotInQty</error>                  
+		</exec>
+		<!--查询出有超订单入库的商品，但此用户有权限超订单入库或者是系统管理员，给出提示信息-->
+		<exec condition="'@SqlReturn:GoodsNumber'!='null'&amp;&amp;(@SqlReturn:allowCount!=0||'@Sess:UserId'=='1')">
+			<confirm yesDefine="tblBuyInStock_Add_AccBefore" noDefine="">tblBuyInStock.add.GoodsQty.confirm,@SqlReturn:BillNo,@SqlReturn:GoodsFullName,@SqlReturn:NotInQty</confirm>
+		</exec>
+	</sql>
+</define>
+<define name="tblBuyInStock_Add_Qty">
+	<sql type="condition"><!--数量小于等于0的商品判断-->
+		<condition><select>select tblGoods.GoodsNumber as GoodsQ from tblBuyInStockDet,tblGoods where isnull(tblBuyInStockDet.Qty,0)&lt;=0 and tblGoods.classCode=tblBuyInStockDet.GoodsCode and f_ref=@ValueofDB:tblBuyInStock_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>common.qty.negative.error,@SqlReturn:GoodsQ</error>                  
+		</exec>
+	</sql>	
+</define>
+
+<define name="tblBuyInStock_Add_One">
+	<sql type="condition"><!--数量小于等于0的商品判断-->
+		<condition><select>select tblGoods.GoodsNumber as GoodsQ from tblBuyInStockDet,tblGoods where isnull(tblBuyInStockDet.Qty,0)&lt;=0 and tblGoods.classCode=tblBuyInStockDet.GoodsCode and f_ref=@ValueofDB:tblBuyInStock_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>common.qty.negative.error,@SqlReturn:GoodsQ</error>                  
+		</exec>
+	</sql>		
+	<sql type="condition">
+		<exec condition="'@MEM:InPriceTrack'!='PriceNo'||'@MEM:InDiscountTracke'=='true'"><!--如果启用了价格跟踪，将单价插入到价格管理表中-->	
+			<sql type="define">tblBuyInStock_Add_PriceTracking</sql>
+		</exec>
+		
+		<!--如果启用审核流，则过账时更新分仓库存-未审核字段  '@MEM:tblBuyInStock_IsStatart' != '0'-->
+		<exec condition="'@MEM:tblBuyInStock_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblBuyInStockDet.GoodsCode,@StockCode=tblBuyInStockDet.StockCode,@BillType=tblBuyInStock,@InstoreQty=-1*tblBuyInStockDet.Qty,@OutstoreQty=0,@from=tblBuyInStockDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--如果启用审核流，删除已审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblBuyInStock_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,delete,retCode,retVal)}</sql>
+		</exec>
+		<!--启用系统配置“已经入库过的序列号，不能再次采购入库”，判断当前序列号是否已经入库-->
+		<exec condition="'@MEM:seqCannotAgainBuy'=='true'">
+			<sql type="procedure">{call proc_HasBuyInStockSeq(@ValueofDB:id,seqCode,seqVal)}</sql>
+		</exec>
+		<exec condition="&quot;@ProcReturn:seqVal&quot;!=&quot;&quot;">
+			<error>seq.validate.hasInstore,@ProcReturn:seqVal</error>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<!--更新入库单明细中的未付款数量为订单数量，付款数量为0-->
+		<exec condition="true"><sql>update tblBuyInStockDet set NotPayQty=Qty,PayQty=0 where f_ref=@ValueofDB:tblBuyInStock_id</sql></exec>	
+	</sql>
+	<sql type="condition">
+		<!--更新采购订单的入库数量，未入库数量，状态等信息-->
+		<exec condition="true">
+			<sql>
+----------------------------------------------------------------------------				
+	--入库单明细信息
+declare @inDetID varchar(32)
+declare @BuyOrderID varchar(32)
+declare @GoodsCode varchar(50)
+declare @BatchNo varchar(100)
+declare @Inch varchar(100)
+declare @Hue varchar(100)
+declare @yearNO varchar(100)
+declare @ProDate varchar(10)
+declare @Availably varchar(10)
+declare @InQty numeric(18,8)
+
+--订单信息
+declare @OrderDetID varchar(32)
+declare @NotInQty numeric(18,8)
+declare @OInQty numeric(18,8)
+
+declare @allotQty numeric(18,8)
+declare @orderallotId varchar(32) 
+declare @reqId  varchar(32)
+declare @appallotId varchar(32)
+declare @reqQty numeric(18,8)
+
+--分组查询多个订单的不同商品的总入库数量
+declare cur_InDet cursor local for select id, BuyOrderID,GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,FactInQty from tblBuyInStockDet where f_ref=@ValueofDB:id and LEN(BuyOrderID)&gt;0 
+open cur_InDet
+fetch next from cur_InDet into @inDetID,@BuyOrderID,@GoodsCode,@BatchNo,@Inch,@Hue,@yearNO,@ProDate,@Availably,@InQty
+while(@@FETCH_STATUS=0)
+	begin	
+		set @OrderDetID=''	
+		--用这些总的入库数量依次更新订单明细的入库数量
+		declare cur_OrderDet cursor local for select id,Qty-InQty from tblBuyOrderDet where f_ref=@BuyOrderID and GoodsCode=@GoodsCode and (BatchNo=@BatchNo or ISNULL(BatchNo,'')='') and (Inch=@Inch or ISNULL(Inch,'')='') and (Hue=@Hue or ISNULL(Hue,'')='') and (yearNO=@yearNO or ISNULL(yearNO,'')='') and (ProDate=@ProDate or ISNULL(ProDate,'')='') and (Availably=@Availably or ISNULL(Availably,'')='') order by detOrderNo
+		open cur_OrderDet
+		fetch next from cur_OrderDet into @OrderDetID,@NotInQty
+		while(@@FETCH_STATUS=0)
+			begin
+				--当总的入库数量大于单个订单未入库数量，则此订单入库数量+未入库数量,否则减去
+				set @allotQty = 0;
+				if(@InQty&gt;=@NotInQty)
+					begin 
+						update tblBuyOrderDet set InQty=InQty+@NotInQty,NotInQty=0 where id=@OrderDetID 
+						set @allotQty = @NotInQty
+						set @InQty=@InQty-@NotInQty  
+					end
+				else if(@InQty&lt;@NotInQty and @InQty &gt; 0)
+					begin
+						update tblBuyOrderDet set InQty=InQty+@InQty,NotInQty=Qty-InQty-@InQty where id=@OrderDetID 
+						set @allotQty = @InQty
+						set @InQty=0
+					end	
+				if(@allotQty &gt; 0)
+				begin
+					--回填订购分配表
+					declare reqCursor cursor local for select  ID,PDMRPReqDetId,appAllotId,Qty-isnull(InQty,0) NoInQty from PDBuyOrderAllot where orderDetId=@OrderDetID and Qty-isnull(InQty,0) &gt; 0
+					open reqCursor
+					fetch reqCursor into  @orderallotId, @reqId ,@appallotId,@reqQty
+					while(@@fetch_status=0)
+					begin
+						if(@allotQty &gt; @reqQty )
+						begin
+							update PDBuyOrderAllot set InQty=isnull(InQty,0)+@reqQty where id=@orderallotId
+							update PDMRPReqDet set InQty=isnull(InQty,0)+@reqQty where id=@reqId
+							INSERT INTO [PDBuyInStockAllot]([inStockDetId],[orderAllotId],[PDMRPReqDetId],[Qty])
+								values(@inDetID,@orderallotId,@reqId,@reqQty)
+							set @allotQty=@allotQty - @reqQty
+						end
+						else if(@allotQty &lt;= @reqQty and @allotQty &gt;0 )
+						begin
+							update PDBuyOrderAllot set InQty=isnull(InQty,0)+@allotQty where id=@orderallotId
+							update PDMRPReqDet set InQty=isnull(InQty,0)+@allotQty where id=@reqId
+							INSERT INTO [PDBuyInStockAllot]([inStockDetId],[orderAllotId],[PDMRPReqDetId],[Qty])
+								values(@inDetID,@orderallotId,@reqId,@allotQty)
+							set @allotQty=0
+						end
+						fetch reqCursor into @orderallotId, @reqId ,@appallotId,@reqQty
+					end
+					close reqCursor
+					deallocate reqCursor
+				
+				end
+				fetch next from cur_OrderDet into @OrderDetID,@NotInQty
+			end
+			
+		close cur_OrderDet
+		deallocate cur_OrderDet
+		
+		
+		fetch next from cur_InDet into @inDetID,@BuyOrderID,@GoodsCode,@BatchNo,@Inch,@Hue,@yearNO,@ProDate,@Availably,@InQty
+	end
+
+close cur_InDet
+deallocate cur_InDet	
+------------------------------------更新请购单入库数量
+update tblBuyApplicationDet set InQty=isnull(InQty,0)+ aa.Qty,NotInQty=tblBuyApplicationDet.Qty- isnull(InQty,0) - aa.Qty from tblBuyApplicationDet join (
+	select PDBuyApplicationAllot.appDetId,SUM(PDBuyInStockAllot.Qty) Qty from PDBuyInStockAllot 
+	join tblBuyInStockDet on PDBuyInStockAllot.inStockDetId=tblBuyInStockDet.id   
+	join PDBuyOrderAllot on PDBuyInStockAllot.orderAllotId=PDBuyOrderAllot.id
+	join PDBuyApplicationAllot on PDBuyOrderAllot.appAllotId=PDBuyApplicationAllot.id
+	where tblBuyInStockDet.f_ref=@ValueofDB:id group by PDBuyApplicationAllot.appDetId ) aa on tblBuyApplicationDet.id=aa.appDetId
+
+update tblBuyOrderDet set FinishStatus=1 where f_ref in (select distinct BuyOrderID from tblBuyInStockDet where f_ref=@ValueofDB:id and LEN(BuyOrderID)&gt;0) and FinishStatus!=2 and NotInQty&lt;=0
+update tblBuyOrder set statusId=1 where id in (select distinct BuyOrderID from tblBuyInStockDet where f_ref=@ValueofDB:id and LEN(BuyOrderID)&gt;0) and statusId!=2 and (select COUNT(0) from tblBuyOrderDet where f_ref=tblBuyOrder.id and NotInQty&gt;0)=0
+----------------------------------------------------------------------------				
+			</sql>
+		</exec>
+	</sql>	
+	<sql type="condition">
+		<condition><select>select BuyApplyID from tblBuyinstockDet a,tblBuyOrderDet b  where a.BuyOrderID=b.f_ref and a.SourceID=b.id and ISNULL(b.BuyApplyID,'')!='' and a.f_ref=@ValueofDB:tblBuyInStock_id</select></condition>
+		<!-- 更新申购单已入库数量和未入库数量-->
+		<exec condition=" '@SqlReturn:BuyApplyID'!='null'">
+			<!--更新请购单的完结状态 -->
+			<sql>if not exists(select GoodsCode from tblBuyApplicationDet where f_ref=@SqlReturn:BuyApplyID and NotInQty&gt;0)
+				begin
+					update tblBuyApplication set statusId='1' where id=@SqlReturn:BuyApplyID
+				end
+			</sql>
+		</exec>
+	
+	</sql>	
+
+	
+	<!--=====================更新出入库明细===============-->
+	<sql type="condition">		
+		<!--分摊订单的预付订金，且回填订单的待付款-->
+		<exec condition="true">
+			<sql type="procedure">{call proc_BuyInPayAmort(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+		<!--插入出入库明细,如果是增值税发票，用折后单价，折后金额影响出入库，否则用含税单价，含税金额影响出入库-->
+		<exec condition=" @ValueofDB:tblBuyInStock_InVoiceType!=2"><!--非增值税发票-->	
+			<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblBuyInStock_Period,@PeriodYear=@ValueofDB:tblBuyInStock_PeriodYear,@PeriodMonth=@ValueofDB:tblBuyInStock_PeriodMonth,@GoodsCode=tblBuyInStockDet.GoodsCode,@StockCode=tblBuyInStockDet.StockCode,@BillID=@ValueofDB:tblBuyInStock_id,@BillType=tblBuyInStock,@BillDate=@ValueofDB:tblBuyInStock_BillDate,@BillNo=@ValueofDB:tblBuyInStock_BillNo,@InstoreQty=tblBuyInStockDet.Qty,@InstorePrice=(tblBuyInStockDet.TaxAmount+tblBuyInStockDet.freightAmount+tblBuyInStockDet.TariffAmt)/tblBuyInStockDet.Qty,@InstoreAmount=tblBuyInStockDet.TaxAmount+tblBuyInStockDet.freightAmount+tblBuyInStockDet.TariffAmt,@createBy=@ValueofDB:tblBuyInStock_createBy,@lastUpdateBy=@ValueofDB:tblBuyInStock_lastUpdateBy,@createTime=@ValueofDB:tblBuyInStock_finishTime,@lastUpdateTime=@ValueofDB:tblBuyInStock_lastUpdateTime,@SCompanyID=@ValueofDB:tblBuyInStock_SCompanyID,@MRemark=@ValueofDB:tblBuyInStock_Remark,@DRemark=tblBuyInStockDet.Remark,@SourceID=tblBuyInStockDet.id,@CompanyCode=@ValueofDB:tblBuyInStock_CompanyCode,@EmployeeID=@ValueofDB:tblBuyInStock_EmployeeID,@DepartmentCode=@ValueofDB:tblBuyInStock_DepartmentCode,@SalesPrice=tblBuyInStockDet.TaxPrice,@SalesAmount=tblBuyInStockDet.TaxAmount,@SalesQty=tblBuyInStockDet.Qty,@Amount=tblBuyInStockDet.DisAmount,@Price=tblBuyInStockDet.DisPrice,@DiscountAmount=@ValueofDB:tblBuyInStock_DiscountAmount,@TrackNo=tblBuyInStockDet.TrackNo,@PresentSampleType=tblBuyInStockDet.PresentSampleType,@from=tblBuyInStockDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>  
+		<exec condition="@ValueofDB:tblBuyInStock_InVoiceType==2"><!--增值税发票-->
+			<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblBuyInStock_Period,@PeriodYear=@ValueofDB:tblBuyInStock_PeriodYear,@PeriodMonth=@ValueofDB:tblBuyInStock_PeriodMonth,@GoodsCode=tblBuyInStockDet.GoodsCode,@StockCode=tblBuyInStockDet.StockCode,@BillID=@ValueofDB:tblBuyInStock_id,@BillType=tblBuyInStock,@BillDate=@ValueofDB:tblBuyInStock_BillDate,@BillNo=@ValueofDB:tblBuyInStock_BillNo,@InstoreQty=tblBuyInStockDet.Qty,@InstorePrice=(tblBuyInStockDet.DisBackAmt+tblBuyInStockDet.freightAmount+tblBuyInStockDet.TariffAmt)/tblBuyInStockDet.Qty,@InstoreAmount=tblBuyInStockDet.DisBackAmt+tblBuyInStockDet.freightAmount+tblBuyInStockDet.TariffAmt,@createBy=@ValueofDB:tblBuyInStock_createBy,@lastUpdateBy=@ValueofDB:tblBuyInStock_lastUpdateBy,@createTime=@ValueofDB:tblBuyInStock_finishTime,@lastUpdateTime=@ValueofDB:tblBuyInStock_lastUpdateTime,@SCompanyID=@ValueofDB:tblBuyInStock_SCompanyID,@MRemark=@ValueofDB:tblBuyInStock_Remark,@DRemark=tblBuyInStockDet.Remark,@SourceID=tblBuyInStockDet.id,@CompanyCode=@ValueofDB:tblBuyInStock_CompanyCode,@EmployeeID=@ValueofDB:tblBuyInStock_EmployeeID,@DepartmentCode=@ValueofDB:tblBuyInStock_DepartmentCode,@SalesPrice=tblBuyInStockDet.TaxPrice,@SalesAmount=tblBuyInStockDet.TaxAmount,@SalesQty=tblBuyInStockDet.Qty,@Amount=tblBuyInStockDet.DisBackAmt,@Price=tblBuyInStockDet.DisPrice,@DiscountAmount=@ValueofDB:tblBuyInStock_DiscountAmount,@TrackNo=tblBuyInStockDet.TrackNo,@PresentSampleType=tblBuyInStockDet.PresentSampleType,@from=tblBuyInStockDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--如果启用了序列号，判断是否插入了重复的序列号-->
+		<exec condition="true">
+			<sql type="define">validateSameSeq</sql>
+		</exec>
+		<!--只有修改，才需要判断负库存-->
+		<exec condition="'@Sess:BillOper' == 'update'">	
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+	</sql>
+	<!--=====================以上代码：更新虚拟库存及出入库明细===============-->
+
+	<!--=============根据不同情况生成凭证信息，并影响往来，科目余额==============-->
+	<sql type="condition">
+		<condition><select>select (cast(@ValueofDB:tblBuyInStock_TotalTaxAmount as numeric(18,8))-cast(@ValueofDB:tblBuyInStock_PayAmount as numeric(18,8))) as RNeedPayAmt,(cast(@ValueofDB:tblBuyInStock_CurTotalAmount as numeric(18,8))-cast(@ValueofDB:tblBuyInStock_CurAlrPayAmt as numeric(18,8))) as CRNeedPayAmt,cast(@ValueofDB:tblBuyInStock_freightAmount as numeric(18,8))*cast(@ValueofDB:tblBuyInStock_CurrencyRate as numeric(18,8)) as freightAmountCur</select></condition>
+		<!--如果启用“自动产生凭证”，则自动插入凭证-->
+		<exec condition="'@MEM:autoGenerateAcc'=='true'"><sql type="certificate">tblBuyInStock</sql></exec>    
+		<!--如果商品有金额，插入应付款贷的往来明细（1应付 2应收 3预付 4预收）-->
+		<exec condition="@ValueofDB:tblBuyInStock_TotalTaxAmount&gt;0">
+			<sql type="procedure">{call proc_insertComIni(1@ValueofDB:tblBuyInStock_id,@ValueofDB:tblBuyInStock_CompanyCode,1,@ValueofDB:tblBuyInStock_BillDate,Period=@ValueofDB:tblBuyInStock_Period@SPFieldLink:PeriodYear=@ValueofDB:tblBuyInStock_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblBuyInStock_PeriodMonth@SPFieldLink:PayTotalDebit=0@SPFieldLink:PayTotalLend=@ValueofDB:tblBuyInStock_TotalTaxAmount@SPFieldLink:RelationDocID=@ValueofDB:tblBuyInStock_id@SPFieldLink:Currency=@ValueofDB:tblBuyInStock_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblBuyInStock_CurrencyRate@SPFieldLink:FcPayTotalDebit=0@SPFieldLink:FcPayTotalCredit=@ValueofDB:tblBuyInStock_CurTotalAmount@SPFieldLink:createBy=@ValueofDB:tblBuyInStock_createBy@SPFieldLink:createTime=@ValueofDB:tblBuyInStock_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblBuyInStock_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblBuyInStock_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblBuyInStock_SCompanyID@SPFieldLink:BillType=tblBuyInStock@SPFieldLink:BillNo=@ValueofDB:tblBuyInStock_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblBuyInStock_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblBuyInStock_DepartmentCode@SPFieldLink:DiscountAmount=@ValueofDB:tblBuyInStock_DiscountAmount@SPFieldLink:Remark=@ValueofDB:tblBuyInStock_Remark,retCode,retVal)}</sql>
+		</exec>
+		<!--如果商品有金额并且待付金额小于0， 插入应付借的往来明细 借金额=单据金额-->
+		<exec condition="@SqlReturn:RNeedPayAmt&lt;0 &amp;&amp; @ValueofDB:tblBuyInStock_TotalTaxAmount&gt;0 &amp;&amp; '@MEM:prerecvpaymarktoneedrecvpay'=='false'">
+			<sql type="procedure">{call proc_insertComIni(3@ValueofDB:tblBuyInStock_id,@ValueofDB:tblBuyInStock_CompanyCode,1,@ValueofDB:tblBuyInStock_BillDate,Period=@ValueofDB:tblBuyInStock_Period@SPFieldLink:PeriodYear=@ValueofDB:tblBuyInStock_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblBuyInStock_PeriodMonth@SPFieldLink:PayTotalDebit=@ValueofDB:tblBuyInStock_TotalTaxAmount@SPFieldLink:PayTotalLend=0@SPFieldLink:RelationDocID=@ValueofDB:tblBuyInStock_id@SPFieldLink:Currency=@ValueofDB:tblBuyInStock_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblBuyInStock_CurrencyRate@SPFieldLink:FcPayTotalDebit=@ValueofDB:tblBuyInStock_CurTotalAmount@SPFieldLink:FcPayTotalCredit=0@SPFieldLink:createBy=@ValueofDB:tblBuyInStock_createBy@SPFieldLink:createTime=@ValueofDB:tblBuyInStock_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblBuyInStock_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblBuyInStock_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblBuyInStock_SCompanyID@SPFieldLink:BillType=tblBuyInStock@SPFieldLink:BillNo=@ValueofDB:tblBuyInStock_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblBuyInStock_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblBuyInStock_DepartmentCode@SPFieldLink:DiscountAmount=0,retCode,retVal)}</sql>
+		</exec>
+		<!--未启用预收预付记应收应付,待付金额小于于零时 插入预付借(预付的部分金额)的往来明细-->
+		<exec condition="@SqlReturn:RNeedPayAmt&lt;0 &amp;&amp; '@MEM:prerecvpaymarktoneedrecvpay'=='false'">
+			<sql type="procedure">{call proc_insertComIni(2@ValueofDB:tblBuyInStock_id,@ValueofDB:tblBuyInStock_CompanyCode,3,@ValueofDB:tblBuyInStock_BillDate,Period=@ValueofDB:tblBuyInStock_Period@SPFieldLink:PeriodYear=@ValueofDB:tblBuyInStock_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblBuyInStock_PeriodMonth@SPFieldLink:PrePayTotalDebit=ABS(@SqlReturn:RNeedPayAmt)@ParamNum:@SPFieldLink:PrePayTotalLend=0@SPFieldLink:RelationDocID=@ValueofDB:tblBuyInStock_id@SPFieldLink:Currency=@ValueofDB:tblBuyInStock_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblBuyInStock_CurrencyRate@SPFieldLink:FcPrePayTotalDebit=ABS(@SqlReturn:CRNeedPayAmt)@ParamNum:@SPFieldLink:FcPrePayTotalCredit=0@SPFieldLink:createBy=@ValueofDB:tblBuyInStock_createBy@SPFieldLink:createTime=@ValueofDB:tblBuyInStock_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblBuyInStock_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblBuyInStock_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblBuyInStock_SCompanyID@SPFieldLink:BillType=tblBuyInStock@SPFieldLink:BillNo=@ValueofDB:tblBuyInStock_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblBuyInStock_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblBuyInStock_DepartmentCode@SPFieldLink:DiscountAmount=0,retCode,retVal)}</sql>
+		</exec>
+		<!--已启用预收预付记应收应付,待付金额小于于零时 插入应付借(预付的部分金额)的往来明细-->
+		<exec condition="@SqlReturn:RNeedPayAmt&lt;0 &amp;&amp; '@MEM:prerecvpaymarktoneedrecvpay'=='true'">
+			<sql type="procedure">{call proc_insertComIni(2@ValueofDB:tblBuyInStock_id,@ValueofDB:tblBuyInStock_CompanyCode,1,@ValueofDB:tblBuyInStock_BillDate,Period=@ValueofDB:tblBuyInStock_Period@SPFieldLink:PeriodYear=@ValueofDB:tblBuyInStock_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblBuyInStock_PeriodMonth@SPFieldLink:PayTotalDebit=@ValueofDB:tblBuyInStock_PayAmount@ParamNum:@SPFieldLink:PayTotalLend=0@SPFieldLink:RelationDocID=@ValueofDB:tblBuyInStock_id@SPFieldLink:Currency=@ValueofDB:tblBuyInStock_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblBuyInStock_CurrencyRate@SPFieldLink:FcPayTotalDebit=ABS(@SqlReturn:CRNeedPayAmt)@ParamNum:@SPFieldLink:FcPayTotalCredit=0@SPFieldLink:createBy=@ValueofDB:tblBuyInStock_createBy@SPFieldLink:createTime=@ValueofDB:tblBuyInStock_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblBuyInStock_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblBuyInStock_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblBuyInStock_SCompanyID@SPFieldLink:BillType=tblBuyInStock@SPFieldLink:BillNo=@ValueofDB:tblBuyInStock_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblBuyInStock_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblBuyInStock_DepartmentCode@SPFieldLink:DiscountAmount=0,retCode,retVal)}</sql>
+		</exec>
+		<!--当付款金额大于0,并且待付金额大于等于0， 插入应付借的往来明细 借金额=付款金额-->
+		<exec condition="@ValueofDB:tblBuyInStock_PayAmount&gt;0&amp;&amp;@SqlReturn:RNeedPayAmt&gt;=0">
+			<sql type="procedure">{call proc_insertComIni(3@ValueofDB:tblBuyInStock_id,@ValueofDB:tblBuyInStock_CompanyCode,1,@ValueofDB:tblBuyInStock_BillDate,Period=@ValueofDB:tblBuyInStock_Period@SPFieldLink:PeriodYear=@ValueofDB:tblBuyInStock_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblBuyInStock_PeriodMonth@SPFieldLink:PayTotalDebit=@ValueofDB:tblBuyInStock_PayAmount@SPFieldLink:PayTotalLend=0@SPFieldLink:RelationDocID=@ValueofDB:tblBuyInStock_id@SPFieldLink:Currency=@ValueofDB:tblBuyInStock_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblBuyInStock_CurrencyRate@SPFieldLink:FcPayTotalDebit=@ValueofDB:tblBuyInStock_CurAlrPayAmt@SPFieldLink:FcPayTotalCredit=0@SPFieldLink:createBy=@ValueofDB:tblBuyInStock_createBy@SPFieldLink:createTime=@ValueofDB:tblBuyInStock_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblBuyInStock_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblBuyInStock_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblBuyInStock_SCompanyID@SPFieldLink:BillType=tblBuyInStock@SPFieldLink:BillNo=@ValueofDB:tblBuyInStock_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblBuyInStock_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblBuyInStock_DepartmentCode@SPFieldLink:DiscountAmount=0,retCode,retVal)}</sql>
+		</exec>
+		<!--如果运费科目是应付账款，则将运费金额插入到往来明细中-->
+    <exec condition="'@ValueofDB:tblBuyInStock_freightAcc'.indexOf('2202')&gt;=0">
+			<sql type="procedure">{call proc_insertComIni(4@ValueofDB:tblBuyInStock_id,@ValueofDB:tblBuyInStock_CompanyCode,1,@ValueofDB:tblBuyInStock_BillDate,Period=@ValueofDB:tblBuyInStock_Period@SPFieldLink:PeriodYear=@ValueofDB:tblBuyInStock_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblBuyInStock_PeriodMonth@SPFieldLink:PayTotalDebit=0@SPFieldLink:PayTotalLend=@ValueofDB:tblBuyInStock_freightAmount@SPFieldLink:RelationDocID=@ValueofDB:tblBuyInStock_id@SPFieldLink:Currency=@ValueofDB:tblBuyInStock_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblBuyInStock_CurrencyRate@SPFieldLink:FcPayTotalDebit=0@SPFieldLink:FcPayTotalCredit=@SqlReturn:freightAmountCur@SPFieldLink:createBy=@ValueofDB:tblBuyInStock_createBy@SPFieldLink:createTime=@ValueofDB:tblBuyInStock_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblBuyInStock_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblBuyInStock_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblBuyInStock_SCompanyID@SPFieldLink:BillType=tblBuyInStock@SPFieldLink:BillNo=@ValueofDB:tblBuyInStock_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblBuyInStock_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblBuyInStock_DepartmentCode@SPFieldLink:DiscountAmount=@ValueofDB:tblBuyInStock_DiscountAmount@SPFieldLink:Remark=@ValueofDB:tblBuyInStock_Remark,retCode,retVal)}</sql>
+		</exec>
+		<!--如果运费科目是预付账款，则将运费金额插入到往来明细中-->
+		<exec condition="'@ValueofDB:tblBuyInStock_freightAcc'.indexOf('1123')&gt;=0">
+			<sql type="procedure">{call proc_insertComIni(4@ValueofDB:tblBuyInStock_id,@ValueofDB:tblBuyInStock_CompanyCode,3,@ValueofDB:tblBuyInStock_BillDate,Period=@ValueofDB:tblBuyInStock_Period@SPFieldLink:PeriodYear=@ValueofDB:tblBuyInStock_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblBuyInStock_PeriodMonth@SPFieldLink:PrePayTotalDebit=@ValueofDB:tblBuyInStock_freightAmount@ParamNum:@SPFieldLink:PrePayTotalLend=0@SPFieldLink:RelationDocID=@ValueofDB:tblBuyInStock_id@SPFieldLink:Currency=@ValueofDB:tblBuyInStock_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblBuyInStock_CurrencyRate@SPFieldLink:FcPrePayTotalDebit=@SqlReturn:freightAmountCur@ParamNum:@SPFieldLink:FcPrePayTotalCredit=0@SPFieldLink:createBy=@ValueofDB:tblBuyInStock_createBy@SPFieldLink:createTime=@ValueofDB:tblBuyInStock_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblBuyInStock_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblBuyInStock_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblBuyInStock_SCompanyID@SPFieldLink:BillType=tblBuyInStock@SPFieldLink:BillNo=@ValueofDB:tblBuyInStock_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblBuyInStock_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblBuyInStock_DepartmentCode@SPFieldLink:DiscountAmount=0,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	<!--=============以上代码：根据不同情况生成凭证信息，并影响往来,科目余额==============-->
+
+	<!--============付款金额大于零，自动生成采购付款单==============-->
+	<sql type="condition">
+		<condition><select>select (cast(@ValueofDB:tblBuyInStock_TotalTaxAmount as numeric(18,8))-cast(@ValueofDB:tblBuyInStock_PayAmount as numeric(18,8))) as RNeedPayAmt,(case when (cast(@ValueofDB:tblBuyInStock_TotalTaxAmount as numeric(18,8))-cast(@ValueofDB:tblBuyInStock_PayAmount as numeric(18,8)))&gt;=0.0 then 'Pay' else 'PrePay' end) as rePayType,(cast(@ValueofDB:tblBuyInStock_PayAmount as numeric(18,8))+cast(@ValueofDB:tblBuyInStock_ProceDureExp as numeric(18,8))) as factAmt </select></condition>
+		<exec condition="@ValueofDB:tblBuyInStock_PayAmount&gt;0">
+			<sql>insert into tblPay (id,BillDate,BillNo,CompanyCode,DepartmentCode,EmployeeID,Paytype,PaytypeID,SettleAmt,FactOutcome,AccAmt,Currency,CurrencyRate,CurrencyAmt,PeriodYear,PeriodMonth,Period,createBy,createTime,lastUpdateBy,lastUpdateTime,SCompanyID,AutoBillMarker,workFlowNodeName,workFlowNode,checkPersons,TrackNo) values ('0'+@ValueofDB:tblBuyInStock_id,@ValueofDB:tblBuyInStock_BillDate,@CODE:[tblPay_BillNo],@ValueofDB:tblBuyInStock_CompanyCode,@ValueofDB:tblBuyInStock_DepartmentCode,@ValueofDB:tblBuyInStock_EmployeeID,1,(case @MEM:prerecvpaymarktoneedrecvpay when 'true' then (case @SqlReturn:rePayType when 'PrePay' then 'Pay' else @SqlReturn:rePayType end) else @SqlReturn:rePayType end),@ValueofDB:tblBuyInStock_PayAmount,@SqlReturn:factAmt,@SqlReturn:factAmt,@ValueofDB:tblBuyInStock_Currency,@ValueofDB:tblBuyInStock_CurrencyRate,@ValueofDB:tblBuyInStock_CurAlrPayAmt,@ValueofDB:tblBuyInStock_PeriodYear,@ValueofDB:tblBuyInStock_PeriodMonth,@ValueofDB:tblBuyInStock_Period,@ValueofDB:tblBuyInStock_createBy,@ValueofDB:tblBuyInStock_createTime,@ValueofDB:tblBuyInStock_lastUpdateBy,@ValueofDB:tblBuyInStock_lastUpdateTime,@ValueofDB:tblBuyInStock_SCompanyID,1,'finish','-1','',@ValueofDB:tblBuyInStock_TrackNo)</sql>
+			<sql>insert into tblPayDet (id,f_ref,BillAmt,Remark,CurBillAmt,ExeBalAmt,ExeBalFcAmt,Currency,CurrencyRate,SettledAmt,WexeBalAmt,CurSettledAmt,CurWexeBalAmt,RefBillNo,BuyOrderNo,BuyOrderID,BackAmt,SCompanyID,CurBackAmt,RefbillID,PayBillType) values ('1'+@ValueofDB:tblBuyInStock_id,'0'+@ValueofDB:tblBuyInStock_id,@ValueofDB:tblBuyInStock_TotalTaxAmount,'',@ValueofDB:tblBuyInStock_CurTotalAmount,(case when cast(@SqlReturn:RNeedPayAmt as numeric(18,8))&gt;=0.0 then @ValueofDB:tblBuyInStock_PayAmount else @ValueofDB:tblBuyInStock_TotalTaxAmount end),(case when cast(@SqlReturn:RNeedPayAmt as numeric(18,8))&gt;=0.0 then @ValueofDB:tblBuyInStock_CurAlrPayAmt else @ValueofDB:tblBuyInStock_CurTotalAmount end),@ValueofDB:tblBuyInStock_Currency,@ValueofDB:tblBuyInStock_CurrencyRate,0,@ValueofDB:tblBuyInStock_TotalTaxAmount,0,@ValueofDB:tblBuyInStock_CurTotalAmount,@ValueofDB:tblBuyInStock_BillNo,@ValueofDB:tblBuyInStock_BuyOrderNo,@ValueofDB:tblBuyInStock_BuyOrderID,0,@ValueofDB:tblBuyInStock_SCompanyID,0,@ValueofDB:tblBuyInStock_id,'tblBuyInStock')</sql>
+		</exec>
+		<!--如果启用了多账户，向多账户明细表中插入数据-->
+		<exec condition="@ValueofDB:tblBuyInStock_PayAmount&gt;0">
+			<sql type="procedure">{call proc_insertByDet(@ValueofDB:tblBuyInStock_id,tblBuyPayAccount,tblPayAccountDet,id=tblBuyPayAccount_id@SPFieldLink:f_ref=0@ValueofDB:tblBuyInStock_id@SPFieldLink:Paytype=tblBuyPayAccount_Paytype@SPFieldLink:Amount=tblBuyPayAccount_Amount@ParamNum:@SPFieldLink:ExeBalFcAmt=tblBuyPayAccount_ExeBalFcAmt@ParamNum:@SPFieldLink:Account=tblBuyPayAccount_Account@SPFieldLink:SCompanyID=tblBuyPayAccount_SCompanyID@SPFieldLink:Remark=tblBuyPayAccount_Remark,retCode,retVal)}</sql>
+		</exec>
+		<!--自动生成的单据需更新单据编号连续-->
+		<exec condition="'@MEM:BillNoSequence'=='true'">  
+			<sql>update tblCodeGenerate set curValue=curValue+1 where code='BP'</sql>
+		</exec>	
+		<!--向追踪单号表中插入数据-->
+		<exec condition="'@MEM:TrackNo'=='true'">  
+			<sql>insert into tblTrackBill(id,RelationID,BillNo,BillType,BillDate,TrackNo,createby,lastupdateBy,createTime,lastupdateTime,ScompanyID) select  substring(replace(newid(),'-',''),1,30),id,BillNo,'tblPay',BillDate,TrackNo,createby,lastupdateBy,createTime,lastupdateTime,ScompanyID from tblPay where id='0'+@ValueofDB:tblBuyInStock_id</sql>
+		</exec>
+	  <!--引用出库单，回填出库明细的出库数量，未出库数量-->
+		<exec condition="true">  
+			<sql type="procedure">{call proc_BuyInUpdateSales(@ValueofDB:tblBuyInStock_id,add,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+</define>
+<!--============以上代码：付款金额大于零，自动生成采购付款单==============-->
+
+<!--===========产生凭证操作=========-->
+<define name="tblBuyInStock_Add_CreateAcc">
+	<sql type="condition">
+		<exec condition="'@ValueofDB:InVoiceType'=='2'">
+			<sql type="certificate">tblBuyInStock_zenzhi </sql>                  
+		</exec>
+	</sql>
+</define>
+
+<!--================点击删除，修改时调用==========-->
+<define name="tblBuyInStock_Delete">
+<sql type="condition">
+	<!--如果启用审核流，则删除单据时更新分仓库存-未审核字段-->
+	<exec condition="'@MEM:tblBuyInStock_IsStatart' != '0'">
+		<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblBuyInStockDet.GoodsCode,@StockCode=tblBuyInStockDet.StockCode,@BillType=tblBuyInStock,@InstoreQty=-1*tblBuyInStockDet.Qty,@OutstoreQty=0,@from=tblBuyInStockDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+	</exec>
+			<!--删除和修改操作时，更新序列号出入明细-->
+	<exec condition="'@Sess:BillOper' =='delete'||'@Sess:BillOper' =='update'">
+		<sql>delete from tblSeqAuditing where BillID=@ValueofDB:tblBuyInStock_id</sql>
+	</exec>		
+	<!--启用审核后能修改或者删除的说明此单没有审核，不必调用此define. 不启用审核流，执行所有控制及过账操作，启用审核，点击反审核时执行此操作-->
+	<exec condition="'@MEM:tblBuyInStock_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+		<sql type="define">tblBuyInStock_Delete_One</sql>
+	</exec>
+
+</sql>
+</define>
+
+<define name="tblBuyInStock_Delete_One">
+<!--=============查询是否存在关联表，如果有提出错误提示===========-->
+<sql type="condition">
+	<!--如果启用审核流，反审核时，时更新分序列号出入未审核完毕的序列号明细，-->
+		<exec condition="&quot;@MEM:tblBuyInStock_IsStatart&quot;!= &quot;0&quot;&amp;&amp;&quot;@Sess:BillOper&quot;==&quot;returnAuditing&quot;">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+</sql>	
+<sql type="condition"><!--判断是否存在对应采购退货单-->
+	<condition><select>select BillNO as BuyOutNo from tblBuyOutStock a,tblBuyOutStockDet b where a.id=b.f_ref and b.BuyInStockID=@ValueofDB:tblBuyInStock_id and a.workFlowNodeName!='print'</select></condition>
+	<exec condition="'@SqlReturn:BuyOutNo'!='null'">	
+		<error>BuyInStock.delete.existBuyOut.error,@SqlReturn:BuyOutNo</error>                  
+	</exec>
+</sql>
+<sql type="condition"><!--判断是否存在对应销售出库单-->
+	<condition><select>select BillNO as SalesOutNo from tblSalesOutStock where BuyInID=@ValueofDB:tblBuyInStock_id</select></condition>
+	<exec condition="'@SqlReturn:SalesOutNo'!='null'">	
+		<error>BuyInStock.delete.existSalesOut.error,@SqlReturn:SalesOutNo</error>                  
+	</exec>
+</sql>
+<sql type="condition"><!--判断是否存在不是自动产生的采购付款单-->
+	<condition><select>select BillNo as PayNo from tblPayDet left join tblPay on tblPay.id =tblPayDet.f_ref where tblPayDet.RefbillID=@ValueofDB:tblBuyInStock_id and tblPay.AutoBillMarker=0 and tblPay.workFlowNodeName!='print'</select></condition>
+	<exec condition="'@SqlReturn:PayNo'!='null'">	 					
+		<error>PayBill.BillNo.error,@SqlReturn:PayNo</error>                  
+	</exec>
+</sql>
+<sql type="condition"><!--判断自动产生的付款单是否存在付款退款-->
+	<condition><select>select BillNo as PayReNo from tblPayDet left join tblPay on tblPay.id =tblPayDet.f_ref where tblPayDet.RefbillID=(select a.id from tblPay a,tblPayDet b where a.id=b.f_ref and RefbillID=@ValueofDB:tblBuyInStock_id and a.AutoBillMarker=1) and tblPay.workFlowNodeName!='print'</select></condition>
+	<exec condition="'@SqlReturn:PayReNo'!='null'">	 					
+		 <error>PayDel.receiveNo.error,@SqlReturn:PayReNo</error>                  
+	</exec>
+</sql>
+<sql type="condition"><!--判断是否存在对应采购换货单-->
+	<condition><select>select BillNo as BuyReplaceNo from tblBuyReplace where BuyInStockID=@ValueofDB:tblBuyInStock_id</select></condition>
+	<exec condition="'@SqlReturn:BuyReplaceNo'!='null'">	
+		<error>BuyInStock.delete.existReplace.error,@SqlReturn:BuyReplaceNo</error>                  
+	</exec>
+</sql>
+<sql type="condition"><!--判断是否存在对应采购开票管理-->
+	<condition><select>select  BillNo as InvoiceNo from tblBuyInfoDet,tblBuyInvoiceInfo where tblBuyInvoiceInfo.id=tblBuyInfoDet.f_ref and refbillID=@ValueofDB:tblBuyInStock_id and tblBuyInvoiceInfo.workFlowNodeName!='print'</select></condition>
+	<exec condition="'@SqlReturn:InvoiceNo'!='null'">	
+		 <error>BuyInvoice.ReBillNo.error,@SqlReturn:InvoiceNo</error>                  
+	</exec>
+</sql>
+<sql type="condition"><!--判断是否存在对应应付转应收-->
+	<condition><select>select tblTransferSale2.BillNo as TFS2No from tblTransferSale2 where RefBillNo=(select BillNo from tblBuyInStock where id=@ValueofDB:tblBuyInStock_id) and workFlowNodeName!='print'</select></condition>
+	<exec condition="'@SqlReturn:TFS2No'!='null'">	
+		<error>SalesInfoDet.ReTFS2No.error,@SqlReturn:TFS2No</error>                  
+	</exec>
+</sql>
+<sql type="condition"><!--判断是否存在对应预付转应付单-->
+	<condition><select>select tblTransferSale3.BillNo as TFS3No from tblTransferSaleDet3,tblTransferSale3 where tblTransferSale3.id=tblTransferSaleDet3.f_ref and refbillID=@ValueofDB:tblBuyInStock_id and tblTransferSale3.workFlowNodeName!='print'</select></condition>
+	<exec condition="'@SqlReturn:TFS3No'!='null'">	
+		<error>BuyInvoice.ReTFS3No.error,@SqlReturn:TFS3No</error>                  
+	</exec>
+</sql>
+<sql type="condition"><!--判断是否存在对应应收转应付单-->
+	<condition><select>select tblTransferSale4.BillNo as TFS4No from tblTransferSaleDet4,tblTransferSale4 where tblTransferSale4.id=tblTransferSaleDet4.f_ref and refbillID=(select BillNo from tblBuyInStock where id=@ValueofDB:tblBuyInStock_id) and tblTransferSale4.workFlowNodeName!='print'</select></condition>
+	<exec condition="'@SqlReturn:TFS4No'!='null'">	
+		<error>BuyInvoice.ReTFS4No.error,@SqlReturn:TFS4No</error>                  
+	</exec>
+</sql>
+<sql type="condition"><!--判断是否存在对应应付调账单-->
+	<condition><select>select  BillNo as AdjustNo from tblPayAdjustdet,tblPayAdjust where tblPayAdjust.id=tblPayAdjustdet.f_ref and tblPayAdjustdet.RefbillID=@ValueofDB:tblBuyInStock_id and tblPayAdjust.workFlowNodeName!='print'</select></condition>
+	<exec condition="'@SqlReturn:AdjustNo'!='null'">	
+		<error>BuyInStock.delete.existPayAdjust.error,@SqlReturn:AdjustNo</error>                  
+	</exec>
+</sql>
+<sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+	<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblBuyInStock_id and  workFlowNodeName='finish'</select></condition>
+	<exec condition="'@SqlReturn:OrderNo'!='null'">	
+		<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>                  
+	</exec>
+</sql>
+<sql type="condition">
+	<condition><select>select BuyOrderID,StockCode,NeedPayAmt,PayAmount,CurAlrPayAmt from tblBuyInStock where id=@ValueofDB:tblBuyInStock_id</select></condition>	
+	<!--如果启用审核流，则过账时更新分仓库存+未审核字段  '@MEM:tblBuyInStock_IsStatart' != '0'-->
+	<exec condition="'@MEM:tblBuyInStock_IsStatart' != '0'">
+		<sql type="procedure">{call proc_updateStocksNotAudit(@BillDate=@ValueofDB:BillDate,@GoodsCode=tblBuyInStockDet.GoodsCode,@StockCode=tblBuyInStockDet.StockCode,@BillType=tblBuyInStock,@InstoreQty=tblBuyInStockDet.Qty,@OutstoreQty=0,@from=tblBuyInStockDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+	</exec>
+	<exec condition="true"><!--删除出入库明细记录-->
+		<sql type="procedure">{call proc_delStockDet(@ValueofDB:tblBuyInStock_id,tblBuyInStock,1,retCode,retVal)}</sql>
+	</exec>
+	<exec condition="'@Sess:BillOper' !='update'"> 
+		<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+	</exec>
+	<exec condition="true"><!--分摊订单的预付订金，且回填订单的待付款-->
+		<sql type="procedure">{call proc_BuyInPayAmort(@ValueofDB:tblBuyInStock_id,delete,retCode,retVal)}</sql>
+	</exec>
+	<exec condition="true">	<!--根据是否启用 预收预付记应收应付,决定要删除的往来明细的类型（1应付 2应收 3预付 4预收）-->
+		<sql type="procedure">{call proc_iterateExeProc(select id as IniId@SPFieldLink:case when isnull(PayTotalDebit@RepComma:0)!=0 or isnull(PayTotalLend@RepComma:0)!=0 then 1 when isnull(PayTotalDebit@RepComma:0)!=0 or isnull(PayTotalLend@RepComma:0)!=0 then (case when '@MEM:prerecvpaymarktoneedrecvpay'='true' then 1 else 3 end) end as ComType from tblCompanyIni where relationDocID='@ValueofDB:tblBuyInStock_id',proc_deleteComIni,@IniId@ParamLink:@ComType,retCode,retVal)}</sql>
+	</exec>
+	<exec condition=" '@MEM:autoGenerateAcc'=='true'"><!--“启用标准财务”为否时，删除凭证审核流或者减少科目余额，删除凭证信息-->
+		<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblBuyInStock_id,retCode,retVal)}</sql>
+	</exec>
+	<exec condition="'@Sess:BillOper' =='update'"><!--如果是修改操作，将此单据是否生成凭证的标示改为否-->
+		<sql>update tblBuyInStock set CertificateNo='' where id=@ValueofDB:tblBuyInStock_id</sql>
+	</exec>
+	<!--付款金额大于0,删除付款单及明细信息-->
+	<exec condition="@SqlReturn:PayAmount&gt;0">
+		<sql>delete from tblPayDet where f_ref='0'+@ValueofDB:tblBuyInStock_id</sql>
+		<sql>delete from tblPayAccountDet where f_ref='0'+@ValueofDB:tblBuyInStock_id</sql>
+		<sql>delete from tblPay where id='0'+@ValueofDB:tblBuyInStock_id</sql>
+		<sql>delete from tblTrackBill where RelationID='0'+@ValueofDB:tblBuyInStock_id</sql>
+	</exec>	
+</sql>
+<!--引用出库单，回填出库明细的出库数量，未出库数量-->
+<sql type="condition">
+	<exec condition="true">  
+		<sql type="procedure">{call proc_BuyInUpdateSales(@ValueofDB:tblBuyInStock_id,delete,retCode,retVal)}</sql>
+	</exec>
+</sql>
+
+<sql type="condition">
+	<!--更新采购订单的入库数量，未入库数量，状态等信息-->
+	<exec condition="true"><!--更新采购订单的入库数量，未入库数量，状态等信息-->
+		<sql>
+-----------------------------------------------------------------------------------			
+	update tblBuyApplicationDet set InQty=isnull(InQty,0)- aa.Qty,NotInQty=tblBuyApplicationDet.Qty- isnull(InQty,0) + aa.Qty from tblBuyApplicationDet join (
+		select PDBuyApplicationAllot.appDetId,SUM(PDBuyInStockAllot.Qty) Qty from PDBuyInStockAllot 
+		join tblBuyInStockDet on PDBuyInStockAllot.inStockDetId=tblBuyInStockDet.id   
+		join PDBuyOrderAllot on PDBuyInStockAllot.orderAllotId=PDBuyOrderAllot.id
+		join PDBuyApplicationAllot on PDBuyOrderAllot.appAllotId=PDBuyApplicationAllot.id
+		where tblBuyInStockDet.f_ref=@ValueofDB:id group by PDBuyApplicationAllot.appDetId ) aa on tblBuyApplicationDet.id=aa.appDetId
+
+	update tblBuyOrderDet set InQty=tblBuyOrderDet.InQty-aa.Qty,NotInQty=tblBuyOrderDet.NotInQty+aa.Qty    from  tblBuyOrderDet join (select PDBuyOrderAllot.orderDetId,sum(PDBuyInStockAllot.Qty) Qty from   PDBuyInStockAllot join PDBuyOrderAllot on  PDBuyOrderAllot.id=PDBuyInstockAllot.orderAllotId  join tblBuyInStockDet on PDBuyInStockAllot.inStockDetId=tblBuyInStockDet.id where tblBuyInStockDet.f_ref=@ValueofDB:id group by PDBuyOrderAllot.orderDetId ) aa on tblBuyOrderDet.id=aa.orderDetId
+	
+	update PDMRPReqDet set InQty=PDMRPReqDet.InQty-aa.Qty    from  PDMRPReqDet join (select PDMRPReqDetId,sum(PDBuyInStockAllot.Qty) Qty from   PDBuyInStockAllot   join tblBuyInStockDet on PDBuyInStockAllot.inStockDetId=tblBuyInStockDet.id where tblBuyInStockDet.f_ref=@ValueofDB:id group by PDMRPReqDetId ) aa on PDMRPReqDet.id=aa.PDMRPReqDetId
+	update PDBuyOrderAllot set InQty=PDBuyOrderAllot.InQty-PDBuyInStockAllot.Qty    from  PDBuyOrderAllot join PDBuyInStockAllot on PDBuyOrderAllot.id=PDBuyInStockAllot.orderAllotId  join tblBuyInStockDet on PDBuyInStockAllot.inStockDetId=tblBuyInStockDet.id  where tblBuyInStockDet.f_ref=@ValueofDB:id
+	
+	delete PDBuyInStockAllot where inStockDetId in ( select id from tblBuyInStockDet where f_ref=@ValueofDB:id )
+	
+	update tblBuyOrderDet set FinishStatus=0 where f_ref in (select BuyOrderID from tblBuyInstockDet where f_ref=@ValueofDB:id) and FinishStatus=1 and NotInQty&gt;0
+	
+	update tblBuyOrder set statusId=0 where id in (select distinct BuyOrderID from tblBuyInStockDet where f_ref=@ValueofDB:id and LEN(BuyOrderID)&gt;0) and statusId!=2 and (select COUNT(0) from tblBuyOrderDet where f_ref=tblBuyOrder.id and NotInQty&gt;0)!=0
+
+-------------------------------------------------------------------
+		</sql>
+	</exec>
+</sql>	
+
+	
+<sql type="condition">
+	<condition><select>select BuyApplyID from tblBuyinstockDet a,tblBuyOrderDet b  where a.BuyOrderID=b.f_ref and a.SourceID=b.id and ISNULL(b.BuyApplyID,'')!='' and a.f_ref=@ValueofDB:tblBuyInStock_id</select></condition>
+	<!-- 更新申购单已入库数量和未入库数量-->
+	<exec condition=" '@SqlReturn:BuyApplyID'!='null'">
+		<!--更新请购单的完结状态 -->
+		<sql>if not exists(select GoodsCode from tblBuyApplicationDet where f_ref=@SqlReturn:BuyApplyID and NoOrderQty&gt;0  )
+			begin
+				update tblBuyApplication set statusId='3' where id=@SqlReturn:BuyApplyID
+			end
+			else
+			begin
+				update tblBuyApplication set statusId='0' where id=@SqlReturn:BuyApplyID
+			end
+		</sql>
+	</exec>
+</sql>
+</define>
+<!--=========手工删除凭证============-->
+<define name="tblBuyInStock_deleteAcc_hand">
+	<sql type="condition"><!--如果此单据没有生成凭证，则不用删除凭证-->
+		<condition><select>select BillNo from tblBuyInStock where id=@ValueofDB:tblBuyInStock_id and CertificateNo=''</select></condition>
+		<exec condition="'@SqlReturn:BillNo'!='null'">	
+			<error>common.NotCreateAcc.Del.Error,@SqlReturn:BillNo</error>                  
+		</exec>
+	</sql>
+	<sql type="condition"><!--当前单据凭证所在期间已经月结，则不能删除此凭证-->
+		<condition><select>select c.BillNo,b.statusId,a.CredTypeID,a.OrderNo from tblAccMain a,tblAccPeriod b,tblBuyInStock c where a.RefBillID=@ValueofDB:tblBuyInStock_id and c.id=@ValueofDB:tblBuyInStock_id and a.CredYear=b.AccYear and a.Period=b.AccPeriod</select></condition>
+		<exec condition="'@SqlReturn:statusId'!='null'&amp;&amp;'@SqlReturn:statusId'=='2'">	
+			<error>common.AccPeriodSettle.error,@SqlReturn:BillNo,@SqlReturn:CredTypeID,@SqlReturn:OrderNo</error>                  
+		</exec>
+	</sql>
+	<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,delete,@ValueofDB:tblBuyInStock_id,retCode,retVal)}</sql>
+	<sql>update tblBuyInStock set CertificateNo='' where id=@ValueofDB:tblBuyInStock_id</sql>
+</define>
+<!--==========================================以上代码，采购入库单==========================================--> 
+
+</defineSqls>

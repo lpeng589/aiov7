@@ -1,0 +1,25 @@
+<!--
+
+    Context configuration file for the Tomcat Manager Web App
+
+    $Id: manager.xml,v 1.3 2004/08/26 17:03:34 remm Exp $
+
+-->
+
+
+<Context path="" reloadable="false"
+         privileged="true" antiResourceLocking="false" antiJARLocking="false" >
+
+   <Resource name="jdbc/sqlserver" auth="Container"
+         type="javax.sql.DataSource" maxActive="100" maxIdle="10"
+     maxWait="10000" username="sa"  password="123456"
+				 factory = "org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory"
+         driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+    url="jdbc:sqlserver://localhost;SelectMethod=Cursor;DatabaseName=aio"/>
+
+
+              
+<Manager className="org.apache.catalina.session.PersistentManager" saveOnRestart="false">
+	<Store className="org.apache.catalina.session.FileStore" />
+</Manager>
+</Context>

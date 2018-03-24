@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SalesOutGoodsFirst"  type="checkBox" > 
+		<orderBy>tblSalesOutStock.BillDate,tblSalesOutStock.BillNo</orderBy>
+		<defineSQL>
+from tblSalesOutStock
+ left join tblCompany on tblCompany.classCode=tblSalesOutStock.CompanyCode
+ left join tblStock on tblStock.classCode=tblSalesOutStock.StockCode 
+ left join tblDepartment on tblDepartment.classCode=tblSalesOutStock.DepartmentCode
+ left join tblEmployee on tblEmployee.id=tblSalesOutStock.EmployeeID
+
+      where 1=1  and (tblSalesOutStock.BillDate&lt;='@ValueofDB:BillDate')
+		</defineSQL>
+		<displayFields>
+			<field name="tblSalesOutStock.BillDate" parentDisplay="false" width="70" searchType="scope" keySearch="true" />
+			<field name="tblSalesOutStock.BillNo" display="tblBuyInStockDet.SalesOutID" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblCompany.ComFullName" parentDisplay="true" width="100" />
+			<field name="tblEmployee.EmpFullName" parentDisplay="true" width="100" />
+			<field name="tblDepartment.DeptFullName" parentDisplay="true" width="100" />
+			<field name="tblStock.StockFullName" parentDisplay="true" width="100" />
+			<field name="tblSalesOutStock.TotalTaxAmount" parentDisplay="true" width="100" />
+		</displayFields>
+		<saveFields>
+			<field name="tblSalesOutStock.id" parentName="@TABLENAME.SalesOutID" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

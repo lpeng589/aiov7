@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+
+<!--=====================================================凭证管理=============================================-->
+<define name="tblAccMain_Add">
+	<sql type="condition">
+		<condition><select>select COUNT(0) as difCount from tblAccDetail a,tblAccTypeInfo b where a.f_ref=@ValueofDB:tblAccMain_id and a.AccCode=b.AccNumber and LEN(b.ClientCode)&gt;0 and b.ClientCode!=a.CompanyCode</select></condition>
+		<exec condition="@SqlReturn:difCount &gt; 0">	 					
+			<error>tblAccMain.difCom.error</error>    
+		</exec>
+	</sql>
+	<!--凭证分录检查-->
+	<sql type="condition">
+		<condition>
+			<select>select Count(AccCode) as SumAccCode from tblAccDetail where f_ref=@ValueofDB:tblAccMain_id</select>
+			<select>select AccCode as NotExistAccNumber from tblAccDetail where f_ref=@ValueofDB:tblAccMain_id and AccCode not in (select AccNumber from tblAccTypeInfo)</select>
+			<select>select 'exists' as CatalogAccount from tblAccDetail,tblAccTypeInfo where f_ref=@ValueofDB:tblAccMain_id and tblAccDetail.AccCode=tblAccTypeInfo.AccNumber and isCatalog=1</select>
+			<select>select sum(DebitAmount) as SumDebit,sum(LendAmount) as SumLend from tblAccDetail where f_ref=@ValueofDB:tblAccMain_id</select>
+			<select>select tbllanguage.zh_CN as Acc1,isnull(DebitAmount,0) as DAmt1,isnull(LendAmount,0) as LAmt1 from tblAccDetail left join tblAccTypeInfo on tblAccTypeInfo.AccNumber=tblAccDetail.AccCode left join tbllanguage on tblAccTypeInfo.AccName=tbllanguage.id where isnull(tblAccDetail.DebitAmount,0)=0 and isnull(tblAccDetail.LendAmount,0)=0 and f_ref=@ValueofDB:tblAccMain_id</select>
+			<select>select tbllanguage.zh_CN  as Acc2,isnull(DebitAmount,0) as DAmt2,isnull(LendAmount,0) as LAmt2 from tblAccDetail left join tblAccTypeInfo on tblAccTypeInfo.AccNumber=tblAccDetail.AccCode left join tbllanguage on tblAccTypeInfo.AccName=tbllanguage.id where isnull(tblAccDetail.DebitAmount,0)=0 and isnull(tblAccDetail.LendAmount,0)=0 and f_ref=@ValueofDB:tblAccMain_id</select>
+			<select>select Sum(DebitAmount)-Sum(LendAmount) as Balance 
+			from tblAccDetail where f_ref=@ValueofDB:tblAccMain_id</select>
+			<select>select 'exist' as DebitAndLendAmount from tblAccDetail where f_ref=@ValueofDB:tblAccMain_id and (DebitAmount!=0 and LendAmount!=0)</select>
+		</condition>
+		<!--提示录入会计分录-->
+		<exec condition="@SqlReturn:SumAccCode == 0">	 					
+			<error>tblAccDetail.BillDet.error</error>    
+		</exec>
+		<!-- 会计科目代码不存在 -->
+		<exec condition="'@SqlReturn:NotExistAccNumber'!='null'">
+			<error>tblAccMain.add.AccCode,@SqlReturn:NotExistAccNumber</error> 
+		</exec>
+		<!-- 会计科目 不可以是目录 -->
+		<exec condition="'@SqlReturn:CatalogAccount'=='exists'">
+			<error>tblAccMain.add.CatalogAccount</error> 
+		</exec>
+		<!--提示录入会计分录借贷方金额-->
+		<exec condition="'@SqlReturn:Acc1' != 'null'">	 				
+			<error>tblAccDetail.BillDetAmt.error,@SqlReturn:Acc1</error> 
+		</exec>
+		<!-- 同一行记录不能同时有借贷金额 -->
+		<exec condition="'@SqlReturn:DebitAndLendAmount'=='exist'">
+			<error>tblAccMain_error.DebitAndLend</error> 
+		</exec>
+		<!--提示继续录入会计分录-->	 
+		<exec condition="@SqlReturn:SumAccCode == 1">	 					
+			<error>tblAccDetail.BillDetLess.error</error>    
+		</exec>
+		 
+		<exec condition="'@SqlReturn:Acc2' != 'null'">	 
+		<!--提示要正确录入会计分录借贷方金额-->					
+			 <error>tblAccDetail.BillDetAmt2.error,@SqlReturn:Acc2</error> 
+		</exec>	
+		<!--提示会计分录借贷方总额不平-->
+		<exec condition="@SqlReturn:Balance != 0">	 					
+			 <error>tblAccDetail.Balance.error</error>    
+		</exec>		 	 
+	</sql>	  
+	<!--如果存在科目为往来科目的，则必须在该科目上选择往来单位-->
+	<sql type="condition">
+		<condition>
+			<select>select Count(AccCode) as SumAccCode from tblAccDetail where (AccCode like '1122%' or AccCode like '1123%' or AccCode like '2202%' or AccCode like '2203%' ) and (CompanyCode is null or CompanyCode='')  and  f_ref=@ValueofDB:tblAccMain_id</select>
+			<select>select 'Exist' as SupplierExist,b.ComFullName as Supplier from tblAccDetail a left join tblCompany b on b.classCode=a.CompanyCode where f_ref=@ValueofDB:tblAccMain_id and a.CompanyCode!='' and a.CompanyCode is not null and ClientFlag=1 and (AccCode like '1122%' or AccCode like '2203%')</select>
+			<select>select 'Exist' as CustomerExist,b.ComFullName as Customer from tblAccDetail a left join tblCompany b on b.classCode=a.CompanyCode where f_ref=@ValueofDB:tblAccMain_id and a.CompanyCode!='' and a.CompanyCode is not null and ClientFlag=2 and (AccCode like '1123%' or AccCode like '2202%')</select>
+		</condition>
+		<!--选择往来单位-->
+		<exec condition="@SqlReturn:SumAccCode &gt; 0">	 					
+			<error>tblAccDetail.SelectCompany.error</error>    
+		</exec>	
+		<!-- 科目为应收预收，但往来单位为供应商 -->
+		<exec condition="'@SqlReturn:SupplierExist'=='Exist'">
+			<error>tblAccMain.add.Customer.error</error> 
+		</exec>
+		<!-- 科目为应付预付，但往来单位为客户 -->
+		<exec condition="'@SqlReturn:CustomerExist'=='Exist'">
+			<error>tblAccMain.add.Supplier.error</error> 
+		</exec>	 	 
+	</sql>
+	<sql type="condition">  <!-- 不存在会计期间，则先插入 -->
+		<condition>
+          	<select>select AccYear,AccMonth,AccPeriod from tblAccPeriod where AccMonth = Month(@ValueofDB:tblAccMain_BillDate) and AccYear=Year(@ValueofDB:tblAccMain_BillDate)  and SCompanyID=@Sess:SCompanyID</select>
+          </condition>
+		<exec condition=" '@SqlReturn:AccPeriod'=='null' || '@SqlReturn:AccPeriod'=='' "> 
+			<sql>insert into tblAccPeriod(id,AccYear,AccMonth,AccPeriod,createBy,lastUpdateBy,createTime,lastUpdateTime,statusId,IsBegin,SCompanyID,periodBegin,periodEnd,printCount,AccOverYear,AccStatusId,step)
+select SUBSTRING(convert(varchar(40),newid()),1,30),Year(@ValueofDB:tblAccMain_BillDate),AccMonth,AccPeriod,'1','1',createTime,lastUpdateTime,0,2,'00001',convert(varchar(10),Year(@ValueofDB:tblAccMain_BillDate))+SUBSTRING(periodBegin,5,10),convert(varchar(10),Year(@ValueofDB:tblAccMain_BillDate))+SUBSTRING(periodEnd,5,10),0,0,0,0  from tblAccPeriod where accYear=Year(@ValueofDB:tblAccMain_BillDate)-1</sql> 	
+		</exec>
+	</sql>
+	<sql type="condition">  <!-- 检查凭证录入 -->
+		<condition>
+          	<select>select AccYear,AccMonth,AccPeriod from tblAccPeriod where AccMonth = Month(@ValueofDB:tblAccMain_BillDate) and AccYear=Year(@ValueofDB:tblAccMain_BillDate)  and SCompanyID=@Sess:SCompanyID</select>
+			<select>SELECT CredTypeID theCredTypeID FROM tblAccMain WHERE id=@ValueofDB:tblAccMain_id</select>
+   		  	<select>select Currency as RateCurTypeID from tblAccDetail where f_ref=@ValueofDB:tblAccMain_id and SCompanyID=@Sess:SCompanyID</select>
+			<select> select count(0) hasOrderNo1 from tblAccMain a where a.period=@SqlReturn:AccPeriod and a.CredYear=@SqlReturn:AccYear and a.CredTypeID=@SqlReturn:theCredTypeID  and a.SCompanyID=@Sess:SCompanyID and OrderNo=1 </select><!--  先检查凭证号1存不存在 -->
+			<select>select ISNULL( min(a.orderNo),0) maxOrderNo from tblAccMain a left join tblAccMain b on a.SCompanyID=b.SCompanyID and a.Period=b.Period and a.CredYear=b.CredYear and a.CredMonth=b.CredMonth and a.CredTypeID=b.CredTypeID and a.OrderNo+1=b.OrderNo  where a.period=@SqlReturn:AccPeriod and a.CredTypeID=@SqlReturn:theCredTypeID and a.CredYear=@SqlReturn:AccYear  and a.SCompanyID=@Sess:SCompanyID AND a.id!=@ValueofDB:tblAccMain_id and b.OrderNo is null
+			 </select>
+          </condition>
+		<exec condition="true"> 
+			<sql>update tblAccMain set AutoBillMarker=0,CredYear=@SqlReturn:AccYear,CredMonth=@SqlReturn:AccMonth,Period=@SqlReturn:AccPeriod,OrderNo=case when @SqlReturn:hasOrderNo1=0 then 1 else  @SqlReturn:maxOrderNo+1 end where id=@ValueofDB:tblAccMain_id</sql> 	
+			<sql>update tblAccDetail set PeriodYear=@SqlReturn:AccYear,AccDate=@ValueofDB:tblAccMain_BillDate,PeriodMonth=@SqlReturn:AccMonth,createBy=@ValueofDB:tblAccMain_createBy,createTime=@ValueofDB:tblAccMain_createTime,lastUpdateBy=@ValueofDB:tblAccMain_lastUpdateBy,lastUpdateTime=@ValueofDB:tblAccMain_lastUpdateTime where f_ref=@ValueofDB:tblAccMain_id</sql> 
+		</exec>
+	</sql>
+
+	<!-- 更改摘要 -->
+	<sql type="condition">
+		<condition>
+			<select>select count(*) as CommentCount from tblAccDetail where f_ref=@ValueofDB:tblAccMain_id and RecordComment!=''</select>
+		</condition>
+		<exec condition="@SqlReturn:CommentCount&gt;1">
+			<sql>update tblAccDetail set RecordComment=(select top 1 RecordComment from tblAccDetail a where a.f_ref=@ValueofDB:tblAccMain_id and RecordComment!=''
+	and a.detorderNo&lt;tblAccDetail.detorderNo order by detorderNo desc) 
+	where f_ref=@ValueofDB:tblAccMain_id and RecordComment=''</sql>
+		</exec>
+		<exec condition="true"><!--更新明细表部门，经手人为空的部门、经手人-->
+			<sql>update tblAccDetail set EmployeeID=@ValueofDB:tblAccMain_EmployeeID where f_ref=@ValueofDB:tblAccMain_id and len(isnull(EmployeeID,''))=0</sql>
+			<sql>update tblAccDetail set DepartmentCode=@ValueofDB:tblAccMain_DepartmentCode where f_ref=@ValueofDB:tblAccMain_id and len(isnull(DepartmentCode,''))=0</sql>
+		</exec>
+		<exec condition="@SqlReturn:CommentCount==1">
+			<sql>update tblAccDetail set RecordComment=(select RecordComment from tblAccDetail where f_ref=@ValueofDB:tblAccMain_id and RecordComment!='' group by RecordComment) where f_ref=@ValueofDB:tblAccMain_id and RecordComment=''</sql>
+		</exec>
+	</sql>
+
+	<!--根据情况调用另外一个define操作-->	
+	<sql type="condition">
+		<!--不启用审核流也不需要发票操作-->
+		<condition>
+			<select>select isnull(RefBillType,'') as RefBillType from tblAccMain where id=@ValueofDB:tblAccMain_id</select>
+		</condition>
+		<exec condition="'@MEM:tblAccMain_IsStatart' == '0' &amp;&amp; '@SqlReturn:RefBillType' == ''">
+			<sql type="define">tblAccMain_Add_One</sql>
+		</exec>
+	</sql>
+<!--根据情况调用另外一个define操作:不启用审核流时执行tblBuyInStock_Add_One操作-->	
+</define>
+
+
+<define name="tblAccMain_Add_One">
+	<!--如果存在应收应付、预收预付科目，则产生往来-->
+	<sql type="condition">
+		<condition>
+			<select>select AccYear,AccMonth,AccPeriod from tblAccPeriod where AccMonth = Month(@ValueofDB:tblAccMain_BillDate) and AccYear=Year(@ValueofDB:tblAccMain_BillDate) and SCompanyID=@Sess:SCompanyID</select>
+			<select>select AccCode from tblAccDetail where (AccCode like '1122%' or AccCode like '1123%' or AccCode like '2202%' or AccCode like '2203%' ) and f_ref=@ValueofDB:tblAccMain_id and CompanyCode is not null</select>
+			<select>select AccCode as AccCode1,CompanyCode as CompanyCode1,DebitAmount as DebitAmount1,LendAmount as LendAmount1,Currency as Currency1,CurrencyRate as CurrencyRate1,DebitCurrencyAmount as DebitCurrencyAmount1,LendCurrencyAmount as LendCurrencyAmount1 from tblAccDetail where (AccCode like '2202%') and f_ref=@ValueofDB:tblAccMain_id and CompanyCode is not null and (len(isnull(RefBillType,''))=0 or isnull(RefBillType,'')='tblAccMain')</select>
+			<select>select AccCode as AccCode2,CompanyCode as CompanyCode2,DebitAmount as DebitAmount2,LendAmount as LendAmount2,Currency as Currency2,CurrencyRate as CurrencyRate2,DebitCurrencyAmount as DebitCurrencyAmount2,LendCurrencyAmount as LendCurrencyAmount2 from tblAccDetail where (AccCode like '1122%') and f_ref=@ValueofDB:tblAccMain_id and CompanyCode is not null and (len(isnull(RefBillType,''))=0 or isnull(RefBillType,'')='tblAccMain')</select>
+			<select>select AccCode as AccCode3,CompanyCode as CompanyCode3,DebitAmount as DebitAmount3,LendAmount as LendAmount3,Currency as Currency3,CurrencyRate as CurrencyRate3,DebitCurrencyAmount as DebitCurrencyAmount3,LendCurrencyAmount as LendCurrencyAmount3 from tblAccDetail where (AccCode like '1123%') and f_ref=@ValueofDB:tblAccMain_id and CompanyCode is not null and (len(isnull(RefBillType,''))=0 or isnull(RefBillType,'')='tblAccMain')</select>
+			<select>select AccCode as AccCode4,CompanyCode as CompanyCode4,DebitAmount as DebitAmount4,LendAmount as LendAmount4,Currency as Currency4,CurrencyRate as CurrencyRate4,DebitCurrencyAmount as DebitCurrencyAmount4,LendCurrencyAmount as LendCurrencyAmount4 from tblAccDetail where (AccCode like '2203%') and f_ref=@ValueofDB:tblAccMain_id and CompanyCode is not null and (len(isnull(RefBillType,''))=0 or isnull(RefBillType,'')='tblAccMain')</select>
+			<select>select AutoBillMarker,@MEM:AccNumberType+'_'+cast(OrderNo as varchar(100)) as accOrderNo,RefBillType from tblAccMain where id=@ValueofDB:tblAccMain_id</select>
+			<select>select Currency as RateCurTypeID from tblAccDetail where f_ref=@ValueofDB:tblAccMain_id and SCompanyID=@Sess:SCompanyID</select>
+			<select>select CredTypeID+'_'+cast(OrderNo as varchar(100)) as abc from tblaccMain where id=@ValueofDB:tblAccMain_id</select>
+		</condition>
+		<!--更新科目余额-->
+		<exec condition="true">
+			<!-- 导入时影响会往来 -->
+			<sql>update tblAccDetail set CurrencyRate=0 where CurrencyRate is null and f_ref=@ValueofDB:tblAccMain_id</sql>
+			<sql>update tblAccDetail set Currency='' where (Currency is null or Currency='null') and f_ref=@ValueofDB:tblAccMain_id</sql>
+			<sql>update tblAccDetail set DebitCurrencyAmount=0 where DebitCurrencyAmount is null and f_ref=@ValueofDB:tblAccMain_id</sql>
+			<sql>update tblAccDetail set LendCurrencyAmount=0 where LendCurrencyAmount is null and f_ref=@ValueofDB:tblAccMain_id</sql>
+			<sql>update tblAccMain set RefBillType='tblAccMain',RefBillID=@ValueofDB:tblAccMain_id where id=@ValueofDB:tblAccMain_id and (len(RefBillID)=0 or RefBillID is null) and (RefBillType is null or RefBillType = '')</sql>
+			<sql>update tblAccDetail set RefBillType=(select RefBillType from tblAccMain where id=@ValueofDB:tblAccMain_id),RefBillID=(select RefBillID from tblAccMain where id=@ValueofDB:tblAccMain_id) where f_ref=@ValueofDB:tblAccMain_id</sql>
+		</exec>
+		<exec condition="true">
+			<!--当有凭证产生，并且生成了凭证明细，调用凭证关联影响的存储过程 （凭证启用审核流标识，凭证ID,单据日期，创建人，创建时间）-->
+			<sql type="procedure">{call proc_insertAccAfterRefOper(4,@ValueofDB:tblAccMain_id,@ValueofDB:tblAccMain_BillDate,@ValueofDB:tblAccMain_createBy,@ValueofDB:tblAccMain_createTime,retCode,retVal)}</sql>		
+		</exec>
+		
+		<!--如果出现核算往来的，则根据相应情况对往来单位添加往来明细记录-->
+		<!--应付-->
+		<exec condition="('@SqlReturn:AccCode1'.length &gt; 0 &amp;&amp; @SqlReturn:AutoBillMarker != 1 &amp;&amp; '@SqlReturn:AccCode1' != 'null') &amp;&amp; ('@SqlReturn:CompanyCode1'.length &gt; 0 &amp;&amp; '@SqlReturn:CompanyCode1' != 'null')">
+		<!--（1应付 2应收 3预付 4预收）-->					
+			<sql type="procedure">
+{call proc_iterateExeProc(select id as id@SPFieldLink:AccCode as AccCode1@SPFieldLink:CompanyCode as CompanyCode1@SPFieldLink:DebitAmount as DebitAmount1@SPFieldLink:LendAmount as LendAmount1@SPFieldLink:isnull(Currency@SPFieldLink:'') as Currency1@SPFieldLink:DepartmentCode as DepartmentCode1@SPFieldLink:EmployeeID as EmployeeID1@SPFieldLink:isnull(CurrencyRate@SPFieldLink:0)  as CurrencyRate1@SPFieldLink:case when '@MEM:currency'='true' and isnull(Currency@SPFieldLink:'')='' then DebitAmount else isnull(DebitCurrencyAmount@SPFieldLink:0) end as DebitCurrencyAmount1@SPFieldLink:case when '@MEM:currency'='true' and isnull(Currency@SPFieldLink:'')='' then LendAmount else isnull(LendCurrencyAmount@SPFieldLink:0) end as LendCurrencyAmount1 from tblAccDetail where (AccCode like '2202%') and f_ref='@ValueofDB:tblAccMain_id' and CompanyCode is not null ,proc_insertComIni,@id@ParamLink:@CompanyCode1@ParamLink:'1'@ParamLink:'@ValueofDB:tblAccMain_BillDate'@ParamLink:'Period=@SqlReturn:AccPeriod@SPFieldLink:PeriodYear=@SqlReturn:AccYear@SPFieldLink:PeriodMonth=@SqlReturn:AccMonth@SPFieldLink:PayTotalDebit='+@DebitAmount1+'@ParamNum:@SPFieldLink:PayTotalLend='+@LendAmount1+'@ParamNum:@SPFieldLink:RelationDocID=@ValueofDB:tblAccMain_id@SPFieldLink:Currency='+@Currency1+'@SPFieldLink:CurrencyRate='+@CurrencyRate1+'@ParamNum:@SPFieldLink:FcPayTotalDebit='+@DebitCurrencyAmount1+'@ParamNum:@SPFieldLink:FcPayTotalCredit='+@LendCurrencyAmount1+'@ParamNum:@SPFieldLink:createBy=@ValueofDB:tblAccMain_createBy@SPFieldLink:createTime=@ValueofDB:tblAccMain_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblAccMain_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblAccMain_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblAccMain_SCompanyID@SPFieldLink:BillNo=@SqlReturn:accOrderNo@SPFieldLink:EmployeeID='+@EmployeeID1+'@SPFieldLink:DepartmentCode='+@DepartmentCode1+'@SPFieldLink:BillType=tblAccMain',@retCode,@retVal)}
+			</sql>
+		</exec>
+		<!--预付-->
+		<exec condition="('@SqlReturn:AccCode3'.length &gt; 0 &amp;&amp; @SqlReturn:AutoBillMarker != 1 &amp;&amp; '@SqlReturn:AccCode3' != 'null')  &amp;&amp; ('@SqlReturn:CompanyCode3'.length &gt; 0 &amp;&amp; '@SqlReturn:CompanyCode3' != 'null')">
+		<!--（1应付 2应收 3预付 4预收）-->
+			<sql type="procedure">
+{call proc_iterateExeProc(select id as id@SPFieldLink:AccCode as AccCode3@SPFieldLink:CompanyCode as CompanyCode3@SPFieldLink:DebitAmount as DebitAmount3@SPFieldLink:LendAmount as LendAmount3@SPFieldLink:isnull(Currency@SPFieldLink:'') as Currency3@SPFieldLink:DepartmentCode as DepartmentCode3@SPFieldLink:EmployeeID as EmployeeID3@SPFieldLink:isnull(CurrencyRate@SPFieldLink:0) as CurrencyRate3@SPFieldLink:case when '@MEM:currency'='true' and isnull(Currency@SPFieldLink:'')='' then DebitAmount else isnull(DebitCurrencyAmount@SPFieldLink:0) end as DebitCurrencyAmount3@SPFieldLink:case when '@MEM:currency'='true' and isnull(Currency@SPFieldLink:'')='' then LendAmount else isnull(LendCurrencyAmount@SPFieldLink:0) end as LendCurrencyAmount3 from tblAccDetail where (AccCode like '1123%') and f_ref='@ValueofDB:tblAccMain_id' and CompanyCode is not null,proc_insertComIni,@id@ParamLink:@CompanyCode3@ParamLink:'3'@ParamLink:'@ValueofDB:tblAccMain_BillDate'@ParamLink:'Period=@SqlReturn:AccPeriod@SPFieldLink:PeriodYear=@SqlReturn:AccYear@SPFieldLink:PeriodMonth=@SqlReturn:AccMonth@SPFieldLink:PrePayTotalDebit='+@DebitAmount3+'@SPFieldLink:PrePayTotalLend='+@LendAmount3+'@SPFieldLink:RelationDocID=@ValueofDB:tblAccMain_id@SPFieldLink:Currency='+@Currency3+'@SPFieldLink:CurrencyRate='+@CurrencyRate3+'@SPFieldLink:FcPrePayTotalDebit='+@DebitCurrencyAmount3+'@SPFieldLink:FcPrePayTotalCredit='+@LendCurrencyAmount3+'@SPFieldLink:createBy=@ValueofDB:tblAccMain_createBy@SPFieldLink:createTime=@ValueofDB:tblAccMain_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblAccMain_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblAccMain_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblAccMain_SCompanyID@SPFieldLink:BillNo=@SqlReturn:accOrderNo@SPFieldLink:EmployeeID='+@EmployeeID3+'@SPFieldLink:DepartmentCode='+@DepartmentCode3+'@SPFieldLink:BillType=tblAccMain',@retCode,@retVal)}
+			</sql>
+		</exec>
+		<!--应收-->
+		<exec condition="('@SqlReturn:AccCode2'.length &gt; 0 &amp;&amp; @SqlReturn:AutoBillMarker != 1 &amp;&amp; '@SqlReturn:AccCode2' != 'null')  &amp;&amp; ('@SqlReturn:CompanyCode2'.length &gt; 0 &amp;&amp; '@SqlReturn:CompanyCode2' != 'null')">
+			<!--<sql type="procedure"> 往来单位明细 （1应付 2应收 3预付 4预收）-->
+			<sql type="procedure">
+{call proc_iterateExeProc(select id as id@SPFieldLink:AccCode as AccCode2@SPFieldLink:CompanyCode as CompanyCode2@SPFieldLink:DebitAmount as DebitAmount2@SPFieldLink:LendAmount as LendAmount2@SPFieldLink:isnull(Currency@SPFieldLink:'') as Currency2@SPFieldLink:DepartmentCode as DepartmentCode2@SPFieldLink:EmployeeID as EmployeeID2@SPFieldLink:isnull(CurrencyRate@SPFieldLink:0) as CurrencyRate2@SPFieldLink:case when '@MEM:currency'='true' and isnull(Currency@SPFieldLink:'')='' then DebitAmount else isnull(DebitCurrencyAmount@SPFieldLink:0) end as DebitCurrencyAmount2@SPFieldLink:case when '@MEM:currency'='true' and isnull(Currency@SPFieldLink:'')='' then LendAmount else isnull(LendCurrencyAmount@SPFieldLink:0) end as LendCurrencyAmount2 from tblAccDetail where (AccCode like '1122%') and f_ref='@ValueofDB:tblAccMain_id' and CompanyCode is not null,proc_insertComIni,@id@ParamLink:@CompanyCode2@ParamLink:'2'@ParamLink:'@ValueofDB:tblAccMain_BillDate'@ParamLink:'Period=@SqlReturn:AccPeriod@SPFieldLink:PeriodYear=@SqlReturn:AccYear@SPFieldLink:PeriodMonth=@SqlReturn:AccMonth@SPFieldLink:ReceiveTotalDebit='+@DebitAmount2+'@ParamNum:@SPFieldLink:ReceiveTotalLend='+@LendAmount2+'@ParamNum:@SPFieldLink:RelationDocID=@ValueofDB:tblAccMain_id@SPFieldLink:Currency='+@Currency2+'@SPFieldLink:CurrencyRate='+@CurrencyRate2+'@ParamNum:@SPFieldLink:FcRecTotalDebit='+@DebitCurrencyAmount2+'@ParamNum:@SPFieldLink:FcRecTotalCredit='+@LendCurrencyAmount2+'@ParamNum:@SPFieldLink:createBy=@ValueofDB:tblAccMain_createBy@SPFieldLink:createTime=@ValueofDB:tblAccMain_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblAccMain_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblAccMain_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblAccMain_SCompanyID@SPFieldLink:BillNo=@SqlReturn:accOrderNo@SPFieldLink:EmployeeID='+@EmployeeID2+'@SPFieldLink:DepartmentCode='+@DepartmentCode2+'@SPFieldLink:BillType=tblAccMain',@retCode,@retVal)}
+			</sql>
+		</exec>
+		<!--预收-->
+		<exec condition="('@SqlReturn:AccCode4'.length &gt; 0 &amp;&amp; @SqlReturn:AutoBillMarker != 1 &amp;&amp; '@SqlReturn:AccCode4' != 'null')  &amp;&amp; ('@SqlReturn:CompanyCode4'.length &gt; 0 &amp;&amp; '@SqlReturn:CompanyCode4' != 'null')">
+		<!--<sql type="procedure"> 往来单位明细 （1应付 2应收 3预付 4预收）-->
+			<sql type="procedure">
+{call proc_iterateExeProc(select id as id@SPFieldLink:AccCode as AccCode4@SPFieldLink:CompanyCode as CompanyCode4@SPFieldLink:DebitAmount as DebitAmount4@SPFieldLink:LendAmount as LendAmount4@SPFieldLink:isnull(Currency@SPFieldLink:'') as Currency4@SPFieldLink:DepartmentCode as DepartmentCode4@SPFieldLink:EmployeeID as EmployeeID4@SPFieldLink:isnull(CurrencyRate@SPFieldLink:0) as CurrencyRate4@SPFieldLink:case when '@MEM:currency'='true' and isnull(Currency@SPFieldLink:'')='' then DebitAmount else isnull(DebitCurrencyAmount@SPFieldLink:0) end as DebitCurrencyAmount4@SPFieldLink:case when '@MEM:currency'='true' and isnull(Currency@SPFieldLink:'')='' then LendAmount else isnull(LendCurrencyAmount@SPFieldLink:0) end as LendCurrencyAmount4 from tblAccDetail where (AccCode like '2203%') and f_ref='@ValueofDB:tblAccMain_id' and CompanyCode is not null,proc_insertComIni,@id@ParamLink:@CompanyCode4@ParamLink:'4'@ParamLink:'@ValueofDB:tblAccMain_BillDate'@ParamLink:'Period=@SqlReturn:AccPeriod@SPFieldLink:PeriodYear=@SqlReturn:AccYear@SPFieldLink:PeriodMonth=@SqlReturn:AccMonth@SPFieldLink:PreReceiveTotalDebit='+@DebitAmount4+'@ParamNum:@SPFieldLink:PreReceiveTotalLend='+@LendAmount4+'@ParamNum:@SPFieldLink:RelationDocID=@ValueofDB:tblAccMain_id@SPFieldLink:Currency='+@Currency4+'@SPFieldLink:CurrencyRate='+@CurrencyRate4+'@ParamNum:@SPFieldLink:FcPreRecTotalDebit='+@DebitCurrencyAmount4+'@ParamNum:@SPFieldLink:FcPreRecTotalCredit='+@LendCurrencyAmount4+'@ParamNum:@SPFieldLink:createBy=@ValueofDB:tblAccMain_createBy@SPFieldLink:createTime=@ValueofDB:tblAccMain_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblAccMain_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblAccMain_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblAccMain_SCompanyID@SPFieldLink:BillNo=@SqlReturn:accOrderNo@SPFieldLink:EmployeeID='+@EmployeeID4+'@SPFieldLink:DepartmentCode='+@DepartmentCode4+'@SPFieldLink:BillType=tblAccMain',@retCode,@retVal)}
+			</sql>
+		</exec>		
+		<!--修改页面时更新往来明细的凭证号  往来明细 往来对账体现-->
+		<exec condition="'@Sess:BillOper'=='update'">  
+			<sql>update tblCompanyini set BillNo=(select CredTypeID+'_'+cast(OrderNo as varchar(100)) from tblaccMain where id=tblCompanyini.RelationDocID) where RelationDocID=@ValueofDB:tblAccMain_id and billType='tblAccMain' and (@SqlReturn:RefBillType='null' or @SqlReturn:RefBillType='tblAccMain')</sql>
+		</exec>
+	</sql>
+ </define>
+ 
+<define name="tblAccMain_Del"> 
+	<!--删除或者修改单据时如果存在关联单据提示-->
+	<sql type="condition">
+		<condition>
+			<select>select AccYear,AccPeriod FROM tblAccPeriod WHERE AccStatusId=1</select>
+			<select>select tblAccMain.workFlowNodeName,tblAccMain.isAuditing,tblAccMain.CredYear,tblAccMain.Period,tblAccMain.CredTypeID,tblAccMain.OrderNo,tblAccMain.RefBillType,case isnull(tblAccMain.RefBillNo,'') WHEN 'settleAcc' THEN '月结' WHEN '' THEN '月结' else tblAccMain.RefBillNo end as RefBillNo,tblAccMain.RefBillID,tblAccMain.AutoBillMarker,tblAccMain.SCompanyID,zh_CN,zh_HK,zh_TW,en from tblAccMain left join tblDBTableInfo on tblDBTableInfo.tableName=tblAccMain.RefBillType left join tbllanguage on tbllanguage.id=tblDBTableInfo.languageid where tblAccMain.id=@ValueofDB:tblAccMain_id and tblAccMain.SCompanyID=@Sess:SCompanyID</select>
+   			<select>select Currency as RateCurTypeID from tblAccDetail where f_ref=@ValueofDB:tblAccMain_id and SCompanyID=@Sess:SCompanyID</select>
+   			<select>SELECT setting FROM tblSysDeploy WHERE sysCode='standardAcc'</select>
+			<select>select IsAuditing from tblAccMainSetting</select>
+		</condition>
+		<!-- 简体中文提示：由其它单据生成的凭证不能修改或删除 -->
+		<exec condition=" '@SqlReturn:IsAuditing'!='1' &amp;&amp; @SqlReturn:AutoBillMarker==1&amp;&amp;'@Sess:Local'=='zh_CN'&amp;&amp;'@SqlReturn:RefBillType'!='ProfitLossCarryForward'&amp;&amp;'@SqlReturn:RefBillType'!='adjustExchange'">	
+		<error>AccMainDel.BillNo.error,@SqlReturn:zh_CN,@SqlReturn:RefBillNo</error> 
+		</exec>
+		<!-- 香港中文提示：由其它单据生成的凭证不能修改或删除 -->
+		<exec condition=" '@SqlReturn:IsAuditing'!='1' &amp;&amp; @SqlReturn:AutoBillMarker==1&amp;&amp;'@Sess:Local'=='zh_HK'&amp;&amp;'@SqlReturn:RefBillType'!='ProfitLossCarryForward'&amp;&amp;'@SqlReturn:RefBillType'!='adjustExchange'">	
+		<error>AccMainDel.BillNo.error,@SqlReturn:zh_HK,@SqlReturn:RefBillNo</error> 
+		</exec>
+		<!-- 台湾中文提示：由其它单据生成的凭证不能修改或删除 -->
+		<exec condition=" '@SqlReturn:IsAuditing'!='1' &amp;&amp; @SqlReturn:AutoBillMarker==1&amp;&amp;'@Sess:Local'=='zh_TW'&amp;&amp;'@SqlReturn:RefBillType'!='ProfitLossCarryForward'&amp;&amp;'@SqlReturn:RefBillType'!='adjustExchange'">	
+		<error>AccMainDel.BillNo.error,@SqlReturn:zh_TW,@SqlReturn:RefBillNo</error> 
+		</exec>
+		<!-- 英文提示：由其它单据生成的凭证不能修改或删除 -->
+		<exec condition=" '@SqlReturn:IsAuditing'!='1' &amp;&amp; @SqlReturn:AutoBillMarker==1&amp;&amp;'@Sess:Local'=='en'&amp;&amp;'@SqlReturn:RefBillType'!='ProfitLossCarryForward'&amp;&amp;'@SqlReturn:RefBillType'!='adjustExchange'">	
+		<error>AccMainDel.BillNo.error,@SqlReturn:en,@SqlReturn:RefBillNo</error> 
+		</exec>	
+		<!-- 非标准财务，月结产生的结转损益的凭证不可以删除，只可以通过反月结删除 -->
+		<exec condition="'@SqlReturn:setting'=='false'&amp;&amp;'@SqlReturn:RefBillID' == 'settleAcc'&amp;&amp;'@SqlReturn:RefBillType'=='ProfitLossCarryForward'">
+			<error>AccMainDel.settleAcc.error</error>
+		</exec>
+		
+		<!-- 已审核完毕的凭证不能删除 -->
+		<exec condition="'@SqlReturn:isAuditing' == 'finish'">
+			<error>emp.voucher.del.wName.error,@SqlReturn:CredTypeID,@SqlReturn:OrderNo</error>
+		</exec>
+		<!-- 已过账完毕的凭证不能删除 -->
+		<exec condition="'@SqlReturn:workFlowNodeName' == 'finish'">
+			<error>emp.voucher.del.isposting.error,@SqlReturn:CredTypeID,@SqlReturn:OrderNo</error>
+		</exec>
+		<!-- 会计期间之前的凭证不能删除 -->
+		<exec condition="'@SqlReturn:CredYear' != 'null' &amp;&amp; '@SqlReturn:Period' != 'null' &amp;&amp; (@SqlReturn:AccYear &gt; @SqlReturn:CredYear || (@SqlReturn:AccYear == @SqlReturn:CredYear &amp;&amp; @SqlReturn:AccPeriod &gt; @SqlReturn:Period))">
+			<error>emp.voucher.del.noperiod.error,@SqlReturn:CredTypeID,@SqlReturn:OrderNo</error>
+		</exec>
+		<!--月结凭证不允许直接做删除或修改操作，只能通过反月结删除。-->
+		<exec condition="'@SqlReturn:RefBillID' == 'settleAcc'&amp;&amp;'@SqlReturn:RefBillType'!='ProfitLossCarryForward'&amp;&amp;'@SqlReturn:RefBillType'!='adjustExchange'">	 					
+		<error>AccMainDel.settleAcc.error</error> 
+		</exec>	
+		
+		 <!--系统开账产生的维修凭证不能删除、修改-->
+		 <exec condition="'@ValueofDB:tblAccMain_id' == 'account_0001' || '@ValueofDB:tblAccMain_id' == 'account_0002' || '@ValueofDB:tblAccMain_id' == 'account_a001'">	
+		 <error>AccMainDel.OpenAcc.error</error> 
+		 </exec>		
+		 
+		<exec condition="'@Sess:BillOper'=='delete'"><!--如果删除凭证，则要删除单据中的凭证号-->	
+			<sql type="procedure">{call proc_updateBillCerd(@ValueofDB:tblAccMain_id,retCode,retVal)}</sql>
+		</exec>	 
+		<!--不启用审核流-->
+		<!-- <exec condition="'@MEM:tblAccMain_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblAccMain_Del_One</sql>
+		</exec> -->
+
+		<exec condition="true">
+			<sql>delete from tblAccDetail where f_ref=@ValueofDB:tblAccMain_id</sql>
+		</exec>
+	</sql>	
+</define>
+ 
+<!--如果凭证需要审核，则在点审核后执行以下部分；如果不需要审核，也执行以下部分操作--> 
+<define name="tblAccMain_Del_One">
+	<sql type="condition">
+		<condition>
+			<select>select AccYear,AccPeriod FROM tblAccPeriod WHERE AccStatusId=1</select>
+			<select>select tblAccMain.workFlowNodeName,tblAccMain.isAuditing,tblAccMain.CredYear,tblAccMain.Period,tblAccMain.CredTypeID,tblAccMain.OrderNo,tblAccMain.RefBillType,case isnull(tblAccMain.RefBillNo,'') WHEN 'settleAcc' THEN '月结' WHEN '' THEN '月结' else tblAccMain.RefBillNo end as RefBillNo,tblAccMain.RefBillID,tblAccMain.AutoBillMarker,tblAccMain.SCompanyID,zh_CN,zh_HK,zh_TW,en from tblAccMain left join tblDBTableInfo on tblDBTableInfo.tableName=tblAccMain.RefBillType left join tbllanguage on tbllanguage.id=tblDBTableInfo.languageid where tblAccMain.id=@ValueofDB:tblAccMain_id and tblAccMain.SCompanyID=@Sess:SCompanyID</select>
+		</condition>
+		<!-- 会计期间之前的凭证不能删除 -->
+		<exec condition="'@SqlReturn:CredYear' != 'null' &amp;&amp; '@SqlReturn:Period' != 'null' &amp;&amp; (@SqlReturn:AccYear &gt; @SqlReturn:CredYear || (@SqlReturn:AccYear == @SqlReturn:CredYear &amp;&amp; @SqlReturn:AccPeriod &gt; @SqlReturn:Period))">
+			<error>emp.voucher.del.noperiod.error,@SqlReturn:CredTypeID,@SqlReturn:OrderNo</error>
+		</exec>
+	</sql>
+	<sql type="condition">  <!-- 由删除费用明细表引起的删除凭证明细表 -->
+		<condition>
+			<select>select CredYear as AccYear,CredMonth as AccMonth,Period as AccPeriod from tblAccMain where id=@ValueofDB:tblAccMain_id</select>
+			<select>select tblAccMain.id,tblAccMain.BillDate,tblAccMain.RefBillType,tblAccMain.RefBillNo,tblAccMain.RefBillID,tblAccMain.SCompanyID,tblModules.modelName,SUBSTRING(tblAccMain.DepartmentCode,1,5) as DepartmentCode from tblAccMain left join tblModules on tblModules.tblName=tblAccMain.RefBillType where tblAccMain.id=@ValueofDB:tblAccMain_id and tblAccMain.SCompanyID=@Sess:SCompanyID</select>
+			<select>select Currency as RateCurTypeID from tblAccDetail where f_ref=@ValueofDB:tblAccMain_id and SCompanyID=@Sess:SCompanyID</select>
+		</condition>
+		<!--系统开账产生的维修凭证不能删除、修改-->
+		<exec condition="'@ValueofDB:tblAccMain_id' == 'account_0001' || '@ValueofDB:tblAccMain_id' == 'account_0002' || '@ValueofDB:tblAccMain_id' == 'account_a001'">	
+			<error>AccMainDel.OpenAcc.error</error> 
+		 </exec>		 
+		 <exec condition="true">
+			<!--  修改科目余额(明细部分）  -->
+			<sql type="procedure">
+				{call proc_updateAccBalaAssort(@SqlReturn:id,tblAccDetail,tblAccDetail_AccCode,@SqlReturn:AccPeriod,@SqlReturn:AccYear,@SqlReturn:AccMonth,(-1)*(tblAccDetail_DebitAmount)@ParamNum:,(-1)*(tblAccDetail_LendAmount)@ParamNum:,(-1)*(tblAccDetail_DebitCurrencyAmount)@ParamNum:,(-1)*(tblAccDetail_LendCurrencyAmount)@ParamNum:,@SqlReturn:SCompanyID,tblAccDetail_Currency,@SqlReturn:DepartmentCode,retCode,retVal)}
+          	</sql>
+		 </exec>
+	</sql>
+
+	<!--如果存在应收应付、预收预付科目，则产生往来-->
+	<sql type="condition">
+		<condition>
+			<select>select f_ref as id1,AccCode as AccCode1,CompanyCode as CompanyCode1,DebitAmount as DebitAmount1,LendAmount as LendAmount1,Currency as Currency1,CurrencyRate as CurrencyRate1,DebitCurrencyAmount as DebitCurrencyAmount1,LendCurrencyAmount as LendCurrencyAmount1 from tblAccDetail where (AccCode like '2202%') and f_ref=@ValueofDB:tblAccMain_id and (CompanyCode is not null or CompanyCode != '') and isnull(RefBillType,'')='tblAccMain'</select>
+			<select>select  f_ref as id2,AccCode as AccCode2,CompanyCode as CompanyCode2,DebitAmount as DebitAmount2,LendAmount as LendAmount2,Currency as Currency2,CurrencyRate as CurrencyRate2,DebitCurrencyAmount as DebitCurrencyAmount2,LendCurrencyAmount as LendCurrencyAmount2 from tblAccDetail where (AccCode like '1122%') and f_ref=@ValueofDB:tblAccMain_id and (CompanyCode is not null or CompanyCode != '') and isnull(RefBillType,'')='tblAccMain'</select>
+			<select>select  f_ref as id3,AccCode as AccCode3,CompanyCode as CompanyCode3,DebitAmount as DebitAmount3,LendAmount as LendAmount3,Currency as Currency3,CurrencyRate as CurrencyRate3,DebitCurrencyAmount as DebitCurrencyAmount3,LendCurrencyAmount as LendCurrencyAmount3 from tblAccDetail where (AccCode like '1123%') and f_ref=@ValueofDB:tblAccMain_id and (CompanyCode is not null or CompanyCode != '') and isnull(RefBillType,'')='tblAccMain'</select>
+			<select>select  f_ref as id4,AccCode as AccCode4,CompanyCode as CompanyCode4,DebitAmount as DebitAmount4,LendAmount as LendAmount4,Currency as Currency4,CurrencyRate as CurrencyRate4,DebitCurrencyAmount as DebitCurrencyAmount4,LendCurrencyAmount as LendCurrencyAmount4 from tblAccDetail where (AccCode like '2203%') and f_ref=@ValueofDB:tblAccMain_id and (CompanyCode is not null or CompanyCode != '') and isnull(RefBillType,'')='tblAccMain'</select>
+			<select>select AutoBillMarker from tblAccMain where tblAccMain.id=@ValueofDB:tblAccMain_id and tblAccMain.SCompanyID=@Sess:SCompanyID</select>
+		</condition>
+		<!--应付-->
+		<exec condition="('@SqlReturn:AccCode1'.length &gt; 0 &amp;&amp; @SqlReturn:AutoBillMarker != 1 &amp;&amp; '@SqlReturn:AccCode1' != 'null') &amp;&amp; ('@SqlReturn:CompanyCode1'.length &gt; 0 &amp;&amp; '@SqlReturn:CompanyCode1' != 'null')">
+				<sql type="procedure">
+		{call proc_iterateExeProc(select id as id1@SPFieldLink:AccCode as AccCode1@SPFieldLink:CompanyCode as CompanyCode1@SPFieldLink:DebitAmount as DebitAmount1@SPFieldLink:LendAmount as LendAmount1@SPFieldLink:Currency as Currency1@SPFieldLink:CurrencyRate as CurrencyRate1@SPFieldLink:DebitCurrencyAmount as DebitCurrencyAmount1@SPFieldLink:LendCurrencyAmount as LendCurrencyAmount1 from tblAccDetail where (AccCode like '2202%') and f_ref='@ValueofDB:tblAccMain_id' and (CompanyCode is not null or CompanyCode != ''),proc_deleteComIni,@id1@ParamLink:'1',@retCode,@retVal)}
+				</sql>
+				
+		</exec>
+		<!--预付-->
+		<exec condition="('@SqlReturn:AccCode3'.length &gt; 0 || '@SqlReturn:AccCode3' != 'null') &amp;&amp; ('@SqlReturn:CompanyCode3'.length &gt; 0 || '@SqlReturn:CompanyCode3' != 'null') &amp;&amp; @SqlReturn:AutoBillMarker != 1 ">
+						<sql type="procedure">
+		{call proc_iterateExeProc(select  id as id3@SPFieldLink:AccCode as AccCode3@SPFieldLink:CompanyCode as CompanyCode3@SPFieldLink:DebitAmount as DebitAmount3@SPFieldLink:LendAmount as LendAmount3@SPFieldLink:Currency as Currency3@SPFieldLink:CurrencyRate as CurrencyRate3@SPFieldLink:DebitCurrencyAmount as DebitCurrencyAmount3@SPFieldLink:LendCurrencyAmount as LendCurrencyAmount3 from tblAccDetail where (AccCode like '1123%') and f_ref='@ValueofDB:tblAccMain_id' and (CompanyCode is not null or CompanyCode != ''),proc_deleteComIni,@id3@ParamLink:'3',@retCode,@retVal)}
+				</sql>
+		</exec>
+		<!--应收-->
+		<exec condition="('@SqlReturn:AccCode2'.length &gt; 0 &amp;&amp; '@SqlReturn:AccCode2' != 'null') &amp;&amp; @SqlReturn:AutoBillMarker != 1 &amp;&amp; ('@SqlReturn:CompanyCode2'.length &gt; 0 &amp;&amp; '@SqlReturn:CompanyCode2' != 'null')">
+			  <!-- <sql type="procedure"> 删除往来明细:修改类型（1应付 2应收 3预付 4预收） 
+				{call proc_deleteComIni (2@SqlReturn:id2,2,retCode,retVal)}
+				</sql>-->
+								<sql type="procedure">
+		{call proc_iterateExeProc(select  id as id2@SPFieldLink:AccCode as AccCode2@SPFieldLink:CompanyCode as CompanyCode2@SPFieldLink:DebitAmount as DebitAmount2@SPFieldLink:LendAmount as LendAmount2@SPFieldLink:Currency as Currency2@SPFieldLink:CurrencyRate as CurrencyRate2@SPFieldLink:DebitCurrencyAmount as DebitCurrencyAmount2@SPFieldLink:LendCurrencyAmount as LendCurrencyAmount2 from tblAccDetail where (AccCode like '1122%') and f_ref='@ValueofDB:tblAccMain_id' and (CompanyCode is not null or CompanyCode != ''),proc_deleteComIni,@id2@ParamLink:'2',@retCode,@retVal)}
+				</sql>
+		</exec>
+		<!--预收-->
+		<exec condition="('@SqlReturn:AccCode4'.length &gt; 0 &amp;&amp; '@SqlReturn:AccCode4' != 'null') &amp;&amp; @SqlReturn:AutoBillMarker != 1 &amp;&amp; ('@SqlReturn:CompanyCode4'.length &gt; 0 &amp;&amp; '@SqlReturn:CompanyCode4' != 'null')">
+			   <!--<sql type="procedure"> 删除往来明细:修改类型（1应付 2应收 3预付 4预收）
+				{call proc_deleteComIni (4@SqlReturn:id4,4,retCode,retVal)}
+				</sql> -->
+				
+				<sql type="procedure">
+		{call proc_iterateExeProc(select id as id4@SPFieldLink:AccCode as AccCode4@SPFieldLink:CompanyCode as CompanyCode4@SPFieldLink:DebitAmount as DebitAmount4@SPFieldLink:LendAmount as LendAmount4@SPFieldLink:Currency as Currency4@SPFieldLink:CurrencyRate as CurrencyRate4@SPFieldLink:DebitCurrencyAmount as DebitCurrencyAmount4@SPFieldLink:LendCurrencyAmount as LendCurrencyAmount4 from tblAccDetail where (AccCode like '2203%') and f_ref='@ValueofDB:tblAccMain_id' and (CompanyCode is not null or CompanyCode != ''),proc_deleteComIni,@id4@ParamLink:'4',@retCode,@retVal)}
+				</sql>
+		</exec>
+	</sql>
+</define>
+  
+  <!--凭证拓展按钮的审核-->
+	<define name="tblAccMain_Add_confirm">
+		<!--如果存在应收应付、预收预付科目，则产生往来-->
+<sql type="condition">
+<condition>
+<select> select AccYear,AccMonth,AccPeriod from tblAccPeriod where AccMonth = (select Month(BillDate) from tblAccMain where tblAccMain.id=@ValueofDB:tblAccMain_id)
+ and AccYear=(select Year(BillDate) from tblAccMain where tblAccMain.id=@ValueofDB:tblAccMain_id)</select>
+<select>select AccCode from tblAccDetail where (AccCode like '1122%' or AccCode like '1123%' or AccCode like '2202%' or AccCode like '2203%' ) and f_ref=@ValueofDB:tblAccMain_id and CompanyCode is not null</select>
+<select>select AccCode as AccCode1,CompanyCode as CompanyCode1,DebitAmount as DebitAmount1,LendAmount as LendAmount1,Currency as Currency1,CurrencyRate as CurrencyRate1,DebitCurrencyAmount as DebitCurrencyAmount1,LendCurrencyAmount as LendCurrencyAmount1 from tblAccDetail where (AccCode like '2202%') and f_ref=@ValueofDB:tblAccMain_id and CompanyCode is not null</select>
+<select>select AccCode as AccCode2,CompanyCode as CompanyCode2,DebitAmount as DebitAmount2,LendAmount as LendAmount2,Currency as Currency2,CurrencyRate as CurrencyRate2,DebitCurrencyAmount as DebitCurrencyAmount2,LendCurrencyAmount as LendCurrencyAmount2 from tblAccDetail where (AccCode like '1122%') and f_ref=@ValueofDB:tblAccMain_id and CompanyCode is not null</select>
+<select>select AccCode as AccCode3,CompanyCode as CompanyCode3,DebitAmount as DebitAmount3,LendAmount as LendAmount3,Currency as Currency3,CurrencyRate as CurrencyRate3,DebitCurrencyAmount as DebitCurrencyAmount3,LendCurrencyAmount as LendCurrencyAmount3 from tblAccDetail where (AccCode like '1123%') and f_ref=@ValueofDB:tblAccMain_id and CompanyCode is not null</select>
+<select>select AccCode as AccCode4,CompanyCode as CompanyCode4,DebitAmount as DebitAmount4,LendAmount as LendAmount4,Currency as Currency4,CurrencyRate as CurrencyRate4,DebitCurrencyAmount as DebitCurrencyAmount4,LendCurrencyAmount as LendCurrencyAmount4 from tblAccDetail where (AccCode like '2203%') and f_ref=@ValueofDB:tblAccMain_id and CompanyCode is not null</select>
+<select>select AutoBillMarker,BillDate from tblAccMain where id=@ValueofDB:tblAccMain_id</select>
+<select>select Currency as RateCurTypeID,SCompanyID,createBy,lastUpdateBy,createTime,lastUpdateTime from tblAccDetail where f_ref=@ValueofDB:tblAccMain_id and SCompanyID=@Sess:SCompanyID</select>
+</condition>
+<!--未启用审核用-->
+<exec condition="'@MEM:tblAccMain_IsStatart' == '0'">
+<error>workFlow.notApprove.error</error> 
+</exec>
+<exec condition="true">
+	<!--当有凭证产生，并且生成了凭证明细，调用凭证关联影响的存储过程 （凭证启用审核流标识，凭证ID,单据日期，创建人，创建时间）-->
+	<sql type="procedure">{call proc_insertAccAfterRefOper(@MEM:tblAccMain_IsStatart,@ValueofDB:tblAccMain_id,@ValueofDB:tblAccMain_BillDate,@ValueofDB:tblAccMain_createBy,@ValueofDB:tblAccMain_createTime,retCode,retVal)}</sql>		
+</exec>
+
+<!--如果出现核算往来的，则根据相应情况对往来单位添加往来明细记录-->
+<!--应付-->
+<exec condition="('@SqlReturn:AccCode1'.length &gt; 0 &amp;&amp; @SqlReturn:AutoBillMarker != 1 &amp;&amp; '@SqlReturn:AccCode1' != 'null') &amp;&amp; ('@SqlReturn:CompanyCode1'.length &gt; 0 &amp;&amp; '@SqlReturn:CompanyCode1' != 'null')">
+		<!--（1应付 2应收 3预付 4预收）-->					
+				<sql type="procedure">
+{call proc_iterateExeProc(select id as id@SPFieldLink:AccCode as AccCode1@SPFieldLink:CompanyCode as CompanyCode1@SPFieldLink:DebitAmount as DebitAmount1@SPFieldLink:LendAmount as LendAmount1@SPFieldLink:Currency as Currency1@SPFieldLink:DepartmentCode as DepartmentCode1@SPFieldLink:EmployeeID as EmployeeID1@SPFieldLink:CurrencyRate as CurrencyRate1@SPFieldLink:DebitCurrencyAmount as DebitCurrencyAmount1@SPFieldLink:LendCurrencyAmount as LendCurrencyAmount1 from tblAccDetail where (AccCode like '2202%') and f_ref='@ValueofDB:tblAccMain_id' and CompanyCode is not null ,proc_insertComIni,@id@ParamLink:@CompanyCode1@ParamLink:'1'@ParamLink:'@SqlReturn:BillDate'@ParamLink:'Period=@SqlReturn:AccPeriod@SPFieldLink:PeriodYear=@SqlReturn:AccYear@SPFieldLink:PeriodMonth=@SqlReturn:AccMonth@SPFieldLink:PayTotalDebit='+@DebitAmount1+'@ParamNum:@SPFieldLink:PayTotalLend='+@LendAmount1+'@ParamNum:@SPFieldLink:RelationDocID=@ValueofDB:tblAccMain_id@SPFieldLink:CurrencyTypeID='+@Currency1+'@SPFieldLink:CurrencyRate='+@CurrencyRate1+'@ParamNum:@SPFieldLink:FcPayTotalDebit='+@DebitCurrencyAmount1+'@ParamNum:@SPFieldLink:FcPayTotalCredit='+@LendCurrencyAmount1+'@ParamNum:@SPFieldLink:createBy=@SqlReturn:createBy@SPFieldLink:createTime=@SqlReturn:createTime@SPFieldLink:lastUpdateBy=@SqlReturn:lastUpdateBy@SPFieldLink:lastUpdateTime=@SqlReturn:lastUpdateTime@SPFieldLink:SCompanyID=@SqlReturn:SCompanyID@SPFieldLink:BillNo=@MEM:AccNumberType _ @SqlReturn:OrderNo@SPFieldLink:EmployeeID='+@EmployeeID1+'@SPFieldLink:DepartmentCode='+@DepartmentCode1+'@SPFieldLink:BillType=tblAccMain',@retCode,@retVal)}
+		</sql>
+		</exec>
+<!--预付-->
+<exec condition="('@SqlReturn:AccCode3'.length &gt; 0 &amp;&amp; @SqlReturn:AutoBillMarker != 1 &amp;&amp; '@SqlReturn:AccCode3' != 'null')  &amp;&amp; ('@SqlReturn:CompanyCode3'.length &gt; 0 &amp;&amp; '@SqlReturn:CompanyCode3' != 'null')">
+		<!--（1应付 2应收 3预付 4预收）-->
+		
+			<sql type="procedure">
+{call proc_iterateExeProc(select id as id@SPFieldLink:AccCode as AccCode3@SPFieldLink:CompanyCode as CompanyCode3@SPFieldLink:DebitAmount as DebitAmount3@SPFieldLink:LendAmount as LendAmount3@SPFieldLink:Currency as Currency3@SPFieldLink:DepartmentCode as DepartmentCode3@SPFieldLink:EmployeeID as EmployeeID3@SPFieldLink:CurrencyRate as CurrencyRate3@SPFieldLink:DebitCurrencyAmount as DebitCurrencyAmount3@SPFieldLink:LendCurrencyAmount as LendCurrencyAmount3 from tblAccDetail where (AccCode like '1123%') and f_ref='@ValueofDB:tblAccMain_id' and CompanyCode is not null ,proc_insertComIni,@id@ParamLink:@CompanyCode3@ParamLink:'3'@ParamLink:'@SqlReturn:BillDate'@ParamLink:'Period=@SqlReturn:AccPeriod@SPFieldLink:PeriodYear=@SqlReturn:AccYear@SPFieldLink:PeriodMonth=@SqlReturn:AccMonth@SPFieldLink:PrePayTotalDebit='+@DebitAmount3+'@SPFieldLink:PrePayTotalLend='+@LendAmount3+'@SPFieldLink:RelationDocID=@ValueofDB:tblAccMain_id@SPFieldLink:CurrencyTypeID='+@Currency3+'@SPFieldLink:CurrencyRate='+@CurrencyRate3+'@SPFieldLink:FcPrePayTotalDebit='+@DebitCurrencyAmount3+'@SPFieldLink:FcPrePayTotalCredit='+@LendCurrencyAmount3+'@SPFieldLink:createBy=@SqlReturn:createBy@SPFieldLink:createTime=@SqlReturn:createTime@SPFieldLink:lastUpdateBy=@SqlReturn:lastUpdateBy@SPFieldLink:lastUpdateTime=@SqlReturn:lastUpdateTime@SPFieldLink:SCompanyID=@SqlReturn:SCompanyID@SPFieldLink:BillNo=@MEM:AccNumberType _ @SqlReturn:OrderNo@SPFieldLink:EmployeeID='+@EmployeeID3+'@SPFieldLink:DepartmentCode='+@DepartmentCode3+'@SPFieldLink:BillType=tblAccMain',@retCode,@retVal)}
+		</sql>
+		</exec>
+<!--应收-->
+<exec condition="('@SqlReturn:AccCode2'.length &gt; 0 &amp;&amp; @SqlReturn:AutoBillMarker != 1 &amp;&amp; '@SqlReturn:AccCode2' != 'null')  &amp;&amp; ('@SqlReturn:CompanyCode2'.length &gt; 0 &amp;&amp; '@SqlReturn:CompanyCode2' != 'null')">
+			<!--<sql type="procedure"> 往来单位明细 （1应付 2应收 3预付 4预收）-->
+			<sql type="procedure">
+{call proc_iterateExeProc(select id as id@SPFieldLink:AccCode as AccCode2@SPFieldLink:CompanyCode as CompanyCode2@SPFieldLink:DebitAmount as DebitAmount2@SPFieldLink:LendAmount as LendAmount2@SPFieldLink:Currency as Currency2@SPFieldLink:DepartmentCode as DepartmentCode2@SPFieldLink:EmployeeID as EmployeeID2@SPFieldLink:CurrencyRate as CurrencyRate2@SPFieldLink:DebitCurrencyAmount as DebitCurrencyAmount2@SPFieldLink:LendCurrencyAmount as LendCurrencyAmount2 from tblAccDetail where (AccCode like '1122%') and f_ref='@ValueofDB:tblAccMain_id' and CompanyCode is not null,proc_insertComIni,@id@ParamLink:@CompanyCode2@ParamLink:'2'@ParamLink:'@SqlReturn:BillDate'@ParamLink:'Period=@SqlReturn:AccPeriod@SPFieldLink:PeriodYear=@SqlReturn:AccYear@SPFieldLink:PeriodMonth=@SqlReturn:AccMonth@SPFieldLink:ReceiveTotalDebit='+@DebitAmount2+'@ParamNum:@SPFieldLink:ReceiveTotalLend='+@LendAmount2+'@ParamNum:@SPFieldLink:RelationDocID=@ValueofDB:tblAccMain_id@SPFieldLink:CurrencyTypeID='+@Currency2+'@SPFieldLink:CurrencyRate='+@CurrencyRate2+'@ParamNum:@SPFieldLink:FcRecTotalDebit='+@DebitCurrencyAmount2+'@ParamNum:@SPFieldLink:FcRecTotalCredit='+@LendCurrencyAmount2+'@ParamNum:@SPFieldLink:createBy=@SqlReturn:createBy@SPFieldLink:createTime=@SqlReturn:createTime@SPFieldLink:lastUpdateBy=@SqlReturn:lastUpdateBy@SPFieldLink:lastUpdateTime=@SqlReturn:lastUpdateTime@SPFieldLink:SCompanyID=@SqlReturn:SCompanyID@SPFieldLink:BillNo=@MEM:AccNumberType _ @SqlReturn:OrderNo@SPFieldLink:SCompanyID=@SqlReturn:SCompanyID@SPFieldLink:EmployeeID='+@EmployeeID2+'@SPFieldLink:DepartmentCode='+@DepartmentCode2+'@SPFieldLink:BillType=tblAccMain',@retCode,@retVal)}
+		</sql>
+		</exec>
+<!--预收-->
+<exec condition="('@SqlReturn:AccCode4'.length &gt; 0 &amp;&amp; @SqlReturn:AutoBillMarker != 1 &amp;&amp; '@SqlReturn:AccCode4' != 'null')  &amp;&amp; ('@SqlReturn:CompanyCode4'.length &gt; 0 &amp;&amp; '@SqlReturn:CompanyCode4' != 'null')">
+<!--<sql type="procedure"> 往来单位明细 （1应付 2应收 3预付 4预收）-->
+	<sql type="procedure">
+{call proc_iterateExeProc(select id as id@SPFieldLink:AccCode as AccCode4@SPFieldLink:CompanyCode as CompanyCode4@SPFieldLink:DebitAmount as DebitAmount4@SPFieldLink:LendAmount as LendAmount4@SPFieldLink:Currency as Currency4@SPFieldLink:DepartmentCode as DepartmentCode4@SPFieldLink:EmployeeID as EmployeeID4@SPFieldLink:CurrencyRate as CurrencyRate4@SPFieldLink:DebitCurrencyAmount as DebitCurrencyAmount4@SPFieldLink:LendCurrencyAmount as LendCurrencyAmount4 from tblAccDetail where (AccCode like '2203%') and f_ref='@ValueofDB:tblAccMain_id' and CompanyCode is not null,proc_insertComIni,@id@ParamLink:@CompanyCode4@ParamLink:'4'@ParamLink:'@SqlReturn:BillDate'@ParamLink:'Period=@SqlReturn:AccPeriod@SPFieldLink:PeriodYear=@SqlReturn:AccYear@SPFieldLink:PeriodMonth=@SqlReturn:AccMonth@SPFieldLink:PreReceiveTotalDebit='+@DebitAmount4+'@ParamNum:@SPFieldLink:PreReceiveTotalLend='+@LendAmount4+'@ParamNum:@SPFieldLink:RelationDocID=@ValueofDB:tblAccMain_id@SPFieldLink:CurrencyTypeID='+@Currency4+'@SPFieldLink:CurrencyRate='+@CurrencyRate4+'@ParamNum:@SPFieldLink:FcPreRecTotalDebit='+@DebitCurrencyAmount4+'@ParamNum:@SPFieldLink:FcPreRecTotalCredit='+@LendCurrencyAmount4+'@ParamNum:@SPFieldLink:createBy=@SqlReturn:createBy@SPFieldLink:createTime=@SqlReturn:createTime@SPFieldLink:lastUpdateBy=@SqlReturn:lastUpdateBy@SPFieldLink:lastUpdateTime=@SqlReturn:lastUpdateTime@SPFieldLink:SCompanyID=@SqlReturn:SCompanyID@SPFieldLink:BillNo=@MEM:AccNumberType _ @SqlReturn:OrderNo@SPFieldLink:SCompanyID=@SqlReturn:SCompanyID@SPFieldLink:EmployeeID='+@EmployeeID4+'@SPFieldLink:DepartmentCode='+@DepartmentCode4+'@SPFieldLink:BillType=tblAccMain',@retCode,@retVal)}
+		</sql>
+		</exec>		
+	</sql>
+	<sql type="condition">
+<condition>
+<!--凭证扩展按钮审核-->
+<select>select tblAccMain.id,tblAccMain.workFlowNodeName from tblAccMain where id=@ValueofDB:tblAccMain_id</select>
+<select>select EmpFullName from tblEmployee where id=@Sess:UserId</select>
+</condition>
+<exec condition="'@MEM:tblAccMain_IsStatart'=='1'&amp;&amp;'@SqlReturn:workFlowNodeName' == 'notApprove'">
+<!--每次审核保留最后一次审核人或反审核到主表,同时插入审核日志-->
+<sql>update tblAccMain set workFlowNodeName='finish',workFlowNode='-1',checkPersons=''  where id=@ValueofDB:tblAccMain_id</sql>
+</exec>
+<exec condition="'@MEM:tblAccMain_IsStatart'=='1'&amp;&amp;'@SqlReturn:workFlowNodeName' == 'finish'">
+<error>workFlowNodeName.finish.error</error> 
+</exec>
+</sql>
+ </define>
+ 
+ <!--如果凭证需要审核，则在点审核后执行以下部分；如果不需要审核，也执行以下部分操作-->
+ <!--凭证拓展按钮的反审核-->
+  <define name="tblAccMain_Del_reverse">
+  
+  <sql type="condition">  <!-- 由删除费用明细表引起的删除凭证明细表 -->
+        <condition>
+<select>select CredYear as AccYear,CredMonth as AccMonth,Period as AccPeriod from tblAccMain where id=@ValueofDB:tblAccMain_id</select>
+<select>select tblAccMain.id,tblAccMain.BillDate,tblAccMain.RefBillType,tblAccMain.RefBillNo,tblAccMain.RefBillID,tblAccMain.SCompanyID,tblModules.modelName from tblAccMain left join tblModules on tblModules.tblName=tblAccMain.RefBillType where tblAccMain.id=@ValueofDB:tblAccMain_id and tblAccMain.SCompanyID=@Sess:SCompanyID</select>
+   <select>select Currency as RateCurTypeID from tblAccDetail where f_ref=@ValueofDB:tblAccMain_id and SCompanyID=@Sess:SCompanyID</select>
+   <!--凭证扩展按钮反审核-->
+<select>select tblAccMain.id,tblAccMain.workFlowNodeName from tblAccMain where id=@ValueofDB:tblAccMain_id</select>
+</condition>
+<!--未启用审核用-->
+<exec condition="'@MEM:tblAccMain_IsStatart' == '0'">
+<error>workFlow.notApprove.error</error> 
+</exec>
+ <exec condition="'@SqlReturn:workFlowNodeName' == 'notApprove'">
+<error>workFlowNodeName.notApprove.error</error> 
+</exec>
+		  <exec condition="true">
+          <sql type="procedure"><!-- 修改科目余额(明细部分） -->
+		{call proc_updateAccBalaByDet(@SqlReturn:id,tblAccDetail,tblAccDetail_AccCode,@SqlReturn:AccPeriod,@SqlReturn:AccYear,@SqlReturn:AccMonth,(-1)*(tblAccDetail_DebitAmount)@ParamNum:,(-1)*(tblAccDetail_LendAmount)@ParamNum:,(-1)*(tblAccDetail_DebitCurrencyAmount)@ParamNum:,(-1)*(tblAccDetail_LendCurrencyAmount)@ParamNum:,@SqlReturn:SCompanyID,@SqlReturn:RateCurTypeID,retCode,retVal)}
+          </sql>
+		 </exec>
+		</sql>
+
+		<!--如果存在应收应付、预收预付科目，则产生往来-->
+<sql type="condition">
+<condition>
+<select>select f_ref as id1,AccCode as AccCode1,CompanyCode as CompanyCode1,DebitAmount as DebitAmount1,LendAmount as LendAmount1,Currency as Currency1,CurrencyRate as CurrencyRate1,DebitCurrencyAmount as DebitCurrencyAmount1,LendCurrencyAmount as LendCurrencyAmount1 from tblAccDetail where (AccCode like '2202%') and f_ref=@ValueofDB:tblAccMain_id and (CompanyCode is not null or CompanyCode != '')</select>
+<select>select  f_ref as id2,AccCode as AccCode2,CompanyCode as CompanyCode2,DebitAmount as DebitAmount2,LendAmount as LendAmount2,Currency as Currency2,CurrencyRate as CurrencyRate2,DebitCurrencyAmount as DebitCurrencyAmount2,LendCurrencyAmount as LendCurrencyAmount2 from tblAccDetail where (AccCode like '1122%') and f_ref=@ValueofDB:tblAccMain_id and (CompanyCode is not null or CompanyCode != '')</select>
+<select>select  f_ref as id3,AccCode as AccCode3,CompanyCode as CompanyCode3,DebitAmount as DebitAmount3,LendAmount as LendAmount3,Currency as Currency3,CurrencyRate as CurrencyRate3,DebitCurrencyAmount as DebitCurrencyAmount3,LendCurrencyAmount as LendCurrencyAmount3 from tblAccDetail where (AccCode like '1123%') and f_ref=@ValueofDB:tblAccMain_id and (CompanyCode is not null or CompanyCode != '')</select>
+<select>select  f_ref as id4,AccCode as AccCode4,CompanyCode as CompanyCode4,DebitAmount as DebitAmount4,LendAmount as LendAmount4,Currency as Currency4,CurrencyRate as CurrencyRate4,DebitCurrencyAmount as DebitCurrencyAmount4,LendCurrencyAmount as LendCurrencyAmount4 from tblAccDetail where (AccCode like '2203%') and f_ref=@ValueofDB:tblAccMain_id and (CompanyCode is not null or CompanyCode != '')</select>
+<select>select AutoBillMarker from tblAccMain where tblAccMain.id=@ValueofDB:tblAccMain_id and tblAccMain.SCompanyID=@Sess:SCompanyID</select>
+</condition>
+<!--应付-->
+<exec condition="('@SqlReturn:AccCode1'.length &gt; 0 &amp;&amp; @SqlReturn:AutoBillMarker != 1 &amp;&amp; '@SqlReturn:AccCode1' != 'null') &amp;&amp; ('@SqlReturn:CompanyCode1'.length &gt; 0 &amp;&amp; '@SqlReturn:CompanyCode1' != 'null')">
+
+		<sql type="procedure">
+{call proc_iterateExeProc(select id as id1@SPFieldLink:AccCode as AccCode1@SPFieldLink:CompanyCode as CompanyCode1@SPFieldLink:DebitAmount as DebitAmount1@SPFieldLink:LendAmount as LendAmount1@SPFieldLink:Currency as Currency1@SPFieldLink:CurrencyRate as CurrencyRate1@SPFieldLink:DebitCurrencyAmount as DebitCurrencyAmount1@SPFieldLink:LendCurrencyAmount as LendCurrencyAmount1 from tblAccDetail where (AccCode like '2202%') and f_ref='@ValueofDB:tblAccMain_id' and (CompanyCode is not null or CompanyCode != ''),proc_deleteComIni,@id1@ParamLink:'1',@retCode,@retVal)}
+		</sql>
+		
+</exec>
+<!--预付-->
+<exec condition="('@SqlReturn:AccCode3'.length &gt; 0 || '@SqlReturn:AccCode3' != 'null') &amp;&amp; ('@SqlReturn:CompanyCode3'.length &gt; 0 || '@SqlReturn:CompanyCode3' != 'null') &amp;&amp; @SqlReturn:AutoBillMarker != 1 ">
+
+				<sql type="procedure">
+{call proc_iterateExeProc(select  id as id3@SPFieldLink:AccCode as AccCode3@SPFieldLink:CompanyCode as CompanyCode3@SPFieldLink:DebitAmount as DebitAmount3@SPFieldLink:LendAmount as LendAmount3@SPFieldLink:Currency as Currency3@SPFieldLink:CurrencyRate as CurrencyRate3@SPFieldLink:DebitCurrencyAmount as DebitCurrencyAmount3@SPFieldLink:LendCurrencyAmount as LendCurrencyAmount3 from tblAccDetail where (AccCode like '1123%') and f_ref='@ValueofDB:tblAccMain_id' and (CompanyCode is not null or CompanyCode != ''),proc_deleteComIni,@id3@ParamLink:'3',@retCode,@retVal)}
+		</sql>
+</exec>
+<!--应收-->
+<exec condition="('@SqlReturn:AccCode2'.length &gt; 0 &amp;&amp; '@SqlReturn:AccCode2' != 'null') &amp;&amp; @SqlReturn:AutoBillMarker != 1 &amp;&amp; ('@SqlReturn:CompanyCode2'.length &gt; 0 &amp;&amp; '@SqlReturn:CompanyCode2' != 'null')">
+
+		<sql type="procedure">
+{call proc_iterateExeProc(select  id as id2@SPFieldLink:AccCode as AccCode2@SPFieldLink:CompanyCode as CompanyCode2@SPFieldLink:DebitAmount as DebitAmount2@SPFieldLink:LendAmount as LendAmount2@SPFieldLink:Currency as Currency2@SPFieldLink:CurrencyRate as CurrencyRate2@SPFieldLink:DebitCurrencyAmount as DebitCurrencyAmount2@SPFieldLink:LendCurrencyAmount as LendCurrencyAmount2 from tblAccDetail where (AccCode like '1122%') and f_ref='@ValueofDB:tblAccMain_id' and (CompanyCode is not null or CompanyCode != ''),proc_deleteComIni,@id2@ParamLink:'2',@retCode,@retVal)}
+		</sql>
+</exec>
+<!--预收-->
+<exec condition="('@SqlReturn:AccCode4'.length &gt; 0 &amp;&amp; '@SqlReturn:AccCode4' != 'null') &amp;&amp; @SqlReturn:AutoBillMarker != 1 &amp;&amp; ('@SqlReturn:CompanyCode4'.length &gt; 0 &amp;&amp; '@SqlReturn:CompanyCode4' != 'null')">
+
+		
+		<sql type="procedure">
+{call proc_iterateExeProc(select id as id4@SPFieldLink:AccCode as AccCode4@SPFieldLink:CompanyCode as CompanyCode4@SPFieldLink:DebitAmount as DebitAmount4@SPFieldLink:LendAmount as LendAmount4@SPFieldLink:Currency as Currency4@SPFieldLink:CurrencyRate as CurrencyRate4@SPFieldLink:DebitCurrencyAmount as DebitCurrencyAmount4@SPFieldLink:LendCurrencyAmount as LendCurrencyAmount4 from tblAccDetail where (AccCode like '2203%') and f_ref='@ValueofDB:tblAccMain_id' and (CompanyCode is not null or CompanyCode != ''),proc_deleteComIni,@id4@ParamLink:'4',@retCode,@retVal)}
+		</sql>
+</exec>
+</sql>
+
+<sql type="condition">
+<condition>
+<!--凭证扩展按钮反审核-->
+<select>select tblAccMain.id,tblAccMain.workFlowNodeName from tblAccMain where id=@ValueofDB:tblAccMain_id</select>
+<select>select EmpFullName from tblEmployee where id=@Sess:UserId</select>
+</condition>
+<!--每次审核保留最后一次审核人或反审核到主表,同时插入审核日志-->
+<exec condition="'@MEM:tblAccMain_IsStatart'=='1'&amp;&amp;'@SqlReturn:workFlowNodeName' == 'finish'">
+<sql>update tblAccMain set workFlowNodeName='notApprove' where id=@SqlReturn:id</sql>
+</exec>
+<exec condition="'@MEM:tblAccMain_IsStatart'=='1'&amp;&amp;'@SqlReturn:workFlowNodeName' == 'notApprove'">
+<error>workFlowNodeName.notApprove.error</error> 
+</exec>
+</sql>
+
+</define>
+<!--=====================================================以上代码：凭证管理=============================================-->
+</defineSqls>

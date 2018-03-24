@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="BuyOrderDetGoodsFirst"  type="checkBox"  desc="采购订单多单引用采购询价单父弹窗" > 
+		<orderBy>tblBuyAskPrice.BillDate,tblBuyAskPrice.BillNo</orderBy>
+		<defineSQL>
+from tblBuyAskPrice 
+left join tblCompany on tblCompany.classCode=tblBuyAskPrice.CompanyCode
+ left join tblDepartment on tblDepartment.classCode=tblBuyAskPrice.DepartmentCode
+      where 1=1  and ((tblBuyAskPrice.CompanyCode='@ValueofDB:CompanyCode' and (len(isnull(tblBuyAskPrice.Priceusefullife,''))=0 or tblBuyAskPrice.Priceusefullife&gt;='@ValueofDB:BillDate') and tblBuyAskPrice.workFlowNodeName = 'finish') and tblBuyAskPrice.BillDate &lt;='@ValueofDB:BillDate')
+		</defineSQL>
+		<displayFields>
+			<field name="tblBuyAskPrice.BillDate" parentDisplay="false" width="70" searchType="scope" />
+			<field name="tblBuyAskPrice.BillNo" display="@TABLENAME.BuyAskPriceID" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblCompany.[tblCompany_1]" parentDisplay="false" width="70" />
+			<field name="tblDepartment.DeptFullName" display="@TABLENAME.DepartmentCode" parentDisplay="false" width="50" />
+			<field name="tblBuyAskPrice.TotalAmount" parentDisplay="false" width="70" searchType="scope" />
+			<field name="tblBuyAskPrice.TotalTaxAmount" parentDisplay="false" width="70" searchType="scope" />
+		</displayFields>
+		<saveFields>
+			<field name="tblBuyAskPrice.id" parentName="@TABLENAME.BuyAskPriceID" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

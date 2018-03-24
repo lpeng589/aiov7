@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectAccCodeC_v2" type="checkBox" version="2">
+     <table>tblAccTypeInfo</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag>true</saveParentFlag>
+     <defineSQL>
+  from tblAccTypeInfo
+     </defineSQL>
+     <classCode>tblAccTypeInfo.classCode</classCode>
+     <remark>全部科目,回填AccCode,选择父级能够查询子级数据</remark>
+     <condition>(tblAccTypeInfo.statusId!='-1')</condition>
+     <changeCond></changeCond>
+     <orderBy>tblAccTypeInfo.AccNumber,tblAccTypeInfo.AccName</orderBy>
+     <displayFields>
+          <field name="tblAccTypeInfo.AccNumber" width="100" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+          <field name="tblAccTypeInfo.AccName" width="180" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+          <field name="tblAccTypeInfo.PyCode" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblAccTypeInfo.classCode" parentName="AccCode" relationKey="false" hidden="true" />
+          <field name="tblAccTypeInfo.isCatalog" parentName="isCatalog" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

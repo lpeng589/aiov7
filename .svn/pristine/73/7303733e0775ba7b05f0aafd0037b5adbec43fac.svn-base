@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="tblSalseQuoteDet_quote_tblBuyAskPricexs" type="checkBox">
+     <table>tblBuyAskPriceDet,tblBuyAskPrice,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblGoods.GoodsNumber f1,
+      tblGoods.GoodsFullName f2,
+      tblGoods.GoodsSpec f3,
+      tblGoods.Spec1 f4,
+      tblGoods.Spec2 f5,
+      tblGoods.Spec3 f6,
+      tblGoods.Validity f7,
+      tblGoods.GoodsFullNamePYM f8,
+      tblGoods.BaseUnit f9,
+      tblGoods.BarCode f10,
+      tblBuyAskPriceDet.BatchNo f11,
+      tblBuyAskPriceDet.Inch f12,
+      tblBuyAskPriceDet.Hue f13,
+      tblBuyAskPriceDet.yearNO f14,
+      tblBuyAskPriceDet.ProDate f15,
+      tblBuyAskPriceDet.Availably f16,
+      tblBuyAskPriceDet.Qty f17,
+      tblBuyAskPriceDet.Price f18,
+      tblBuyAskPriceDet.Amount f19,
+      (case tblGoods.isCatalog when 0 then tblStocks.lastQty else -99999999 end) f20,
+      (case tblGoods.isCatalog when 0 then tblStocks.UseQty else -99999999 end) f21,
+      tblBuyAskPrice.id f22,
+      tblBuyAskPriceDet.id f23,
+      tblGoods.classCode f24,
+      tblBuyAskPriceDet.SecUnit f25,
+      tblBuyAskPriceDet.BaseQty f26,
+      tblBuyAskPriceDet.SecQty f27,
+      tblBuyAskPriceDet.Discount f28,
+      tblBuyAskPrice.BillDate f29,
+      tblBuyAskPrice.BillNo f30
+  from tblBuyAskPriceDet 
+left join tblBuyAskPrice on tblBuyAskPriceDet.f_ref=tblBuyAskPrice.id
+left join tblGoods on tblBuyAskPriceDet.goodsCode=tblGoods.classCode
+left join (select GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,sum(LastQty) as LastQty,sum(tblStocks.LastQty+tblStocks.inQtyNotAudit+tblStocks.SInQtyNotAudit-tblStocks.outQtyNotAudit-tblStocks.BOutQtyNotAudit) as UseQty from tblStocks where 2=2 and tblStocks.StockCode='@ValueofDB:StockCode' and tblStocks.StockCode='@ValueofDB:@TABLENAME_StockCode' and BatchNo='@ValueofDB:@TABLENAME_BatchNo' and Inch='@ValueofDB:@TABLENAME_Inch' and Hue='@ValueofDB:@TABLENAME_Hue' and yearNO='@ValueofDB:@TABLENAME_yearNO' and ProDate='@ValueofDB:@TABLENAME_ProDate' and Availably='@ValueofDB:@TABLENAME_Availably' and tblStocks.LastQty&gt;0 GROUP BY GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably) as tblStocks on tblStocks.GoodsCode=tblGoods.classCode and tblStocks.BatchNo=tblBuyAskPriceDet.BatchNo and tblStocks.Inch=tblBuyAskPriceDet.Inch and tblStocks.Hue=tblBuyAskPriceDet.Hue and tblStocks.yearNO=tblBuyAskPriceDet.yearNO and tblStocks.ProDate=tblBuyAskPriceDet.ProDate and tblStocks.Availably=tblBuyAskPriceDet.Availably 
+     </defineSQL>
+     <classCode></classCode>
+     <remark>销售报价多单引用采购询价</remark>
+     <condition>(tblBuyAskPrice.workFlowNodeName='finish'and (tblBuyAskPrice.Priceusefullife&gt;='@ValueofDB:BillDate'or len(tblBuyAskPrice.Priceusefullife)=0))</condition>
+     <changeCond>(tblGoods.statusid!='-1')</changeCond>
+     <orderBy>tblBuyAskPrice.BillDate,tblBuyAskPrice.BillNo,tblGoods.GoodsNumber</orderBy>
+     <displayFields>
+          <field name="tblBuyAskPrice.BillDate" width="70" searchType="scope" parentDisplay="false" orderBy="升" />
+          <field name="tblBuyAskPrice.BillNo" width="100" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.BuyAskPriceDetID" orderBy="升" />
+          <field name="tblGoods.[tblGoods]"  width="120" parentDisplay="true" orderBy="升" /> 
+          <field name="tblBuyAskPriceDet.BatchNo" width="70" searchType="match" parentDisplay="true" />
+          <field name="tblBuyAskPriceDet.Inch" width="70" searchType="match" parentDisplay="true" />
+          <field name="tblBuyAskPriceDet.Hue" width="70" searchType="match" parentDisplay="true" />
+          <field name="tblBuyAskPriceDet.yearNO" width="70" searchType="match" parentDisplay="true" />
+          <field name="tblBuyAskPriceDet.ProDate" width="70" searchType="equal" parentDisplay="true" />
+          <field name="tblBuyAskPriceDet.Availably" width="70" searchType="equal" parentDisplay="true" />
+          <field name="tblBuyAskPriceDet.Qty" width="100" parentDisplay="true" />
+          <field name="tblBuyAskPriceDet.Price" width="100" parentDisplay="true" />
+          <field name="tblBuyAskPriceDet.Amount" width="100" parentDisplay="true" />
+          <field name="(case tblGoods.isCatalog when 0 then tblStocks.lastQty else -99999999 end)" width="100" parentDisplay="false" asName="tblStocks.lastQty" display="tblStocks.lastQty" />
+          <field name="(case tblGoods.isCatalog when 0 then tblStocks.UseQty else -99999999 end)" width="100" parentDisplay="false" asName="ViewVirtualStock.UseQty" display="ViewVirtualStock.UseQty" />
+     </displayFields>
+     <saveFields>
+          <field name="tblGoods.[tblGoods]" parentName="@TABLENAME.tblGoods_GoodsNumber" relationKey="false" hidden="false" orderBy="升" />
+          <field name="tblBuyAskPriceDet.BatchNo" parentName="@TABLENAME.BatchNo" relationKey="false" hidden="false" />
+          <field name="tblBuyAskPriceDet.Inch" parentName="@TABLENAME.Inch" relationKey="false" hidden="false" />
+          <field name="tblBuyAskPriceDet.Hue" parentName="@TABLENAME.Hue" relationKey="false" hidden="false" />
+          <field name="tblBuyAskPriceDet.yearNO" parentName="@TABLENAME.yearNO" relationKey="false" hidden="false" />
+          <field name="tblBuyAskPriceDet.ProDate" parentName="@TABLENAME.ProDate" relationKey="false" hidden="false" />
+          <field name="tblBuyAskPriceDet.Availably" parentName="@TABLENAME.Availably" relationKey="false" hidden="false" />
+          <field name="tblBuyAskPriceDet.Qty" parentName="@TABLENAME.Qty" relationKey="false" hidden="false" />
+          <field name="tblBuyAskPriceDet.Price" parentName="@TABLENAME.Price" relationKey="false" hidden="false" />
+          <field name="tblBuyAskPriceDet.Amount" parentName="@TABLENAME.Amount" relationKey="false" hidden="false" />
+          <field name="(case tblGoods.isCatalog when 0 then tblStocks.lastQty else -99999999 end)" parentName="@TABLENAME.tblStocks_lastQty" display="tblStocks.lastQty" relationKey="false" hidden="true" />
+          <field name="(case tblGoods.isCatalog when 0 then tblStocks.UseQty else -99999999 end)" parentName="@TABLENAME.ViewVirtualStock_UseQty" display="ViewVirtualStock.UseQty" relationKey="false" hidden="true" />
+          <field name="tblBuyAskPrice.id" parentName="@TABLENAME.BuyAskPriceDetID" display="@TABLENAME.BuyAskPriceDetID" relationKey="true" hidden="true" />
+          <field name="tblBuyAskPriceDet.id" parentName="@TABLENAME.SourceID" relationKey="false" hidden="true" />
+          <field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="false" hidden="true" />
+          <field name="tblBuyAskPriceDet.SecUnit" parentName="@TABLENAME.SecUnit" relationKey="false" hidden="false" />
+          <field name="tblBuyAskPriceDet.BaseQty" parentName="@TABLENAME.BaseQty" relationKey="false" hidden="false" />
+          <field name="tblBuyAskPriceDet.SecQty" parentName="@TABLENAME.SecQty" relationKey="false" hidden="false" />
+          <field name="tblBuyAskPriceDet.Discount" parentName="@TABLENAME.Discount" relationKey="false" hidden="false" />
+     </saveFields>
+</select>
+</popupSelect>

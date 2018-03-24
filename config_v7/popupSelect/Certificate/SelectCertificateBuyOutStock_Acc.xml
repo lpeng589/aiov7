@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectCertificateBuyOutStock_Acc" type="checkBox">
+     <table>tblBuyOutStock,tblCompany,tblEmployee,tblDepartment</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      tblBuyOutStock.id f1,
+      tblBuyOutStock.BillDate f2,
+      tblBuyOutStock.BillNo f3,
+      tblBuyOutStock.InVoiceType f4,
+      tblCompany.ComFullName f5,
+      tblEmployee.EmpFullName f6,
+      tblDepartment.DeptFullName f7,
+      tblBuyOutStock.TotalTaxAmount f8,
+      tblBuyOutStock.CurTotalAmount f9,
+      tblBuyOutStock.AlreadyPayAmt f10,
+      tblBuyOutStock.CurAlreadyPayAmt f11
+  from tblBuyOutStock 
+left join tblCompany on tblBuyOutStock.CompanyCode = tblCompany.classCode 
+left join tblEmployee on tblEmployee.id= tblBuyOutStock.employeeid
+left join tblDepartment on tblDepartment.classcode=tblBuyOutStock.departmentcode
+     </defineSQL>
+     <classCode></classCode>
+     <condition>(AccountAmount!=0 or TotalTaxAmount!=0 or (select COUNT(0) from tblBuyOutStockDet where f_ref=tblBuyOutStock.id and CostAmount!=0)>0) and tblBuyOutStock.workFlowNodeName = 'finish' and LEN(CertificateNo)=0</condition>
+     <changeCond></changeCond>
+     <orderBy>tblBuyOutStock.BillDate,tblBuyOutStock.BillNo</orderBy>
+     <displayFields>
+          <field name="tblBuyOutStock.BillDate" width="100" searchType="scope" keySearch="true" parentDisplay="false" />
+          <field name="tblBuyOutStock.BillNo" width="120" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblBuyOutStock.InVoiceType" width="80" searchType="match" parentDisplay="false" />
+          <field name="tblCompany.ComFullName" width="150" searchType="match" parentDisplay="false" display="tblBuyOutStock.CompanyCode"/>
+          <field name="tblEmployee.EmpFullName" width="85" searchType="match" parentDisplay="false" display="tblBuyOutStock.EmployeeID"/>
+          <field name="tblDepartment.DeptFullName" width="85" searchType="match" parentDisplay="false" display="tblBuyOutStock.DepartmentCode"/>
+          <field name="tblBuyOutStock.TotalTaxAmount" width="90" parentDisplay="false" />
+          <field name="tblBuyOutStock.CurTotalAmount" width="90" parentDisplay="false" />
+          <field name="tblBuyOutStock.AlreadyPayAmt" width="110" parentDisplay="false" />
+          <field name="tblBuyOutStock.CurAlreadyPayAmt" width="110" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblBuyOutStock.id" parentName="@TABLENAME.id" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

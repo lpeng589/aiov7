@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="tblBuyInStockDet_quote_tblBuyOrderDet">
+     <table>viewbuyorder,tblGoods,tblBuyOrderDet</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      viewbuyorder.id f1,
+      tblGoods.GoodsNumber f2,
+      tblGoods.GoodsFullName f3,
+      tblGoods.GoodsSpec f4,
+      tblGoods.GoodsFullNamePYM f5,
+      tblGoods.Spec1 f6,
+      tblGoods.Spec2 f7,
+      tblGoods.Spec3 f8,
+      tblGoods.BarCode f9,
+      viewbuyorder.BatchNo f10,
+      viewbuyorder.Inch f11,
+      viewbuyorder.Hue f12,
+      viewbuyorder.yearNO f13,
+      tblBuyOrderDet.ProDate f14,
+      tblBuyOrderDet.Availably f15,
+      viewbuyorder.Qty f16,
+      tblBuyOrderDet.Price f17,
+      tblBuyOrderDet.InQty f18,
+      tblBuyOrderDet.NotInQty f19
+  from viewbuyorder noRight
+				left join tblGoods on viewbuyorder.GoodsCode=tblGoods.classCode
+				left join tblBuyOrderDet on tblBuyOrderDet.id=viewbuyorder.id
+     </defineSQL>
+     <classCode></classCode>
+     <remark>采购入库明细引用采购订单明细</remark>
+     <condition>viewbuyorder.FinishStatus=0 and tblGoods.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.[tblGoods]" width="120" parentDisplay="true" orderBy="升" />
+          <field name="viewbuyorder.BatchNo" width="120"  parentDisplay="false" />
+          <field name="viewbuyorder.Inch" width="70"  parentDisplay="false" />
+          <field name="viewbuyorder.Hue" width="70"  parentDisplay="false" />
+          <field name="viewbuyorder.yearNO" width="70"  parentDisplay="false" />
+          <field name="tblBuyOrderDet.ProDate" width="70"  parentDisplay="false" />
+          <field name="tblBuyOrderDet.Availably" width="70"  parentDisplay="false" />
+          <field name="viewbuyorder.Qty" width="100" parentDisplay="false" />
+          <field name="tblBuyOrderDet.Price" width="100" parentDisplay="false" />
+          <field name="tblBuyOrderDet.InQty" width="100" parentDisplay="false" />
+          <field name="tblBuyOrderDet.NotInQty" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="viewbuyorder.id" parentName="@TABLENAME.SourceID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

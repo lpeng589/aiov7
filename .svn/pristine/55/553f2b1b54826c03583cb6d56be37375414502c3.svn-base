@@ -1,0 +1,363 @@
+function $m(value){
+	return document.getElementById(value) ;
+}
+
+function mywin()
+{
+	this.winlist = new Array();   
+	this.winIndex = 0 ;
+	this.maxWins = 20;				
+	this.tagTitleWidth = 110;		
+	this.indentWidth = 10;		
+	this.currentwin = null;
+	this.addwin = addwin;                     
+	this.removewin = removewin;                    
+	this.removeall = removeall;                                   
+	this.activewin = activewin;                   
+	this.container = container;
+	this.padLeft = padLeft;					
+	this.padRight = padRight;				
+	this.scrollWidth = scrollWidth;
+	
+	function container(url,title)
+	{
+	  if(url.indexOf("ReportDataAction.do")>-1) return -1; 	  
+		for(var i=0;i<this.winlist.length;i++)
+		{
+			if(this.winlist[i].mytitle == title && this.winlist[i].url == url)
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+	function activewin(oEl)                 
+	{
+		
+		if(oEl == null){
+			this.currentwin = null;
+			return
+		}
+		var tempzindex = this.currentwin.style.zIndex;
+		this.currentwin.wintitle.style.zIndex = this.currentwin.index;
+		this.currentwin.style.display = "none";
+		this.currentwin.wintitle.className = 'tab1';
+		oEl.wintitle.style.zIndex = tempzindex;
+		oEl.style.display = "";
+		oEl.wintitle.className = 'tab2';
+		this.currentwin = oEl;
+		var mleft = parseInt($m("titlelist").style.marginLeft);
+		if (isNaN(mleft))
+			mleft = 0;
+		var padleft = this.padLeft(oEl);
+		var padright = this.padRight(oEl);
+		var clientwidth = $m("titlelist").parentElement.clientWidth
+		if(padleft + mleft > clientwidth)
+			$m("titlelist").style.marginLeft = clientwidth - padleft;			
+			
+		if(padright < clientwidth && mleft < 0)
+		{
+			mleft = clientwidth - this.scrollWidth();
+			if(mleft>0)
+				mleft = 0;
+			$m("titlelist").style.marginLeft = mleft;
+		}
+		if(padleft + mleft < this.tagTitleWidth)
+			$m("titlelist").style.marginLeft = - (padleft - this.tagTitleWidth);
+			
+		mywindows.curIndex = this.currentwin.index;
+		var obj = oEl.getElementsByTagName('iframe')[0].document ;
+		var tempFlag = getIframeIndex(obj,oEl.getElementsByTagName('iframe')[0]) ;
+		if(tempFlag!=null){
+			if(obj.frames[tempFlag].window.showStatus!=undefined){
+				obj.frames[tempFlag].window.showStatus();
+			}
+		}
+	}
+	
+	function getIframeIndex(obj,srcObj){
+		for(var j=0;j<obj.frames.length;j++){
+			if(obj.frames[j].frameElement==srcObj){
+				return j ;
+			}
+		}
+		return null ;
+	}
+
+	function padLeft(oEl)
+	{
+		var padleft = oEl.index * this.tagTitleWidth - this.indentWidth*(oEl.index-1);
+		return padleft;
+	}
+	
+	
+	function refreshwin(obj)
+	{
+	     if (obj == null) {
+	         return;
+	     }
+	     var pageUrl = obj.url;
+	     var pageTitle = obj.wintitle;
+	     var title = pageTitle.title;
+	
+	     var index = this.container(pageUrl, title);
+	     this.removewin(obj);
+	     if (index > -1) {
+	         this.addwin(pageUrl, title, index);
+	     }
+	}
+
+	function padRight(oEl)
+	{
+		var count = (this.winlist.length - oEl.index) + 1;
+		var padright = this.tagTitleWidth * count - this.indentWidth*(count-1);
+		return padright;
+	}
+
+	function addwin(url,title,firstLoad)                                      
+	{
+		this.winIndex = this.winIndex + 1 ;
+		var con = this.container(url,title);
+		if(con>-1)
+		{
+			this.activewin(this.winlist[con]);
+			return;
+		}
+		if(this.winlist.length >= this.maxWins)
+		{
+			alert('$text.get("aio.lb.windowopennum") '+this.maxWins+'$text.get("aio.lb.windowopennumshow")');
+			return false;
+		}
+		var frameName = "" ;
+		if(url.indexOf("MessageQueryAction")>0){
+			frameName = "id='msgframe' name='msgframe'" ;
+		}
+		var loadUrl = "" ;
+		if(typeof(firstLoad)!="undefined"){
+			loadUrl = "&firstLoad="+firstLoad ;
+		}
+		oDIV = window.document.createElement( "TABLE" );
+		this.winlist[this.winlist.length] = oDIV;             
+		oDIV.url = url;
+		//oDIV.title = title ;
+		oDIV.mytitle = title ;
+		oDIV.index = this.winlist.length;
+		oDIV.divIndex = this.winIndex ;
+		oDIV.className = "win";
+		oDIV.width = "100%";
+		oDIV.height = "100%";
+		oDIV.cellSpacing = 0;
+		oDIV.cellpadding = 0;
+		oDIV.border = 0;
+		oDIV.insertRow(-1).insertCell(-1).innerHTML ="<iframe  "+frameName+" src='"+url+loadUrl+"&winCurIndex="+this.winIndex+"' class = 'win1' frameborder='0' scrolling=\"no\" width=\"100%\" height=\"100%\" ></iframe>";
+		var oTitle = window.document.createElement( "SPAN" );		
+		oTitle.win=oDIV;
+		oTitle.className ='wintitle';
+		oTitle.style.width = this.tagTitleWidth;
+		oTitle.className = "tab2";
+		oTitle.style.left = this.winlist.length == 1 ? 0 : this.winlist[this.winlist.length-2].wintitle.style.pixelLeft - this.indentWidth;
+		//oTitle.title = title;
+		title = subStr(title,12);
+		var oInTitle = window.document.createElement( "SPAN" );	
+		oInTitle.win = oTitle.win;	
+		oInTitle.style.width = this.tagTitleWidth-25;
+		oInTitle.className="tabTitle"
+		oInTitle.innerHTML= title == null ? "unkown windows" : title;
+		oInTitle.onclick = new Function("win.activewin(this.win);"); 
+		oInTitle.ondblclick = new Function("win.removewin(this.win)");
+		oTitle.oncontextmenu = function(){  popMenu(this.win.index,this.win.mytitle,this.win.url);};
+		
+		if(oDIV.index != 1){
+			var oTitleClose = window.document.createElement( "a" );
+			oTitleClose.win = oTitle.win;	
+			oTitleClose.className="tabClose";
+			//oTitleClose.href="javascript:void(0)";
+			oTitleClose.title='$text.get("multiwindow.lb.closecurrent")';
+			oTitleClose.onclick = new Function("win.removewin(this.win)");
+			oTitleClose.onmouseover = function(){oTitleClose.className="tabClose2";} ;
+			oTitleClose.onmouseout = function(){oTitleClose.className="tabClose";} ;
+			
+			oTitle.insertAdjacentElement( "beforeEnd" , oInTitle );
+			oTitle.insertAdjacentElement( "beforeEnd" , oTitleClose );	
+		}else{
+			var oTitleDest = window.document.createElement( "SPAN" );	
+			oTitleDest.win = oTitle.win;	
+			oTitleDest.style.width = 27;
+			oTitleDest.className="tabDest";
+			oTitle.insertAdjacentElement( "beforeEnd" , oTitleDest );	
+			oTitle.insertAdjacentElement( "beforeEnd" , oInTitle );
+		}
+		
+		if(this.currentwin != null) {
+			this.currentwin.wintitle.className = 'tab1';
+			this.currentwin.style.display = "none";
+			this.currentwin.wintitle.style.zIndex = this.currentwin.index;
+		}
+		oDIV.style.zIndex = this.maxWins + 1;
+		oTitle.style.zIndex = this.maxWins+1;
+		oDIV.wintitle = oTitle;
+		$m("titlelist").insertAdjacentElement( "beforeEnd" , oTitle );
+
+		var scrollwidth = this.scrollWidth();
+		if(scrollwidth > $m("titlelist").parentElement.clientWidth)
+		{
+			$m("titlelist").style.marginLeft = $m("titlelist").parentElement.clientWidth - scrollwidth-200;
+		}
+		worarea.style.display="none";
+		mywindows.parentNode.style.display = ""; 
+		mywindows.curIndex = oDIV.index; 
+		mywindows.insertAdjacentElement( "beforeEnd" , oDIV );
+		this.currentwin = oDIV;
+		return oDIV;
+	}
+
+	function scrollWidth()
+	{
+		var n = this.winlist.length;
+		var scrollwidth = this.tagTitleWidth*n - this.indentWidth*(n-1);
+		return scrollwidth;
+	}
+
+	function removewin(obj)       
+	{
+		
+		if(obj == null)return;
+		if(obj.index == 1){
+			return;
+		}
+		var temparr = new Array();
+		var afterwin = false; 
+		for(var i=0;i<this.winlist.length;i++)
+		{
+			if(afterwin) this.winlist[i].wintitle.style.left =  this.winlist[i].wintitle.style.pixelLeft + this.indentWidth;
+			if(this.winlist[i] != obj)
+				temparr[temparr.length] = this.winlist[i];
+			else
+				afterwin = true;
+		}
+		
+		this.winlist = temparr;
+		if(this.currentwin == obj){
+			
+			this.activewin(this.winlist[this.winlist.length-1]);
+		}
+		obj.wintitle.removeNode(true) ;
+		obj.removeNode(true) ;
+		obj = null;
+		if(this.winlist.length==0)
+		{
+		   worarea.style.display="";
+		   mywindows.parentNode.style.display = "none";
+		}
+	}
+
+	function removeall()      
+	{
+		var wincount = this.winlist.length;
+		for(var i=wincount-1;i>=1;i--)
+			this.removewin(this.winlist[i]);
+		//worarea.style.display="";
+		//mywindows.parentNode.style.display = "none";		
+	}
+}
+
+function tabScroll(direction)
+{
+	tabScrollStop();
+	direction == "right" ? tabMoveRight() : tabMoveLeft();
+}
+
+function tabMoveRight()
+{
+	tabMove("right",37);
+	timer=setTimeout(tabMoveRight,10);
+}
+
+function tabMoveLeft()
+{
+	tabMove("left",37);
+	timer=setTimeout(tabMoveLeft,10);
+}
+
+function tabScrollStop()
+{
+	clearTimeout(timer);
+	timer = null;
+}
+
+function tabMove(direction,speed)
+{
+	var mleft = parseInt($m("titlelist").style.marginLeft);
+	if (isNaN(mleft))
+		mleft = 0;
+	if(direction=="right")
+	{
+		if($m("titlelist").parentElement.clientWidth >= $m("titlelist").parentElement.scrollWidth)
+		{
+			tabScrollStop();
+			return;
+		}
+		else
+		{
+			$m("titlelist").style.marginLeft = mleft - speed;
+		}
+	}
+	else
+	{
+		if(mleft + speed >=0)
+		{
+			$m("titlelist").style.marginLeft = 0;
+			tabScrollStop();
+			return;
+		}
+		else
+		{
+			$m("titlelist").style.marginLeft = mleft + speed;
+		}
+	}
+	
+}
+var timer = null;
+var win = null;
+var wins = new Array();
+
+function init()
+{	
+    win =  new mywin();          
+}
+
+function AddWin(Url,Title,firstLoad)
+{ 
+	wins[wins.length] = win.addwin(Url, Title,firstLoad);
+	return wins[wins.length] ;                    
+}
+function subStr(str,len)
+{
+	var strlength=0;
+	var newstr = "";
+	for (var i=0;i<str.length;i++)
+	{
+		if(str.charCodeAt(i)>=1000)
+			strlength += 2;
+		else
+			strlength += 1;
+		if(strlength > len)
+		{
+			newstr += "...";
+			break;
+		}
+		else
+		{
+			newstr += str.substr(i,1);
+		}
+	}
+	return newstr;
+}
+
+function popMenu(index,title,url){
+	event.returnValue=false;
+    event.cancelBubble=true;
+	if(typeof(doPopMenu) != "undefined"){
+		doPopMenu(index,title,url);
+	}
+}

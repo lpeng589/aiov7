@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN" "http://struts.apache.org/dtds/struts-config_1_2.dtd">
+<struts-config>
+	<!--所有用户自定义模块可放在此处-->
+	<form-beans>
+		
+	</form-beans>
+	<!-- ========== Global Forward Definitions ============================== -->
+	<global-forwards>
+		
+	</global-forwards>	
+	<action-mappings>
+		
+	</action-mappings>
+
+</struts-config>

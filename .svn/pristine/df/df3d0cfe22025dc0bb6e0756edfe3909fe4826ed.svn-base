@@ -1,0 +1,134 @@
+
+window.onerror = function(){
+	//window.alert("错误信息："+argument[0]+";错误行号："+argument[3]+"(Mrp.js文件)");
+}
+function m(id){
+	return document.getElementById(id);
+}
+function n(name){
+	return document.getElementsByName(name);
+}
+//根据对象(的名称)全选或取消全选
+
+function checkThisCks(obj){
+	checkAll(obj.name,obj.checked);
+	
+}
+//
+function checkAll(name,ckAll){
+	var cbs = document.getElementsByName(name);
+	for(i=0;i<cbs.length;i++){
+		if(!cbs[i].disabled&&cbs[i].isPlace!="true"){
+			cbs[i].checked=ckAll;
+		}
+	}
+}
+//为什么用不了？
+
+function checkAll2(na){
+	var cbs = document.getElementsByName(na);
+	var flag = obj.checked;
+
+	for(i=1;i<cbs.length;i++){
+		cbs[i].checked=flag;
+	}
+}
+//得到复选框被选中的下标
+
+function getCheckedIndex(name){
+	var cbs = document.getElementsByName(name);
+	var indexs = new Array();
+	for(i=0;i<cbs.length;i++){
+		if(cbs[i].checked)
+			indexs[indexs.length]=i;
+	}
+	return indexs;
+}
+//不计算第一个多选框(一般指全选框)
+function getCheckedIndex1(name){
+	var cbs = document.getElementsByName(name);
+	var indexs = new Array();
+	for(i=1;i<cbs.length;i++){
+		if(cbs[i].checked)
+			indexs[indexs.length]=i-1;
+	}
+	return indexs;
+}
+//根据table的id获得表格行集
+function getRows(tableId){
+	return m(tableId).lastChild.childNodes;
+}
+//避免出现科学计数法
+
+function toFloat(val){
+	val = parseFloat(val);
+	document.write(val);
+}
+//选中单选第一个按钮
+
+function checkFirst(name){
+	var checkboxs = document.getElementsByName(name);
+	if(checkboxs[0])
+		document.getElementsByName(name)[0].checked="checked";
+}
+//删除表格行
+
+function delTableRow(id){
+	var rows = m(id).rows;
+	for(i=rows.length-1;i>=0;i--){
+		m(id).deleteRow(i);
+	}
+}
+//给行加上一个新的列
+//tr(Object)行对象，str(String)内容，isHtml(boolean)是HTML还是Text
+function addNewTd(tr,str,isHtml){
+	var td = document.createElement("td");
+	if(isHtml){
+		td.innerHTML=str;
+		td.width=30;
+	}else{
+		td.innerText=str;
+	}
+	tr.appendChild(td);
+}
+//得到复选框被选中与否的字符串
+function getCbCheckedStr(name){
+	var cbs = n(name);
+	var cb = new Array();
+	for(i=1;i<cbs.length;i++){
+		cb[cb.length]=cbs[i].checked;
+	}
+	return cb;
+}
+//获得表格一列的信息，以数组形式返回
+//tblId string:表格的Id，如果不存在，则提示错误信息。
+
+//colNum int：表格的列数从0开始，如果不是数字则为第一列
+
+//rowNumStart int:从哪一行开始默认为1
+//textFlag boolean:是取得text还是取得html，默认为text
+function getCellInfos(tblId,rowNumStart,colNum,textFlag){
+	var tbl = m(tblId);
+	if(!tbl){
+		alert("$text.get('mrp.js.tblIsNotExistandIdis')"+tblId);
+		return false;
+	}
+	colNum = parseInt(colNum);//将colNum转换为数字
+
+	rowNumStart = parseInt(rowNumStart);
+	if(isNaN(colNum))colNum=0;//如果不是数字则为0(第一列)
+	if(isNaN(rowNumStart))rowNumStart = 1;
+	var rows = tbl.rows;//取得表格的行
+	var res = new Array();//结果
+	var inner = "innerText";
+	if(!textFlag) inner="innerHTML";
+	for(i = rowNumStart;i<rows.length;i++){
+		res[res.length]=eval("rows[i].cells[colNum]."+inner)+"";//得到列值
+
+	}
+	return res;	
+}
+//去除左右空格
+String.prototype.trim = function(){
+	return this.replace(/(^\s*)|(\s*$)/g,"");
+}

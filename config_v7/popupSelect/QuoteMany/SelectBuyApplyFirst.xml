@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SelectBuyApplyFirst"  type="checkBox" > 
+		<orderBy>tblBuyApplication.BillDate,tblBuyApplication.BillNo</orderBy>
+		<defineSQL>
+from tblBuyApplication
+  left join tblDepartment on tblDepartment.classCode=tblBuyApplication.DepartmentCode
+ left join tblEmployee on tblEmployee.id=tblBuyApplication.EmployeeID
+      where 1=1  and (tblBuyApplication.BillDate&lt;='@ValueofDB:BillDate' and tblBuyApplication.workFlowNodeName = 'finish')
+		</defineSQL>
+		<displayFields>
+			<field name="tblBuyApplication.BillDate" parentDisplay="false" width="70" searchType="scope" keySearch="true" />
+			<field name="tblBuyApplication.BillNo" display="@TABLENAME.BuyApplyID" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblEmployee.EmpFullName" parentDisplay="false" width="100" />
+			<field name="tblDepartment.DeptFullName" parentDisplay="false" width="100" />
+		</displayFields>
+		<saveFields>
+			<field name="tblBuyApplication.id" parentName="@TABLENAME.BuyApplyID" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

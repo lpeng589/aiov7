@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectReceiveVarietal" type="checkBox">
+     <table>ViewSalesBillDet,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      ViewSalesBillDet.BillDate f1,
+      ViewSalesBillDet.BillNo f2,
+      ViewSalesBillDet.NotPayQty f3,
+      ViewSalesBillDet.TaxPrice f4,
+      ViewSalesBillDet.PayAmt f5,
+      ViewSalesBillDet.NeedPayAmt f6,
+      ViewSalesBillDet.CompanyCode f7,
+      ViewSalesBillDet.ExeBalAmt f8,
+      ViewSalesBillDet.id f9,
+      ViewSalesBillDet.GoodsCode f10,
+      ViewSalesBillDet.DetId f11,
+      ViewSalesBillDet.TaxAmount f12,
+      ViewSalesBillDet.ReceiveBillType f13,
+      ViewSalesBillDet.BillName f14,
+      ViewSalesBillDet.SalesOrderNO f15,
+      tblGoods.GoodsNumber f16,
+      tblGoods.GoodsFullName f17,
+      tblGoods.GoodsSpec f18,
+      tblGoods.Validity f19,
+      tblGoods.Varietal f20,
+      tblGoods.BaseUnit f21,
+      ViewSalesBillDet.BatchNo f22,
+      ViewSalesBillDet.Inch f23,
+      ViewSalesBillDet.Hue f24,
+      ViewSalesBillDet.yearNO f25
+  from ViewSalesBillDet
+  left join tblGoods on ViewSalesBillDet.GoodsCode=tblGoods.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <condition>(1=2 or ViewSalesBillDet.id='@ValueofDB:tblSaleReceiveDet_RefbillID' and ViewSalesBillDet.NotPayQty&gt;0)</condition>
+     <changeCond></changeCond>
+     <orderBy>ViewSalesBillDet.BillDate desc,ViewSalesBillDet.BillNo desc</orderBy>
+     <displayFields>
+          <field name="ViewSalesBillDet.BillDate" width="100" searchType="scope" parentDisplay="false" display="tblSaleReceive.BillDate" />
+          <field name="ViewSalesBillDet.BillNo" width="120" searchType="match" parentDisplay="false" display="tblSaleReceive.BillNo" />
+          <field name="ViewSalesBillDet.NotPayQty" width="80" parentDisplay="false" display="tblSalesOrderDet.NotPayQty" />
+          <field name="ViewSalesBillDet.TaxPrice" width="80" parentDisplay="false" display="tblSalesOrderDet.Price" />
+          <field name="tblGoods.GoodsNumber" width="100" searchType="match" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullName" width="150" searchType="match" parentDisplay="true" />
+          <field name="tblGoods.GoodsSpec" width="100" searchType="match" parentDisplay="false" />
+          <field name="tblGoods.Validity" width="80" parentDisplay="false" />
+          <field name="tblGoods.Varietal" width="80" searchType="equal" parentDisplay="false" />
+          <field name="tblGoods.BaseUnit" width="65" parentDisplay="false" />
+          <field name="ViewSalesBillDet.BatchNo" width="100" parentDisplay="false" display="tblSalesOrderDet.BatchNo" />
+          <field name="ViewSalesBillDet.Inch" width="70" parentDisplay="false" display="tblSalesOrderDet.Inch" />
+          <field name="ViewSalesBillDet.Hue" width="70" parentDisplay="false" display="tblSalesOrderDet.Hue" />
+          <field name="ViewSalesBillDet.yearNO" width="70" parentDisplay="false" display="tblSalesOrderDet.yearNO" />
+     </displayFields>
+     <saveFields>
+          <field name="ViewSalesBillDet.BillDate" parentName="@TABLENAME.RefBillDate" display="tblSaleReceive.BillDate" relationKey="false" hidden="true" />
+          <field name="ViewSalesBillDet.BillNo" parentName="@TABLENAME.RefbillNo" display="tblSaleReceive.BillNo" relationKey="false" hidden="true" />
+          <field name="ViewSalesBillDet.NotPayQty" parentName="@TABLENAME.Qty" display="tblSalesOrderDet.NotPayQty" relationKey="false" hidden="true" />
+          <field name="ViewSalesBillDet.TaxPrice" parentName="@TABLENAME.Price" display="tblSalesOrderDet.Price" relationKey="false" hidden="true" />
+          <field name="ViewSalesBillDet.PayAmt" parentName="@TABLENAME.SettledAmt" display="@TABLENAME.SettledAmt" relationKey="false" hidden="true" />
+          <field name="ViewSalesBillDet.NeedPayAmt" parentName="@TABLENAME.WexeBalAmt" display="@TABLENAME.WexeBalAmt" relationKey="false" hidden="true" />
+          <field name="ViewSalesBillDet.CompanyCode" parentName="@TABLENAME.CompanyCode" display="tblSalesOrder.CompanyCode" relationKey="false" hidden="true" />
+          <field name="ViewSalesBillDet.ExeBalAmt" parentName="@TABLENAME.ExeBalAmt" display="@TABLENAME.ExeBalAmt" relationKey="false" hidden="true" />
+          <field name="ViewSalesBillDet.id" parentName="@TABLENAME.RefbillID" display="@TABLENAME.RefbillID" relationKey="false" hidden="true" />
+          <field name="ViewSalesBillDet.GoodsCode" parentName="@TABLENAME.GoodsCode" display="@TABLENAME.GoodsCode" relationKey="true" hidden="true" />
+          <field name="ViewSalesBillDet.DetId" parentName="@TABLENAME.SourceID" display="@TABLENAME.SourceID" relationKey="false" hidden="true" />
+          <field name="ViewSalesBillDet.TaxAmount" parentName="@TABLENAME.BillAmt" display="@TABLENAME.BillAmt" relationKey="false" hidden="true" />
+          <field name="ViewSalesBillDet.ReceiveBillType" parentName="@TABLENAME.ReceiveBillType" display="@TABLENAME.ReceiveBillType" relationKey="false" hidden="true" />
+          <field name="ViewSalesBillDet.BillName" parentName="@TABLENAME.BillName" display="@TABLENAME.BillName" relationKey="false" hidden="true" />
+          <field name="ViewSalesBillDet.SalesOrderNO" parentName="@TABLENAME.SalesOrderID" display="@TABLENAME.SalesOrderID" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

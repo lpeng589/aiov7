@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="GoodsOutWithProPrice" type="checkBox">
+     <table>tblGoods,tblGoodsUnit,tblCustomerPriceDet</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblStocks.BatchNo f1,
+      tblStocks.Inch f2,
+      tblStocks.Hue f3,
+      tblStocks.yearNO f4,
+      tblStocks.ProDate f5,
+      tblStocks.Availably f6,
+      tblGoods.classCode f7,
+      tblGoodsUnit.SecUnit f8,
+      tblGoodsUnit.UnitD f9,
+      tblGoodsUnit.SecUnitD f10,
+      (case when isnull(tblCustomerPriceDet.Price,0)=0 then (case tblCompany.ComSalesType when 'FacePrice' then FacePrice  when 'ProSalesPrice' then ProSalesPrice when 'ProSalesPrice2' then ProSalesPrice2 when 'ProSalesPrice3' then ProSalesPrice3 when 'ProSalesPrice4' then ProSalesPrice4 when 'ProjectPrice' then ProjectPrice when 'ProSalesPrice5' then ProSalesPrice5 when 'ProSalesPrice6' then ProSalesPrice6 when 'ProSalesPrice7' then ProSalesPrice7 when 'ProSalesPrice8' then ProSalesPrice8 when 'ProSalesPrice9' then ProSalesPrice9 end) else tblCustomerPriceDet.Price end) f11,
+      tblGoods.AccountingPrice f12,
+      tblGoods.GoodsNumber f13,
+      tblGoods.GoodsFullName f14,
+      tblGoods.GoodsSpec f15,
+      tblGoods.Spec1 f16,
+      tblGoods.Spec2 f17,
+      tblGoods.Spec3 f18,
+      tblGoods.Validity f19,
+      tblGoods.GoodsFullNamePYM f20,
+      tblGoods.BaseUnit f21,
+      tblGoods.BarCode f22,
+      (case tblGoods.isCatalog when 0 then tblStocks.lastQty else -99999999 end) f23,
+      (case tblGoods.isCatalog when 0 then tblStocks.UseQty else -99999999 end) f24
+  from tblGoods left join (select GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,sum(LastQty) as LastQty,sum(tblStocks.LastQty+tblStocks.inQtyNotAudit+tblStocks.SInQtyNotAudit-tblStocks.outQtyNotAudit-tblStocks.BOutQtyNotAudit) as UseQty from tblStocks where 2=2 and tblStocks.StockCode='@ValueofDB:StockCode' and tblStocks.StockCode='@ValueofDB:@TABLENAME_StockCode' and BatchNo='@ValueofDB:@TABLENAME_BatchNo' and Inch='@ValueofDB:@TABLENAME_Inch' and Hue='@ValueofDB:@TABLENAME_Hue' and yearNO='@ValueofDB:@TABLENAME_yearNO' and ProDate='@ValueofDB:@TABLENAME_ProDate' and Availably='@ValueofDB:@TABLENAME_Availably' and tblStocks.LastQty&gt;0 GROUP BY GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably) as tblStocks on tblStocks.GoodsCode=tblGoods.classCode 
+  left join tblGoodsUnit with(index(IX_tblGoodsUnit_refdefault)) on tblGoodsUnit.f_ref=tblGoods.id and tblGoodsUnit.DefaultAssit=1
+  left join tblCustomerPriceDet on tblCustomerPriceDet.GoodsCode=tblGoods.classCode and tblCustomerPriceDet.f_ref=(select id from tblCustomerPrice where CompanyCode='@ValueofDB:CompanyCode')
+  left join tblCompany on tblCompany.classCode='@ValueofDB:CompanyCode'
+     </defineSQL>
+     <classCode>tblGoods.classCode</classCode>
+     <remark>回填最近售价或预设售价</remark>
+     <condition></condition>
+     <changeCond>tblGoods.workFlowNodeName='finish' and tblGoods.statusid!='-1'</changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName,tblStocks.ProDate,tblStocks.Availably</orderBy>
+     <displayFields>
+          <field name="tblGoods.GoodsNumber" width="120" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+          <field name="tblGoods.GoodsFullName" width="150" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.GoodsCode" orderBy="升" />
+          <field name="tblGoods.GoodsSpec" width="150" searchType="match" keySearch="true" parentDisplay="true" />
+          <field name="tblGoods.Spec1" width="100" searchType="match" parentDisplay="true" hiddenInput="true" orderBy="  " />
+          <field name="tblGoods.Spec2" width="100" searchType="match" parentDisplay="true" hiddenInput="true" orderBy="  " />
+          <field name="tblGoods.Spec3" width="100" searchType="match" parentDisplay="true" hiddenInput="true" />
+          <field name="tblGoods.Validity" width="70" searchType="equal" parentDisplay="true" hiddenInput="true" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="true" hiddenInput="true" />
+          <field name="tblGoods.BaseUnit" width="50" searchType="match" parentDisplay="true" />
+          <field name="tblGoods.BarCode" width="100" searchType="match" keySearch="true" parentDisplay="true" hiddenInput="true" />
+          <field name="tblStocks.BatchNo" width="120" searchType="match" parentDisplay="true" />
+          <field name="tblStocks.Inch" width="70" searchType="match" parentDisplay="true" />
+          <field name="tblStocks.Hue" width="70" searchType="match" parentDisplay="true" />
+          <field name="tblStocks.yearNO" width="70" searchType="match" parentDisplay="true" />
+          <field name="tblStocks.ProDate" width="70" searchType="equal" parentDisplay="true" orderBy="升" />
+          <field name="tblStocks.Availably" width="70" searchType="equal" parentDisplay="true" orderBy="升" />
+          <field name="(case tblGoods.isCatalog when 0 then tblStocks.lastQty else -99999999 end)" asName="tblStocks.lastQty" width="100" parentDisplay="true" display="tblStocks.lastQty" />
+          <field name="(case tblGoods.isCatalog when 0 then tblStocks.UseQty else -99999999 end)" asName="ViewVirtualStock.UseQty" width="100" parentDisplay="true" display="ViewVirtualStock.UseQty" />
+          <field name="(case when isnull(tblCustomerPriceDet.Price,0)=0 then (case (select ComSalesType from tblCompany where CompanyCode='@ValueofDB:CompanyCode') when 'FacePrice' then FacePrice  when 'ProSalesPrice' then ProSalesPrice when 'ProSalesPrice2' then ProSalesPrice2 when 'ProSalesPrice3' then ProSalesPrice3 when 'ProSalesPrice4' then ProSalesPrice4 when 'ProjectPrice' then ProjectPrice when 'ProSalesPrice5' then ProSalesPrice5 when 'ProSalesPrice6' then ProSalesPrice6 when 'ProSalesPrice7' then ProSalesPrice7 when 'ProSalesPrice8' then ProSalesPrice8 when 'ProSalesPrice9' then ProSalesPrice9 end) else tblCustomerPriceDet.Price end)" width="100" parentDisplay="false" display="@TABLENAME.Price" />
+     </displayFields>
+     <saveFields>
+          <field name="tblStocks.BatchNo" parentName="@TABLENAME.BatchNo" relationKey="false" hidden="false" />
+          <field name="tblStocks.Inch" parentName="@TABLENAME.Inch" relationKey="false" hidden="false" />
+          <field name="tblStocks.Hue" parentName="@TABLENAME.Hue" relationKey="false" hidden="false" />
+          <field name="tblStocks.yearNO" parentName="@TABLENAME.yearNO" relationKey="false" hidden="false" />
+          <field name="tblStocks.ProDate" parentName="@TABLENAME.ProDate" relationKey="false" hidden="false" orderBy="升" />
+          <field name="tblStocks.Availably" parentName="@TABLENAME.Availably" relationKey="false" hidden="false" orderBy="升" />
+          <field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true" />
+          <field name="tblGoodsUnit.SecUnit" parentName="@TABLENAME.SecUnit" relationKey="false" hidden="true" />
+          <field name="tblGoodsUnit.UnitD" parentName="@TABLENAME.BaseQty" relationKey="false" hidden="false" />
+          <field name="tblGoodsUnit.SecUnitD" parentName="@TABLENAME.SecQty" relationKey="false" hidden="false" />
+          <field name="(case when isnull(tblCustomerPriceDet.Price,0)=0 then (case (select ComSalesType from tblCompany where CompanyCode='@ValueofDB:CompanyCode') when 'FacePrice' then FacePrice  when 'ProSalesPrice' then ProSalesPrice when 'ProSalesPrice2' then ProSalesPrice2 when 'ProSalesPrice3' then ProSalesPrice3 when 'ProSalesPrice4' then ProSalesPrice4 when 'ProjectPrice' then ProjectPrice when 'ProSalesPrice5' then ProSalesPrice5 when 'ProSalesPrice6' then ProSalesPrice6 when 'ProSalesPrice7' then ProSalesPrice7 when 'ProSalesPrice8' then ProSalesPrice8 when 'ProSalesPrice9' then ProSalesPrice9 end) else tblCustomerPriceDet.Price end)" parentName="@TABLENAME.Price" display="@TABLENAME.Price" relationKey="false" hidden="true" />
+          <field name="tblGoods.AccountingPrice" parentName="@TABLENAME.AccountingPrice" relationKey="false" hidden="false" />
+     </saveFields>
+</select>
+</popupSelect>

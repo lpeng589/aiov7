@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectCertificateFixedDevalue_Acc" type="checkBox">
+     <table>tblFixedAssetDevalue</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      tblFixedAssetDevalue.id f1,
+      tblFixedAssetDevalue.BillDate f2,
+      tblFixedAssetDevalue.BillNo f3,
+      tblFixedAssetAdd.GoodsNumber f4,
+      tblFixedAssetAdd.GoodsName f5,
+      tblFixedAssetAdd.GoodsSpec f6,
+      tblFixedAssetDevalue.DevalueAmt f7,
+      tblFixedAssetDevalue.originalWorth f8,
+      tblFixedAssetDevalue.Remark f9
+  from tblFixedAssetDevalue 
+  left join tblFixedAssetAdd on tblFixedAssetDevalue.AssetsAddId=tblFixedAssetAdd.id
+     </defineSQL>
+     <classCode></classCode>
+     <condition>tblFixedAssetDevalue.workFlowNodeName = 'finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblFixedAssetDevalue.BillDate</orderBy>
+     <displayFields>
+          <field name="tblFixedAssetDevalue.BillDate" width="70" searchType="scope" keySearch="true" parentDisplay="false" />
+          <field name="tblFixedAssetDevalue.BillNo" width="100" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblFixedAssetAdd.GoodsNumber"  searchType="match" keySearch="true" width="120" parentDisplay="false" />
+          <field name="tblFixedAssetAdd.GoodsName"  searchType="match" keySearch="true" width="150" parentDisplay="false" />
+          <field name="tblFixedAssetAdd.GoodsSpec"  searchType="match" keySearch="true" width="150" parentDisplay="false" />
+          <field name="tblFixedAssetDevalue.DevalueAmt" width="100" parentDisplay="false" />
+          <field name="tblFixedAssetDevalue.originalWorth" width="100" parentDisplay="false" />
+          <field name="tblFixedAssetDevalue.Remark" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblFixedAssetDevalue.id" parentName="@TABLENAME.id" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

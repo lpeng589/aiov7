@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="HueOut">
+     <table>tblStocks</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      isnull(tblStocks.BatchNo,'') f1,
+      isnull(tblStocks.Inch,'') f2,
+      isnull(tblStocks.Hue,'') f3,
+      isnull(tblStocks.yearNO,'') f4,
+      isnull(tblStocks.ProDate,'') f5,
+      isnull(tblStocks.Availably,'') f6,
+      SUM(lastQty) f7
+  from tblStocks 
+     </defineSQL>
+     <classCode></classCode>
+     <remark>颜色</remark>
+     <condition>tblStocks.GoodsCode='@ValueofDB:@TABLENAME_GoodsCode' and tblStocks.StockCode='@ValueofDB:@TABLENAME_StockCode' and tblStocks.StockCode='@ValueofDB:StockCode' and (LEN(isnull(BatchNo,''))&gt;0 or LEN(isnull(Inch,''))&gt;0 or LEN(isnull(Hue,''))&gt;0 or LEN(isnull(yearNO,''))&gt;0 or LEN(isnull(ProDate,''))&gt;0 or LEN(isnull(Availably,''))&gt;0) group by isnull(BatchNo,''),isnull(Inch,''),isnull(Hue,''),isnull(yearNO,''),isnull(ProDate,''),isnull(Availably,'')</condition>
+     <changeCond></changeCond>
+     <orderBy>isnull(tblStocks.Hue,'')</orderBy>
+     <displayFields>
+          <field name="isnull(tblStocks.BatchNo,'')" width="120" searchType="match" parentDisplay="true" asName="@TABLENAME.BatchNo" display="@TABLENAME.BatchNo" />
+          <field name="isnull(tblStocks.Inch,'')" width="70" searchType="match" parentDisplay="true" asName="@TABLENAME.Inch" display="@TABLENAME.Inch" />
+          <field name="isnull(tblStocks.Hue,'')" width="70" searchType="match" parentDisplay="true" asName="@TABLENAME.Hue" display="@TABLENAME.Hue" orderBy="升" />
+          <field name="isnull(tblStocks.yearNO,'')" width="70" searchType="match" parentDisplay="true" asName="@TABLENAME.yearNO" display="@TABLENAME.yearNO" />
+          <field name="isnull(tblStocks.ProDate,'')" width="80" searchType="equal" parentDisplay="true" asName="@TABLENAME.ProDate" display="@TABLENAME.ProDate" />
+          <field name="isnull(tblStocks.Availably,'')" width="80" searchType="equal" parentDisplay="true" asName="@TABLENAME.Availably" display="@TABLENAME.Availably" />
+          <field name="SUM(lastQty)" width="90" parentDisplay="false" asName="tblStocks.lastQty" display="tblStocks.lastQty" />
+     </displayFields>
+     <saveFields>
+          <field name="isnull(tblStocks.BatchNo,'')" parentName="@TABLENAME.BatchNo" display="@TABLENAME.BatchNo" relationKey="false" hidden="false" />
+          <field name="isnull(tblStocks.Inch,'')" parentName="@TABLENAME.Inch" display="@TABLENAME.Inch" relationKey="false" hidden="false" />
+          <field name="isnull(tblStocks.Hue,'')" parentName="@TABLENAME.Hue" display="@TABLENAME.Hue" relationKey="true" hidden="false" orderBy="升" />
+          <field name="isnull(tblStocks.yearNO,'')" parentName="@TABLENAME.yearNO" display="@TABLENAME.yearNO" relationKey="false" hidden="false" />
+          <field name="isnull(tblStocks.ProDate,'')" parentName="@TABLENAME.ProDate" display="@TABLENAME.ProDate" relationKey="false" hidden="false" />
+          <field name="isnull(tblStocks.Availably,'')" parentName="@TABLENAME.Availably" display="@TABLENAME.Availably" relationKey="false" hidden="false" />
+     </saveFields>
+</select>
+</popupSelect>

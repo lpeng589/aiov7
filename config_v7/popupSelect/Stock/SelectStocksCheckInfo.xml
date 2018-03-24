@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectStocksCheckInfo" belongTableName="tblStock">
+     <table>tblStock</table>
+     <forwardModel>tblStock</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblStockCheckPrepare.CheckDate f1,
+      tblStock.classCode f2,
+      tblStockCheckPrepare.id f3,
+      tblStock.StockNumber f4,
+      tblStock.StockFullName f5,
+      tblStock.StockFullNamePYM f6
+  from tblStock join tblStockCheckPrepare noRight on tblStock.classCode=tblStockCheckPrepare.StockCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>仓库,因显示字段及回填字段特殊而保留,供盘点录入单使用</remark>
+     <condition>tblStock.statusid!='-1' and tblStock.workFlowNodeName='finish'</condition>
+     <changeCond>tblStockCheckPrepare.statusId = 0 and tblStockCheckPrepare.CheckDate &lt;='@ValueofDB:BillDate'</changeCond>
+     <orderBy>tblStock.StockNumber,tblStock.StockFullName</orderBy>
+     <displayFields>
+          <field name="tblStockCheckPrepare.CheckDate" width="224" searchType="equal" keySearch="true" parentDisplay="false" />
+          <field name="tblStock.StockNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblStock.StockFullName" width="80" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.StockCode" orderBy="升" />
+          <field name="tblStock.StockFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblStockCheckPrepare.CheckDate" parentName="@TABLENAME.CheckDate" relationKey="false" hidden="true" />
+          <field name="tblStock.classCode" parentName="@TABLENAME.StockCode" relationKey="true" hidden="true" />
+          <field name="tblStockCheckPrepare.id" parentName="@TABLENAME.PrepareId" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

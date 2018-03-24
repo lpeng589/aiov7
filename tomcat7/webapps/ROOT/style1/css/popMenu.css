@@ -1,0 +1,15 @@
+.info{FONT-SIZE: 14px;color:#FFFFFF;font-family:@Tahoma,@微软雅黑;width:20px}
+tr.over {background: #000; color: #fff; cursor: default; font-size: 12px}
+tr.out {font-size:12px;background:#000;opacity:0.8;}
+div.rm_div {
+	background-color: #efefef; BORDER-BOTTOM: #ffffff 1px outset; BORDER-LEFT: #ffffff 1px outset; 
+	BORDER-RIGHT: #ffffff 1px outset; BORDER-TOP: #ffffff 1px outset; DISPLAY: none; 
+	HEIGHT: 1px; PADDING-BOTTOM: 1px; PADDING-LEFT: 1px; PADDING-RIGHT: 1px; PADDING-TOP: 1px; POSITION: absolute; WIDTH: 0px;
+	z-index: 1000;
+}
+hr.sperator {
+	BORDER-BOTTOM: #ffffff 1px inset; BORDER-LEFT: #ffffff 1px inset; BORDER-RIGHT: #ffffff 1px inset; BORDER-TOP: #ffffff 1px inset; WIDTH: 95%
+}
+.w2kfont {FONT-FAMILY: Tahoma; FONT-SIZE: 8pt}
+.rm_div .yj_img{float:left;display:inline-block;}
+.rm_div .yj_span{float:left;display:inline-block;line-height:20px;padding:0 0 0 3px;font-family:微软雅黑;color:#fff;}

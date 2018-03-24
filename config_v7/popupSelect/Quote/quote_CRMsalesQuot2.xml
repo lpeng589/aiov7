@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="quote_CRMsalesQuot2">
+     <table>CRMsalesQuotDt,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      CRMsalesQuotDt.id f1,
+      tblGoods.GoodsNumber f2,
+      tblGoods.GoodsFullName f3,
+      tblGoods.GoodsSpec f4,
+      tblGoods.GoodsFullNamePYM f5,
+      CRMsalesQuotDt.Qty f6,
+      CRMsalesQuotDt.Price f7,
+      CRMsalesQuotDt.Amount f8
+  from CRMsalesQuotDt
+				left join tblGoods on CRMsalesQuotDt.GoodsCode=tblGoods.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>销售订单明细引用CRM客户报价</remark>
+     <condition>tblGoods.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoods.GoodsNumber</orderBy>
+     <displayFields>
+          <field name="tblGoods.GoodsNumber" width="120" parentDisplay="false" hiddenInput="true" orderBy="升" />
+          <field name="tblGoods.GoodsFullName" width="150" parentDisplay="false" />
+          <field name="tblGoods.GoodsSpec" width="150" parentDisplay="false" hiddenInput="true" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100" parentDisplay="false" hiddenInput="true" />
+          <field name="CRMsalesQuotDt.Qty" width="100" parentDisplay="false" />
+          <field name="CRMsalesQuotDt.Price" width="100" parentDisplay="false" />
+          <field name="CRMsalesQuotDt.Amount" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="CRMsalesQuotDt.id" parentName="@TABLENAME.CRMID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

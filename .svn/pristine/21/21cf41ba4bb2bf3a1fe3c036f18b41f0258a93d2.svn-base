@@ -1,0 +1,407 @@
+var curpicattType= "ATT";
+var isrefresh = false;
+var notbefor="";
+var fileCount=0;
+
+function openUploadAttach(path,type,refresh){
+	var filter = "";
+	if(type == "PIC"){
+		filter = "Image";
+		curpicattType = "PIC";
+	}
+	if(refresh ){
+		isrefresh = true;
+	}
+	
+	var attachUpload = document.getElementById("attachUpload");
+	if(attachUpload == null){
+		uploadDiv = document.createElement("div"); 
+		uploadDiv.id = "attachUpload" ;
+		uploadDiv.style.cssText = "position:absolute;top:10px;left:30px;width:600px;height:0px; display:block;z-index:100;";
+		document.body.appendChild(uploadDiv);
+		attachUpload = document.getElementById("attachUpload");
+	}
+	var clientHeight = document.documentElement.clientHeight;
+	if(clientHeight==0) {
+		clientHeight = document.body.clientHeight ;
+	}
+	attachUpload.style.left=  ((document.body.clientWidth - 500) /2) +"px";
+	attachUpload.style.top=  ((clientHeight - 250) /2) +"px";
+	attachUpload.style.display="block";
+	//attachUpload.style.z-index="100";
+	attachUpload.innerHTML='<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" id="fileUpload" width="500" height="250" codebase="http:/'+'/fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">'+
+			' <param name="movie" value="/flash/FileUpload.swf" /><param name="quality" value="high" /><param name="bgcolor" value="#869ca7" /><param name="flashvars" value="maxSize=$!globals.getSysSetting("defaultAttachSize")&uploadUrl=/UploadServlet;jsessionid=$session.id?path='+path+'&filter='+filter+'" />'+
+			' <param name="allowScriptAccess" value="sameDomain" /><embed src="/flash/FileUpload.swf" quality="high" bgcolor="#869ca7"	width="500" height="250" name="column" align="middle" play="true" loop="false"'+
+			'	flashvars="maxSize=$!globals.getSysSetting("defaultAttachSize")&uploadUrl=/UploadServlet;jsessionid=$session.id?path='+path+'&filter='+filter+'"	quality="high" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="http/'+'/www.adobe.com/go/getflashplayer"></embed></object>';
+} 
+
+function onCompleteUpload(retstr){ 	   
+	retstr = decodeURIComponent(retstr);  
+    var strs = retstr.split(";");
+    for(i=0;i<strs.length;i++){ 
+    	if(strs[i] != ""){ 
+    		insertNextFile(strs[i]);
+    	}
+    }  
+    var attachUpload = document.getElementById("attachUpload");
+	attachUpload.style.display="none";
+	
+	if(isrefresh){
+		window.location.href = window.location.href;
+	}
+}
+ 
+function insertNextFile(str){     
+	  fileCount=fileCount+1;
+	  if(curpicattType == "PIC"){
+	  	  var filevalue = document.form.picFiles.value;
+	  	  if(typeof(document.form.picFiles) == "undefined"){
+		  	return;
+		  }
+		  if(filevalue.indexOf(str) == -1){	      	
+		      document.getElementById("delImg").src = "/ReadFile.jpg?type=PIC&tempFile=path&path=/temp/&fileName="+str;
+		      document.getElementById("oa_photo").value = "/ReadFile.jpg?type=PIC&tempFile=path&path=/temp/&fileName="+str;
+	      }
+	  }
+}
+function removeFile(file,picType)  
+{
+	notbefor="not";
+	fileCount=fileCount-1;
+	if(picType == "PIC"){
+		document.getElementById("files_preview").removeChild(document.getElementById(file));     
+	    var filevalue = document.form.picFiles.value;
+	    document.form.picFiles.value = filevalue.substr(0,filevalue.indexOf(file))+ filevalue.substr(filevalue.indexOf(file)+file.length+1);
+	    document.form.delPicFiles.value = document.form.delPicFiles.value+file+";";
+	}else{
+	    document.getElementById("files_preview").removeChild(document.getElementById(file));     
+	    var filevalue = document.form.attachFiles.value;
+	    document.form.attachFiles.value = filevalue.substr(0,filevalue.indexOf(file))+ filevalue.substr(filevalue.indexOf(file)+file.length+1);
+	    document.form.delFiles.value = document.form.delFiles.value+file+";";
+    }
+}
+
+var urlstr;
+var obj ;
+var field;
+function openSelect(urlstr,obj,field){
+	window.urlstr = urlstr;
+	window.obj = obj;
+	window.field = field;
+	if(typeof(window.parent.$("#bottomFrame").attr("id"))!="undefined"){
+		asyncbox = parent.asyncbox;
+	}
+	 #if($globals.hasUsedSeq($mainTable))
+	    var index=urlstr.indexOf("&seq=");
+	    var fname=obj.name;
+	    var fvalue=obj.value;
+		if(index>-1){
+			field=field.substr(0,field.lastIndexOf("_"));
+			urlstr=urlstr.substring(0,index+"&seq=".length)+m(field).value+"&seqFname=$!mainTable.tableName"+"_"+field+"&newSeq="+obj.value;
+			var goodscode = "" ;
+			var stockCode = "" ;
+			var goodsProps = "" ;
+			#foreach ($row in $mainTable.fieldInfos )
+			 	#if($!row.logicValidate != "")	
+				    var ss="$!row.logicValidate".split(":")
+					if(ss[0]=="@GN"){
+						var goodscodestr=ss[4].substr(ss[4].lastIndexOf("_")+1);
+						goodscode=m(goodscodestr).value;
+					}
+					if(typeof(ss[5])!="undefined" && typeof(m(ss[5]))!="undefined"){
+						stockCode = m(ss[5]).value ;
+					}
+		  		#end
+		  		#if("$row.inputType" == "2" && "$row.fieldSysType"=="GoodsField" && $globals.getPropBean($row.fieldName).isSequence!="1")
+		  				goodsProps += "$row.fieldName="+m("$row.fieldName").value+"&"
+		  		#end
+			#end
+			if(goodscode==""){
+				return false;
+			}else{
+				urlstr=urlstr+"&goodsCode="+goodscode+"&newSeq="+obj.value+"&childTableName=$!mainTable.tableName"+"&stockCode="+stockCode+"&"+goodsProps;
+			}
+			urlstr = encodeURI(urlstr) ;
+			if(urlstr.indexOf("+")!=-1){
+				urlstr = urlstr.replaceAll("\\+",encodeURIComponent("+")) ;
+			}
+			urlstr = urlstr.replaceAll("#","%23") ;
+			urlstr += "&src=menu&MOID=$MOID&MOOP=add&popupWin=MainPopup"
+			//var str  = window.showModalDialog(urlstr+"&src=menu&MOID=$MOID&MOOP=add",winObj,"dialogWidth=565px;dialogHeight=360px");
+			asyncbox.open({id:'MainPopup',title:'弹出窗口',url:urlstr,width:800,height:470}); 
+		} else{
+	 #end
+	 	if(urlstr.indexOf("&url=@URL:")==-1){
+	 		urlstr = encodeURI(urlstr) ;
+	 	}
+	 	urlstr = encodeURI(urlstr) ;
+	 	if(urlstr.indexOf("+")!=-1){
+			urlstr = urlstr.replaceAll("\\+",encodeURIComponent("+")) ;
+		}
+		urlstr = urlstr.replaceAll("#","%23") ;
+		urlstr += "&src=menu&MOID=$MOID&MOOP=add&popupWin=MainPopup";
+		//var str  = window.showModalDialog(urlstr+"&src=menu&MOID=$MOID&MOOP=add",winObj,"dialogWidth=800px;dialogHeight=450px"); 
+		asyncbox.open({id:'MainPopup',title:'弹出窗口',url:urlstr,width:800,height:470});
+	    #if($globals.hasUsedSeq($mainTable))
+		}
+	    #end
+}
+function exeMainPopup(str){
+	if(typeof(str)=="undefined")return false;
+	fs=str.split(";"); 
+	 if(field == "BaseUnit"){
+ var saveField=n("BaseUnit"); 
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[0];
+ } 
+ var obj = m("tbl_tblUnit_id");
+ if(obj != null){
+ obj.value = fs[0];
+ }
+ var saveField=n("tblUnit_UnitName");
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[1];
+ }
+ var obj = m("tbl_tblUnit_UnitName");
+ if(obj != null){
+ obj.value = fs[1];
+ }
+ if(6!=5 && m("CompanyCode")!=null && m("CompanyCode").type!="hidden"){
+ m("CompanyCode").focus();
+ }
+ }
+ if(field == "CostMethod"){
+ var saveField=n("CostMethod"); 
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[0];
+ } 
+ var obj = m("tbl_tblGoodsAccProp_id");
+ if(obj != null){
+ obj.value = fs[0];
+ }
+ var saveField=n("AccCode"); 
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[1];
+ } 
+ var obj = m("tbl_tblGoodsAccProp_AccCode");
+ if(obj != null){
+ obj.value = fs[1];
+ }
+ var saveField=n("tblGoodsAccProp_GoodsAccName");
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[2];
+ }
+ var obj = m("tbl_tblGoodsAccProp_GoodsAccName");
+ if(obj != null){
+ obj.value = fs[2];
+ }
+ if(0!=5 && m("upperQty")!=null && m("upperQty").type!="hidden"){
+ m("upperQty").focus();
+ }
+ }
+ if(field == "ProductionflowID"){
+ var saveField=n("ProductionflowID"); 
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[0];
+ } 
+ var obj = m("tbl_tblProductionflow_id");
+ if(obj != null){
+ obj.value = fs[0];
+ }
+ var saveField=n("tblProductionflow_flowName");
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[1];
+ }
+ var obj = m("tbl_tblProductionflow_flowName");
+ if(obj != null){
+ obj.value = fs[1];
+ }
+ if(0!=5 && m("Gross")!=null && m("Gross").type!="hidden"){
+ m("Gross").focus();
+ }
+ }
+ if(field == "CompanyCode"){
+ var saveField=n("CompanyCode"); 
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[0];
+ } 
+ var obj = m("tbl_ViewCompanyTotal_classCode");
+ if(obj != null){
+ obj.value = fs[0];
+ }
+ var saveField=n("ViewCompanyTotal_ComFullName");
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[1];
+ }
+ var obj = m("tbl_ViewCompanyTotal_ComFullName");
+ if(obj != null){
+ obj.value = fs[1];
+ }
+ if(6!=5 && m("PifaPrice")!=null && m("PifaPrice").type!="hidden"){
+ m("PifaPrice").focus();
+ }
+ }
+ if(field == "StockCode"){
+ var saveField=n("StockCode"); 
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[0];
+ } 
+ var obj = m("tbl_tblStock_classCode");
+ if(obj != null){
+ obj.value = fs[0];
+ }
+ var saveField=n("tblStock_StockFullName");
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[1];
+ }
+ var obj = m("tbl_tblStock_StockFullName");
+ if(obj != null){
+ obj.value = fs[1];
+ }
+ if(6!=5 && m("Spec1")!=null && m("Spec1").type!="hidden"){
+ m("Spec1").focus();
+ }
+ }
+  if(field == "AccCode"){
+ }
+    if(field == "AttOfType"){
+ var saveField=n("AttOfType"); 
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[0];
+ } 
+ var obj = m("tbl_tblGoodsCommAtt_id");
+ if(obj != null){
+ obj.value = fs[0];
+ }
+ }
+ if(field == "AttOfSpec"){
+ var saveField=n("AttOfSpec"); 
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[0];
+ } 
+ var obj = m("tbl_tblGoodsCommAtt_id");
+ if(obj != null){
+ obj.value = fs[0];
+ }
+ }
+ if(field == "AttOfColorMethod"){
+ var saveField=n("AttOfColorMethod"); 
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[0];
+ } 
+ var obj = m("tbl_tblGoodsCommAtt_id");
+ if(obj != null){
+ obj.value = fs[0];
+ }
+ }
+ if(field == "AttOfColorMaterial"){
+ var saveField=n("AttOfColorMaterial"); 
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[0];
+ } 
+ var obj = m("tbl_tblGoodsCommAtt_id");
+ if(obj != null){
+ obj.value = fs[0];
+ }
+ }
+ if(field == "AttOfColorNO"){
+ var saveField=n("AttOfColorNO"); 
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[0];
+ } 
+ var obj = m("tbl_tblGoodsCommAtt_id");
+ if(obj != null){
+ obj.value = fs[0];
+ }
+ }
+ if(field == "AttOfProcessMethod"){
+ var saveField=n("AttOfProcessMethod"); 
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[0];
+ } 
+ var obj = m("tbl_tblGoodsCommAtt_id");
+ if(obj != null){
+ obj.value = fs[0];
+ }
+ }
+ if(field == "AttOfProcessNO"){
+ var saveField=n("AttOfProcessNO"); 
+ if(saveField[0]!=undefined){
+ saveField[0].value = fs[0];
+ } 
+ var obj = m("tbl_tblGoodsCommAtt_id");
+ if(obj != null){
+ obj.value = fs[0];
+ }
+ }
+ 
+ return 0;
+}
+
+function m(value){
+	return document.getElementById(value) ;
+}
+function n(value){
+	if(document.getElementsByName(value).length==0){
+		return document.getElementsByName("conver");
+	}
+	return document.getElementsByName(value) ;
+}
+function isCheckField(obj,fieldName){
+	var name = m("tbl_"+obj.name).value;  
+	if(obj.value != name){
+		resetSubmit(fieldName);		
+	}
+}
+function resetSubmit(fieldName){
+ if(fieldName == "BaseUnit"){
+ var saveField=n("BaseUnit"); 
+ saveField[0].value = "";
+ var obj = m("tbl_tblUnit_id");
+ if(obj != null){
+ obj.value = "";
+ }
+ var saveField=n("tblUnit_UnitName");
+ saveField[0].value = ""; 
+ m("tbl_tblUnit_UnitName").value = "" ;
+ }
+ if(fieldName == "CostMethod"){
+ var saveField=n("CostMethod"); 
+ saveField[0].value = "";
+ var obj = m("tbl_tblGoodsAccProp_id");
+ if(obj != null){
+ obj.value = "";
+ }
+ var saveField=n("AccCode"); 
+ saveField[0].value = "";
+ var obj = m("tbl_tblGoodsAccProp_AccCode");
+ if(obj != null){
+ obj.value = "";
+ }
+ var saveField=n("tblGoodsAccProp_GoodsAccName");
+ saveField[0].value = ""; 
+ m("tbl_tblGoodsAccProp_GoodsAccName").value = "" ;
+ }
+ if(fieldName == "ProductionflowID"){
+ var saveField=n("ProductionflowID"); 
+ saveField[0].value = "";
+ var obj = m("tbl_tblProductionflow_id");
+ if(obj != null){
+ obj.value = "";
+ }
+ var saveField=n("tblProductionflow_flowName");
+ saveField[0].value = ""; 
+ m("tbl_tblProductionflow_flowName").value = "" ;
+ }
+ if(fieldName == "CompanyCode"){
+ var saveField=n("CompanyCode"); 
+ saveField[0].value = "";
+ var obj = m("tbl_ViewCompanyTotal_classCode");
+ if(obj != null){
+ obj.value = "";
+ }
+ var saveField=n("ViewCompanyTotal_ComFullName");
+ saveField[0].value = ""; 
+ m("tbl_ViewCompanyTotal_ComFullName").value = "" ;
+ }
+}

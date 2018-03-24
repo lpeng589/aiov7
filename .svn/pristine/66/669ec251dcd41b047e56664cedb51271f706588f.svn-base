@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="ReportSelectEmployee_v2"  type="checkBox"  version="2"  belongTableName="tblEmployee" > 
+		<orderBy>tblEmployee.EmpNumber,tblEmployee.EmpFullName</orderBy>
+		<defineSQL>
+from tblEmployee
+  left join tblDepartment on tblEmployee.DepartmentCode=tblDepartment.classCode
+      where 1=1  and (tblEmployee.SCompanyID='@Sess:SCompanyID' or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'
+		</defineSQL>
+		<displayFields>
+			<field name="tblEmployee.EmpNumber" parentDisplay="false" width="80" searchType="match" keySearch="true" />
+			<field name="tblEmployee.EmpFullName" display="tblBuyInStock.EmployeeID" parentDisplay="true" width="80" searchType="match" keySearch="true" />
+			<field name="tblEmployee.TitleID" parentDisplay="false" width="100" searchType="equal" />
+			<field name="tblDepartment.DeptFullName" parentDisplay="false" width="150" searchType="match" />
+			<field name="tblEmployee.EmpFullNamePYM" parentDisplay="false" width="100" searchType="match" keySearch="true" hiddenInput="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblEmployee.id" parentName="EmployeeID" hidden="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

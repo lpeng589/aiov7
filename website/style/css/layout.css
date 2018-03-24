@@ -1,0 +1,114 @@
+body{
+	margin: 0px;
+	width:100%;
+	font-size:12px;
+	background-color:#FFFFFF;
+	height:100%;
+	SCROLLBAR-SHADOW-COLOR: #4D6185;
+  	SCROLLBAR-ARROW-COLOR: #555555;
+  	SCROLLBAR-DARKSHADOW-COLOR: #ffffff;
+	SCROLLBAR-BASE-COLOR: #C8E0FB;
+	font-family:"微软雅黑","Microsoft YaHei";
+}
+
+button{
+	margin:0px;
+	border:0;
+	border:1px solid #1CA4FC;
+	text-align:center;
+	margin-right:5px;
+	height:22px;
+	line-height:16px;
+	vertical-align:middle;
+	font-size:12px;
+	cursor:pointer;
+	color:#02428A;
+	width:0;
+	width:auto;
+	padding:2px 3px 0 3px;
+	overflow:visible;
+	background:url(../images/aiobg.gif) repeat-x left top;
+}
+
+input{
+	background-color:transparent;
+	width:auto;
+}
+input,select,textarea{outline:0;}
+input[disabled],
+select[disabled],
+textarea[disabled],
+button[disabled],
+input[readonly],
+select[readonly],
+textarea[readonly],
+button[readonly]{
+  cursor: not-allowed;
+  background-color: #eeeeee;
+}
+
+input[type="radio"][disabled],
+input[type="checkbox"][disabled],
+input[type="radio"][readonly],
+input[type="checkbox"][readonly] {
+  background-color: transparent;
+}
+.Heading {
+	margin-top:5px;
+	height:26px;
+	width:100%;
+}
+.HeadingIcon{
+	width:58px; 
+	float:left; 
+	height:26px;
+}
+.HeadingTitle{
+	width:auto;
+	padding-right:15px;
+	font-weight:bolder;
+	color:#666666;
+	float:left;
+	/*margin-top:12px; */
+	height:25px;
+	line-height:25px;
+	border-bottom:1px solid #81B2E3;
+	padding-left:5px;
+	text-align:left; 
+}
+
+.listRange_1_photoAndDoc_1 li{
+	list-style: none;
+}
+
+.HeadingButton{
+	margin-top:6px;
+	float:right;
+	margin:0px;
+	padding:0px;
+}
+.HeadingButton li{
+	float:left;
+	vertical-align:text-top;
+	list-style: none;
+}
+
+#listRange_id {
+	float:left;
+	width:100%;
+	overflow-y:auto;
+	overflow-x:hidden;
+	border-top:1px solid #ECECEC;
+}
+
+ .listRange_1{
+	float:left;
+	height:auto;
+	width:99%;
+	margin-top:3px;
+	margin-left:3px;
+	text-align:left;
+	padding:2px 0 2px 0;
+	background: #FFFFFF url(../images/aiobg.gif) repeat-x left -221px;
+	border:1px solid #A2CEF5;
+}

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+<define name="TodayOutStoreAmount">
+	    <sql type="condition" marker="tblSalesOutStock.classCode">select  substring (convert(varchar(100),Round(isnull(sum(TotalTaxAmount),0),2)),1,charindex('.',Round(isnull(sum(TotalTaxAmount),0),2))+2)  as amount,convert(varchar(10),getdate(),120) as date,(select           
+substring (convert(varchar(100),Round(isnull(sum(tblCompanyIni.ReceiveTotalDebit),0),2)),1,charindex('.',Round(isnull(sum(tblCompanyIni.ReceiveTotalDebit),0),2))+2) as ReceiveTotalDebit  from tblCompanyIni 
+left join tblCompany on tblCompany.classCode = tblCompanyIni.CompanyCode and tblCompany.SCompanyID = tblCompanyIni.SCompanyID 
+where 1=1               
+and (tblCompanyIni.BillDate= convert(varchar(10),getdate(),120))                   
+and tblCompanyIni.Period != '-1'       
+and tblCompanyIni.PeriodMonth != '-1'
+and (tblCompany.ClientFlag=2 or tblCompany.ClientFlag=3)        
+and (tblCompanyIni.SCompanyID like @Sess:SCompanyID+'%')  ) as ReceiveTotalDebit from tblSalesOutStock 
+where BillDate=convert(varchar(10),getdate(),120) and scompanyId=@Sess:SCompanyID
+        </sql>
+		<sql type="template">日期:@SqlReturn:date 营业额:@SqlReturn:amount 应收总额:@SqlReturn:ReceiveTotalDebit</sql>
+	    </define>
+		<!--职员添加新意向客户后提醒-->
+	<define  name = "ClientAdd1">	
+		<sql type="condition" marker="id" >select top 1 id,dbo.queryAlertCRM1() EmpFullName, '' as CreateBy,ViewCRMCompanyAll.SCompanyID as SCompanyID from ViewCRMCompanyAll where len(dbo.queryAlertCRM1())>0</sql>
+		<sql type="template">今日新增意向客户: @SqlReturn:EmpFullName </sql>
+	</define>
+	
+			<!--职员添加新成交客户后提醒-->
+	<define  name = "ClientAdd2">	
+		<sql type="condition" marker="id" >select top 1 id,dbo.queryAlertCRM2() EmpFullName, '' as CreateBy,ViewCRMCompanyAll.SCompanyID as SCompanyID from ViewCRMCompanyAll where len(dbo.queryAlertCRM2())>0</sql>
+		<sql type="template">今日新增成交客户: @SqlReturn:EmpFullName </sql>
+	</define>
+	
+				<!--职员添加销售跟单记录后提醒-->
+	<define  name = "ClientAdd3">	
+		<sql type="condition" marker="id" >select top 1 id,dbo.queryAlertCRM3() EmpFullName, '' as CreateBy,CRMsaleFollow.SCompanyID as SCompanyID from CRMsaleFollow where len(dbo.queryAlertCRM3())>0</sql>
+		<sql type="template">今日新增跟单记录: @SqlReturn:EmpFullName </sql>
+	</define>
+	
+	
+	<!-- 今日外出人员提醒 -->
+	<define name="OAOutLeaveBillTimeMSG">
+		<sql type="condition" marker="id" >select id as id,dbo.fn_OATimeMSG('OAOutLeaveBill') as MSG,'' as CreateBy,SCompanyID as SCompanyID from OAOutLeaveBill where len(dbo.fn_OATimeMSG('OAOutLeaveBill'))&gt;0</sql>
+		<sql type="template">今日外出人员：@SqlReturn:MSG</sql>
+	</define>
+	<!-- 今日请假人员提醒 -->
+	<define name="OALeaveBillTimeMSG">
+		<sql type="condition" marker="id" >select id as id,dbo.fn_OATimeMSG('OALeaveBill') as MSG,'' as CreateBy,SCompanyID as SCompanyID from OALeaveBill where len(dbo.fn_OATimeMSG('OAOutLeaveBill'))&gt;0</sql>
+		<sql type="template">今日请假人员：@SqlReturn:MSG</sql>
+	</define>
+	<!-- 今日工作计划添加数 -->
+	<define name="OAMyWorkPlanTimeMSG">
+		<sql type="condition" marker="id" >select newid() as id,count(*) as Count,'' as CreateBy,'' as SCompanyID from (select distinct createBy,SCompanyID from OAMyWorkPlan where DateDiff(day,convert(char(10),planDate,120),getDate())=0) as A</sql>
+		<sql type="template">工作计划添加人数：@SqlReturn:Count 人</sql>
+	</define>
+	<!-- 当天营业额毛利通知 -->
+	<define name="PSSSalesProfitTimeMSG">
+		<sql type="condition" marker="id">select newid() as id,A.TotalTaxAmount as TotalTaxAmount,convert(decimal(18,2),A.GrossProfit) as GrossProfit,'' as CreateBy,A.SCompanyID as SCompanyID from (select convert(decimal(18,2),sum(TotalTaxAmount)) as TotalTaxAmount,(sum(TotalTaxAmount)-sum(b.CurrentAmt)) as GrossProfit,SCompanyID as SCompanyID from tblSalesOutStock a outer apply(select sum(CurrentAmt) as CurrentAmt from tblSalesOutStockDet where f_ref=a.id) as b where DateDiff(day,a.BillDate,getDate())=0 and TotalTaxAmount is not Null group by SCompanyID) as A where A.TotalTaxAmount is not Null and A.GrossProfit is not NULL and A.TotalTaxAmount!=0</sql>
+		<sql type="template">今天营业额为： @SqlReturn:TotalTaxAmount ,毛利： @SqlReturn:GrossProfit</sql>
+	</define>
+	
+	<!-- 当天职员销售额通知 -->
+	<define name="PSSEmployeeSales">
+		<sql type="condition" marker="id">select newid() as id,dbo.fn_PSSEmployeeSalesTimingMSG() as str,'' as CreateBy,'' as SCompanyID where dbo.fn_PSSEmployeeSalesTimingMSG() is not null</sql>
+		<sql type="template">今天销售额为： @SqlReturn:str</sql>
+	</define>
+	
+	<!-- 当天职员销售毛利通知 -->
+	<define name="PSSEmployeeGrossProfit">
+		<sql type="condition" marker="id">select newid() as id,dbo.fn_PSSEmployeeGrossProfit() as str,'' as CreateBy,'' as SCompanyID where dbo.fn_PSSEmployeeGrossProfit() is Not null</sql>
+		<sql type="template">今天毛利为： @SqlReturn:str</sql>
+	</define>
+	
+	<!-- 当天费用通知 -->
+	<define name="PSSFeeTimingMSG">
+		<sql type="condition" marker="id">select newid() as id,dbo.fn_PSSFeeTimingMSG() as str,'' as CreateBy,'' as SCompanyID where dbo.fn_PSSFeeTimingMSG() is Not NUll and len(dbo.fn_PSSFeeTimingMSG())!=0</sql>
+		<sql type="template">今天费用统计，@SqlReturn:str</sql>
+	</define>
+</defineSqls>

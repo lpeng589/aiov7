@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="tblBuyOrderDet_quote_tblBuyApplicationDet">
+     <table>tblBuyApplicationDet</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblBuyApplicationDet.id f1,
+      tblGoods.GoodsNumber f2,
+      tblGoods.GoodsFullName f3,
+      tblGoods.GoodsSpec f4,
+      tblGoods.GoodsFullNamePYM f5,
+      tblBuyApplicationDet.BatchNo f6,
+      tblBuyApplicationDet.Inch f7,
+      tblBuyApplicationDet.Hue f8,
+      tblBuyApplicationDet.yearNO f9,
+      tblBuyApplicationDet.ProDate f10,
+      tblBuyApplicationDet.Availably f11,
+      tblBuyApplicationDet.Qty f12,
+      tblBuyApplicationDet.NoOrderQty f13
+  from tblBuyApplicationDet
+	 left join tblGoods on tblBuyApplicationDet.GoodsCode=tblGoods.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>采购订单明细引用采购申请明细</remark>
+     <condition>tblBuyApplicationDet.FinishStatus=0</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.GoodsNumber" width="120"  parentDisplay="false" orderBy="升" />
+          <field name="tblGoods.GoodsFullName" width="150"  parentDisplay="false" orderBy="升" />
+          <field name="tblGoods.GoodsSpec" width="150" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100"  parentDisplay="false" hiddenInput="true" />
+          <field name="tblBuyApplicationDet.BatchNo" width="120"  parentDisplay="false" />
+          <field name="tblBuyApplicationDet.Inch" width="70"  parentDisplay="false" />
+          <field name="tblBuyApplicationDet.Hue" width="70"  parentDisplay="false" />
+          <field name="tblBuyApplicationDet.yearNO" width="70"  parentDisplay="false" />
+          <field name="tblBuyApplicationDet.ProDate" width="70"  parentDisplay="false" />
+          <field name="tblBuyApplicationDet.Availably" width="70"  parentDisplay="false" />
+          <field name="tblBuyApplicationDet.Qty" width="100" parentDisplay="false" />
+          <field name="tblBuyApplicationDet.NoOrderQty" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblBuyApplicationDet.id" parentName="@TABLENAME.SourceID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

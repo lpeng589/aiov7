@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+	<define name="FlowNqingjiadan2_Add">
+		<sql type="condition">
+			<exec condition="true">
+				<sql>
+					update FlowNqingjiadan2  
+					set duty=(select TitleID from tblEmployee where id = @ValueofDB:EmployeeID )
+					where id =@ValueofDB:id
+				</sql>
+			</exec>	
+		</sql>
+	</define>
+</defineSqls>

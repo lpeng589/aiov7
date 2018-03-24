@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="GoodsFixedAsset" type="checkBox">
+     <table>tblGoods</table>
+     <forwardModel>tblGoods</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+	  tblGoods.classCode f3,
+      tblGoods.GoodsNumber f4,
+      tblGoods.GoodsFullName f5,
+      tblGoods.GoodsSpec f6,
+      tblGoods.Spec1 f7,
+      tblGoods.Spec2 f8,
+      tblGoods.Spec3 f9,
+      tblGoods.Validity f10,
+      tblGoods.GoodsFullNamePYM f11,
+      tblGoods.BarCode f12,
+	  tblGoods.BaseUnit f1,
+      tblGoods.PreBuyPrice f2
+  from tblGoods
+     </defineSQL>
+     <classCode>tblGoods.classCode</classCode>
+     <remark>弹出框显示预设进价</remark>
+     <condition></condition>
+     <changeCond>tblGoods.workFlowNodeName='finish' and tblGoods.statusid!='-1'</changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.[tblGoods]" width="120" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+          <field name="tblGoods.PreBuyPrice" width="60" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

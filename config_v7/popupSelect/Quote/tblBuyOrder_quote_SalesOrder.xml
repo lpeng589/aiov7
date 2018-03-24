@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="tblBuyOrder_quote_SalesOrder">
+     <table>tblSalesOrder,tblEmployee,tblDepartment,tblCompany,tblSalesOrderDet,tblStock,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblSalesOrder.id f1,
+      tblSalesOrder.BillDate f2,
+      tblSalesOrder.BillNo f3,
+      tblDepartment.DeptFullName f4,
+      tblEmployee.EmpFullName f5,
+      tblCompany.ComFullName f6,
+      tblStock.StockFullName f7,
+      tblSalesOrder.BackAmount f8,
+      tblSalesOrder.TotalTaxAmount f9,
+      tblGoods.GoodsNumber f10,
+      tblGoods.GoodsFullName f11,
+      tblGoods.GoodsSpec f12,
+      tblGoods.GoodsFullNamePYM f13
+  from tblSalesOrder 
+		left join tblEmployee on tblEmployee.id=tblSalesOrder.EmployeeID 
+		left join tblDepartment on tblDepartment.classCode=tblSalesOrder.DepartmentCode 
+		left join tblCompany on tblCompany.classCode=tblSalesOrder.CompanyCode 
+		left join tblSalesOrderDet on (tblSalesOrder.id=tblSalesOrderDet.f_ref and tblSalesOrderDet.id=(select top 1 a.id from tblSalesOrderDet a where a.f_ref=tblSalesOrder.id and a.GoodsCode in (select classCode from tblGoods where 1=1 and tblGoods.GoodsNumber like '%@condition:tblGoods.GoodsNumber%' and tblGoods.GoodsFullName like '%@condition:tblGoods.GoodsFullName%' and tblGoods.GoodsSpec like '@condition:tblGoods.GoodsSpec%')))  
+		left join tblstock on tblStock.classCode=tblSalesOrderDet.StockCode 
+		left join tblGoods on tblGoods.classCode=tblSalesOrderDet.GoodsCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>采购订单引用销售订单</remark>
+     <condition>tblSalesOrder.statusId=0 and tblSalesOrder.workFlowNodeName = 'finish'</condition>
+     <changeCond></changeCond>
+     <hasChild>tblBuyOrderDet_quote_tblSalesOrderDet</hasChild>
+     <orderBy>tblSalesOrder.BillDate,tblSalesOrder.BillNo</orderBy>
+     <displayFields>
+          <field name="tblSalesOrder.BillDate" width="70" searchType="scope" parentDisplay="false" orderBy="升" />
+          <field name="tblSalesOrder.BillNo" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblDepartment.DeptFullName" width="75" searchType="match" parentDisplay="false" display="@TABLENAME.DepartmentCode" />
+          <field name="tblEmployee.EmpFullName" width="50" searchType="match" parentDisplay="false" display="@TABLENAME.EmployeeID" />
+          <field name="tblCompany.ComFullName" width="200" searchType="match" parentDisplay="false" display="tblSalesOrder.CompanyCode" />
+          <field name="tblStock.StockFullName" width="75" searchType="match" parentDisplay="false" display="@TABLENAME.StockCode" />
+          <field name="tblSalesOrder.BackAmount" width="100" parentDisplay="false" />
+          <field name="tblSalesOrder.TotalTaxAmount" width="100" parentDisplay="false" />
+          <field name="tblGoods.GoodsNumber" width="120" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullName" width="150" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsSpec" width="150" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblSalesOrder.id" parentName="@TABLENAME.id" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

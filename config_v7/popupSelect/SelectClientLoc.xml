@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="SelectClientLoc"  desc="考勤选择客户弹出窗" > 
+		<orderBy>AttendanceClientInfo .Distance</orderBy>
+		<defineSQL>
+from (
+ select *,isnull(ACOS(SIN((@ValueofDB:AddressLat * 3.1415) / 180 ) *SIN((AddressLat * 3.1415) / 180 ) +COS((@ValueofDB:AddressLat * 3.1415) / 180 ) * COS((AddressLat * 3.1415) / 180 ) *COS((@ValueofDB:AddressLng* 3.1415) / 180 - (AddressLng * 3.1415) / 180 ) ) * 6380,5500000) as Distance
+ from tblAttendanceClientView
+ where  charindex(tblAttendanceClientView.tableName, '@ValueofDB:type') &gt; 0
+) as AttendanceClientInfo
+		</defineSQL>
+		<changeCond>AttendanceClientInfo.statusId=0</changeCond>
+		<displayFields>
+			<field name="AttendanceClientInfo.ClientName" parentDisplay="true" width="200" searchType="match" />
+			<field name="AttendanceClientInfo.Address" parentDisplay="false" width="200" />
+			<field name="AttendanceClientInfo.AddressLat" parentDisplay="false" width="100" />
+			<field name="AttendanceClientInfo.AddressLng" parentDisplay="false" width="100" />
+			<field name="AttendanceClientInfo.Distance" parentDisplay="false" width="100" />
+		</displayFields>
+		<saveFields>
+			<field name="AttendanceClientInfo.ClientId" parentName="@TABLENAME.ClientId" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

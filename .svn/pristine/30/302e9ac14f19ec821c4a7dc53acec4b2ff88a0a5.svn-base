@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="BuyOrderDetGoods"  type="checkBox"  desc="采购订单多单引用采购询价单子弹窗" > 
+		<orderBy>tblBuyAskPrice.BillDate,tblBuyAskPrice.BillNo,tblGoods.GoodsNumber</orderBy>
+		<topPopup>BuyOrderDetGoodsFirst</topPopup>
+		<defineSQL>
+from tblBuyAskPriceDet 
+			  left join tblBuyAskPrice on tblBuyAskPriceDet.f_ref=tblBuyAskPrice.id
+			  left join tblGoods on tblBuyAskPriceDet.goodsCode=tblGoods.classCode
+      where 1=1  and ((tblBuyAskPrice.CompanyCode='@ValueofDB:CompanyCode' and (len(isnull(tblBuyAskPrice.Priceusefullife,''))=0 or tblBuyAskPrice.Priceusefullife&gt;='@ValueofDB:BillDate') and tblBuyAskPrice.workFlowNodeName = 'finish') and tblBuyAskPrice.BillDate &lt;='@ValueofDB:BillDate')  and tblBuyAskPrice.id='@TOPID'
+		</defineSQL>
+		<changeCond>(tblGoods.statusid!='-1')</changeCond>
+		<displayFields>
+			<field name="tblBuyAskPrice.BillDate" parentDisplay="false" width="70" searchType="scope" />
+			<field name="tblBuyAskPrice.BillNo" display="@TABLENAME.BuyAskPriceID" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblGoods.[tblGoods]" parentDisplay="true" width="120" />
+			<field name="tblBuyAskPriceDet.BatchNo" parentDisplay="true" width="120" />
+			<field name="tblBuyAskPriceDet.Inch" parentDisplay="true" width="70" />
+			<field name="tblBuyAskPriceDet.Hue" parentDisplay="true" width="70" />
+			<field name="tblBuyAskPriceDet.yearNO" parentDisplay="true" width="70" />
+			<field name="tblBuyAskPriceDet.ProDate" parentDisplay="true" width="70" searchType="equal" keySearch="true" />
+			<field name="tblBuyAskPriceDet.Availably" parentDisplay="true" width="70" searchType="equal" keySearch="true" />
+			<field name="tblBuyAskPriceDet.Qty" parentDisplay="true" width="100" />
+			<field name="tblBuyAskPriceDet.Price" parentDisplay="true" width="100" />
+			<field name="tblBuyAskPriceDet.Amount" parentDisplay="true" width="100" />
+		</displayFields>
+		<saveFields>
+			<field name="tblGoods.[tblGoods]" parentName="@TABLENAME.tblGoods_GoodsNumber" width="0" />
+			<field name="tblBuyAskPriceDet.BatchNo" parentName="@TABLENAME.BatchNo" width="0" />
+			<field name="tblBuyAskPriceDet.Inch" parentName="@TABLENAME.Inch" width="0" />
+			<field name="tblBuyAskPriceDet.Hue" parentName="@TABLENAME.Hue" width="0" />
+			<field name="tblBuyAskPriceDet.yearNO" parentName="@TABLENAME.yearNO" width="0" />
+			<field name="tblBuyAskPriceDet.ProDate" parentName="@TABLENAME.ProDate" width="0" />
+			<field name="tblBuyAskPriceDet.Availably" parentName="@TABLENAME.Availably" width="0" />
+			<field name="tblBuyAskPriceDet.Qty" parentName="@TABLENAME.Qty" width="0" />
+			<field name="tblBuyAskPriceDet.Price" parentName="@TABLENAME.Price" width="0" />
+			<field name="tblBuyAskPriceDet.Amount" parentName="@TABLENAME.Amount" width="0" />
+			<field name="tblBuyAskPrice.id" parentName="@TABLENAME.BuyAskPriceID" hidden="true" relationKey="true" width="0" />
+			<field name="tblBuyAskPriceDet.id" parentName="@TABLENAME.SourceID" hidden="true" width="0" />
+			<field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" hidden="true" width="0" />
+			<field name="tblBuyAskPriceDet.SecUnit" parentName="@TABLENAME.SecUnit" width="0" />
+			<field name="tblBuyAskPriceDet.BaseQty" parentName="@TABLENAME.BaseQty" width="0" />
+			<field name="tblBuyAskPriceDet.SecQty" parentName="@TABLENAME.SecQty" width="0" />
+			<field name="tblBuyAskPriceDet.Discount" parentName="@TABLENAME.Discount" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

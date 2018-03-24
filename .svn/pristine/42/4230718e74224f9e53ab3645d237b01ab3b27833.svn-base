@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="tblGoodsAssemblySplit_quote_tblAssemblyTemplate">
+     <table>tblAssemblyTemplate,tblAssemblyTemplateDetail,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblAssemblyTemplate.id f1,
+      tblAssemblyTemplate.BillDate f2,
+      tblAssemblyTemplate.BillNo f3,
+      tblGoods.GoodsNumber f4,
+      tblGoods.GoodsFullName f5,
+      tblGoods.GoodsSpec f6,
+      tblGoods.GoodsFullNamePYM f7
+  from tblAssemblyTemplate
+				left join tblAssemblyTemplateDetail on (tblAssemblyTemplate.id=tblAssemblyTemplateDetail.f_ref and tblAssemblyTemplateDetail.id=(select top 1 a.id from tblAssemblyTemplateDetail a where a.f_ref=tblAssemblyTemplate.id and a.GoodsCode in (select classCode from tblGoods as k where 1=1 and k.GoodsNumber like '%@condition:tblGoods.GoodsNumber%' and k.GoodsFullName like '%@condition:tblGoods.GoodsFullName%' and k.GoodsSpec like '@condition:tblGoods.GoodsSpec%')))
+				left join tblGoods  on tblGoods.classCode=tblAssemblyTemplateDetail.GoodsCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>组拆装单引用组拆装模板</remark>
+     <condition>(tblAssemblyTemplate.workFlowNodeName='finish' and tblAssemblyTemplate.BillDate&lt;='@ValueofDB:BillDate' and tblAssemblyTemplate.StatusId ='0')</condition>
+     <changeCond></changeCond>
+     <orderBy>tblAssemblyTemplate.BillDate,tblAssemblyTemplate.BillNo,tblGoods.GoodsNumber</orderBy>
+     <displayFields>
+          <field name="tblAssemblyTemplate.BillDate" width="100" searchType="scope" parentDisplay="false" orderBy="升" />
+          <field name="tblAssemblyTemplate.BillNo" width="120" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblGoods.GoodsNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblGoods.GoodsFullName" width="150" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsSpec" width="100" searchType="match" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblAssemblyTemplate.id" parentName="@TABLENAME.RefBillID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

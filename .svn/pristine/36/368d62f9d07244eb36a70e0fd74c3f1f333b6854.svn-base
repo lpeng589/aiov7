@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="model_getClientInfo"  desc="手机端获取客户信息" > 
+		<defineSQL>
+from  tblCompany as  tblCompany 
+where  tblCompany.classCode= '@ValueofDB:CompanyCode'
+		</defineSQL>
+		<displayFields>
+			<field name="tblCompany.classCode" asName="CompanyCode" parentDisplay="false" width="0" />
+			<field name="tblCompany.ComFullName" asName="ComFullName" parentDisplay="false" width="0" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+</popupSelect>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectAssetsAccType_add">
+     <table>tblFixedAssetAccType,tblAccTypeInfo</table>
+     <forwardModel>tblFixedAssetAccType</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblFixedAssetAccType.AccCode f1,
+      tblFixedAssetAccType.TypeName f2,
+      tblFixedAssetAccType.Type f3,
+      tblAccTypeInfo.AccName f4,
+      tblFixedAssetAccType.Remark f5
+from tblFixedAssetAccType
+left join tblAccTypeInfo on tblFixedAssetAccType.AccCode=tblAccTypeInfo.AccNumber
+     </defineSQL>
+     <classCode></classCode>
+     <remark>回填增加方式</remark>
+     <condition>tblFixedAssetAccType.Type='1'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblFixedAssetAccType.Type</orderBy>
+     <displayFields>
+          <field name="tblFixedAssetAccType.TypeName" width="100" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.AssetsAccType" orderBy="  " />
+          <field name="tblFixedAssetAccType.Type" width="100"  parentDisplay="false" orderBy="升" />
+          <field name="tblAccTypeInfo.AccName" width="100" searchType="match" keySearch="true" parentDisplay="false" display="tblFixedAssetAccType.AccCode" />
+          <field name="tblFixedAssetAccType.Remark" width="100" searchType="match" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblFixedAssetAccType.AccCode" parentName="@TABLENAME.AssetsAccType" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

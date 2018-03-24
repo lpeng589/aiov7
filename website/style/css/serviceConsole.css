@@ -1,0 +1,41 @@
+body,h1,h2,h3,h4,h5,h6,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,select,legend,button,input,textarea{margin:0;padding:0;}
+body,button,input,select,textarea {font:12px/1.5 Microsoft Yahei;color:#666;outline:0;}
+img{border:0;}
+em,i{font-style:normal;}
+li{list-style:none;}
+a:link, a:visited, a:active { color:black; text-decoration: underline; }
+a:hover { color:#008000; text-decoration: underline; }
+a.clientName{color:#FFFF00;font-size:15px;}
+a.clientName:hover{color:#FFCC66;}
+.list_client{padding:5px;}
+.list_client>p{line-height:25px;}
+.QA_list{width:100%; height:130;overflow:auto;line-height:25px;background:#F7FBEA;"}
+.QA_list>ul{overflow-y:auto;max-height:140px;}
+.QA_list>ul li{line-height:20px;}
+.reportListT{background:url(/style/images/client/serbacl.gif) repeat-x 0 0;font-weight: bold;height:40px;line-height:40px;padding:0 0 0 10px;position:relative;}
+.reportListT>i{display:inline-block;float:right;height:21px;width:84px;text-align:center;line-height:21px;margin:18px 0 0 0;cursor:pointer;}
+i.service{background:url(/style/images/client/ser01.gif) no-repeat 0 0;width:106px;color:#fff;}
+i.bg11{background:url(/style/images/client/ser11.gif) no-repeat 0 0;color:#FFFF00;}
+i.clientD{background:url(/style/images/client/ser02.gif) no-repeat 0 0;color:#FFFF00;margin-right:50px;}
+i.bg12{background:url(/style/images/client/ser12.gif) no-repeat 0 0;color:#fff;}
+
+.operate{background:#BDBDBD;height:50px;}
+.operate>p{padding:15px 0 0 20px;}
+.operate>p a{padding:0 0 0 18px;display:inline-block;margin:0 10px 0 0;}
+a.keFu{background:url(/style/images/client/cus01.png) no-repeat 0 0;}
+a.touSu{background:url(/style/images/client/cus02.png) no-repeat 0 0;}
+a.lianXiRen{background:url(/style/images/client/cus03.png) no-repeat 0 0;}
+a.renWu{background:url(/style/images/client/cus04.png) no-repeat 0 0;}
+.QAShow>ul{padding:5px 0 10px 0;}
+.QAShow>ul li{line-height:20px;}
+.QAShow>ul li>b{color:#A0A0A0;}
+.QADetail{padding:10px 0;}
+.QADetail>table td{padding:5px 2px;}
+
+.ClientInfor{background:#eCeCeC;}
+.ClientInfor>p{background:#BDBDBD;padding:5px 0;}
+.ClientInfor>div{padding:8px 5px;}
+.ClientInfor>div>span{background:#a0a0a0;color:#fff;}
+.ClientInfor>div a.phone{padding:0 10px 0 0;background:url(/style/images/client/sphone.png) no-repeat right;margin:0 0 0 10px;font-weight:bold;}
+.linkMan>b{font-weight:normal;color:#9e9e9e;}
+.linkMan>i{width:16px;height:16px;display:inline-block;background:url(/style/images/client/f.png) no-repeat 0 0;cursor:pointer;}

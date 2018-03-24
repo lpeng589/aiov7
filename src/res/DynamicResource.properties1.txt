@@ -1,0 +1,108 @@
+==
+fieldType.name.1=Integer=整型
+fieldType.name.10=Fastness Phone=固话
+fieldType.name.11=Mobile=手机
+fieldType.name.12=Phone=电话
+fieldType.name.13=Web site=网址
+fieldType.name.14=Figure=图片
+fieldType.name.15=Attachment=附件
+fieldType.name.16=Zip code=邮编
+fieldType.name.17=HTML=HTML
+fieldType.name.18=Time=时间
+fieldType.name.19=Long Character=长字符
+fieldType.name.2=Double=双精度
+fieldType.name.20=Password=密码
+fieldType.name.21=Middle Character=中字符
+fieldType.name.3=Any Char=任意字符
+fieldType.name.4=Remark=备注
+fieldType.name.5=Western Char=英文字符
+fieldType.name.6=Short Date=短日期
+fieldType.name.7=Long Date=长日期
+fieldType.name.8=IP=ip地址
+fieldType.name.9=Email=电邮
+fieldType.value.1=0=0
+fieldType.value.10=9=9
+fieldType.value.11=10=10
+fieldType.value.12=11=11
+fieldType.value.13=12=12
+fieldType.value.14=13=13
+fieldType.value.15=14=14
+fieldType.value.16=15=15
+fieldType.value.17=16=16
+fieldType.value.18=17=17
+fieldType.value.19=18=18
+fieldType.value.2=1=1
+fieldType.value.20=19=19
+fieldType.value.21=20=20
+fieldType.value.3=2=2
+fieldType.value.4=3=3
+fieldType.value.5=4=4
+fieldType.value.6=5=5
+fieldType.value.7=6=6
+fieldType.value.8=7=7
+fieldType.value.9=8=8
+inputType.name.1=Input=输入
+inputType.name.10=Only Read=只读
+inputType.name.11=Radio Box=单选框
+inputType.name.12=Function Method=功能方法
+inputType.name.13=department opentSelect=部门弹出框
+inputType.name.14=employee openSelect=职员弹出框
+inputType.name.15=Download Select=动态选项型
+inputType.name.2=Enumeration Type=固定选项型
+inputType.name.3=Associated table Choice=弹出框选择
+inputType.name.4=Un Input=不输入
+inputType.name.5=Hidden=隐藏
+inputType.name.6=Multi-language=多语言
+inputType.name.7=Check Box=复选框
+inputType.name.8=HiddenInput=隐藏可显示
+inputType.name.9=pym=拼音码
+inputType.value.1= 0=0
+inputType.value.10=8=8
+inputType.value.11=10=10
+inputType.value.12=11=11
+inputType.value.13=14=14
+inputType.value.14=15=15
+inputType.value.15=16=16
+inputType.value.2=1=1
+inputType.value.3=2=2
+inputType.value.4=100=100
+inputType.value.5=3=3
+inputType.value.6=4=4
+inputType.value.7=5=5
+inputType.value.8=6=6
+inputType.value.9=7=7
+nullType.name.1=Can Null=可为空
+nullType.name.2=Not Null=非空
+nullType.value.1=0=0
+nullType.value.2=1=1
+scopeflag.name.1=Category Info.=分类资料
+scopeflag.name.2=Personnel Range=人员范围
+scopeflag.name.3=Time Range=时间范围
+scopeflag.name.4=Value Range=数值范围
+scopeflag.name.5=Shield Field=字段屏蔽
+scopeflag.name.6=Dept Range=部门范围
+scopeflag.name.7=field value=字段值
+scopeflag.value.1=0=0
+scopeflag.value.2=1=1
+scopeflag.value.3=2=2
+scopeflag.value.4=3=3
+scopeflag.value.5=4=4
+scopeflag.value.6=5=5
+scopeflag.value.7=6=6
+selected.name.1=No=否
+selected.name.2=Equal Conditions=等于条件
+selected.name.3=Fuzzy Search=模糊匹配
+selected.name.4=Range Search=范围查询
+selected.value.1=0=0
+selected.value.2=1=1
+selected.value.3=2=2
+selected.value.4=3=3
+tableType.name.1=Main Table=主表
+tableType.name.2=Child Table=从表
+tableType.name.3=Neighbor Table=邻居表
+tableType.value.1=0=0
+tableType.value.2=1=1
+tableType.value.3=2=2
+inputType.name.16=CutLine=分隔线
+inputType.name.16=CutLine=关联单据ID
+inputType.value.16=17=17

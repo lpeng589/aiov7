@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="FreightCom">
+     <table>tblFreightCom</table>
+     <forwardModel>tblFreightCom</forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      tblFreightCom.id f1,
+      tblFreightCom.ComNbr f2,
+      tblFreightCom.ComFullName f3,
+      tblFreightCom.ComContactor f4,
+      tblFreightCom.ComContactorTel f5
+	from tblFreightCom
+     </defineSQL>
+     <classCode></classCode>
+     <condition></condition>
+     <changeCond>tblFreightCom.statusId!='-1' and tblFreightCom.workFlowNodeName='finish'</changeCond>
+     <orderBy>tblFreightCom.ComNbr,tblFreightCom.ComFullName</orderBy>
+     <displayFields>
+          <field name="tblFreightCom.ComNbr" width="80" searchType="match" parentDisplay="false" />
+          <field name="tblFreightCom.ComFullName" width="220" searchType="match" parentDisplay="true" display="@TABLENAME.FreightCom" />
+          <field name="tblFreightCom.ComContactor" width="150" parentDisplay="false" />
+          <field name="tblFreightCom.ComContactorTel" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblFreightCom.id" parentName="@TABLENAME.FreightCom" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

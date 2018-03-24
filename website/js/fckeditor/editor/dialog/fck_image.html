@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+<!--
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ *
+ * == BEGIN LICENSE ==
+ *
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ *
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ *
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ *
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ *
+ * == END LICENSE ==
+ *
+ * Text field dialog window.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta content="noindex, nofollow" name="robots" />
+	<script type="text/javascript" src="/js/jquery.js"></script>
+	<script src="common/fck_dialog_common.js" type="text/javascript"></script>
+	<script language="javascript" src="/js/oa/ajaxfileupload.js"></script>
+	<script type="text/javascript">
+var dialog	= window.parent ;
+var oEditor = dialog.InnerDialogLoaded() ;
+var oDOM = oEditor.FCK.EditorDocument ;
+var oActiveEl = dialog.Selection.GetSelectedElement() ;
+
+window.onload = function(){
+	oEditor.FCKLanguageManager.TranslatePage(document) ;
+	if ( oActiveEl && oActiveEl.tagName == 'IMG'){
+		var imgName=GetAttribute( oActiveEl, 'src' ) .split("/");
+		GetE('imgName').value = imgName[2];
+		GetE('ImgWidth').value = GetAttribute( oActiveEl, 'width' )  ;
+		GetE('ImgHeight').value = GetAttribute( oActiveEl, 'height' )  ;
+	}else{
+		oActiveEl = null ;
+	}
+}
+
+function checkImage(){
+	var theImage=form.formFile.value.toLowerCase();
+	if(theImage!=""){
+	    var strLen=theImage.length; 
+	    var strImg=theImage.substring(theImage.lastIndexOf(".")+1,strLen); 
+	    if(strImg!='jpg' && strImg!= 'gif' && strImg!='bmp' && strImg!="jpeg" && strImg!="png"){ 
+			return false;
+	    } 
+	 }
+	 return true;
+}
+
+function checkFile(){
+	if(!checkImage()){
+		alert( "请上传正确格式的图片文件!!"); 
+		return false;
+	}
+}
+
+var imgUrl="";
+function uploadImg(){
+	var fileName = $("#formFile").val();
+	if(fileName.length==0){
+		alert( "请先上传图片文件!!"); 
+		return false;
+	}
+	if(!checkImage()){
+		alert( "请上传正确格式的图片文件!!"); 
+		return false;
+	}
+	var flag=false
+	jQuery.ajaxFileUpload({
+		url:'/OAWorkFlowTableAction.do?operation=92&importType=img',
+		secureuri:false,
+		fileElementId:'formFile',
+		dataType: 'text',
+		success: function (data, status){
+			jQuery("#imgName").val(data);
+		},error: function (data, status, e){
+			alert(data);
+		}
+	});
+}
+
+function Ok(){
+	var imgName=$("#imgName").val();
+	imgUrl="/upload/"+imgName;
+	if(imgName.length==0){
+		var fileName = $("#formFile").val();
+		if(fileName.length==0){
+			alert( "请先上传图片文件!!"); 
+			return false;
+		}
+		if(!checkImage()){
+			alert( "请上传正确格式的图片文件!!"); 
+			return false;
+		}	
+	}
+	oEditor.FCKUndo.SaveUndoStep() ;
+	oActiveEl = CreateNamedElement( oEditor, oActiveEl, 'IMG', { imgtype: 'pic'} ) ;
+	SetAttribute( oActiveEl, 'src' , imgUrl) ;
+	SetAttribute( oActiveEl, 'width' , GetE('ImgWidth').value) ;
+	SetAttribute( oActiveEl, 'height', GetE('ImgHeight').value) ;
+	return true;
+}
+
+</script>
+</head>
+<body style="overflow: hidden;height: 60%;">
+	<iframe name="formFrame" style="display:none"></iframe>
+	<form name="form" action="" enctype="multipart/form-data" method="post" target="formFrame" style="width:500px;height:200px;">
+	<div id="listRange_id">
+	<ul style="list-style: none; display: block">
+		<li>
+		<label>上传图片:</label>
+	   		<input name="formFile" id="formFile" type="file" value="" style="display: none;" onChange="uploadImg();" />
+	   		<input type="text" id="imgName" name="imgName" value="" readonly="readonly"/><input type="button" value="选择文件"  onClick="javascript:$('#formFile').click();" />
+	   	</li>
+	   	<li>
+	   	<label>图片高度:</label>
+	   		<input name="ImgHeight" id="ImgHeight" type="text" value="" />
+	   	</li>
+	   	<li>
+	   	<label>图片宽度:</label>
+	   		<input name="ImgWidth" id="ImgWidth" type="text" value="" />
+	   	</li>
+   	</ul>
+	</div>
+	</form>
+	</body>
+</html>

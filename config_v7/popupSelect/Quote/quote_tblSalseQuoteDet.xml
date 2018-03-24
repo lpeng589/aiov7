@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="quote_tblSalseQuoteDet">
+     <table>tblSalseQuoteDet,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblSalseQuoteDet.id f1,
+      tblGoods.GoodsNumber f2,
+      tblGoods.GoodsFullName f3,
+      tblGoods.GoodsSpec f4,
+      tblGoods.GoodsFullNamePYM f5,
+      tblSalseQuoteDet.BatchNo f6,
+      tblSalseQuoteDet.Inch f7,
+      tblSalseQuoteDet.Hue f8,
+      tblSalseQuoteDet.yearNO f9,
+      tblSalseQuoteDet.ProDate f10,
+      tblSalseQuoteDet.Availably f11,
+      tblSalseQuoteDet.Qty f12,
+      tblSalseQuoteDet.Price f13
+  from tblSalseQuoteDet
+		 left join tblGoods on tblGoods.classCode=tblSalseQuoteDet.GoodsCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>销售订单明细引用销售报价明细</remark>
+     <condition>tblGoods.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.GoodsNumber" width="120" parentDisplay="false" orderBy="升" />
+          <field name="tblGoods.GoodsFullName" width="150" parentDisplay="false" orderBy="升" />
+          <field name="tblGoods.GoodsSpec" width="150" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100" parentDisplay="false" hiddenInput="true" />
+          <field name="tblSalseQuoteDet.BatchNo" width="120" parentDisplay="false" />
+          <field name="tblSalseQuoteDet.Inch" width="70" parentDisplay="false" />
+          <field name="tblSalseQuoteDet.Hue" width="70" parentDisplay="false" />
+          <field name="tblSalseQuoteDet.yearNO" width="70" parentDisplay="false" />
+          <field name="tblSalseQuoteDet.ProDate" width="70" parentDisplay="false" />
+          <field name="tblSalseQuoteDet.Availably" width="70" parentDisplay="false" />
+          <field name="tblSalseQuoteDet.Qty" width="100" parentDisplay="false" />
+          <field name="tblSalseQuoteDet.Price" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblSalseQuoteDet.id" parentName="@TABLENAME.RefSalseQuoteDetid" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

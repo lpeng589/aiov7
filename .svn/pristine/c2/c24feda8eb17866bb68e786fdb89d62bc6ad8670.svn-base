@@ -1,0 +1,29 @@
+.mlist {}
+.list  li  span{display: inline-block;overflow:hidden; white-space:nowrap; text-overflow:ellipsis;padding: 0px;margin: 0px;}
+.w1{width:50px;}
+.w2{width:50px;}
+.w3{width:200px;}
+.w4{width:90px;}
+.w5{width:200px;}
+
+
+
+body{font-family: "Î¢ÈíÑÅºÚ","Microsoft YaHei";}
+.dataDiv p {padding:3px;margin:0px;border-bottom: 1px solid #EAE4EA;}
+.dataDiv p span {
+overflow: hidden;
+//white-space: nowrap;
+display: inline-block;
+}
+.dataDiv p .sv {
+
+}
+.dataDiv p .st {
+width: 90px;
+}
+
+fieldset legend{
+margin-left: 10px;
+color: #53967F;
+}
+

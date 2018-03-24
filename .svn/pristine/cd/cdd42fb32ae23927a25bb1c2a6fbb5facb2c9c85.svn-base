@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SalesInvoiceInfoSelect1" type="checkBox">
+     <table>ViewSalesInvoiceInfoSelectBillNo</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>
+  from ViewSalesInvoiceInfoSelectBillNo
+     </defineSQL>
+     <classCode></classCode>
+     <remark>销售开票关联单据</remark>
+     <condition>(ViewSalesInvoiceInfoSelectBillNo.CompanyCode='@ValueofDB:@TABLENAME_CompanyCode')</condition>
+     <changeCond>((ViewSalesInvoiceInfoSelectBillNo.InVoiceType=2 or ViewSalesInvoiceInfoSelectBillNo.InVoiceType=1) and ViewSalesInvoiceInfoSelectBillNo.NoInvoiceAmount!=0 and ViewSalesInvoiceInfoSelectBillNo.WorkFlowNodeName='finish' and ViewSalesInvoiceInfoSelectBillNo.BillDate&lt;='@ValueofDB:BillDate')</changeCond>
+     <orderBy>ViewSalesInvoiceInfoSelectBillNo.BillDate,ViewSalesInvoiceInfoSelectBillNo.BillNo,ViewSalesInvoiceInfoSelectBillNo.ComFullName</orderBy>
+     <displayFields>
+          <field name="ViewSalesInvoiceInfoSelectBillNo.ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="false" display="tblSalesOutStock.CompanyCode" orderBy="升" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.BillDate" width="70" searchType="scope" parentDisplay="false" hiddenInput="true" display="tblSalesOutStock.BillDate" orderBy="升" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.BillNo" width="100" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.RefBillNo" orderBy="升" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.TotalAmount" width="100" parentDisplay="false" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.TotalCoTaxAmt" width="100" parentDisplay="false" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.AfterChangeAmt" width="100" parentDisplay="false" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.InvoiceAmount" width="100" parentDisplay="false" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.NoInvoiceAmount" width="100" parentDisplay="false" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.NoInvoiceAmount2" width="100" parentDisplay="false" display="@TABLENAME.ExeBalAmt" />
+     </displayFields>
+     <saveFields>
+          <field name="ViewSalesInvoiceInfoSelectBillNo.ComFullName" parentName="@TABLENAME.tblCompany_ComFullName" display="tblSalesOutStock.CompanyCode" relationKey="false" hidden="true" orderBy="升" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.BillNo" parentName="@TABLENAME.RefBillNo" display="@TABLENAME.RefBillNo" relationKey="true" hidden="false" orderBy="升" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.AfterChangeAmt" parentName="@TABLENAME.BillAmt" relationKey="false" hidden="true" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.InvoiceAmount" parentName="@TABLENAME.InvoiceAmount" relationKey="false" hidden="true" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.NoInvoiceAmount" parentName="@TABLENAME.NeedReturnAmt" relationKey="false" hidden="true" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.NoInvoiceAmount2" parentName="@TABLENAME.ExeBalAmt" display="@TABLENAME.ExeBalAmt" relationKey="false" hidden="true" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.classCode" parentName="@TABLENAME.CompanyCode" relationKey="false" hidden="true" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.id" parentName="@TABLENAME.RefBillID" relationKey="false" hidden="true" />
+          <field name="ViewSalesInvoiceInfoSelectBillNo.BillType" display="tblSalesInfoDet.BillType" parentName="@TABLENAME.BillType" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

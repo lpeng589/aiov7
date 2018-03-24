@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="quote_SalesOrderDet">
+     <table>viewsalesorder</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      viewsalesorder.id f1,
+      tblGoods.GoodsNumber f2,
+      tblGoods.GoodsFullName f3,
+      tblGoods.GoodsSpec f4,
+      tblGoods.GoodsFullNamePYM f5,
+      tblGoods.Spec1 f6,
+      tblGoods.Spec2 f7,
+      tblGoods.Spec3 f8,
+      tblGoods.BarCode f9,
+      viewsalesorder.BatchNo f10,
+      viewsalesorder.Inch f11,
+      viewsalesorder.Hue f12,
+      viewsalesorder.yearNO f13,
+      viewsalesorder.ProDate f14,
+      viewsalesorder.Availably f15,
+      viewsalesorder.Qty f16,
+      viewsalesorder.Price f17,
+      viewsalesorder.OutQty f18,
+      viewsalesorder.NotOutQty f19,
+      viewsalesorder.lastQty f20
+  from viewsalesorder
+	left join tblGoods on viewsalesorder.GoodsCode=tblGoods.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>销售出库明细引用销售订单明细</remark>
+     <condition>(viewsalesorder.FinishStatus=0) and tblGoods.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.[tblGoods]" width="120" parentDisplay="true" orderBy="升" />
+          <field name="viewsalesorder.BatchNo" width="120" parentDisplay="false" />
+          <field name="viewsalesorder.Inch" width="70" parentDisplay="false" />
+          <field name="viewsalesorder.Hue" width="70" parentDisplay="false" />
+          <field name="viewsalesorder.yearNO" width="70" parentDisplay="false" />
+          <field name="viewsalesorder.ProDate" width="70" parentDisplay="false" display="tblBuyOutStockDet.ProDate" />
+          <field name="viewsalesorder.Availably" width="70" parentDisplay="false" display="tblBuyOutStockDet.Availably" />
+          <field name="viewsalesorder.Qty" width="100" parentDisplay="false" />
+          <field name="viewsalesorder.Price" width="100" parentDisplay="false" />
+          <field name="viewsalesorder.OutQty" width="100" parentDisplay="false" />
+          <field name="viewsalesorder.NotOutQty" width="100" parentDisplay="false" />
+          <field name="viewsalesorder.lastQty" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="viewsalesorder.id" parentName="@TABLENAME.SourceID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

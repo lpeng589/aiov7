@@ -1,0 +1,13 @@
+# 手机版首页可自定义增加多个链接，显示为带图标的按扭
+#
+# 本配置文件可指定手机版首页的自定义链接。
+#
+# 自定义本功能，可把本文件另存为config.ini
+#
+# 每一行一个链接，格式如下
+#
+# 链接的地址,链接的名字，链接的图标，归属权限url,归属权限类型(add,update,query,print)
+#
+# 注意：所有自定义的文件必须放在mobile/define目录下，所有链接地址图标不带路径
+#
+tblSalesOrderList.jsp,订单查询,flow.png,/UserFunctionQueryAction.do?tableName=tblSalesOrder,query

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="TransferSale2InStockSelect">
+     <table>tblBuyInStock,tblCompany</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblBuyInStock.BillNo f1,
+      tblCompany.ComFullName f2,
+      tblBuyInStock.AlreadyPayAmt f3,
+      tblBuyInStock.NeedPayAmt f4,
+      tblBuyInStock.TotalTaxAmount f5
+  from tblBuyInStock
+  left join tblCompany on tblBuyInStock.CompanyCode = tblCompany.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <condition>tblBuyInStock.workFlowNodeName = 'finish' and tblCompany.classCode='@ValueofDB:CompanyCode' and tblBuyInStock.NeedPayAmt &gt; 0</condition>
+     <changeCond></changeCond>
+     <orderBy>tblBuyInStock.BillNo desc</orderBy>
+     <displayFields>
+          <field name="tblBuyInStock.BillNo" width="120" searchType="match" keySearch="true" parentDisplay="true" display="tblTransferSale2.RefBillNo" />
+          <field name="tblCompany.ComFullName" width="200" searchType="match" parentDisplay="false" />
+          <field name="tblBuyInStock.AlreadyPayAmt" width="100" parentDisplay="false" />
+          <field name="tblBuyInStock.NeedPayAmt" width="100" parentDisplay="false" />
+          <field name="tblBuyInStock.TotalTaxAmount" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblBuyInStock.BillNo" parentName="tblTransferSale2.RefBillNo" display="tblTransferSale2.RefBillNo" relationKey="true" hidden="false" />
+     </saveFields>
+</select>
+</popupSelect>

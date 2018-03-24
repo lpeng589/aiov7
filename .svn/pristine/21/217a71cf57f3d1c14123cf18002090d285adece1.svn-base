@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SalesOrderGoods"  type="checkBox" > 
+		<orderBy>tblSalesOrder.BillDate,tblSalesOrder.BillNo</orderBy>
+		<topPopup>SalesOrderGoodsFirst</topPopup>
+		<defineSQL>
+from tblSalesOrderDet left join tblSalesOrder on tblSalesOrderDet.f_ref=tblSalesOrder.id
+	    left join tblGoods on tblSalesOrderDet.goodsCode=tblGoods.classCode
+		  left join ViewVirtualStock as tblStocks on tblStocks.GoodsCode=tblGoods.classCode and tblStocks.StockCode='@ValueofDB:StockCode' and tblStocks.StockCode='@ValueofDB:@TABLENAME_StockCode' and tblStocks.BatchNo=isnull(tblSalesOrderDet.BatchNo,'') and tblStocks.Inch=isnull(tblSalesOrderDet.Inch,'') and tblStocks.Hue=isnull(tblSalesOrderDet.Hue,'') and tblStocks.yearNo=isnull(tblSalesOrderDet.yearNo,'') and tblStocks.ProDate=isnull(tblSalesOrderDet.ProDate,'') and tblStocks.Availably =isnull(tblSalesOrderDet.Availably,'')
+      where 1=1  and ((tblSalesOrder.InvoiceType='@ValueofDB:InVoiceType' and tblSalesOrder.CompanyCode='@ValueofDB:CompanyCode' and tblSalesOrder.BillDate&lt;='@ValueofDB:BillDate' and tblSalesOrder.statusId =0 and tblSalesOrderDet.finishStatus=0 and tblSalesOrder.workFlowNodeName = 'finish')) and tblGoods.workFlowNodeName='finish'
+		  and tblSalesOrder.id='@TOPID'
+        </defineSQL>
+		<changeCond>(tblGoods.statusid!='-1')</changeCond>
+		<displayFields>
+			<field name="tblSalesOrder.BillDate" parentDisplay="false" width="100" searchType="scope" keySearch="true" />
+			<field name="tblSalesOrder.BillNo" display="@TABLENAME.SalesOrderID" parentDisplay="true" width="120" searchType="match" keySearch="true" />
+			<field name="tblGoods.[tblGoods]" parentDisplay="false" width="120" searchType="match" keySearch="true" />
+			<field name="tblSalesOrderDet.BatchNo" parentDisplay="true" width="120" />
+			<field name="tblSalesOrderDet.Inch" parentDisplay="true" width="70" />
+			<field name="tblSalesOrderDet.Hue" parentDisplay="true" width="70" />
+			<field name="tblSalesOrderDet.yearNO" parentDisplay="true" width="70" />
+			<field name="tblSalesOrderDet.ProDate" parentDisplay="true" width="70" searchType="equal" />
+			<field name="tblSalesOrderDet.Availably" parentDisplay="true" width="70" searchType="equal" />
+			<field name="tblSalesOrderDet.NotOutQty" parentDisplay="true" width="100" />
+			<field name="tblSalesOrderDet.Price" parentDisplay="true" width="100" />
+			<field name="tblSalesOrderDet.NotOutQty*tblSalesOrderDet.Price" asName="tblSalesOrderDet.Amount"  display="tblSalesOrderDet.Amount" parentDisplay="false" width="100" />
+			<field name="(case tblGoods.isCatalog when 0 then tblStocks.lastQty else -99999999 end)" asName="tblStocks.lastQty" display="tblStocks.lastQty" parentDisplay="true" width="100" />
+			<field name="(case tblGoods.isCatalog when 0 then tblStocks.LastQty+tblStocks.inQtyNotAudit+tblStocks.SInQtyNotAudit-tblStocks.outQtyNotAudit-tblStocks.BOutQtyNotAudit else -99999999 end)" asName="ViewVirtualStock.UseQty" display="ViewVirtualStock.UseQty" parentDisplay="true" width="100" />
+		</displayFields>
+		<saveFields>
+			<field name="tblGoods.[tblGoods]" parentName="@TABLENAME.tblGoods_[tblGoods]" width="0" />
+			<field name="tblSalesOrderDet.BatchNo" parentName="@TABLENAME.BatchNo" width="0" />
+			<field name="tblSalesOrderDet.Inch" parentName="@TABLENAME.Inch" width="0" />
+			<field name="tblSalesOrderDet.Hue" parentName="@TABLENAME.Hue" width="0" />
+			<field name="tblSalesOrderDet.yearNO" parentName="@TABLENAME.yearNO" width="0" />
+			<field name="tblSalesOrderDet.ProDate" parentName="@TABLENAME.ProDate" width="0" />
+			<field name="tblSalesOrderDet.Availably" parentName="@TABLENAME.Availably" width="0" />
+			<field name="tblSalesOrderDet.NotOutQty" parentName="@TABLENAME.Qty" width="0" />
+			<field name="tblSalesOrderDet.Price" parentName="@TABLENAME.Price" width="0" />
+			<field name="(case tblGoods.isCatalog when 0 then tblStocks.lastQty else -99999999 end)" parentName="@TABLENAME.tblStocks_lastQty" display="tblStocks.lastQty" width="0" />
+			<field name="(case tblGoods.isCatalog when 0 then tblStocks.LastQty+tblStocks.inQtyNotAudit+tblStocks.SInQtyNotAudit-tblStocks.outQtyNotAudit-tblStocks.BOutQtyNotAudit else -99999999 end)" parentName="@TABLENAME.ViewVirtualStock_UseQty" display="ViewVirtualStock.UseQty" width="0" />
+			<field name="tblSalesOrder.id" parentName="@TABLENAME.SalesOrderID" hidden="true" relationKey="true" width="0" />
+			<field name="tblSalesOrderDet.id" parentName="@TABLENAME.SourceID" hidden="true" width="0" />
+			<field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" hidden="true" width="0" />
+			<field name="tblSalesOrderDet.SecUnit" parentName="@TABLENAME.SecUnit" width="0" />
+			<field name="tblSalesOrderDet.SecQty" parentName="@TABLENAME.SecQty" width="0" />
+			<field name="tblSalesOrderDet.BaseQty" parentName="@TABLENAME.BaseQty" width="0" />
+			<field name="tblSalesOrderDet.Discount" parentName="@TABLENAME.Discount" width="0" />
+			<field name="tblSalesOrderDet.PresentSampleType" parentName="@TABLENAME.PresentSampleType" width="0" />
+			<field name="tblGoods.AccountingPrice" parentName="@TABLENAME.AccountingPrice" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

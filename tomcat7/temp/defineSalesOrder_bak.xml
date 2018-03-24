@@ -1,0 +1,1114 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+
+<!--==========================================================销售订单ERP===================================================================-->
+
+<define name="tblSalesOrder_add">
+	<sql type="condition"><!--检查客户子账户余额-->
+		<condition>
+			<select>select count(*) as subAccountExist from tblSubAccountBalance where CompanyCode = @ValueofDB:CompanyCode and subAccountNo = @ValueofDB:subAccount </select>
+			<select>select balance from tblSubAccountBalance where CompanyCode = @ValueofDB:CompanyCode and subAccountNo = @ValueofDB:subAccount </select>
+		</condition>
+		<!--<exec condition="true"><error>@SqlReturn:balance</error></exec>-->
+		<exec condition="@SqlReturn:subAccountExist == 1 &amp;&amp; @ValueofDB:TotalTaxAmount &gt; @SqlReturn:balance   &amp;&amp; '@ValueofDB:CompanyCode' != '0003V00001' &amp;&amp; @ValueofDB:TotalTaxAmount &gt; 0 &amp;&amp; '@ValueofDB:CompanyCode' != '0003H00004' &amp;&amp; '@ValueofDB:CompanyCode' != '0003T000010000B'">			
+			<error>账户余额不足!</error>       
+		</exec>
+	</sql>
+	
+	<sql type="condition"><!--单据日期在引用的单据之前，给出错误提示(销售报价)-->
+		<condition><select>select billDate as QuoteDate from tblSalseQuote where id=@ValueofDB:tblSalesOrder_RefSalseQuoteid</select></condition>
+		<exec condition="'@ValueofDB:tblSalesOrder_RefSalseQuoteid'.length&gt;0&amp;&amp;'@ValueofDB:tblSalesOrder_BillDate' &lt; '@SqlReturn:QuoteDate'">			
+			<error>common.billDateLessByQuoteDate.error,@ValueofDB:tblSalesOrder_BillDate,@SqlReturn:QuoteDate</error>       
+		</exec>
+	</sql>
+	<sql type="condition"><!--单据日期在引用的单据之前，给出错误提示（CRM报价）-->
+		<condition><select>select billDate as QuoteDate from CRMsalesQuot where id=@ValueofDB:tblSalesOrder_CRMIDS</select></condition>
+		<exec condition="'@ValueofDB:tblSalesOrder_CRMIDS'.length&gt;0&amp;&amp;'@ValueofDB:tblSalesOrder_BillDate' &lt; '@SqlReturn:QuoteDate'">			
+			<error>common.billDateLessByQuoteDate.error,@ValueofDB:tblSalesOrder_BillDate,@SqlReturn:QuoteDate</error>       
+		</exec>
+	</sql>
+	<!--单据日期在引用的单据之前，给出错误提示（客户合同）这个表未使用，暂时屏蔽此控制
+	<sql type="condition">		
+		<condition><select>select billDate as QuoteDate from CRMSaleContract where id=@ValueofDB:tblSalesOrder_CRMpactID</select></condition>
+		<exec condition="'@ValueofDB:tblSalesOrder_CRMpactID'.length&gt;0&amp;&amp;'@ValueofDB:tblSalesOrder_BillDate' &lt; '@SqlReturn:QuoteDate'">			
+			<error>common.billDateLessByQuoteDate.error,@ValueofDB:tblSalesOrder_BillDate,@SqlReturn:QuoteDate</error>       
+		</exec>
+	</sql>-->
+	<sql type="condition">
+		<!--输入了预收订金，没有选择收款账户时给出提示-->
+		<exec condition="@ValueofDB:tblSalesOrder_AccountAmount!=0 &amp;&amp; '@ValueofDB:tblSalesOrder_Account'.length==0 "> 
+			<error>sales.ReceiveAccCode.error</error>       
+		</exec>	
+		<!--选择了收款账户，输入预收订金小于等于0时给出提示-->
+		<exec condition="@ValueofDB:tblSalesOrder_AccountAmount&lt;=0 &amp;&amp; '@ValueofDB:tblSalesOrder_Account'.length &gt; 0 "> 
+			<error>salesorder.PreAccAmt.error</error>       
+		</exec>
+		<!--发票类型是“收据凭证”，税率必须等于0,其他类型税率必须大于等于0-->
+		<exec condition="('@ValueofDB:tblSalesOrder_InVoiceType'=='3'&amp;&amp;@ValueofDB:tblSalesOrder_Tax!=0)||@ValueofDB:tblSalesOrder_Tax&lt;0">			
+			<error>common.isReceipt.existsTax.error</error>        
+		</exec>
+	</sql>
+	<sql type="condition"><!--发货日期小于订单日期，给出错误提示-->
+		<condition><select>select SendDate as SendDate from tblSalesOrderDet a where a.f_ref=@ValueofDB:tblSalesOrder_id and len(a.SendDate)!=0 and a.SendDate &lt; @ValueofDB:tblSalesOrder_BillDate </select></condition>
+		<exec condition="'@SqlReturn:SendDate'!='null'"> 
+			<error>SendDate.BillDate.error</error>       
+		</exec>	
+	</sql>
+	<sql type="condition"><!--生产日期大于保质期限时，给出提示-->
+		<condition><select>select b.GoodsNumber as GoodsQ from tblSalesOrderDet a,tblGoods b where len(ProDate)&gt;0 and len(Availably)&gt;0 and ProDate&gt;Availably and b.classCode=a.GoodsCode and a.f_ref=@ValueofDB:tblBuyOrder_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>common.proDateAfterAvailably.error,@SqlReturn:GoodsQ</error>                  
+		</exec>
+	</sql>
+	<sql type="condition"><!--数量小于等于0时，给出错误提示-->
+		<condition><select>select b.GoodsNumber as GoodsQ,Qty from tblSalesOrderDet a,tblGoods b where a.f_ref=@ValueofDB:tblSalesOrder_id and b.classCode=a.GoodsCode and isnull(a.Qty,0)&lt;=0</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">						
+			<error>common.qty.negative.error,@SqlReturn:GoodsQ</error>       
+		</exec>	
+	</sql>
+	
+	<!--非赠品，样品的单价不等于核价时，给出错误提示-->
+	<!--<sql type="condition">
+		<condition><select> select b.GoodsNumber GoodsNumber2,b.GoodsFullName GoodsFullName2,PDPriceTrace.curPrice pdCUrPrice
+								from tblSalesOrderDet a
+								join tblGoods b on a.GoodsCode=b.classCode
+								left join PDPriceTrace on PDPriceTrace.id=a.PriceTraceID
+								where a.f_ref=@ValueofDB:id and a.PresentSampleType not in ('1','2') and( isnull(PDPriceTrace.id,'')='' or a.curPrice&lt;&gt;PDPriceTrace.curPrice  ) </select></condition>
+		<exec condition=" '@SqlReturn:GoodsNumber2'!='null' &amp;&amp; ( '@SqlReturn:pdCUrPrice'=='null' || '@SqlReturn:pdCUrPrice'=='' ) ">
+			<error> @SqlReturn:GoodsNumber2 还未核价请选备品或议价类型 </error>
+		</exec>
+		<exec condition=" '@SqlReturn:GoodsNumber2'!='null'  &amp;&amp; ( '@SqlReturn:pdCUrPrice'!='null' &amp;&amp; '@SqlReturn:pdCUrPrice'!='' )  ">
+			<error> @SqlReturn:GoodsNumber2 单价必须等于核价单中价格(@SqlReturn:pdCUrPrice) </error>
+		</exec>
+	</sql>-->
+	
+	
+	<sql type="condition"><!--正常类型单价不能为0-->
+		<condition><select> 
+select b.GoodsNumber GoodsNumber2,b.GoodsFullName GoodsFullName2
+								from tblSalesOrderDet a
+								join tblGoods b on a.GoodsCode=b.classCode
+								where a.f_ref=@ValueofDB:id and a.PresentSampleType not in ('1','2') and TaxPrice=0 </select></condition>
+		<exec condition=" '@SqlReturn:GoodsNumber2' != 'null' ">
+		<!--<exec condition="false">-->			
+			<error> @SqlReturn:GoodsNumber2 单价不能为0 </error>
+		</exec>
+	</sql>
+	
+	
+	
+	<sql type="condition"><!--折扣不是0到1之间的数值时给出错误提示-->
+		<condition><select>select 'disCountError' as disCountError from tblSalesOrderDet a where a.f_ref=@ValueofDB:tblSalesOrder_id and (Discount&lt;=0 or Discount&gt;100)</select></condition>
+		<exec condition="'@SqlReturn:disCountError' != 'null'">				
+			<error>common.Discount.error</error>        
+		</exec>
+	</sql>
+	<sql type="condition"><!--启用了价格控制，判断非赠品，样品商品单价是否在价格控制范围内-->
+		<exec condition="@MEM:PriceControl==true">			
+			<sql type="define">tblSalesOrder_Add_PriceControl_Validate</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--商品是赠样品时单价不为零，给出错误提示-->
+		<condition><select>select b.GoodsNumber as GoodsSample from tblSalesOrderDet a,tblGoods b where a.f_ref=@ValueofDB:tblSalesOrder_id and b.classCode=a.GoodsCode and a.PresentSampleType in ('1') and isnull(a.curPrice,0)!=0</select></condition>
+		<exec condition="'@SqlReturn:GoodsSample' != 'null'">	 					
+			<error>@SqlReturn:GoodsSample 是备品，必须0单价</error>       
+		</exec>
+	</sql>
+	<!--<sql type="condition">明细表的金额不等于数量*单价
+		<condition><select>select b.GoodsNumber,b.GoodsFullName from tblSalesOrderDet a,tblGoods b where a.f_ref=@ValueofDB:tblSalesOrder_id and a.GoodsCode=b.classCode and Amount!=round(Qty*Price,@MEM:DigitsAmount)</select></condition>
+		<exec condition="'@SqlReturn:GoodsNumber'!='null'">			
+			<error>common.AmtPriceQty.NotEqual.error,@SqlReturn:GoodsNumber,@SqlReturn:GoodsFullName</error>                  
+		</exec>
+	</sql>		-->
+  <!--<sql type="condition">总金额与明细表合计金额不相等，给出错误提示
+		<condition><select>select dbo.getDigits('tblSalesOrderDet','TaxAmount',sum(tblSalesOrderDet.TaxAmount)-@ValueofDB:DiscountAmount+@ValueofDB:tblSalesOrder_khFreightAmt) as SumDetAmt from tblSalesOrderDet where  f_ref=@ValueofDB:tblSalesOrder_id</select></condition>
+		<exec condition=" @SqlReturn:SumDetAmt != @ValueofDB:tblSalesOrder_TotalTaxAmount">				
+			<error>common.mainDetilAmt.NotEqual.error,@ValueofDB:tblSalesOrder_TotalTaxAmount,@SqlReturn:SumDetAmt</error>       
+		</exec>	
+	</sql>-->
+
+  <!--====================外币暂不处理==================-->
+	<sql type="condition">
+		<condition><select>select AccNumber,AccName,IsForCur,Currency as CURD from tblAccTypeInfo where AccNumber=@ValueofDB:tblSalesOrder_Account and SCompanyID=@ValueofDB:tblSalesOrder_SCompanyID</select></condition>
+		<!--选择的帐号不是该外币对应的帐号-->
+		<exec condition="'@ValueofDB:tblSalesOrder_Currency'.length != 0 &amp;&amp; '@ValueofDB:tblSalesOrder_Account'.length != 0 &amp;&amp; '@ValueofDB:tblSalesOrder_Currency' != '@SqlReturn:CURD'"> 
+				<error>tblAccTypeInfo.ReceSelectCurType.error</error>       
+		</exec>	
+	
+	  <!--币种为空，付款帐户不为空时，选择的付款帐户存在核算外币时提示-->	<!--选择的收款帐户不是该币种对应的帐户-->
+		<exec condition="'@ValueofDB:tblSalesOrder_Currency'.length == 0 &amp;&amp; '@ValueofDB:tblSalesOrder_Account'.length != 0 &amp;&amp; '@SqlReturn:CURD' != 'null' &amp;&amp; '@SqlReturn:CURD' != ''">
+				<error>tblAccTypeInfo.ReceSelectCurType.error</error>       
+		</exec>	 
+		<!--如果是本位币帐户，不用录入汇率-->	
+	 	<exec condition=" ('@ValueofDB:tblSalesOrder_Currency'.length == 0 &amp;&amp; @ValueofDB:tblSalesOrder_CurrencyRate&gt;0 &amp;&amp;@ValueofDB:tblSalesOrder_CurrencyRate!=1)">		
+    	  <error>CurrencyRate.putErrors.error</error>       
+		</exec>
+	</sql>
+	<!--====================以上代码：外币暂不处理==================-->	
+	
+
+	<sql type="condition"><!--如果启用了“提示可用库存不足”的系统配置，判断库存是否足够-->		
+		<exec condition="@MEM:UsableNotEnough==true">
+			<sql type="define">tblSalesOrder_Add_UsableQty_Validate</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--如果没有执行上面是否的提示，继续执行此操作-->
+		<exec condition="true">
+			<sql type="define">ZDYSalesOrder_add</sql>
+		</exec>
+	</sql>	
+	
+	<!-- 根据单据客户更新电商/分销 单据状态  -->	
+	<sql type="condition"><!--更新下级经销商配送单据状态-->
+		<condition>
+			<select>select ComNumber from tblCompany where classCode = @ValueofDB:CompanyCode</select>
+		</condition>	
+	
+		<exec condition="'@SqlReturn:ComNumber' =='HF01'">
+			update aioDS.dbo.tblBuyOrder set BillStatus = (case @ValueofDB:workFlowNode when 0 then 2 when -1 then 1 else 0 end) where erpSalesOrderId = @ValueofDB:id
+		</exec>
+	</sql>
+	
+	<!--判断是否选择合同-->
+	<!--
+	<sql type="condition">
+		<exec condition="'@ValueofDB:CRMpactID' ==''">
+			<error>请选择客户合同</error>
+		</exec>
+	</sql>
+	-->	
+</define>
+
+	<define name="tblSalesOrder_Add_One">
+		<exec condition="'@ValueofDB:CRMpactID' ==''">
+			<error>请选择客户合同</error>
+		</exec>
+		
+		<sql type="condition"><!--扣减子账户余额-->
+			<condition>
+				<select>select balance from tblSubAccountBalance where CompanyCode = @ValueofDB:CompanyCode and subAccountNo = @ValueofDB:subAccount </select>
+			</condition>
+			
+			<exec condition="@SqlReturn:balance &gt; @ValueofDB:TotalTaxAmount">			
+				<sql>update tblSubAccountBalance set balance = balance - @ValueofDB:TotalTaxAmount where CompanyCode = @ValueofDB:CompanyCode and subAccountNo = @ValueofDB:subAccount </sql>   
+			</exec>
+		</sql>
+	</define>
+
+	<!--  销售订单增加自定义控制-->
+	<define name="ZDYSalesOrder_add">	
+		<!--================================================自定义部分================================================-->
+		<sql type="condition">
+			<condition>
+				<!--  <select>select b.GoodsNumber,b.GoodsFullName
+								from tblSalesOrderDet a
+								join tblGoods b on a.GoodsCode=b.classCode
+								left join PDCostEstimate c on a.GoodsCode=c.GoodsCode and c.workFlowNodeName='finish'
+								where a.f_ref=@ValueofDB:id and c.GoodsCode is null </select>-->
+				<select>select b.GoodsNumber GoodsNumber1,b.GoodsFullName GoodsFullName1
+								from tblSalesOrderDet a
+								join tblGoods b on a.GoodsCode=b.classCode
+								where a.f_ref=@ValueofDB:id and a.price &lt;0 </select>
+				
+				<select> select count(0) ErrorCompany from PDPriceTrace join tblSalesOrderDet on PDPriceTrace.id=tblSalesOrderDet.PriceTraceID   join tblSalesOrder on tblSalesOrderDet.f_ref=tblSalesOrder.id where tblSalesOrder.id= @ValueofDB:id and PDPriceTrace.CompanyCode!=tblSalesOrder.CompanyCode  </select>
+				
+			</condition>
+			<exec condition=" @SqlReturn:ErrorCompany &gt; 0 ">
+				<error> 在选择明细商品后，请不要修改客户名称 </error>
+			</exec>
+			<exec condition=" '@SqlReturn:GoodsNumber1'!='null' ">
+				<error> @SqlReturn:GoodsNumber1 @SqlReturn:GoodsFullName1  销售单价须大于0 </error>
+			</exec>
+			<!-- <exec condition=" '@SqlReturn:GoodsNumber'!='null'">
+				<confirm yesDefine="ZDYSalesOrder_add_doubleGoods" noDefine="">@SqlReturn:GoodsNumber @SqlReturn:GoodsFullName  没有对应的成本预核算记录或未审核通过！是否继续? </confirm>
+			</exec>-->
+			<exec condition=" true ">
+				<sql type="define">ZDYSalesOrder_add_doubleGoods</sql>
+			</exec>
+		</sql>
+	</define>
+	<!-- 商品重复判断 -->
+	<define name="ZDYSalesOrder_add_doubleGoods">
+		<sql type="condition"> <!-- 商品重复判断 -->
+			<!-- <condition>
+				<select>select top 1 tblGoods.GoodsNumber as Number,tblGoods.GoodsFullName as FullName,tblGoods.GoodsSpec as Spec  from tblSalesOrder join tblSalesOrderDet on tblSalesOrder.id=tblSalesOrderDet.f_ref join tblGoods on tblSalesOrderDet.GoodsCode=tblGoods.classCode where  tblSalesOrder.id = @ValueofDB:id group by tblGoods.GoodsNumber ,tblGoods.GoodsFullName ,tblGoods.GoodsSpec having count(0)&gt;1  </select>
+			</condition>
+			<exec condition=" '@SqlReturn:Number'!='null'">
+				<confirm yesDefine="ZDYSalesOrder_add_doubleValidate" noDefine="">本单商品@SqlReturn:Number @SqlReturn:FullName 重复多行 是否继续？</confirm>
+			</exec>-->
+			<exec condition=" true ">
+				<sql type="define">ZDYSalesOrder_add_doubleValidate</sql>
+			</exec>
+		</sql>
+	</define>
+	<!-- 重单判断 -->
+	<define name="ZDYSalesOrder_add_doubleValidate">
+		<sql type="condition"> <!-- 重单判断 -->
+			<!-- <condition>
+				<select>select top 1 tblSalesOrder.BillNo oBillNo,tblGoods.GoodsNumber as Number,tblGoods.GoodsFullName as FullName,tblGoods.GoodsSpec as Spec  from tblSalesOrder join tblSalesOrderDet on tblSalesOrder.id=tblSalesOrderDet.f_ref join tblGoods on tblSalesOrderDet.GoodsCode=tblGoods.classCode where tblSalesOrder.BuyNo=@ValueofDB:tblSalesOrder_BuyNo and tblSalesOrder.CompanyCode =@ValueofDB:CompanyCode  and tblSalesOrder.id &lt;&gt; @ValueofDB:id and tblSalesOrderDet.GoodsCode in (select GoodsCode from tblSalesOrderDet where f_ref=@ValueofDB:id)</select>
+			</condition>
+			<exec condition=" '@SqlReturn:Number'!='null'">
+				 <confirm yesDefine="ZDYSalesOrder_add_confirm" noDefine="">重单嫌疑！ 单据@SqlReturn:oBillNo 已存在相同客户采购单号和商品@SqlReturn:Number @SqlReturn:FullName @SqlReturn:Spec 是否继续？</confirm>
+			</exec> -->
+			<exec condition=" true ">
+				<!--<sql type="define">ZDYSalesOrder_add_profitValidate</sql>-->
+				<sql type="define">ZDYSalesOrder_add_confirm</sql>
+			</exec>
+		</sql>
+	</define>
+	<!-- 利润判断 ，暂时取消-->
+	<define name="ZDYSalesOrder_add_profitValidate">
+		<sql type="condition">
+			<condition>
+				<select>select d.GoodsNumber,d.GoodsFullName,
+cast((case when isnull(b.noTaxCost,0)=0 then 0 else ((a.Price-b.noTaxCost)/b.noTaxCost)*100 end) as numeric(18,2))  as maolilv, 
+cast( profitLower as numeric(18,2)) profitLower, cast(profitUpper as numeric(18,2)) profitUpper  from tblSalesOrder Bi,tblSalesOrderDet a,PDCostEstimate b,tblcompany c,tblGoods d where Bi.id=a.f_ref and a.GoodsCode=b.GoodsCode and Bi.CompanyCode=c.classCode and a.GoodsCode=d.classCode  and b.isLast=1  and b.workFlowNodeName='finish' and a.f_ref=@ValueofDB:id and ( ((a.Price-b.noTaxCost) / a.Price) *100 &lt; profitLower or ((a.Price-b.noTaxCost) / a.Price) *100 &gt;  profitUpper ) </select>
+				<select>select b.GoodsNumber GoodsNumber1,b.GoodsFullName GoodsFullName2
+								from tblSalesOrderDet a
+								join tblGoods b on a.GoodsCode=b.classCode
+								left join PDCostEstimate c on a.GoodsCode=c.GoodsCode and c.workFlowNodeName='finish'
+								where a.f_ref=@ValueofDB:id and c.GoodsCode is null </select>
+			</condition>
+			<exec condition=" '@SqlReturn:GoodsNumber'!='null' &amp;&amp; @SqlReturn:maolilv&lt;@SqlReturn:profitLower || @SqlReturn:maolilv&gt;@SqlReturn:profitUpper ">
+				<confirm yesDefine="ZDYSalesOrder_add_noProfit" noDefine="">商品 @SqlReturn:GoodsNumber @SqlReturn:GoodsFullName 毛利下限 @SqlReturn:profitLower %，上限 @SqlReturn:profitUpper %，当前毛利 @SqlReturn:maolilv % 超出限定范围,是否继续保存</confirm>
+			</exec>
+			<!-- 没有成本预核算单的情况 -->
+			<exec condition=" '@SqlReturn:GoodsNumber1'!='null'">
+				<sql type="define">ZDYSalesOrder_add_noProfit</sql>
+			</exec>
+			<exec condition=" '@SqlReturn:GoodsNumber1'=='null' "> <!-- 这是毛利达标的情况 -->
+				<sql>update tblSalesOrder set noProfit=0 where id=@ValueofDB:id</sql>
+				<sql type="define">ZDYSalesOrder_add_confirm</sql>
+			</exec>
+		</sql>
+		
+	</define>
+
+	<!-- 重单确认 -->
+	<define name="ZDYSalesOrder_add_noProfit">
+		<!-- 更新当前未变更数-，未下工令单数-->
+		<sql>update tblSalesOrder set noProfit=1 where id=@ValueofDB:id</sql>
+		<sql type="define">ZDYSalesOrder_add_confirm</sql>
+	</define>
+	<!-- 确认 -->
+	<define name="ZDYSalesOrder_add_confirm">
+		<sql type="condition">
+			<condition>
+				<select>select BillNo from tblBuyApplication where SalesOrderID=@ValueofDB:id </select>
+			</condition>
+			<exec condition=" '@SqlReturn:BillNo'!='null'">
+				<error>已经有对应的采购申请单 @SqlReturn:BillNo ，不允许修改删除</error>
+			</exec>
+		</sql>
+		
+		<!-- 更新当前未变更数-，未下工令单数-->
+		<sql>update tblSalesOrderDet set NoWorkOrderQty=Qty-isnull(WorkOrderQty,0) where f_ref=@ValueofDB:id</sql>
+		
+		<sql type="condition"><!--如果没有执行上面是否的提示，继续执行此操作-->
+		<exec condition="true">
+			<sql type="define">tblSalesOrder_Add_One1</sql>
+		</exec>
+	</sql>	
+	</define>
+
+<define name="tblSalesOrder_Add_One1">
+	<sql type="condition">
+		<!--没有启用多仓库，用主表仓库更新明细表上的仓库值-->
+		<exec condition="'@MEM:ManyStockSales'=='false'">				  
+			<sql>update tblSalesOrderDet set StockCode=@ValueofDB:tblSalesOrder_StockCode where f_ref=@ValueofDB:tblSalesOrder_id</sql>	
+		</exec>
+		<!--更新订单明细表中未出库数量=订单数量，未生产数量=订单数量-->
+		<exec condition="true">		  
+			<sql>update tblSalesOrderDet set OutQty=0,NotOutQty=Qty,FinishStatus=0,NeedReceiveAmt=TaxAmount,NotPayQty=Qty,NoInvoiceAmount=TaxAmount,InvoiceAmount=0,InvoiceStatus=0 where f_ref=@ValueofDB:tblSalesOrder_id</sql>
+			<sql>update tblSalesOrder set statusId=0,NeedReturnAmt=TotalTaxAmount-AccountAmount,CurNeedReturnAmt=CurTotalAmount-CurAccountAmount,AlrAccAmt=AccountAmount,NotAmortDeposit=AccountAmount,CurAlrAccAmt=CurAccountAmount,PayAmt=0,CertificateNo='',NoInvoiceAmount=TotalTaxAmount,InvoiceAmount=0,InvoiceStatus=0 where id=@ValueofDB:tblSalesOrder_id</sql>
+		</exec>	
+		<!--如果启用了系统配置“保质期”，根据情况修改保质期限和生产日期的值-->
+		<exec condition="'@MEM:Availably'=='true'">		
+			<sql><!--商品设置了保质期，没有录入保质期限，根据生产日期更新保质期限-->
+			update tblSalesOrderDet set tblSalesOrderDet.Availably=a.Availably from(select  b.id as id,case when tblGoods.AvailablyType='Day' then convert(varchar(10),dateadd(Day,tblGoods.Validity,ProDate),21) when tblGoods.AvailablyType='Month' then convert(varchar(10),dateadd(Month,tblGoods.Validity,ProDate),21) when tblGoods.AvailablyType='Year' then convert(varchar(10),dateadd(Year,tblGoods.Validity,ProDate),21) else '' end as Availably from tblSalesOrder  a join tblSalesOrderDet b on b.f_ref=a.id join tblGoods on tblGoods.classCode=b.GoodsCode where a.id=@ValueofDB:tblSalesOrder_id and len(Availably)=0 and len(ProDate)!=0 and tblGoods.Validity!=0)a where tblSalesOrderDet.id=a.id
+			</sql>
+			<sql><!--商品设置了保质期，没有录入生产日期，根据保质期限更新生产日期-->
+			update tblSalesOrderDet set tblSalesOrderDet.ProDate=a.ProDate from(select  b.id as id,case when tblGoods.AvailablyType='Day' then convert(varchar(10),dateadd(Day,(-1)*tblGoods.Validity,Availably),21) when tblGoods.AvailablyType='Month' then convert(varchar(10),dateadd(Month,(-1)*tblGoods.Validity,Availably),21) when tblGoods.AvailablyType='Year' then convert(varchar(10),dateadd(Year,(-1)*tblGoods.Validity,Availably),21) else '' end as ProDate from tblSalesOrder a join tblSalesOrderDet b on b.f_ref=a.id join tblGoods on tblGoods.classCode=b.GoodsCode where a.id=@ValueofDB:tblBuyOrder_id and len(ProDate)=0 and len(Availably)!=0 and tblGoods.Validity!=0)a where tblSalesOrderDet.id=a.id
+			 </sql>
+		</exec>
+
+	</sql>
+	<sql type="condition"><!-- 自动插入交期回复单数据，方便回复 -->
+		<condition><select> select substring(cast(newid() as varchar(50)),1,30) as newReplayId </select></condition>
+		<exec condition="true"><!-- 为每行销售订单设置一个固定不动的唯一标识 -->
+			<sql> update tblSalesOrderDet set FixID = id where f_ref=@ValueofDB:id and isnull(FixID,'')=''    </sql>
+		</exec>
+		<!-- 自动生成交期回复表 -->
+		<exec condition=" '@Sess:BillOper'=='add' ">
+			<sql> update tblSalesOrder set PDReplyDateID=@SqlReturn:newReplayId where id=@ValueofDB:id </sql>
+			<sql> INSERT INTO [PDReplyDate]([id],[classCode],[isCatalog],[tblSalesOrderID],[createBy],[lastUpdateBy],[createTime],[lastUpdateTime],[statusId],[SCompanyID],[finishTime],[printCount],[workFlowNode],[workFlowNodeName],[checkPersons],[DepartmentCode],[EmployeeID],[StartDate],[ReplyDate]) 
+select @SqlReturn:newReplayId,'',0,@ValueofDB:id,[createBy],[lastUpdateBy],[createTime],[lastUpdateTime],[statusId],[SCompanyID],[finishTime],[printCount],'-1','finish',[checkPersons],[DepartmentCode],[EmployeeID],'','' from tblSalesOrder where id=@ValueofDB:id  </sql>
+			<sql>INSERT INTO [PDReplyDateDet]([f_ref],[StartDate],[ReplyDate],[GoodsCode],[cReplyDate],[PmcDate],sourceId,Qty) select @SqlReturn:newReplayId,'','',[GoodsCode],ReplyDate,'' ,FixID,Qty from tblSalesOrderDet where f_ref=@ValueofDB:id  </sql>
+		</exec>
+		<exec condition=" '@Sess:BillOper'=='update' ">
+			<!-- 删除回复单中多余的记录，因为订单可能已删除明细 -->
+			<sql> delete PDReplyDateDet where f_ref=@ValueofDB:PDReplyDateID and SourceId not in ( select FixId from tblSalesOrderDet where f_ref=@ValueofDB:id  )  </sql>
+			<!-- 插入回复单中不存在的记录，因为订单可能增加明细 -->
+			<sql>INSERT INTO [PDReplyDateDet]([f_ref],[StartDate],[ReplyDate],[GoodsCode],[cReplyDate],[PmcDate],sourceId,Qty) select @ValueofDB:PDReplyDateID,'','',[GoodsCode],ReplyDate,'' ,FixID,Qty from tblSalesOrderDet where f_ref=@ValueofDB:id and FixID not in ( select SourceId from PDReplyDateDet where f_ref=@ValueofDB:PDReplyDateID )  </sql>
+			<!-- 修改回复单中修改的记录 -->
+			<sql> update PDReplyDateDet set GoodsCode=tblSalesOrderDet.GoodsCode,cReplyDate=tblSalesOrderDet.ReplyDate,Qty=tblSalesOrderDet.Qty from PDReplyDateDet join tblSalesOrderDet on PDReplyDateDet.f_ref=@ValueofDB:PDReplyDateID and tblSalesOrderDet.f_ref=@ValueofDB:id and  PDReplyDateDet.SourceId=tblSalesOrderDet.FixId  </sql>
+		</exec>
+	</sql>
+	
+			
+
+	<sql type="condition">
+		<exec condition=" '@ValueofDB:workFlowNode' =='0' ">
+			<!--自定义; 清空所有赠品明细-->
+			<sql> delete from tblSalesOrderDet where IsCombo=1 and f_ref=@ValueofDB:id </sql>
+		</exec>	
+		<exec condition="'@ValueofDB:ComboId' !='' &amp;&amp; '@ValueofDB:workFlowNode' =='0' ">
+			<!--自定义; 主表选择套餐时，按套餐插入赠品明细-->
+			<sql type="procedure">{call proc_ComboInsertDet(@ValueofDB:id,retCode,retVal)}</sql>
+		</exec>	
+		<exec condition="'@ValueofDB:PartsId'!='' &amp;&amp; '@ValueofDB:workFlowNode' =='0' ">
+			<!--自定义; 主表选择配件时，按配件插入配件明细 -->
+			<sql>insert into tblSalesOrderDet(id, f_ref, StockCode,GoodsCode, FinishStatus, SCompanyID,Qty, Price, Amount, Discount, DisPrice, DisBackAmt, DisAmount, TaxPrice, TaxAmount, CoTaxAmt, CurPrice, CurAmount,CostPrice, CostAmount,PresentSampleType,IsCombo,SalesGoodsType,pjPrice,pjAmount,packGrossWeight,weight,FeeType)
+				select  LEFT(REPLACE(NEWID(),'-',''),30),@ValueofDB:id, b.StockCode,GoodsCode, 0, '00001',sum(Qty)*@ValueofDB:PartsNum, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0,0, 0,'1',1,2,(select top 1 lastPrice from tblStocks where tblStocks.GoodsCode=a.GoodsCode) as lastPrice,sum(Qty)*@ValueofDB:PartsNum*(select top 1 lastPrice from tblStocks where tblStocks.GoodsCode=a.GoodsCode) as lastAmount,b.packGrossWeight,sum(Qty)*b.packGrossWeight,a.FeeType from PDPartsDet a,tblGoods b where a.f_ref=@ValueofDB:PartsId and a.GoodsCode=b.classCode group by b.StockCode,GoodsCode,b.packGrossWeight,a.FeeType</sql>
+		</exec>
+		
+		<exec condition="  '@ValueofDB:GiftId'=='' &amp;&amp; '@ValueofDB:workFlowNode' =='0'  ">
+			<sql> delete from tblSalesOrderDet where IsCombo=3 and f_ref=@ValueofDB:id </sql>
+			<sql> update tblSalesOrder set OldGiftId=GiftId where id=@ValueofDB:id  </sql>
+		</exec>
+		
+		<!-- 礼品是可以改数量的，加了个老礼品套餐字段如果，更换套餐就要重新自动生成一次，否则不能重新生成套餐 -->
+		<!-- 暂时改为在开始结点重算，审核后不重算，但是需人为保证审核时不要改品种改数量  -->
+		<exec condition="  '@ValueofDB:GiftId'!='' &amp;&amp; '@ValueofDB:workFlowNode' =='0'  ">
+			<!--自定义; 清空所有礼品明细， isCombo=3 代表礼品 -->
+			<sql> delete from tblSalesOrderDet where IsCombo=3 and f_ref=@ValueofDB:id </sql>
+			<sql> update tblSalesOrder set OldGiftId=GiftId where id=@ValueofDB:id  </sql>
+			<!-- 按当前明细中规格相同的商品总数，计算出礼品数量,并存入订单礼品表中，供扫描入库时分配-->
+			<sql>
+				declare @table2 table(Spec1 varchar(100),ComeFrom  varchar(100),GoodsCode varchar(100),Qty numeric(18,8))
+				declare @table1 table(GoodsCode varchar(100),Qty numeric(18,8))
+				declare @Spec varchar(100),@ComeFrom varchar(100),@Qty numeric(18,8),@DQty numeric(18,8)
+				declare CurDet cursor local for select Spec1,ComeFrom,sum(Qty) from tblSalesOrderDet a join tblGoods b on a.GoodsCode=b.classCode  where a.f_ref=@ValueofDB:id and a.GoodsCode like '00001%' group by Spec1,ComeFrom 
+				open CurDet
+				fetch CurDet into @Spec,@ComeFrom,@Qty
+				while @@FETCH_STATUS=0
+				begin
+					delete @table1
+					insert into @table1(GoodsCode,Qty) select GoodsCode,ROUND(@Qty*ratio/100,0) from tblGiftDet where Spec1=@Spec and ComeFrom=@ComeFrom and f_ref=@ValueofDB:GiftId 
+					--检查数量是否相等，如产生小数点，可能导致数量少
+					select @DQty=@Qty-( select sum(Qty) from @table1 )
+					if @DQty &gt; 0 and (select sum(ratio) from tblGiftDet where Spec1=@Spec and ComeFrom=@ComeFrom and f_ref=@ValueofDB:GiftId )=100
+					begin
+						update @table1 set Qty=Qty+@DQty where GoodsCode = ( select top 1 GoodsCode from @table1 )
+					end
+					insert into @table2(Spec1,ComeFrom,GoodsCode,Qty) select @Spec,@ComeFrom,GoodsCode,Qty from @table1
+					fetch CurDet into @Spec,@ComeFrom,@Qty
+				end
+				close CurDet
+				deallocate CurDet
+				
+				insert into tblSalesOrderDet(id, f_ref, StockCode,GoodsCode, FinishStatus, SCompanyID,Qty, Price, Amount, Discount, DisPrice, DisBackAmt, DisAmount, TaxPrice, TaxAmount, CoTaxAmt, CurPrice, CurAmount,CostPrice, CostAmount,PresentSampleType,IsCombo,SalesGoodsType,pjPrice,pjAmount,packGrossWeight,weight)select  LEFT(REPLACE(NEWID(),'-',''),30), @ValueofDB:id, b.StockCode,GoodsCode, 0, '00001',sum(a.Qty), 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0,0, 0,'1',3,1,(select top 1 lastPrice from tblStocks where tblStocks.GoodsCode=a.GoodsCode  and lastQty &gt; 0 ),0,b.packGrossWeight,sum(a.Qty)*b.packGrossWeight from @table2 a,tblGoods b where a.GoodsCode=b.classCode group by b.StockCode,a.GoodsCode,b.packGrossWeight
+				update tblSalesOrderDet set pjPrice=30.5 where f_ref=@ValueofDB:id and goodsCode='0000100002000010002C' and IsCombo=3 --U5-40-1  这个礼品固定价格为30.5
+				update tblSalesOrderDet set pjAmount=pjPrice*Qty where f_ref=@ValueofDB:id  and IsCombo=3
+				delete tblSalesOrderDet where  f_ref=@ValueofDB:id  and IsCombo=3 and qty=0
+				delete tblSalesOrderGift where f_ref=@ValueofDB:id
+				insert into tblSalesOrderGift(f_ref,Spec1,ComeFrom,GoodsCode,Qty,BindQty) 
+					select @ValueofDB:id,Spec1,ComeFrom,GoodsCode,Sum(Qty),0 from @table2   group by Spec1,ComeFrom,GoodsCode
+					
+				update tblSalesOrderDet set  tblSalesOrderDet.FeeType=tblGiftdet.FeeType from tblSalesOrder 
+						inner join tblSalesOrderDet on tblSalesOrder.id =tblSalesOrderDet.f_ref
+						inner join tblGift on tblSalesOrder.GiftId=tblGift.id 
+						inner join tblGiftdet on tblGift.id =tblGiftdet.f_ref and tblSalesOrderDet.GoodsCode=tblGiftdet.GoodsCode
+				where tblSalesOrder.id=@ValueofDB:id
+						
+			</sql>
+		</exec>
+	</sql>
+	
+	<!--还原折扣 -->
+	<sql type="condition">
+		<condition>
+			<select>select (convert(float,Tax)/100.0+1) as tx from tblsalesorder where id = @ValueofDB:id </select>
+		</condition>
+		<exec condition="true">
+			<sql>
+					update tblsalesorderdet  set tblsalesorderdet.Discount= 100 where f_ref =@ValueofDB:id 
+			</sql>		
+			<sql>
+						update tblsalesorderdet  set tblsalesorderdet.DisPrice= tblsalesorderdet.Price * tblsalesorderdet.Discount/100.0,
+								tblSalesOrderDet.TaxPrice=@SqlReturn:tx*tblSalesOrderDet.Discount*tblSalesOrderDet.Price/100.0,
+								tblSalesOrderDet.CurPrice=(@SqlReturn:tx*tblSalesOrderDet.Discount*tblSalesOrderDet.Price/100.0)/@ValueofDB:CurrencyRate,
+								tblSalesOrderDet.DisBackAmt=tblSalesOrderDet.Amount*tblSalesOrderDet.Discount/100.0,
+								tblSalesOrderDet.TaxAmount=@SqlReturn:tx*tblSalesOrderDet.Amount*tblSalesOrderDet.Discount/100.0
+						where f_ref =@ValueofDB:id 
+			</sql>			
+			<sql>
+				update tblsalesorderdet  set 
+							tblSalesOrderDet.CurAmount=(@SqlReturn:tx*tblSalesOrderDet.Amount*tblSalesOrderDet.Discount/100.0)/@ValueofDB:CurrencyRate,
+							tblSalesOrderDet.DisAmount=tblSalesOrderDet.Amount-tblSalesOrderDet.DisBackAmt
+						where f_ref =@ValueofDB:id 
+			</sql>			
+			<sql>			
+						update tblSalesOrder set TotalAmount=round(tblSalesOrderDet.DisBackAmt,2),
+							   TotalTaxAmount= round(tblSalesOrderDet.TaxAmount-tblSalesOrder.DiscountAmount,2),
+							   TotalCoTaxAmt=round((tblSalesOrderDet.TaxAmount-tblSalesOrder.DiscountAmount)/1.17*0.11,2),
+							   CurTotalAmount=round((tblSalesOrderDet.TaxAmount-tblSalesOrder.DiscountAmount)/tblSalesOrder.CurrencyRate,2),
+							   DisAmount= tblSalesOrderDet.DisAmount
+						from tblSalesOrder 
+							inner join ( 
+								select f_ref, sum(DisBackAmt) DisBackAmt,sum(TaxAmount) TaxAmount ,sum(DisAmount) DisAmount
+								from  tblSalesOrderDet where f_ref =@ValueofDB:id group by f_ref
+									) tblSalesOrderDet on tblsalesorder.id =tblsalesorderdet.f_ref
+						where tblSalesOrder.id =@ValueofDB:id
+			
+			</sql>
+		</exec>
+	</sql>
+		
+	
+	<!-- 计算折扣-->
+	<sql type="condition">
+		<!--  非促销订单，并且有合同关联 -->
+		<exec condition="'@ValueofDB:ComboId'=='' &amp;&amp; '@ValueofDB:CRMpactID'!='' ">
+			<sql>
+				declare @CRMpactID varchar(100)
+				select @CRMpactID=CRMpactID from tblSalesOrder where id =@ValueofDB:id 
+				if exists( select *  from tblContractdet1 where f_ref = @CRMpactID)
+				begin
+					declare @cjyAmt numeric(18,8) --柴机油金额
+					declare @qjyAmt numeric(18,8) --汽机油金额
+					declare @cjyDiscount numeric(18,8)  --柴机油折扣
+					declare @qjyDiscount numeric(18,8)  --汽机油折扣
+					select @cjyAmt =sum(tblSalesorderdet.Amount) from tblSalesOrderdet where f_ref=@ValueofDB:id and goodscode like '0000100002%'
+					select @qjyAmt =sum(tblSalesorderdet.Amount) from tblSalesOrderdet where f_ref=@ValueofDB:id and goodscode like '0000100004%'
+					
+					set @cjyDiscount=0
+					set @qjyDiscount=0
+					select @cjyDiscount= tblContractdet1.Discount from tblContractdet1 where f_ref=@CRMpactID and goodscode ='0000100002'
+						and tblContractdet1.BeginT&lt;=@cjyAmt and @cjyAmt&lt; tblContractdet1.EndT 
+						
+					select @qjyDiscount= tblContractdet1.Discount from tblContractdet1 where f_ref=@CRMpactID and goodscode ='0000100004'
+						and tblContractdet1.BeginT&lt;=@qjyAmt and @qjyAmt&lt; tblContractdet1.EndT 
+					
+					if (isnull(@cjyDiscount,0)=0) 
+						set @cjyDiscount=100
+					else
+						set @cjyDiscount=100-@cjyDiscount
+					if (isnull(@qjyDiscount,0)=0)
+						set @qjyDiscount=100
+					else
+						set @qjyDiscount=100 - @qjyDiscount
+					
+					if isnull(@cjyDiscount,0)!=0 begin
+						update tblsalesorderdet  set tblsalesorderdet.Discount= @cjyDiscount where f_ref =@ValueofDB:id and goodscode like '0000100002%'
+					end 
+					if isnull(@qjyDiscount,0)!=0 begin
+						update tblsalesorderdet  set tblsalesorderdet.Discount= @qjyDiscount where f_ref =@ValueofDB:id and goodscode like '0000100004%'
+					end
+					
+					if (isnull(@cjyDiscount,0)!=0 or isnull(@qjyDiscount,0)!=0) begin 
+					
+						update tblsalesorderdet  set tblsalesorderdet.DisPrice= tblsalesorderdet.Price * tblsalesorderdet.Discount/100.0,
+								tblSalesOrderDet.TaxPrice=((@ValueofDB:Tax/100.0)+1)*tblSalesOrderDet.Discount*tblSalesOrderDet.Price/100.0,
+								tblSalesOrderDet.CurPrice=(((@ValueofDB:Tax/100.0)+1)*tblSalesOrderDet.Discount*tblSalesOrderDet.Price/100.0)/@ValueofDB:CurrencyRate,
+								tblSalesOrderDet.DisBackAmt=tblSalesOrderDet.Amount*tblSalesOrderDet.Discount/100.0,
+								tblSalesOrderDet.TaxAmount=((@ValueofDB:Tax/100.0)+1)*tblSalesOrderDet.Amount*tblSalesOrderDet.Discount/100.0
+						where f_ref =@ValueofDB:id and goodscode like '0000100002%'
+						
+						update tblsalesorderdet  set 
+							tblSalesOrderDet.CurAmount=(((@ValueofDB:Tax/100.0)+1)*tblSalesOrderDet.Amount*tblSalesOrderDet.Discount/100.0)/@ValueofDB:CurrencyRate,
+							tblSalesOrderDet.DisAmount=tblSalesOrderDet.Amount-tblSalesOrderDet.DisBackAmt
+						where f_ref =@ValueofDB:id and goodscode like '0000100002%'
+						
+						update tblsalesorderdet  set tblsalesorderdet.DisPrice= tblsalesorderdet.Price * tblsalesorderdet.Discount/100.0,
+								tblSalesOrderDet.TaxPrice=((@ValueofDB:Tax/100.0)+1)*tblSalesOrderDet.Discount*tblSalesOrderDet.Price/100.0,
+								tblSalesOrderDet.CurPrice=(((@ValueofDB:Tax/100.0)+1)*tblSalesOrderDet.Discount*tblSalesOrderDet.Price/100.0)/@ValueofDB:CurrencyRate,
+								tblSalesOrderDet.DisBackAmt=tblSalesOrderDet.Amount*tblSalesOrderDet.Discount/100.0,
+								tblSalesOrderDet.TaxAmount=((@ValueofDB:Tax/100.0)+1)*tblSalesOrderDet.Amount*tblSalesOrderDet.Discount/100.0
+						where f_ref =@ValueofDB:id and goodscode like '0000100004%'
+						
+						update tblsalesorderdet  set 
+							tblSalesOrderDet.CurAmount=(((@ValueofDB:Tax/100.0)+1)*tblSalesOrderDet.Amount*tblSalesOrderDet.Discount/100.0)/@ValueofDB:CurrencyRate,
+							tblSalesOrderDet.DisAmount=tblSalesOrderDet.Amount-tblSalesOrderDet.DisBackAmt
+						where f_ref =@ValueofDB:id and goodscode like '0000100004%'
+						
+						
+						update tblSalesOrder set TotalAmount=round(tblSalesOrderDet.DisBackAmt,2),
+							   TotalTaxAmount= round(tblSalesOrderDet.TaxAmount-tblSalesOrder.DiscountAmount,2),
+							   TotalCoTaxAmt=round((tblSalesOrderDet.TaxAmount-tblSalesOrder.DiscountAmount)/1.17*0.11,2),
+							   CurTotalAmount=round((tblSalesOrderDet.TaxAmount-tblSalesOrder.DiscountAmount)/tblSalesOrder.CurrencyRate,2),
+							   DisAmount= tblSalesOrderDet.DisAmount
+						from tblSalesOrder 
+							inner join ( 
+								select f_ref, sum(DisBackAmt) DisBackAmt,sum(TaxAmount) TaxAmount ,sum(DisAmount) DisAmount
+								from  tblSalesOrderDet where f_ref =@ValueofDB:id group by f_ref
+									) tblSalesOrderDet on tblsalesorder.id =tblsalesorderdet.f_ref
+						where tblSalesOrder.id =@ValueofDB:id
+					end
+				end
+			</sql>
+		</exec>
+	</sql>
+	
+	
+	<!-- 更新主表总重,计算运费-->
+	<sql type="condition">
+		<!--外发运输不计算运费-->
+		<exec condition=" '@ValueofDB:FreightOut' !='Yes,' ">
+			<sql type="procedure">{call proc_ComputeFreight(@ValueofDB:id,tblSalesOrder,@ValueofDB:District,@ValueofDB:isShipping,retCode,retVal)}</sql>
+		</exec>	
+	</sql>
+	
+
+	
+	
+	<sql type="condition">
+		<!--如果不启用审核流，调用过账的define-->
+		<!--<exec condition="'@MEM:tblSalesOrder_IsStatart' == '0'&amp;&amp; @MEM:OpenInvoice==false">-->
+		<exec condition="true">
+			<sql type="define">tblSalesOrder_Add_One2</sql>
+		</exec>	
+	</sql>
+</define>
+<!--==============启用了提示可用库存，可用库存的判断============-->
+<define name="tblSalesOrder_Add_UsableQty_Validate">
+	<sql type="condition">
+		<condition><select>select c.GoodsFullName as GoodsexistName from (select sum(Qty) as Qty,goodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,case when @MEM:ManyStockSales='false' then k.StockCode else f.StockCode end as StockCode from tblSalesOrder k,tblSalesOrderDet f where k.id=f.f_ref and f.f_ref=@ValueofDB:tblSalesOrder_id group by goodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,k.StockCode,f.StockCode) a,tblGoods c where a.goodsCode=c.classCode and a.Qty&gt;isnull((select sum(isnull(b.UseQty,0)) from ViewVirtualStock b where a.goodsCode=b.goodsCode and a.BatchNo=b.BatchNo and a.Inch=b.Inch and a.Hue=b.Hue and a.yearNO=b.yearNO and a.ProDate=b.ProDate and a.Availably=b.Availably and b.LastQty&gt;0 and (a.StockCode=b.stockCode or len(isnull(a.StockCode,''))=0)),0)</select></condition>	
+		<exec condition="'@SqlReturn:GoodsexistName' != 'null'">	 										 
+			<confirm yesDefine="tblSalesOrder_Add_One1" noDefine="">select.estimate.do.stock,@SqlReturn:GoodsexistName</confirm>
+		</exec>
+	</sql>
+</define>
+<!--===========启用了价格控制，判断商品价格是否在控制范围内的判断提示=========-->
+<define name="tblSalesOrder_Add_PriceControl_Validate">
+	<!--=======不含税单价的判断=======-->
+	<sql type="condition">
+		<condition><select>select c.GoodsNumber as GoodsLH,cast(isnull(b.LowestPrice,0) as decimal(18,4)) as LowestPrice,cast(isnull(b.HighestPrice,0) as decimal(18,4)) as HighestPrice from tblSalesOrderDet a,ViewPriceControl b,tblGoods c where a.f_ref=@ValueofDB:tblSalesOrder_id and UserID=@ValueofDB:tblSalesOrder_createBy and b.ControlType='Sell' and b.GoodsCode=a.GoodsCode and c.classCode=a.GoodsCode and a.PresentSampleType not in ('1','2') and (a.DisPrice&lt;b.LowestPrice or (b.HighestPrice&gt;0 and a.DisPrice&gt;b.HighestPrice))</select></condition>
+		<!--有录入最低价，最高价时，判断要在此范围内-->
+		<exec condition="'@SqlReturn:GoodsLH'!='null'&amp;&amp;@SqlReturn:LowestPrice&gt;0&amp;&amp;@SqlReturn:HighestPrice&gt;0">		
+			<error>common.priceNotScope.error,@SqlReturn:GoodsLH,@SqlReturn:LowestPrice,@SqlReturn:HighestPrice</error>       
+		</exec>
+		<!--有录入最低价，没有最高价时，判断要大于等于最低价-->
+		<exec condition="'@SqlReturn:GoodsLH'!='null'&amp;&amp;@SqlReturn:LowestPrice&gt;0&amp;&amp;@SqlReturn:HighestPrice==0">		
+			<error>common.priceLessLowest.error,@SqlReturn:GoodsLH,@SqlReturn:LowestPrice</error>       
+		</exec>
+		<!--有录入最高价，没有最低价时，判断要小于等于最高价-->
+		<exec condition="'@SqlReturn:GoodsLH'!='null'&amp;&amp;@SqlReturn:LowestPrice==0&amp;&amp;@SqlReturn:HighestPrice&gt;0">		
+			<error>common.priceMoreHighest.error,@SqlReturn:GoodsLH,@SqlReturn:HighestPrice</error>       
+		</exec>
+	</sql>
+	<!--=======含税单价的判断=======-->
+	<sql type="condition">
+		<condition><select>select c.GoodsNumber as GoodsLH,cast(isnull(b.LowestPrice,0) as decimal(18,4)) as LowestPrice,cast(isnull(b.HighestPrice,0) as decimal(18,4)) as HighestPrice from tblSalesOrderDet a,ViewPriceControl b,tblGoods c where b.GoodsCode=a.GoodsCode and c.classCode=a.GoodsCode and b.ControlType='SellTax' and UserID=@ValueofDB:tblSalesOrder_createBy and a.PresentSampleType not in ('1','2') and (a.TaxPrice&lt;b.LowestPrice or (b.HighestPrice&gt;0 and a.TaxPrice&gt;b.HighestPrice)) and a.f_ref=@ValueofDB:tblSalesOrder_id</select></condition>
+		<!--有录入最低价，最高价时，判断要在此范围内-->
+		<exec condition="'@SqlReturn:GoodsLH'!='null'&amp;&amp;@SqlReturn:LowestPrice&gt;0&amp;&amp;@SqlReturn:HighestPrice&gt;0">		
+			<error>common.TaxPriceNotScope.error,@SqlReturn:GoodsLH,@SqlReturn:LowestPrice,@SqlReturn:HighestPrice</error>       
+		</exec>
+		<!--有录入最低价，没有最高价时，判断要大于等于最低价-->
+		<exec condition="'@SqlReturn:GoodsLH'!='null'&amp;&amp;@SqlReturn:LowestPrice&gt;0&amp;&amp;@SqlReturn:HighestPrice==0">		
+			<error>common.TaxPriceLessLowest.error,@SqlReturn:GoodsLH,@SqlReturn:LowestPrice</error>       
+		</exec>
+		<!--有录入最高价，没有最低价时，判断要小于等于最高价-->
+		<exec condition="'@SqlReturn:GoodsLH'!='null'&amp;&amp;@SqlReturn:LowestPrice==0&amp;&amp;@SqlReturn:HighestPrice&gt;0">		
+			<error>common.TaxPriceMoreHighest.error,@SqlReturn:GoodsLH,@SqlReturn:HighestPrice</error>       
+		</exec>
+	</sql>
+</define>
+<!--=========销售订单过账操作==========-->
+<define name="tblSalesOrder_Add_One2">	
+	
+	<!--判断之前销售订单是否已审核-->
+	<!--
+	<sql type="condition">
+		<condition>
+			<select>
+				 select HFComboRecord.id as billId from HFComboRecord where HFComboRecord.ActiveId=@ValueofDB:ActiveId and HFComboRecord.CompanyCode=@ValueofDB:CompanyCode
+			</select>
+			<select>
+				declare @billNo varchar(500)
+				set @billNo = ''
+				select @billNo +=(case when @billNo ='' then '' else ',' end)+billNo from tblSalesOrder where id in(select refBillId from HFComboRecordDet where f_ref=@SqlReturn:billId and BillName='销售订单' and refBillId != @ValueofDB:id) and  workFlowNodeName != 'finish' and billNo &lt; @ValueofDB:BillNo
+				select @billNo as billNo
+			</select>
+		</condition>
+		
+		<exec condition="'@SqlReturn:billNo' != ''">
+			<error>请先审核销售订单：@SqlReturn:billNo</error>
+		</exec>
+	</sql> -->
+	<sql type="condition">
+		<condition>
+			<select>
+				 select HFComboRecord.id as billId from HFComboRecord where HFComboRecord.ActiveId=@ValueofDB:ActiveId and HFComboRecord.CompanyCode=@ValueofDB:CompanyCode				
+			</select>
+			<!-- 判断客户的活动预付款总额-->
+			<select>
+				    select HFComboRecord.id IDB, HFComboRecord.TotalAmt,HFComboRecord.UseAmt+cast(@ValueofDB:TotalTaxAmount as numeric(18,2))  TotalUseAmt 
+					from HFComboRecord where id = @SqlReturn:billId and  HFComboRecord.TotalAmt&lt; HFComboRecord.UseAmt+cast(@ValueofDB:TotalTaxAmount as numeric(18,2))-(select isnull(outAmt,0) from HFComboRecordDet where refBillID =@ValueofDB:id )
+			</select>
+		</condition>
+		<exec condition="'@SqlReturn:IDB'!='null'">
+			<error>所选优惠套餐的消费金额：'@SqlReturn:TotalUseAmt' 已超出预付款总额：'@SqlReturn:TotalAmt' </error>
+		</exec>
+		
+
+
+	</sql>
+	<sql type="condition">		
+		<condition>
+			<select>
+				 select HFComboRecord.id as billId,isnull(TotalAmt,0) as TotalAmt from HFComboRecord where HFComboRecord.ActiveId=@ValueofDB:ActiveId and HFComboRecord.CompanyCode=@ValueofDB:CompanyCode				 				
+			</select>			
+			<select>
+				select TotalTaxAmount as TotalTaxAmt from tblSalesOrder where id = @ValueofDB:id
+			</select>
+			<!-- 判断参与活动的已用金额有没有超过总的活动金额-->
+			<select> 
+				<!--
+				select HFComboRecorddet1.id as IDA, BaseAmt,UseAmt+@ValueofDB:TotalTaxAmount as UseAmt from (
+				select @SqlReturn:billId as id, sum(HFComboRecorddet1.BaseAmt) as BaseAmt ,sum(HFComboRecorddet1.UseAmt) UseAmt ,sum(HFComboRecorddet1.needAmt) needAmt
+				from  HFComboRecorddet1 where f_ref =@SqlReturn:billId and comboID =@ValueofDB:ComboId ) HFComboRecorddet1  where  BaseAmt&lt; UseAmt+ @ValueofDB:TotalTaxAmount
+				-->				
+				select @SqlReturn:billId as id, sum(HFComboRecorddet1.BaseAmt) as BaseAmt ,isnull((sum(HFComboRecorddet1.UseAmt)+@SqlReturn:TotalTaxAmt),0) as UseAmt ,sum(HFComboRecorddet1.needAmt) needAmt
+				from  HFComboRecorddet1 where f_ref =@SqlReturn:billId			
+			</select>
+		</condition>
+		<!--
+		<exec condition="'@ValueofDB:ComboId'!='' &amp;&amp; @SqlReturn:UseAmt+@ValueofDB:TotalTaxAmount &gt; @SqlReturn:TotalAmt">
+			 <error> 消费金额：'@SqlReturn:UseAmt' 已超出优惠活动的额度：'@SqlReturn:TotalAmt' </error>
+		</exec>-->
+		<exec condition="'@ValueofDB:ComboId'!='' &amp;&amp; @SqlReturn:UseAmt &gt; @SqlReturn:TotalAmt">
+			 <error> 消费金额：'@SqlReturn:UseAmt' 已超出优惠活动的额度：'@SqlReturn:TotalAmt' </error>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition>
+			<select>
+				 select HFComboRecord.id as billId from HFComboRecord where HFComboRecord.ActiveId=@ValueofDB:ActiveId and HFComboRecord.CompanyCode=@ValueofDB:CompanyCode				 
+				 select refBillId from HFComboRecordDet where f_ref = @SqlReturn:billId and refBillId = @ValueofDB:id
+			</select>
+			<!--判断套餐的使用有没有跨级，A套餐的额度没有用完，不能使用B套餐 -->
+			<!--新模式只能选定当前可选套餐，故屏蔽以下
+			<select>
+				select tblCombo.Combo from HFComboRecorddet1 
+					 inner join tblCombo on tblcombo.id = HFComboRecorddet1.ComboId 
+					where f_ref =@SqlReturn:billId  and HFComboRecorddet1.id &lt;
+				( select HFComboRecorddet1.id from HFComboRecorddet1 where f_ref =@SqlReturn:billId 
+					and HFComboRecorddet1.ComboId=@ValueofDB:ComboId) and HFComboRecorddet1.NeedAmt&gt;0
+				order by HFComboRecorddet1.id 
+			</select>
+			-->
+		</condition>		
+		<exec condition="'@SqlReturn:billId'!='null' &amp;&amp; '@SqlReturn:billId'!=''">
+			<!--<sql> update HFComboRecord set UseAmt=UseAmt+@ValueofDB:TotalTaxAmount,Balance=Balance-@ValueofDB:TotalTaxAmount where id=@SqlReturn:billId </sql>-->
+			<!--<sql> insert into HFComboRecordDet(f_ref,refBillId,BillName,inAmt,outAmt,remark) values(@SqlReturn:billId,@ValueofDB:id,'销售订单',0,@ValueofDB:TotalTaxAmount,'下订单'+@ValueofDB:tblsalesorder_BillNo) </sql>-->
+			<!-- 更新剩余消费额度 -->
+			<sql>
+				update HFComboRecordDet1 set HFComboRecordDet1.UseAmt=HFComboRecordDet1.UseAmt+@ValueofDB:TotalTaxAmount
+				where f_ref=@SqlReturn:billId and HFComboRecordDet1.ComboId=@ValueofDB:ComboId 
+			</sql>
+		</exec>
+		<exec condition="'@SqlReturn:billId'!='null' &amp;&amp; '@SqlReturn:billId'!='' &amp;&amp; '@SqlReturn:refBillId'==''">
+			<sql> insert into HFComboRecordDet(f_ref,refBillId,BillName,inAmt,outAmt,remark) values(@SqlReturn:billId,@ValueofDB:id,'销售订单',0,@ValueofDB:TotalTaxAmount,'下订单'+@ValueofDB:tblsalesorder_BillNo) </sql>
+		</exec>
+	</sql>
+	
+	<sql type="condition">
+		<condition>
+			<select>
+				 select HFComboRecord.id as billId from HFComboRecord where HFComboRecord.ActiveId=@ValueofDB:ActiveId and HFComboRecord.CompanyCode=@ValueofDB:CompanyCode				
+			</select>
+			<select>
+				 select mode  from HFComboActive where id in(select ActiveId from HFComboRecord where HFComboRecord.ActiveId=@ValueofDB:ActiveId and HFComboRecord.CompanyCode=@ValueofDB:CompanyCode)
+			</select>
+		</condition>
+		<!--  如果为阶梯模式 -->
+		<exec condition="'@SqlReturn:mode'=='2'">
+			<sql type="procedure">{call proc_alterHFComRecordDet1(@SqlReturn:billId,retCode,retVal)}</sql>
+		</exec>
+		
+		<exec condition="'@SqlReturn:billId'!='null' &amp;&amp; '@SqlReturn:billId'!=''">			
+			<sql>
+				<!-- 更新活动金额-->
+				update HFComboRecord set TotalAmt=inAmt,UseAmt=outAmt,Balance = inAmt-outAmt
+				from  HFComboRecord inner join (
+				select f_ref,SUM(inAmt) as inAmt ,SUM(outAmt) as outAmt from HFComboRecordDet where f_ref=@SqlReturn:billId group by  f_ref ) HFComboRecordDet
+					on HFComboRecord.id = HFComboRecordDet.f_ref 
+				where HFComboRecord.id =@SqlReturn:billId
+			</sql>
+		
+				<sql type="procedure">{call proc_reCalHFComboRecord(@SqlReturn:billId,retCode,retVal)}</sql>
+				
+		</exec>
+	</sql>
+	
+	
+	<exec condition="@MEM:tblSalesOrder_IsStatart==0">
+		<!-- 自定义操作：新增客户料号记录-->
+		<sql type="condition">
+			<exec condition="false"><!-- 暂时不用客户料号 -->
+				<sql type="procedure">{call proc_AddPDComMaterial(@ValueofDB:id,tblSalesOrder,retCode,retVal)}</sql>
+			</exec>
+		</sql>
+		
+		
+		<sql type="condition">	
+			--修改销售明细表已出库数量和未出库数量
+			<exec condition="true">
+				<sql>update tblSalesOrderDet set OutQty=0,NotOutQty=Qty where f_ref=@ValueofDB:tblSalesOrder_id</sql>
+			</exec>
+			<!--当预收订金大于0时，产生收款单，并影响往来，凭证-->
+			<exec condition="@ValueofDB:tblSalesOrder_AccountAmount&gt;0">
+				<sql type="define">tblSalesOrder_Add_PreReceive</sql>
+			</exec>
+		</sql>
+		
+		<!--根据销售订单客户更新电商/分销采购单据状态-->
+		<sql type="condition">
+			<condition>
+					<select>select ComNumber as ComNumber from tblCompany where classCode = @ValueofDB:CompanyCode</select>
+			</condition>
+
+		</sql>
+	</exec>
+</define>
+
+<!--===========插入凭证，影响科目余额，影响往来===============-->
+<define name="tblSalesOrder_Add_PreReceive">
+	<sql type="condition">
+		<!--未启用预收预付记应收应付,影响往来 （1应付 2应收 3预付 4预收）-->
+		<exec condition="'@MEM:prerecvpaymarktoneedrecvpay'=='false'"> 
+			<sql type="procedure">{call proc_insertComIni(@ValueofDB:tblSalesOrder_id,@ValueofDB:tblSalesOrder_CompanyCode,4,@ValueofDB:tblSalesOrder_BillDate,Period=@ValueofDB:tblSalesOrder_Period@SPFieldLink:PeriodYear=@ValueofDB:tblSalesOrder_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblSalesOrder_PeriodMonth@SPFieldLink:PreReceiveTotalDebit=0@SPFieldLink:PreReceiveTotalLend=@ValueofDB:tblSalesOrder_AccountAmount@SPFieldLink:RelationDocID=@ValueofDB:tblSalesOrder_id@SPFieldLink:Currency=@ValueofDB:tblSalesOrder_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblSalesOrder_CurrencyRate@SPFieldLink:createBy=@ValueofDB:tblSalesOrder_createBy@SPFieldLink:createTime=@ValueofDB:tblSalesOrder_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblSalesOrder_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblSalesOrder_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblSalesOrder_SCompanyID@SPFieldLink:FcPreRecTotalDebit=0@SPFieldLink:FcPreRecTotalCredit=@ValueofDB:tblSalesOrder_CurAccountAmount@SPFieldLink:BillType=tblSalesOrder@SPFieldLink:BillNo=@ValueofDB:tblSalesOrder_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblSalesOrder_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblSalesOrder_DepartmentCode@SPFieldLink:DiscountAmount=@ValueofDB:tblSalesOrder_DiscountAmount@SPFieldLink:Remark=@ValueofDB:tblSalesOrder_Remark,retCode,retVal)}</sql>
+		</exec>	
+		<!--已启用预收预付记应收应付,影响往来 （1应付 2应收 3预付 4预收）-->
+		<exec condition="'@MEM:prerecvpaymarktoneedrecvpay'=='true'"> 
+			<sql type="procedure">{call proc_insertComIni(@ValueofDB:tblSalesOrder_id,@ValueofDB:tblSalesOrder_CompanyCode,2,@ValueofDB:tblSalesOrder_BillDate,Period=@ValueofDB:tblSalesOrder_Period@SPFieldLink:PeriodYear=@ValueofDB:tblSalesOrder_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblSalesOrder_PeriodMonth@SPFieldLink:ReceiveTotalDebit=0@SPFieldLink:ReceiveTotalLend=@ValueofDB:tblSalesOrder_AccountAmount@SPFieldLink:RelationDocID=@ValueofDB:tblSalesOrder_id@SPFieldLink:Currency=@ValueofDB:tblSalesOrder_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblSalesOrder_CurrencyRate@SPFieldLink:createBy=@ValueofDB:tblSalesOrder_createBy@SPFieldLink:createTime=@ValueofDB:tblSalesOrder_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblSalesOrder_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblSalesOrder_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblSalesOrder_SCompanyID@SPFieldLink:FcRecTotalDebit=0@SPFieldLink:FcRecTotalCredit=@ValueofDB:tblSalesOrder_CurAccountAmount@SPFieldLink:BillType=tblSalesOrder@SPFieldLink:BillNo=@ValueofDB:tblSalesOrder_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblSalesOrder_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblSalesOrder_DepartmentCode@SPFieldLink:DiscountAmount=@ValueofDB:tblSalesOrder_DiscountAmount@SPFieldLink:Remark=@ValueofDB:tblSalesOrder_Remark,retCode,retVal)}</sql>
+		</exec>	
+		<exec condition="true"> <!--产生销售收款单-->	
+			<sql type="define">tblSalesOrder_Add_CreateReceBill</sql>
+		</exec>	
+    <!--如果启用“自动产生凭证”，则自动插入凭证-->
+		<exec condition="'@MEM:autoGenerateAcc'=='true'">
+			<sql type="certificate">tblSalesOrder</sql>                  
+		</exec>
+	</sql>    
+</define>
+
+
+<!--============删除销售订单=============-->
+<!--不管是否启用审核流，修改或者删除都会调用此define，但启用了审核流能够修改或者删除说明是未审核完成，未审核的单据不需要下面的判断-->
+<define name="tblSalesOrder_Del">
+	<sql type="condition"><!--回填子账户余额-->
+		<condition>
+			<select>select balance from tblSubAccountBalance where CompanyCode = @ValueofDB:CompanyCode and subAccountNo = @ValueofDB:subAccount </select>
+		</condition>
+		
+		<exec condition="true">			
+			<sql>update tblSubAccountBalance set balance = balance + @ValueofDB:TotalTaxAmount where CompanyCode = @ValueofDB:CompanyCode and subAccountNo = @ValueofDB:subAccount </sql>   
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition>
+			<select>select BillNo from tblBuyApplication where SalesOrderID=@ValueofDB:id</select>
+		</condition>
+		<exec condition=" '@SqlReturn:BillNo'!='null'">
+			<error> 已经被采购申请 @SqlReturn:BillNo 引用，不允许修改删除</error>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition>
+			<select>select BillNo from PDWorkOrder where tblSalesOrderID=@ValueofDB:id</select>
+		</condition>
+		<exec condition=" '@SqlReturn:BillNo'!='null'">
+			<error> 已经被工令单 @SqlReturn:BillNo 引用，不允许修改删除</error>
+		</exec>
+	</sql>	
+	<sql type="condition">
+		<condition>
+			<select>select count(0) hasmrp from PDMRPBill where PDMRPBill.BillId =@ValueofDB:id</select>
+		</condition>
+		<exec condition="  @SqlReturn:hasmrp &gt; 0 ">
+			<error> 已经进行MRP运算不可以修改</error>
+		</exec>
+	</sql>
+	
+	<sql type="condition">
+		<!--<exec condition="@MEM:tblSalesOrder_IsStatart==0 &amp;&amp; @MEM:OpenInvoice==false">-->
+		
+		<exec condition="true">
+			<sql type="define">tblSalesOrder_Del_def</sql> 
+		</exec>
+		
+		<!--修改电商销售订单的导入状态-->
+		<exec condition="true">
+			<sql>update tblEBOrder set InSign='1' where id=@ValueofDB:tblSalesOrder_id</sql> 
+		</exec>
+	</sql>
+</define>	
+
+
+<define name="tblSalesOrder_Del_def">
+	<!--=======删除的控制类操作===============-->
+	<!--若是订单状态不是未完成,不允许执行数据更新操作 -->
+	<sql type="condition">
+		<condition><select>select statusId from tblSalesOrder where id=@ValueofDB:tblSalesOrder_id</select></condition>
+		<exec condition="@SqlReturn:statusId!=0">
+			<error>common.noNormallyStatus.oper.error</error>       
+		</exec>
+	</sql>
+	<!--凭证启用了审核流，关联次单据的审核流已经审核完毕，不能修改此单 -->
+	<sql type="condition">
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblSalesOrder_id and workFlowNodeName='finish'</select></condition>
+		<exec condition="'@SqlReturn:OrderNo'!= 'null' ">	 					
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>       
+		</exec>
+	</sql>
+	<!--被采购订单引用，不能修改此单 -->
+	<sql type="condition">
+		<condition><select>select BillNo as BuyBillNo from tblBuyOrder where SalesOrderID=@ValueofDB:tblSalesOrder_id</select></condition>
+		<exec condition="'@SqlReturn:BuyBillNo'!='null'">
+        	<error>tblbuyOrder.delete.quoted,@SqlReturn:BuyBillNo</error>       
+		</exec>
+	</sql>
+	<!--被销售出库单引用，不允许修改 -->
+	<sql type="condition">
+		<condition><select>select BillNo as SalBillNo from tblSalesOutStock a,tblSalesOutStockDet b where a.id=b.f_ref and b.SalesOrderID=@ValueofDB:tblSalesOrder_id and a.workFlowNodeName!='print'</select></condition>
+		<exec condition="'@SqlReturn:SalBillNo' != 'null'">	 					
+			<error>tblSalesOrder.delete.quoted,@SqlReturn:SalBillNo</error>       
+		</exec>
+	</sql>
+	<!--存在不是自动生成的相关的收款单，不允许修改 -->
+	<sql type="condition">
+		<condition><select>select a.BillNo as RecBillNo from tblSaleReceive a,tblSaleReceiveDet b where a.id=b.f_ref and b.RefbillID=@ValueofDB:tblSalesOrder_id and a.AutoBillMarker=0 and a.workFlowNodeName!='print'</select></condition>
+		<exec condition="'@SqlReturn:RecBillNo'!='null'">	 					
+			<error>DelBill.ReBillNo.error,@SqlReturn:RecBillNo</error>       
+		</exec>
+	</sql>
+	<!--存在自动生成的收款单存在关联的收款退款单，不允许修改 -->
+	<sql type="condition">
+		<condition><select>select a.BillNo as RecRfBillNo from tblSaleReceive a,tblSaleReceiveDet b where a.id=b.f_ref and b.RefbillID=(select c.id from tblSaleReceive c,tblSaleReceiveDet d where c.id=d.f_ref and d.RefbillID=@ValueofDB:tblSalesOrder_id and c.AutoBillMarker=1) and a.workFlowNodeName!='print'</select></condition>
+		<exec condition="'@SqlReturn:RecRfBillNo'!='null'">	 					
+			<error>DelBill.RecRBillNo.error,@SqlReturn:RecRfBillNo</error>       
+		</exec>
+	</sql>
+	<!--被生成计划单引用，不允许修改
+	<sql type="condition">
+		<condition><select>select BillNo as PlanBillNo from tblPlan where RefBillID=@ValueofDB:tblSalesOrder_id</select></condition>
+		<exec condition="'@SqlReturn:PlanBillNo' != 'null'">	 					
+			<error>tblSalesOrder.tblPlan1.quoted,@SqlReturn:PlanBillNo</error>       
+		</exec>
+	</sql>-->
+
+	
+
+	
+	<!--========删除的逻辑操作===========-->
+	<sql type="condition">
+		<condition><select>select AccountAmount from tblSalesOrder where id=@ValueofDB:tblSalesOrder_id</select></condition>		
+		<exec condition="true">	<!--删除虚拟库存不足提醒细记录-->
+			<sql>delete from tblNotEnoughStock where RefBillId=@ValueofDB:tblSalesOrder_id</sql>
+		</exec>
+		<!--根据是否启用预收预付记应收应付, 预收订金大于0时，删除凭证、往来、收款单, 删除本单据的往来记录（1应付 2应收 3预付 4预收)-->
+		<exec condition="@SqlReturn:AccountAmount&gt;0">								
+			<sql type="procedure">{call proc_iterateExeProc(select id as IniId from tblCompanyIni where relationDocID='@ValueofDB:tblSalesOrder_id',proc_deleteComIni,@IniId@ParamLink:(case when '@MEM:prerecvpaymarktoneedrecvpay'='true' then 2 else 4 end),retCode,retVal)}</sql>
+		</exec>
+		<exec condition="true">				
+			<!--删除凭证审核流或者减少科目余额，删除凭证信息-->
+			<sql type="define">tblSalesOrder_Del_DeleteAcc</sql>
+			<!--删除销售收款单信息-->
+			<sql>delete from tblSaleReceive where id in (select f_ref from tblSaleReceiveDet where RefbillID=@ValueofDB:tblSalesOrder_id)</sql>
+			<sql>delete from tblSalesRecAccount where f_ref=(select top 1 f_ref from tblSaleReceiveDet where RefbillID=@ValueofDB:tblSalesOrder_id)</sql>
+			<sql>delete from tblTrackBill where RelationID in (select f_ref from tblSaleReceiveDet where RefbillID=@ValueofDB:tblSalesOrder_id)</sql>
+			<sql>delete from tblSaleReceiveDet where RefbillID=@ValueofDB:tblSalesOrder_id</sql>
+		</exec>
+	</sql>
+	<!--反审核删除赠品记录-->
+	<sql>delete from tblSalesOrderDet where IsCombo=1 and f_ref=@ValueofDB:tblSalesOrder_id</sql>
+	
+	
+	<!-- 删除或修改单据时还原优惠套套餐  -->
+	<sql type="condition">
+		<condition>
+			<select>
+				select ActiveId,CompanyCode,ComboId,TotalTaxAmount from tblSalesOrder where id =@ValueofDB:id
+			</select>
+			<select>
+				 select HFComboRecord.id as billId from HFComboRecord where HFComboRecord.ActiveId=@SqlReturn:ActiveId and HFComboRecord.CompanyCode=@SqlReturn:CompanyCode
+			</select>
+			<select>
+				 <!--select isnull(sum(isnull(TotalTaxAmount,0)),0) as Amt from tblSalesOrder a join HFComboRecord b on a.ActiveId = b.ActiveId where a.ComboId = @SqlReturn:ComboId and a.ActiveId = @SqlReturn:ActiveId and b.CompanyCode=@SqlReturn:CompanyCode and b.id = @SqlReturn:billId-->
+				  select isnull(outAmt,0) as Amt from HFComboRecordDet WHERE f_ref = @SqlReturn:billId AND refBillId =@ValueofDB:id
+			</select>
+		
+			<select>
+				select  mode  from HFComboActive where id in(select ActiveId from HFComboRecord where HFComboRecord.ActiveId=@SqlReturn:ActiveId and HFComboRecord.CompanyCode=@SqlReturn:CompanyCode) 
+			</select>
+		</condition>
+		
+		<exec condition="'@SqlReturn:billId'!='null' &amp;&amp; '@SqlReturn:billId'!='' &amp;&amp; '@SqlReturn:mode'=='1'">			
+			<!-- 更新剩余消费额度 -->
+			<sql> 
+				update HFComboRecordDet1 set HFComboRecordDet1.UseAmt=HFComboRecordDet1.UseAmt-cast(@SqlReturn:Amt as float),
+				HFComboRecordDet1.NeedAmt += cast(@SqlReturn:Amt as float),HFComboRecordDet1.BaseAmt += cast(@SqlReturn:Amt as float)
+				where f_ref=@SqlReturn:billId and HFComboRecordDet1.ComboId=@SqlReturn:ComboId
+				<!--
+				update HFComboRecordDet1 set HFComboRecordDet1.UseAmt=cast(@SqlReturn:Amt as float)-@SqlReturn:TotalTaxAmount
+				where f_ref=@SqlReturn:billId and HFComboRecordDet1.ComboId=@SqlReturn:ComboId -->
+			</sql>
+			
+			<sql>
+				delete HFComboRecordDet where f_ref=@SqlReturn:billId and HFComboRecordDet.refBillId=@ValueofDB:id
+			</sql>
+			
+			<sql>
+				<!-- 更新活动金额-->
+				update HFComboRecord set TotalAmt=inAmt,UseAmt=outAmt,Balance = inAmt-outAmt
+				from  HFComboRecord inner join (
+				select f_ref,SUM(inAmt) as inAmt ,SUM(outAmt) as outAmt from HFComboRecordDet where f_ref=@SqlReturn:billId group by  f_ref ) HFComboRecordDet
+					on HFComboRecord.id = HFComboRecordDet.f_ref 
+				where HFComboRecord.id =@SqlReturn:billId
+			</sql>			
+		</exec>
+		<exec condition="'@SqlReturn:billId'!='null' &amp;&amp; '@SqlReturn:billId'!='' &amp;&amp; '@SqlReturn:mode'=='2'">
+			<!-- 更新剩余消费额度 -->
+			<sql> 
+				update HFComboRecordDet1 set HFComboRecordDet1.UseAmt=HFComboRecordDet1.UseAmt-@SqlReturn:TotalTaxAmount
+				where f_ref=@SqlReturn:billId and HFComboRecordDet1.ComboId=@SqlReturn:ComboId 
+			</sql>
+			
+			<sql>
+				delete HFComboRecordDet where f_ref=@SqlReturn:billId and HFComboRecordDet.refBillId=@ValueofDB:id
+			</sql>
+			
+			<sql>
+				<!-- 更新活动金额-->
+				update HFComboRecord set TotalAmt=inAmt,UseAmt=outAmt,Balance = inAmt-outAmt
+				from  HFComboRecord inner join (
+				select f_ref,SUM(inAmt) as inAmt ,SUM(outAmt) as outAmt from HFComboRecordDet where f_ref=@SqlReturn:billId group by  f_ref ) HFComboRecordDet
+					on HFComboRecord.id = HFComboRecordDet.f_ref 
+				where HFComboRecord.id =@SqlReturn:billId
+			</sql>
+			<sql type="procedure">{call proc_alterHFComRecordDet1(@SqlReturn:billId,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	
+	<sql type="condition">
+		<condition>
+			<select>
+				select ActiveId,CompanyCode,ComboId,TotalTaxAmount from tblSalesOrder where id =@ValueofDB:id
+			</select>
+			<select>
+				 select HFComboRecord.id as billId from HFComboRecord where HFComboRecord.ActiveId=@SqlReturn:ActiveId and HFComboRecord.CompanyCode=@SqlReturn:CompanyCode
+			</select>
+		</condition>		
+	</sql>
+	
+	
+	
+	
+	<!-- 自定义：更新分销采购申请状态记录-->
+
+	
+	
+	
+</define>
+
+
+  <define name="SalesOrder_add">
+    <!--更新物料默认仓库-->
+    <sql>update tblSalesOrderDet set StockCode=a.StockCode from tblGoods a where a.classCode=tblSalesOrderDet.GoodsCode and tblSalesOrderDet.f_ref=@ValueofDB:id </sql>
+           
+	<!-- 新增分销订货申请-->
+	<sql type="condition">
+		<condition>
+			<select>select ComNumber,syncFlag from tblCompany where classCode = @ValueofDB:CompanyCode</select>
+			<select>select dsBuyOrderID from tblSalesOrder  where id=@ValueofDB:id</select>
+			<select>select fxBuyOrderID from tblSalesOrder  where id=@ValueofDB:id</select>
+		
+		</condition>
+		
+		<!--分销账套生成订货申请单-->
+		<exec condition=" false &amp;&amp; '@SqlReturn:syncFlag'!='2' &amp;&amp; '@SqlReturn:ComNumber' !='HF01' &amp;&amp; ('@SqlReturn:fxBuyOrderID'==''||'@SqlReturn:fxBuyOrderID'=='null')">
+			
+			<sql type="class">com.menyi.web.util.AIOConnect.add(127.0.0.1:8001,koron,1,fxBuyOrderNew,,,conn, select id，BillNo，BillDate，'@SqlReturn:fxDepartCode' as DepartmentCode，'1' as EmployeeID，CompanyCode，ReceiveDate，BackAmount，CurBackAmount，CurAlrAccAmt，'1' as createBy，lastUpdateBy，createTime，lastUpdateTime，statusId，Remark，PeriodYear，PeriodMonth，Period，AlrAccAmt，Attachment，SCompanyID，CurNeedReturnAmt，NeedReturnAmt，classCode， workFlowNodeName，workFlowNode，TradeType，CurfreightAmount，printCount，AutoBillMarker，CRMIDS，CRMpactID，checkPersons，TrackNo，RefSalseQuoteid，finishTime，CheckPersont， NotAmortDeposit，PayAmt，CertificateNo，HasBuyOrder，ProjectCode，Discount，DisAmount，Tax，CurrencyRate，TotalAmount，TotalTaxAmount，TotalCoTaxAmt，CurTotalAmount，Currency，DiscountAmount，Account，AccountAmount，CurAccountAmount，InVoiceType，InvoiceAmount，NoInvoiceAmount，InvoiceStatus，BuyNo，ReplyDate，noProfit，ShippingAddress，ZdAddress，Mode，Terms，Outside，payType，ReplyDate1，PDReplyDateID，ComboId，PartsId，PartsNum，GiftId，weight，FreightAmt，gsFreightAmt，khFreightAmt，District，isShipping，CurNotAmortDeposit，CurPayAmt，'销售订单：审核中' as status，id as erpSalesOrderId from tblSalesOrder where id='@ValueofDB:id'
+					,fxBuyOrderNewDet:select left(replace(newid()，'-'，'')，30) as id，f_ref，GoodsCode，Remark，SendDate，EmployeeID，DepartmentCode，NotOutQty，OutQty，BackQty，UnitOutQty，UnitBackQty，InvoiceQty，FinishStatus，BatchNo，PresentSampleType，yearNO，Inch，Hue，CRMID，CRMpactDetID，RefSalseQuoteDetid，TrackNo，AccountingPrice，BackAmount，TotalReceiveAmt，NeedReceiveAmt，ProDate，Availably，NotPayQty，OutPayQty，ViewTotalQty，Qty，Price，Amount，UnitBaseQty，UnitQty，UnitPrice，Discount，DisPrice，DisBackAmt，DisAmount，TaxPrice，TaxAmount，CoTaxAmt，CurPrice，CurAmount，SecQty，BaseQty，SecUnit，UnitIntQty，CostPrice，CostAmount，InvoiceAmount，NoInvoiceAmount，InvoiceStatus，BuyAppQty，NoBuyAppQty，SourceID，PriceTraceID，OutGoodsCode，WorkOrderQty，NoWorkOrderQty，WorkOrderId，ReplyDate，StartDate，Trading，Customer，SendDate1，FixID，MRPQty，PossesQty，SalesGoodsType，pjPrice，pjAmount，IsCombo，weight，packGrossWeight，CurNeedReceiveAmt from tblSalesOrderDet where f_ref='@ValueofDB:id')</sql>
+			<sql>update tblSalesOrder set fxBuyOrderID=id,Oper='Add' where id=@ValueofDB:id</sql>	
+			<sql>update tblSalesOrderDet set fxBuyOrderDetID=id where f_ref=@ValueofDB:id</sql>	
+		</exec>
+		<!-- 电商账套生成采购订单-->
+		<exec condition="'@SqlReturn:syncFlag'!='2' &amp;&amp; '@SqlReturn:ComNumber' =='HF01' &amp;&amp; ('@SqlReturn:dsBuyOrderID'==''||'@SqlReturn:dsBuyOrderID'=='null')">
+		
+			<sql type="define">dsBuyOrder_add</sql>
+		</exec>
+	</sql>    
+    
+	<!-- 更新分销订货申请-->
+	<sql type="condition">
+		<condition><select>select Oper from tblSalesOrder where id=@ValueofDB:id</select></condition>
+		
+		<!-- 销售订单保存后，去掉FX新增操作的标识，便于以后做条件判断-->
+		<exec condition="'@SqlReturn:Oper'!=''||'@SqlReturn:Oper'!='null'">
+			<sql>update tblSalesOrder set Oper='' where id=@ValueofDB:id</sql>
+		</exec>
+	</sql>
+       
+	<!-- 更新分销订货申请
+	<sql type="condition">
+		<exec condition="false">  
+			<sql type="class">com.menyi.web.util.AIOConnect.update(127.0.0.1:8001,koron,1,fxBuyOrderNew,,conn, select fxBuyOrderID as id，BillDate，DepartmentCode，EmployeeID，CompanyCode，ReceiveDate，BackAmount，CurBackAmount，CurAlrAccAmt，createBy，lastUpdateBy，createTime，lastUpdateTime，statusId，Remark，PeriodYear，PeriodMonth，Period，AlrAccAmt，BillNo，Attachment，SCompanyID，CurNeedReturnAmt，NeedReturnAmt，classCode， workFlowNodeName，workFlowNode，TradeType，CurfreightAmount，printCount，AutoBillMarker，CRMIDS，CRMpactID，checkPersons，TrackNo，RefSalseQuoteid，finishTime，CheckPersont， NotAmortDeposit，PayAmt，CertificateNo，HasBuyOrder，ProjectCode，Discount，DisAmount，Tax，CurrencyRate，TotalAmount，TotalTaxAmount，TotalCoTaxAmt，CurTotalAmount，Currency，DiscountAmount，Account，AccountAmount，CurAccountAmount，InVoiceType，InvoiceAmount，NoInvoiceAmount，InvoiceStatus，BuyNo，ReplyDate，noProfit，ShippingAddress，ZdAddress，Mode，Terms，Outside，payType，ReplyDate1，PDReplyDateID，ComboId，PartsId，PartsNum，GiftId，weight，FreightAmt，gsFreightAmt，khFreightAmt，District，isShipping，CurNotAmortDeposit，CurPayAmt from tblSalesOrder where id='@ValueofDB:id'
+					,fxBuyOrderNewDet:select fxBuyOrderDetID as id，GoodsCode，Remark，SendDate，EmployeeID，DepartmentCode，NotOutQty，OutQty，BackQty，UnitOutQty，UnitBackQty，InvoiceQty，FinishStatus，BatchNo，PresentSampleType，yearNO，Inch，Hue，CRMID，CRMpactDetID，RefSalseQuoteDetid，TrackNo，AccountingPrice，BackAmount，TotalReceiveAmt，NeedReceiveAmt，ProDate，Availably，NotPayQty，OutPayQty，ViewTotalQty，Qty，Price，Amount，UnitBaseQty，UnitQty，UnitPrice，Discount，DisPrice，DisBackAmt，DisAmount，TaxPrice，TaxAmount，CoTaxAmt，CurPrice，CurAmount，SecQty，BaseQty，SecUnit，UnitIntQty，CostPrice，CostAmount，InvoiceAmount，NoInvoiceAmount，InvoiceStatus，BuyAppQty，NoBuyAppQty，SourceID，PriceTraceID，OutGoodsCode，WorkOrderQty，NoWorkOrderQty，WorkOrderId，ReplyDate，StartDate，Trading，Customer，SendDate1，FixID，MRPQty，PossesQty，SalesGoodsType，pjPrice，pjAmount，IsCombo，weight，packGrossWeight，CurNeedReceiveAmt from tblSalesOrderDet where f_ref='@ValueofDB:id')</sql>
+		</exec>
+	</sql>-->
+    
+  </define>
+  
+  <!-- 电商生成采购订单 -->
+  <define name="dsBuyOrder_add">
+		<sql type="condition">
+				<condition>					
+					<select>select sum(Amount) as amt from tblSalesOrderDet where f_ref = @ValueofDB:id</select>
+					<select>select count(*) as counts from(select top 1 GoodsNumber+'-'+GoodsFullName as goods  from tblGoods m join tblSalesOrderDet n on m.classCode = n.GoodsCode where n.f_ref = @ValueofDB:id and not Exists(select goodsNumber from AIODS.dbo.tblGoods t where t.GoodsNumber = m.goodsNumber)) a</select>
+					<select>select classCode as DSCompany from AIODS.dbo.tblCompany where ComNumber = '001' and statusId =0 and ClientFlag = 1</select>
+				</condition>
+				<exec condition="'@SqlReturn:counts'!=0">
+					<error>电商平台未同步此商品:,@SqlReturn:goods</error>
+				</exec>
+				<exec condition="'@SqlReturn:counts'==0">					
+					<sql type="class">com.menyi.web.util.AIOConnect.add(127.0.0.1:8002,koron,1,tblBuyOrder,,,conn, select 'ERP'+id，BillDate，'' as DepartmentCode，'1' as EmployeeID，'@SqlReturn:DSCompany' as CompanyCode，ReceiveDate，BackAmount，CurBackAmount，CurAlrAccAmt，'1' as createBy，lastUpdateBy，createTime，lastUpdateTime，statusId，Remark，PeriodYear，PeriodMonth，Period，AlrAccAmt，Attachment，SCompanyID，CurNeedReturnAmt，NeedReturnAmt，classCode， workFlowNodeName，workFlowNode，TradeType，CurfreightAmount，printCount，AutoBillMarker，CRMIDS，CRMpactID，checkPersons，TrackNo，RefSalseQuoteid，finishTime，CheckPersont， NotAmortDeposit，PayAmt，CertificateNo，HasBuyOrder，ProjectCode，Discount，DisAmount，Tax，CurrencyRate，@SqlReturn:amt as TotalAmount，@SqlReturn:amt as TotalTaxAmount，0.0 as TotalCoTaxAmt，@SqlReturn:amt as CurTotalAmount，Currency，DiscountAmount，Account，AccountAmount，CurAccountAmount，InVoiceType，InvoiceAmount，NoInvoiceAmount，InvoiceStatus，BuyNo，ReplyDate，noProfit，ShippingAddress，ZdAddress，Mode，Terms，Outside，payType，ReplyDate1，PDReplyDateID，ComboId，PartsId，PartsNum，GiftId，weight，0.0 as FreightAmt，0.0 as gsFreightAmt，0.0 khFreightAmt，District，isShipping，CurNotAmortDeposit，CurPayAmt，'销售订单：审核中' as status，id as erpSalesOrderId，'0' as flag，'CreditBuy' as TradeType ，'Yes,' as syncErp from tblSalesOrder where id='@ValueofDB:id'
+					,tblBuyOrderDet:select 'ERP'+a.id as id，f_ref，c. classCode as GoodsCode，a.Remark，a.SendDate，a.EmployeeID，a.DepartmentCode，a.NotOutQty，a.OutQty，a.BackQty，a.UnitOutQty，a.UnitBackQty，a.InvoiceQty，a.FinishStatus，a.BatchNo，a.PresentSampleType，a.yearNO，a.Inch，a.Hue，a.CRMID，a.CRMpactDetID，a.RefSalseQuoteDetid，a.TrackNo，a.AccountingPrice，a.BackAmount，a.TotalReceiveAmt，a.NeedReceiveAmt，a.ProDate，a.Availably，a.NotPayQty，a.OutPayQty，a.ViewTotalQty，a.Qty，a.Price，a.Amount，a.UnitBaseQty，a.UnitQty，a.UnitPrice，a.Discount，a.DisPrice，a.DisBackAmt，a.DisAmount，a.TaxPrice，a.TaxAmount，a.CoTaxAmt，a.CurPrice，a.CurAmount，a.SecQty，a.BaseQty，a.SecUnit，a.UnitIntQty，a.CostPrice，a.CostAmount，a.InvoiceAmount，a.NoInvoiceAmount，a.InvoiceStatus，a.BuyAppQty，a.NoBuyAppQty，a.SourceID，a.PriceTraceID，a.OutGoodsCode，a.WorkOrderQty，a.NoWorkOrderQty，a.WorkOrderId，a.ReplyDate，a.StartDate，a.Trading，a.Customer，a.SendDate1，a.FixID，a.MRPQty，a.PossesQty，a.SalesGoodsType，a.pjPrice，a.pjAmount，a.IsCombo，a.weight，a.packGrossWeight，a.CurNeedReceiveAmt from tblSalesOrderDet a join tblGoods b on a.goodsCode = b.classCode join AIODS.dbo.tblGoods c on b.goodsNumber = c.goodsNumber where f_ref='@ValueofDB:id')</sql>
+					<sql>update tblSalesOrder set dsBuyOrderID='ERP'+id,Oper='Add' where id=@ValueofDB:id</sql>	
+					<sql>update tblSalesOrderDet set dsBuyOrderDetID='ERP'+id where f_ref=@ValueofDB:id</sql>		
+				</exec>
+			</sql>
+  </define>
+  
+  <!-- 级经销商删除销售订单 -->
+  <define name="fxDeleteSaleOrder">
+		 <sql type="condition">
+			<exec condition=" true  ">
+				<!-- 删除erp订单 -->
+				<sql>delete from OAMyWorkFlowPerson where keyId=@ValueofDB:id </sql>
+				<sql>delete from OAMyWorkFlowDet where f_ref=@ValueofDB:id </sql>
+				<sql>delete from OAMyWorkFlow where id=@ValueofDB:id </sql>
+				<sql>delete from tblSalesOrderDet where f_ref=@ValueofDB:id </sql>
+				<sql>delete from tblSalesOrder where id=@ValueofDB:id </sql>
+			</exec>
+        	 </sql>
+  </define>	
+	<!-- 电商删除销售订单-->
+	  <define name="dsDeleteSaleOrder">
+		 <sql type="condition">
+			<exec condition=" true  ">
+				<!-- 删除erp订单 -->
+				<sql>delete from OAMyWorkFlowPerson where keyId=@ValueofDB:id </sql>
+				<sql>delete from OAMyWorkFlowDet where f_ref=@ValueofDB:id </sql>
+				<sql>delete from OAMyWorkFlow where id=@ValueofDB:id </sql>
+				<sql>delete from tblSalesOrderDet where f_ref=@ValueofDB:id </sql>
+				<sql>delete from tblSalesOrder where id=@ValueofDB:id </sql>
+			</exec>
+        	 </sql>
+  </define>	
+  
+  
+  
+</defineSqls>

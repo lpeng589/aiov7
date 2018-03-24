@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="SelectCompanyParentClassCode"  belongTableName="tblCompany" > 
+		<saveParentFlag>true</saveParentFlag>
+		<classCode>tblCompany.classCode</classCode>
+		<orderBy>tblCompany.ComNumber desc,tblCompany.ComFullName desc</orderBy>
+		<defineSQL>
+from tblCompany
+      where 1=1  and iscatalog=1
+		</defineSQL>
+		<changeCond>tblCompany.statusId=0 and tblCompany.ClientFlag !=0</changeCond>
+		<displayFields>
+			<field name="tblCompany.ComNumber" parentDisplay="false" width="100" searchType="match" />
+			<field name="tblCompany.ComFullName" parentDisplay="false" width="150" searchType="match" />
+			<field name="tblCompany.ComName" parentDisplay="false" width="80" hiddenInput="true" />
+			<field name="tblCompany.ComFullNamePYM" parentDisplay="false" width="100" hiddenInput="true" />
+			<field name="tblCompany.ClientFlag" parentDisplay="false" width="100" searchType="equal" />
+		</displayFields>
+		<saveFields>
+			<field name="tblCompany.classCode" parentName="@TABLENAME.classCode" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

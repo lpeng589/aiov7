@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="GoodsSecUnit" type="checkBox">
+     <table>tblGoods,tblGoodsUnit</table>
+     <forwardModel>tblGoods</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>
+  from tblGoods left join tblGoodsUnit with(index(IX_tblGoodsUnit_refdefault)) on tblGoodsUnit.f_ref=tblGoods.id and tblGoodsUnit.DefaultAssit=1
+     </defineSQL>
+     <classCode>tblGoods.classCode</classCode>
+     <remark>回填预设进价和辅助单位</remark>
+     <condition></condition>
+     <changeCond>tblGoods.workFlowNodeName='finish' and tblGoods.statusid!='-1'</changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.[tblGoods]" width="120" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+          <field name="tblGoods.PreBuyPrice" width="60" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true" />
+          <field name="tblGoodsUnit.SecUnit" parentName="@TABLENAME.SecUnit" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblGoodsUnit.UnitD" parentName="@TABLENAME.BaseQty" relationKey="false" hidden="false" compare="false" />
+          <field name="tblGoodsUnit.SecUnitD" parentName="@TABLENAME.SecQty" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblGoods.PreBuyPrice" parentName="@TABLENAME.Price" relationKey="false" hidden="false"  compare="false"/>
+     </saveFields>
+</select>
+</popupSelect>

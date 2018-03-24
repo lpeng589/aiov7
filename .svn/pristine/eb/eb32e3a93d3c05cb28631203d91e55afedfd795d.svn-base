@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="ReportSelectStock_v2"  type="checkBox"  version="2"  belongTableName="tblStock" > 
+		<saveParentFlag>true</saveParentFlag>
+		<classCode>tblStock.classCode</classCode>
+		<orderBy>tblStock.StockNumber,tblStock.StockFullName</orderBy>
+		<defineSQL>
+from tblStock
+      where 1=1  and tblStock.workFlowNodeName='finish'
+		</defineSQL>
+		<displayFields>
+			<field name="tblStock.StockNumber" parentDisplay="false" width="100" searchType="match" keySearch="true" />
+			<field name="tblStock.StockFullName" display="tblStocks.StockCode" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblStock.StockFullNamePYM" parentDisplay="false" width="100" searchType="match" keySearch="true" hiddenInput="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblStock.classCode" parentName="StockCode" hidden="true" width="0" />
+			<field name="tblStock.isCatalog" parentName="isCatalog" hidden="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true" default-lazy="true" default-access="property" default-cascade="none">
+	<class name="com.menyi.aio.bean.DBEnumerateBean" table="tblDBEnumeration" lazy="false" dynamic-insert="false" mutable="true" optimistic-lock="version" dynamic-update="false" polymorphism="implicit" select-before-update="false">
+		<id column="ID" name="id" type="int">
+			<generator class="identity">
+			</generator>
+		</id>    
+     		<property column="enumKey" length="50" name="enumKey" not-null="true" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/>
+		<property column="enumValue" length="100" name="enumValue" not-null="true" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/>
+		<map name="display" lazy="false" inverse="true" cascade="all" mutable="true" embed-xml="true" optimistic-lock="true">
+			<key >
+				<column name="referId"/>
+			</key>
+			<map-key column="localStr"  type="string"/>
+			<one-to-many class="com.menyi.aio.bean.DBEnumerateDisplayBean" not-found="exception" embed-xml="true"/>
+		</map>		
+	</class>
+	<class name="com.menyi.aio.bean.DBEnumerateDisplayBean" table="tblDBEnumerationDisplay" lazy="false" dynamic-insert="false" mutable="true" optimistic-lock="version" dynamic-update="false" polymorphism="implicit" select-before-update="false">
+		<id column="ID" name="id" type="int">
+			<generator class="identity">
+			</generator>
+		</id>
+		<property column="localStr" length="50" name="localStr" not-null="true" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/>
+		<property column="display" length="200" name="display" not-null="true" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/> 
+		<property column="referId" length="9" name="referId" not-null="true" type="int" generated="never" lazy="false" optimistic-lock="true" unique="false"/>  
+	</class>
+	<class name="com.menyi.aio.bean.DBTableInfoBean" table="tblDBTableInfo" lazy="false" dynamic-insert="false" mutable="true" optimistic-lock="version" dynamic-update="false" polymorphism="implicit" select-before-update="false">
+		<id column="ID" name="id" type="int">
+			<generator class="identity">
+			</generator>
+		</id>    
+     		<property column="tableName" length="50" name="tableName" not-null="true" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/>
+		<property column="tableType" length="1" name="tableType" type="byte" generated="never" lazy="false" optimistic-lock="true" unique="false"/>
+		<property column="referFieldId" length="9" name="referFieldId" not-null="true" type="int" generated="never" lazy="false" optimistic-lock="true" unique="false"/>  
+		<property column="udType" length="1" name="udType" not-null="true" type="byte" generated="never" lazy="false" optimistic-lock="true" unique="false"/>
+		<property column="createBy" length="9" name="createBy" not-null="true" type="int" generated="never" lazy="false" optimistic-lock="true" unique="false"/>
+		<property column="createTime" length="14" name="createTime" not-null="true" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/>
+		<property column="lastUpdateBy" length="9" name="lastUpdateBy" not-null="true" type="int" generated="never" lazy="false" optimistic-lock="true" unique="false"/>  
+		<property column="lastUpdateTime" length="14" name="lastUpdateTime" not-null="false" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/>
+		<property column="res1" length="14" name="res1" not-null="false" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/> 
+		<property column="res2" length="14" name="res2" not-null="false" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/> 
+		<property column="res3" length="14" name="res3" not-null="false" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/> 
+		<property column="res4" length="14" name="res4" not-null="false" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/>
+		<bag name="fieldInfos" lazy="false" inverse="true" cascade="all" mutable="true" embed-xml="true" optimistic-lock="true">
+			<key >
+				<column name="tableId"/>
+			</key>
+			<one-to-many class="com.menyi.aio.bean.DBFieldInfoBean" not-found="exception" embed-xml="true"/>
+		</bag>
+	</class>
+	<class name="com.menyi.aio.bean.DBFieldInfoBean" table="tblDBFieldInfo" lazy="false" dynamic-insert="false" mutable="true" optimistic-lock="version" dynamic-update="false" polymorphism="implicit" select-before-update="false">
+		<id column="ID" name="id" type="int">
+			<generator class="identity">
+			</generator>
+		</id>
+		<property column="fieldName" length="50" name="fieldName" not-null="true" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/>
+		<property column="listOrder" length="2" name="listOrder" not-null="true" type="byte" generated="never" lazy="false" optimistic-lock="true" unique="false"/> 
+		<property column="inputSizeW" length="9" name="inputSizeW" not-null="true" type="int" generated="never" lazy="false" optimistic-lock="true" unique="false"/>  
+		<property column="inputSizeH" length="9" name="inputSizeH" not-null="true" type="int" generated="never" lazy="false" optimistic-lock="true" unique="false"/>  
+		<property column="isNull" length="1" name="isNull" not-null="true" type="byte" generated="never" lazy="false" optimistic-lock="true" unique="false"/>  
+		<property column="fieldType" length="2" name="fieldType" not-null="true" type="byte" generated="never" lazy="false" optimistic-lock="true" unique="false"/>  
+		<property column="udType" length="2" name="udType" not-null="true" type="byte" generated="never" lazy="false" optimistic-lock="true" unique="false"/>  
+		<property column="inputType" length="2" name="inputType" not-null="true" type="byte" generated="never" lazy="false" optimistic-lock="true" unique="false"/>  
+		<property column="inputRefer" length="9" name="inputRefer" not-null="true" type="int" generated="never" lazy="false" optimistic-lock="true" unique="false"/>  
+		<property column="createBy" length="9" name="createBy" not-null="true" type="int" generated="never" lazy="false" optimistic-lock="true" unique="false"/>  
+		<property column="createTime" length="14" name="createTime" not-null="true" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/>
+		<property column="lastUpdateBy" length="9" name="lastUpdateBy" not-null="true" type="int" generated="never" lazy="false" optimistic-lock="true" unique="false"/>  
+		<property column="lastUpdateTime" length="14" name="lastUpdateTime" not-null="false" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/>
+		<property column="res1" length="14" name="res1" not-null="false" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/> 
+		<property column="res2" length="14" name="res2" not-null="false" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/> 
+		<property column="res3" length="14" name="res3" not-null="false" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/> 
+		<property column="res4" length="14" name="res4" not-null="false" type="string" generated="never" lazy="false" optimistic-lock="true" unique="false"/>
+		<many-to-one name="tableBean" class="com.menyi.aio.bean.DBTableInfoBean" embed-xml="true" not-found="exception" optimistic-lock="true" update="true" unique="false" insert="true">
+			<column name="tableId"/>
+		</many-to-one>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ReportDataSource>
+	<Report reporteId="" reportName="" />
+	<fieldInfo>
+		<field fieldname="convert(char(10),OAMyWorkFlow.applyDate,120)"
+			AsfieldName="BillDate_s" groupByFlag="0" displayFlag="0"
+			condition="&gt;=?" conditionJoin="and" orderbyFlag="" display="开始时间≥"
+			fieldType="5" inputType="0" popUpName="" width="0" classCode="1"
+			linkAdd="" order="1" isStat="0" defaultValue="@MEM:defaultTime"
+			fieldSysType="" fixColName="1" isNull="1" planarField="0" subSQL=""
+			repeatNotShow="0" zeroDisplay="0" seriesCol="" seriesNums=""
+			crossField="" groupName="" fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_CN" display="开始时间≥" />
+				<Display localStr="en" display="Period From≥" />
+				<Display localStr="zh_TW" display="開始時間≥" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="convert(char(10),OAMyWorkFlow.applyDate,120)"
+			AsfieldName="BillDate_e" groupByFlag="0" displayFlag="0"
+			condition="&lt;=?" conditionJoin="and" orderbyFlag="" display="结束时间≤"
+			fieldType="5" inputType="0" popUpName="" width="0" classCode="1"
+			linkAdd="" order="2" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="1" isNull="1" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_CN" display="结束时间≤" />
+				<Display localStr="en" display="Period To≤" />
+				<Display localStr="zh_TW" display="結束時間≤" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="OAMyWorkFlow.departmentCode"
+			AsfieldName="FartherClassCode" groupByFlag="1" displayFlag="1"
+			condition="" conditionJoin="" orderbyFlag="" display="父级代码"
+			fieldType="2" inputType="100" popUpName="" width="0" classCode="1"
+			linkAdd="" order="3" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="1" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_CN" display="父级代码" />
+				<Display localStr="en" display="Father classCode" />
+				<Display localStr="zh_TW" display="父級代碼" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="tblDepartment.DeptFullName"
+			AsfieldName="DeptFullName" groupByFlag="1" displayFlag="1"
+			condition="like '%'+?+'%'" conditionJoin="and" orderbyFlag=""
+			display="部门" fieldType="2" inputType="2"
+			popUpName="ReportSelectDepartment" width="100" classCode="1"
+			linkAdd="ReportDataAction.do?reportNumber=ReportWorkFlowAnalyseEMP&amp;FartherClassCode=@ValueofDB:FartherClassCode&amp;BillDate_s=@condition:BillDate_s&amp;BillDate_e=@condition:BillDate_e"
+			order="4" isStat="0" defaultValue="" fieldSysType="" fixColName="1"
+			isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_CN" display="部门" />
+				<Display localStr="en" display="Department full name" />
+				<Display localStr="zh_TW" display="部門" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field
+			fieldname="(select count(*) from OAMyWorkFlow a left join OAworkFlowTemplate b on a.TableName=b.templateFile where a.departmentCode=OAMyWorkFlow.departmentCode and a.currentNode='0' and convert(char(10),a.applyDate,120)&gt;=@condition:BillDate_s and convert(char(10),a.applyDate,120)&lt;=@condition:BillDate_e and b.templateClass like '00002%')"
+			AsfieldName="Xinjian" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="新建" fieldType="0"
+			inputType="0" popUpName="" width="60" classCode="1" linkAdd=""
+			order="5" isStat="0" defaultValue="" fieldSysType="" fixColName="1"
+			isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_CN" display="新建" />
+				<Display localStr="en" display="New" />
+				<Display localStr="zh_TW" display="新建" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field
+			fieldname="(select count(*) from OAMyWorkFlow a left join OAworkFlowTemplate b on a.TableName=b.templateFile where a.departmentCode=OAMyWorkFlow.departmentCode and a.currentNode!='0' and a.currentNode!='-1' and convert(char(10),a.applyDate,120)&gt;=@condition:BillDate_s and convert(char(10),a.applyDate,120)&lt;=@condition:BillDate_e and b.templateClass like '00002%')"
+			AsfieldName="approved" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="处理中" fieldType="0"
+			inputType="0" popUpName="" width="80" classCode="1" linkAdd=""
+			order="6" isStat="0" defaultValue="" fieldSysType="" fixColName="1"
+			isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_CN" display="处理中" />
+				<Display localStr="en" display="Handling" />
+				<Display localStr="zh_TW" display="處理中" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field
+			fieldname="(select count(*) from OAMyWorkFlow a left join OAworkFlowTemplate b on a.TableName=b.templateFile where a.departmentCode=OAMyWorkFlow.departmentCode and  a.currentNode='-1' and convert(char(10),a.applyDate,120)&gt;=@condition:BillDate_s and convert(char(10),a.applyDate,120)&lt;=@condition:BillDate_e and b.templateClass like '00002%')"
+			AsfieldName="finish" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="完成" fieldType="0"
+			inputType="0" popUpName="" width="60" classCode="1" linkAdd=""
+			order="7" isStat="0" defaultValue="" fieldSysType="" fixColName="1"
+			isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_CN" display="完成" />
+				<Display localStr="en" display="Finish" />
+				<Display localStr="zh_TW" display="完成" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field
+			fieldname="(select count(*) from OAMyWorkFlow a left join OAworkFlowTemplate b on a.TableName=b.templateFile where a.departmentCode=OAMyWorkFlow.departmentCode and  a.flowDepict like '%red%' and convert(char(10),a.applyDate,120)&gt;=@condition:BillDate_s and convert(char(10),a.applyDate,120)&lt;=@condition:BillDate_e and b.templateClass like '00002%')"
+			AsfieldName="OutFinshTime" groupByFlag="0" displayFlag="1"
+			condition="" conditionJoin="" orderbyFlag="" display="异常"
+			fieldType="0" inputType="0" popUpName="" width="60" classCode="1"
+			linkAdd="" order="8" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="1" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_CN" display="异常" />
+				<Display localStr="en" display="Unusual" />
+				<Display localStr="zh_TW" display="異常" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="OAworkFlowTemplate.templateClass"
+			AsfieldName="" groupByFlag="0" displayFlag="0"
+			condition="like '00002%'" conditionJoin="and" orderbyFlag=""
+			display="" fieldType="" inputType="" popUpName="" width="0"
+			classCode="1" linkAdd="" order="9" isStat="0" defaultValue=""
+			fieldSysType="" fixColName="0" isNull="0" planarField="0" subSQL=""
+			repeatNotShow="0" zeroDisplay="0" seriesCol="" seriesNums=""
+			crossField="" groupName="" fieldIdentity="" analysis="0">
+			<Displays />
+			<groupNames />
+		</field>
+	</fieldInfo>
+	<SQL
+		text="select vbCrLf    OAMyWorkFlow.departmentCode as FartherClassCode,vbCrLf    tblDepartment.DeptFullName as DeptFullName,vbCrLf    (select count(*) from OAMyWorkFlow a left join OAworkFlowTemplate b on a.TableName=b.templateFile where a.departmentCode=OAMyWorkFlow.departmentCode and a.currentNode='0' and convert(char(10),a.applyDate,120)&gt;=@condition:BillDate_s and convert(char(10),a.applyDate,120)&lt;=@condition:BillDate_e and b.templateClass like '00002%') as Xinjian,vbCrLf    (select count(*) from OAMyWorkFlow a left join OAworkFlowTemplate b on a.TableName=b.templateFile where a.departmentCode=OAMyWorkFlow.departmentCode and a.currentNode!='0' and a.currentNode!='-1' and convert(char(10),a.applyDate,120)&gt;=@condition:BillDate_s and convert(char(10),a.applyDate,120)&lt;=@condition:BillDate_e and b.templateClass like '00002%') as approved,vbCrLf    (select count(*) from OAMyWorkFlow a left join OAworkFlowTemplate b on a.TableName=b.templateFile where a.departmentCode=OAMyWorkFlow.departmentCode and  a.currentNode='-1' and convert(char(10),a.applyDate,120)&gt;=@condition:BillDate_s and convert(char(10),a.applyDate,120)&lt;=@condition:BillDate_e and b.templateClass like '00002%') as finish,vbCrLf    (select count(*) from OAMyWorkFlow a left join OAworkFlowTemplate b on a.TableName=b.templateFile where a.departmentCode=OAMyWorkFlow.departmentCode and  a.flowDepict like '%red%' and convert(char(10),a.applyDate,120)&gt;=@condition:BillDate_s and convert(char(10),a.applyDate,120)&lt;=@condition:BillDate_e and b.templateClass like '00002%') as OutFinshTimevbCrLffrom OAMyWorkFlowvbCrLfleft join tblDepartment on tblDepartment.classCode=OAMyWorkFlow.departmentCodevbCrLfleft join OAworkFlowTemplate on OAMyWorkFlow.TableName=OAworkFlowTemplate.templateFilevbCrLfwhere 1=1 vbCrLf      and (convert(char(10),OAMyWorkFlow.applyDate,120) &gt;=?)vbCrLf      and (convert(char(10),OAMyWorkFlow.applyDate,120) &lt;=?)vbCrLf      and (tblDepartment.DeptFullName like '%'+?+'%')vbCrLf      and (OAworkFlowTemplate.templateClass like '00002%')vbCrLfgroup by vbCrLf   OAMyWorkFlow.departmentCode,vbCrLf   tblDepartment.DeptFullNamevbCrLfvbCrLf  vbCrLf" />
+	<charts />
+</ReportDataSource>

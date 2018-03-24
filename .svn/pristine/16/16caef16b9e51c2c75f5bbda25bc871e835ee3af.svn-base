@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name = "SelectCertificatePayAccAdjust" type="checkBox">
+     <table>tblPayAdjust</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+        tblPayAdjust.Id f1,
+        tblPayAdjust.BillDate f2,     
+        tblPayAdjust.BillNo f3,     
+        tblPayAdjust.ComFullName f4,     
+        tblPayAdjust.TotalAmount f5,     
+        tblPayAdjust.CurTotalAmount f6,     
+        tblPayAdjust.DeptFullName f7,      
+        tblPayAdjust.EmpFullName f8,        
+        tblPayAdjust.Remark as f9  
+  from (
+    --应付调账单
+    select tblPayAdjust.id as Id,
+    tblPayAdjust.BillDate as BillDate,     
+    tblPayAdjust.BillNo as BillNo,     
+    tblCompany.ComFullName as ComFullName,     
+    tblPayAdjust.TotalAmount as TotalAmount,     
+    tblPayAdjust.CurTotalAmount as CurTotalAmount,     
+    tblDepartment.DeptFullName as DeptFullName,     
+    tblEmployee.EmpFullName as EmpFullName,       
+    tblPayAdjust.Remark as Remark,  
+    'tblPayAdjust' as BillType,
+    tblPayAdjust.CertificateNo as CertificateNo,
+    tblPayAdjust.EmployeeID,
+    tblPayAdjust.CreateBy,
+    tblPayAdjust.DepartmentCode      
+    from tblPayAdjust 
+    left join tblCompany on tblCompany.classCode=tblPayAdjust.CompanyCode 
+    left join tblDepartment on tblDepartment.classCode=tblPayAdjust.DepartmentCode 
+    left join tblEmployee on tblEmployee.id=tblPayAdjust.EmployeeID 
+    where 1=1 
+    and isNull(tblPayAdjust.workFlowNodeName,'')!='draft' 
+    and isNull(tblPayAdjust.workFlowNodeName,'')!='print'                                                      
+    UNION ALL
+    --应收调账单
+    select tblAccAdjust.id as Id,
+    tblAccAdjust.BillDate as BillDate,     
+    tblAccAdjust.BillNo as BillNo,     
+    tblCompany.ComFullName as ComFullName,     
+    tblAccAdjust.TotalAmount as TotalAmount,     
+    tblAccAdjust.CurTotalAmount as CurTotalAmount,     
+    tblDepartment.DeptFullName as DeptFullName,     
+    tblEmployee.EmpFullName as EmpFullName,            
+    tblAccAdjust.Remark as Remark,  
+    'tblAccAdjust' as BillType,
+    tblAccAdjust.CertificateNo as CertificateNo,
+    tblAccAdjust.EmployeeID,
+    tblAccAdjust.CreateBy,
+    tblAccAdjust.DepartmentCode      
+    from tblAccAdjust 
+    left join tblCompany on tblCompany.classCode=tblAccAdjust.CompanyCode 
+    left join tblDepartment on tblDepartment.classCode=tblAccAdjust.DepartmentCode 
+    left join tblEmployee on tblEmployee.id=tblAccAdjust.EmployeeID 
+    where 1=1 
+    and isNull(tblAccAdjust.workFlowNodeName,'')!='draft' 
+    and isNull(tblAccAdjust.workFlowNodeName,'')!='print'              
+  ) tblPayAdjust
+     </defineSQL>
+     <condition>tblPayAdjust.BillType='@TABLENAME' and len(isnull(tblPayAdjust.CertificateNo,''))=0</condition>
+     <changeCond>     </changeCond>
+     <orderBy>tblPayAdjust.BillDate,tblPayAdjust.BillNo</orderBy>
+     <displayFields>
+          <field name="tblPayAdjust.BillDate" width="80" searchType="scope" parentDisplay="false" />
+          <field name="tblPayAdjust.BillNo" width="120" searchType="match" parentDisplay="false" />
+          <field name="tblPayAdjust.ComFullName" display="@TABLENAME.CompanyCode" width="150" searchType="match" parentDisplay="false" />
+          <field name="tblPayAdjust.TotalAmount" width="100" parentDisplay="false" />
+          <field name="tblPayAdjust.CurTotalAmount" width="100" parentDisplay="false" />
+          <field name="tblPayAdjust.DeptFullName"  display="tblDepartment.DeptFullName"  width="100" parentDisplay="false" />          
+          <field name="tblPayAdjust.EmpFullName" display="tblPayAdjust.EmployeeID" width="65" parentDisplay="false" />
+          <field name="tblPayAdjust.Remark" width="100" parentDisplay="false" /> 
+     </displayFields>
+     <saveFields>
+          <field name="tblPayAdjust.id" parentName="@TABLENAME.id" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

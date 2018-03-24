@@ -1,0 +1,31 @@
+td{margin:0;padding:0;}
+img{border:0;}
+em,i{font-style:normal;}
+li{list-style:none;}
+a:link{text-decoration:none;}
+.bgColorGreen{background:url(../images/down2.png) no-repeat right;}
+.bgColorRed{background:url(../images/up2.png) no-repeat right;}
+.bgColorNone{background:none;}
+#conter table{font-size:12px;border-collapse:collapse;border-spacing:0;border-left:1px solid #c2c2c2;border-bottom:1px solid #c2c2c2;}
+#conter table tr td{border-right:1px solid #c2c2c2;border-top:1px solid #c2c2c2;border-spacing:0;padding:0 5px;}
+#conter table thead{text-align:center;background:#5fa3e7;background-image:-webkit-linear-gradient(top,#5fa3e7,#428bca);background-image:linear-gradient(top,#5fa3e7,#428bca);}
+#conter table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#conter table thead tr td{color:#fff;}
+#conter table tbody tr:hover{background:#4BC6D1;}
+.exchangeli {background: url(/style/images/body2/cMenu.png) no-repeat 0 -24px;float:left;width:24px;height:24px;cursor:pointer}
+#conter table tbody .highlightrow{background:#e7fca9;}
+.spaceRow{background:#d7ecff;}
+
+#k_dialog input {padding:5px 20px 5px 20px;margin:40px 5px 40px 5px}
+.data-list{position:absolute;left:0;top:21px;z-index:99;background:#fff;box-shadow:0 0 15px #aaa;padding-bottom:5px;}
+.data-list table{margin-bottom:5px;table-layout:fixed;background:#fff;border-left:1px solid #c2c2c2;border-bottom:1px solid #c2c2c2;}
+.data-list table thead{text-align:center;background:#eee;background-image:-webkit-linear-gradient(top,#f9f9f9,#f2f2f2);background-image:linear-gradient(top,#f9f9f9,#f2f2f2);}
+.data-list table tr td{line-height:25px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-right:1px solid #c2c2c2;border-top:1px solid #c2c2c2;border-spacing:0;padding:0 5px;}
+.data-list table tbody tr:nth-child(even){background:#f2f2f2;}
+.data-list .tb-scroll{max-width:500px;min-width:200px;height:170px;overflow-y:hidden;overflow-x:auto;}
+.data-list .hBtns{padding:0 12px;margin:0 5px 5px 0;background:none;font-weight:bold;cursor:pointer;display:inline-block;height:25px;line-height:25px;color:#666;border:1px #bbb solid;border-radius:3px;width:auto;}
+.data-list .hBtns:hover{backgroudn:#f2f2f2;}
+.data-list table tbody tr.sel {background:#e7fca9;}
+.data-list .cbox-span{overflow:hidden;display:inline-block;padding:0 5px;}
+.data-list .cbox-span .c-box{float:left;width:auto;margin:2px 2px 0 0;cursor:pointer;}
+.data-list .cbox-span .l-bel{float:left;display:inline-block;cursor:pointer;}

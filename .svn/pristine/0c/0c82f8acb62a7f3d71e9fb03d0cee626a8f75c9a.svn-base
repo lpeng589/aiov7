@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SelectBuyAppTotal"  type="checkBox" > 
+		<orderBy>tblBuyApplicationTotal.BillDate desc,tblBuyApplicationTotal.BillNo desc,tblGoods.GoodsNumber</orderBy>
+		<topPopup>SelectBuyAppTotalFirst</topPopup>
+		<defineSQL>
+from tblBuyApplicationTotal
+			left join tblBuyApplicationTotalDet on tblBuyApplicationTotal.id=tblBuyApplicationTotalDet.f_ref
+			left join tblGoods on tblBuyApplicationTotalDet.GoodsCode=tblGoods.classCode
+			left join tblStocks on tblStocks.GoodsCode=tblBuyApplicationTotalDet.GoodsCode and tblStocks.StockCode='@ValueofDB:StockCode' and tblStocks.StockCode='@ValueofDB:@TABLENAME_StockCode' and tblBuyApplicationTotalDet.Hue=tblStocks.Hue and tblBuyApplicationTotalDet.yearNO=tblStocks.yearNO and tblBuyApplicationTotalDet.BatchNo=tblStocks.BatchNo and tblBuyApplicationTotalDet.Inch=tblStocks.Inch and tblBuyApplicationTotalDet.ProDate=tblStocks.ProDate and tblBuyApplicationTotalDet.Availably=tblStocks.Availably and tblStocks.lastQty&gt;0
+			left join tblDepartment on tblDepartment.classCode=tblBuyApplicationTotalDet.DepartmentCode
+      where 1=1  and tblBuyApplicationTotal.BillDate&lt;='@ValueofDB:BillDate' and tblBuyApplicationTotalDet.GoodsCode='@ValueofDB:tblSendDet_GoodsCode'
+		</defineSQL>
+		<changeCond>(tblBuyApplicationTotal.SendStatus=0 and (tblBuyApplicationTotalDet.planQty-tblBuyApplicationTotalDet.AllotQty+tblBuyApplicationTotalDet.ReturnQty)&gt;0 and tblBuyApplicationTotal.workFlowNodeName='finish')  and tblBuyApplicationTotal.id='@TOPID'</changeCond>
+		<displayFields>
+			<field name="tblDepartment.DeptFullName" display="tblSendDet.DepartmentCode" parentDisplay="true" width="75" searchType="match" />
+			<field name="tblBuyApplicationTotal.BillDate" parentDisplay="false" width="70" searchType="scope" />
+			<field name="tblBuyApplicationTotal.BillNo" display="@TABLENAME.BuyAppTotalID" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblGoods.[tblGoods]" parentDisplay="true" width="120" searchType="match" keySearch="true" />
+			<field name="tblBuyApplicationTotalDet.BatchNo" parentDisplay="true" width="120" searchType="match" />
+			<field name="tblBuyApplicationTotalDet.Inch" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblBuyApplicationTotalDet.Hue" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblBuyApplicationTotalDet.yearNO" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblBuyApplicationTotalDet.ProDate" parentDisplay="true" width="70" searchType="equal" />
+			<field name="tblBuyApplicationTotalDet.Availably" parentDisplay="true" width="70" searchType="equal" />
+			<field name="tblBuyApplicationTotalDet.planQty-tblBuyApplicationTotalDet.AllotQty+tblBuyApplicationTotalDet.ReturnQty" asName="tblStocks.Qty" display="@TABLENAME.Qty" parentDisplay="true" width="100" />
+			<field name="(case tblGoods.isCatalog when 0 then tblStocks.lastQty else -99999999 end)" asName="tblStocks.lastQty" display="tblStocks.lastQty" parentDisplay="true" width="100" />
+			<field name="(case tblGoods.isCatalog when 0 then tblStocks.LastQty+tblStocks.inQtyNotAudit+tblStocks.SInQtyNotAudit-tblStocks.outQtyNotAudit-tblStocks.BOutQtyNotAudit else -99999999 end)" asName="ViewVirtualStock.UseQty" display="ViewVirtualStock.UseQty" parentDisplay="true" width="100" />
+		</displayFields>
+		<saveFields>
+			<field name="tblBuyApplicationTotalDet.BatchNo" parentName="@TABLENAME.BatchNo" width="0" />
+			<field name="tblBuyApplicationTotalDet.Inch" parentName="@TABLENAME.Inch" width="0" />
+			<field name="tblBuyApplicationTotalDet.Hue" parentName="@TABLENAME.Hue" width="0" />
+			<field name="tblBuyApplicationTotalDet.yearNO" parentName="@TABLENAME.yearNO" width="0" />
+			<field name="tblBuyApplicationTotalDet.ProDate" parentName="@TABLENAME.ProDate" width="0" />
+			<field name="tblBuyApplicationTotalDet.Availably" parentName="@TABLENAME.Availably" width="0" />
+			<field name="tblBuyApplicationTotalDet.planQty-tblBuyApplicationTotalDet.AllotQty+tblBuyApplicationTotalDet.ReturnQty" parentName="@TABLENAME.Qty" display="@TABLENAME.Qty" width="0" />
+			<field name="tblBuyApplicationTotal.id" parentName="@TABLENAME.BuyAppTotalID" hidden="true" relationKey="true" width="0" />
+			<field name="tblBuyApplicationTotalDet.id" parentName="@TABLENAME.SourceID" hidden="true" width="0" />
+			<field name="tblBuyApplicationTotalDet.GoodsCode" parentName="@TABLENAME.GoodsCode" width="0" />
+			<field name="tblBuyApplicationTotalDet.DepartmentCode" parentName="@TABLENAME.DepartmentCode" hidden="true" width="0" />
+			<field name="tblStocks.lastPrice" parentName="@TABLENAME.Price" width="0" />
+			<field name="tblBuyApplicationTotalDet.SecQty" parentName="@TABLENAME.SecQty" width="0" />
+			<field name="tblBuyApplicationTotalDet.BaseQty" parentName="@TABLENAME.BaseQty" width="0" />
+			<field name="tblBuyApplicationTotalDet.SecUnit" parentName="@TABLENAME.SecUnit" hidden="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

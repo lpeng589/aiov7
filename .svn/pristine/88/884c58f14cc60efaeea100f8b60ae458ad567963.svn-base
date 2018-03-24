@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectCertificatePay_Acc" type="checkBox">
+     <table>tblPay,tblCompany,tblEmployee,tblDepartment</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      tblPay.id f1,
+      tblPay.BillDate f2,
+      tblPay.BillNo f3,
+      tblPay.PaytypeID f4,
+      tblCompany.ComFullName f5,
+      tblEmployee.EmpFullName f6,
+      tblDepartment.DeptFullName f7,
+      tblPay.SettleAmt f8,
+      tblPay.CurrencyAmt f9
+  from tblPay 
+left join tblCompany on tblPay.CompanyCode = tblCompany.classCode 
+left join tblEmployee on tblEmployee.id= tblPay.employeeid
+left join tblDepartment on tblDepartment.classcode=tblPay.departmentcode
+     </defineSQL>
+     <classCode></classCode>
+     <condition>tblPay.workFlowNodeName = 'finish' and LEN(CertificateNo)=0</condition>
+     <changeCond></changeCond>
+     <orderBy>tblPay.BillDate,tblPay.BillNo</orderBy>
+     <displayFields>
+          <field name="tblPay.BillDate" width="100" searchType="scope" keySearch="true" parentDisplay="false" />
+          <field name="tblPay.BillNo" width="120" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblPay.PaytypeID" width="80" searchType="match" parentDisplay="false"/>
+          <field name="tblCompany.ComFullName" width="150" searchType="match" parentDisplay="false" display="tblPay.CompanyCode"/>
+          <field name="tblEmployee.EmpFullName" width="85" searchType="match" parentDisplay="false" display="tblPay.EmployeeID"/>
+          <field name="tblDepartment.DeptFullName" width="85" searchType="match" parentDisplay="false" display="tblPay.DepartmentCode"/>
+          <field name="tblPay.SettleAmt" width="90" parentDisplay="false" />
+          <field name="tblPay.CurrencyAmt" width="90" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblPay.id" parentName="@TABLENAME.id" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

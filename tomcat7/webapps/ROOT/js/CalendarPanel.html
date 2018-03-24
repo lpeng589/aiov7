@@ -1,0 +1,687 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+<title>CalendarPanel</title>
+<script language="javascript" type="text/javascript">
+<!--
+var url = new String(this.location);
+var pathName = new String(this.location.pathname);
+var arg = new argument();
+var oLabel = new label();
+var path = arg.path;
+var browser = getObject();
+var parentBrowser = getParentObject();
+var cp = parentBrowser("CalendarPanel");
+var months = new Array("01","02","03","04","05","06","07","08","09","10","11","12");	//月份数组
+var todayDate = new Date();	//得到当前的日期	
+var currentYear = todayDate.getFullYear();
+var currentMonth = todayDate.getMonth();
+var currentDate = todayDate.getDate();
+var currentDay = todayDate.getDay();
+var currentHour = todayDate.getHours()<10?"0"+todayDate.getHours():todayDate.getHours();
+var currentMinute = todayDate.getMinutes()<10?"0"+todayDate.getMinutes():todayDate.getMinutes();
+var currentSecond = todayDate.getSeconds()<10?"0"+todayDate.getSeconds():todayDate.getSeconds();
+
+//var firstDay_curMonth_curYear = new Date(currentYear,currentMonth,1);	//确定当年当月第一天的周日
+//var blankDay = firstDay_curMonth_curYear.getDay();	//得到每天月前面的空日
+
+/*
+ * @ 根浏览器不同,取不同的Document对象
+ */
+function getObject(){
+	var doc = null;
+	if(document.all){//IE
+		doc = document.all;
+	}else if(document.layers){//NS4
+		doc = document.layers;
+	}else if (document.getElementById && !document.all){//NS6
+		doc = document.getElementById;
+	}else{
+		doc = null;
+	}
+	return doc;
+}
+/*
+ * @ 根浏览器不同,取不同的Document对象
+ */
+function getParentObject(){
+	var doc = null;
+	if(document.all){
+		doc = parent.document.all;
+	}else if(document.layers){
+		doc = parent.document.layers;
+	}else if (document.getElementById && !document.all){
+		doc = parent.document.getElementById;
+	}else{
+		doc = null;
+	}
+	return doc;
+}
+
+/*
+ * @ 从URL中取得相关参数值
+ */
+function argument(){	
+	var queryString = url.substring(url.indexOf("?")+1);
+	var expression = queryString.split("&");
+	var param_0 = expression[0].split("=")[1];
+	var param_1 = expression[1].split("=")[1];
+	var param_2 = expression[2].split("=")[1];
+	var param_3 = expression[3].split("=")[1];
+	this.panelId = param_0;
+	this.imgId = param_1;
+	this.fieldId = param_2;
+	this.isShowTime = param_3;	
+	this.path = pathName.substring(0,pathName.lastIndexOf("/")+1);
+}
+/*
+ * @ 根据客户端系统语言环境设置按扭/标签名称(中文和英文)
+ */
+function label(){
+	var sysLang = navigator.systemLanguage;
+	var userLang = navigator.userLanguage;
+	if (sysLang.toLowerCase() == "zh-cn" && userLang.toLowerCase() == "zh-cn"){
+		this.clearLabel = "清空";
+		this.closeLabel = "关闭";
+		this.sunday = "日";
+		this.monday = "一";
+		this.tuesday = "二";
+		this.wednesday = "三";
+		this.thursday = "四";
+		this.friday = "五";
+		this.saturday = "六";
+		this.fullSunday = "星期日";
+		this.fullMonday = "星期一";
+		this.fullTuesday = "星期二";
+		this.fullWednesday = "星期三";
+		this.fullThursday = "星期四";
+		this.fullFriday = "星期五";
+		this.fullSaturday = "星期六";
+	}else{
+		this.clearLabel = "Clear";
+		this.closeLabel = "Close";
+		this.sunday = "S.";
+		this.monday = "M.";
+		this.tuesday = "T.";
+		this.wednesday = "W.";
+		this.thursday = "T.";
+		this.friday = "F.";
+		this.saturday = "S.";
+		this.fullSunday = "Sunday";
+		this.fullMonday = "Monday";
+		this.fullTuesday = "Tuesday";
+		this.fullWednesday = "Wendesday";
+		this.fullThursday = "Thursday";
+		this.fullFriday = "Friday";
+		this.fullSaturday = "Saturday";
+	}
+}
+/*
+ * @ 显示日历
+ * @ current_year	当前的年份	调用时的参数值为(固定值):currentYear
+ * @ current_month	当前的月份	调用时的参数值为(固定值):currentMonth
+ * @ panelId		日历面板ID
+ * @ imgId			图片按扭ID
+ * @ fieldId		日期显示域NAME/ID
+ * @ isShowTime		是否显示时间
+ */
+function displayCalendar(current_year,current_month,panelId,imgId,fieldId,isShowTime){
+		if (current_month > 11)current_month = 0;
+		if (current_month < 0)current_month = 11;	
+	
+		var days_month = leapYear(current_year);
+		var number_days = days_month[current_month];	
+		var month_number = current_month + 1;
+		var firstDay_curMonth_curYear_inner = new Date(current_year,current_month,1);
+		var weekDay_firstDay = firstDay_curMonth_curYear_inner.getDay();
+		var month = months[current_month];	//取得月份
+		
+		number_days = number_days + weekDay_firstDay;
+		displayDays(current_year,current_month,weekDay_firstDay,number_days,panelId,fieldId,isShowTime);
+		
+		if (cp != null){
+			cp.style.display = "block";
+			eval(panelId).style.display = "block";
+		}
+		window.eval(panelId + "_Year").innerHTML = current_year;	
+		window.eval(panelId + "_Month").innerHTML = month;
+		browser(panelId + "_oYear").value = current_year;
+		browser(panelId + "_oMonth").value = current_month;
+}
+
+/*
+ * @ 显示日号数
+ */
+function displayDays(current_year,current_month,weekDay_of_firstDay,number_of_days,panelId,fieldId,isShowTime){
+	var dayNum = 1; //初始日号数
+	var preMonthDay = 0; //上一个月的日号
+	var nextMonthDay = 1; //下一个月的日号
+	var month = months[current_month];	//取得月份
+	var days_month = leapYear(current_year);
+	var pre_days_month = leapYear((current_month==0)?current_year-1:current_year);
+	var next_days_month = leapYear((current_month==11)?current_year+1:current_year)
+	var pre_number_days = pre_days_month[((current_month-1)<0)?11:(current_month-1)];
+	var next_number_days = next_days_month[((current_month+1)>11)?0:(current_month+1)];	
+	var pre_dayNum = weekDay_of_firstDay;
+	var next_dayNum = number_of_days;
+	var obj = null;
+	cleanHistoryCalendar(panelId); //清除历史日号数
+	while (preMonthDay < weekDay_of_firstDay){
+		obj = panelId + "_Date_" + preMonthDay;	//显示日号数的对象名
+		window.eval(obj).innerHTML = "<div id=\"" + panelId + "_D_" + preMonthDay + "\" onMouseOver=\"showFullDate(" + current_year + "," + current_month + "," + (pre_number_days - pre_dayNum+1) + "," + 0 + "," + obj +");\" style=\"width:14px;height:10px;border:none;color:#B0B0B0;cursor:default;\">" + (pre_number_days - pre_dayNum+1) + "</div>";
+		//showFullDate(current_year,current_month,(pre_number_days - pre_dayNum+1),0,obj);
+		preMonthDay++;
+		pre_dayNum--;
+	}//输出上一个月末的日号数
+	while (weekDay_of_firstDay < number_of_days){	//显示日号数
+		obj = panelId + "_Date_" + weekDay_of_firstDay;	//显示日号数的对象名
+		if (currentYear == current_year && currentMonth == current_month && currentDate == dayNum){
+			window.eval(obj).innerHTML = "<div id=\"" + panelId + "_D_" + weekDay_of_firstDay + "\" style=\"width:14px;height:10px;border:1px solid #9FF0C1;background-color:#D7FFE8;cursor:hand;\" onMouseOver=\"this.style.backgroundColor='#D7ECFF';this.style.border='1px solid #A4C8E9';showFullDate(" + current_year + "," + current_month + "," + dayNum + "," + 1 + "," + obj +");\" onClick=\"javascript:getChoseDate('" + fieldId + "'," + current_year + "," + month + "," + dayNum + "," + isShowTime + ");hideCalendar('" + panelId + "');\">" + dayNum + "</div>";
+		}else{
+			window.eval(obj).innerHTML = "<div id=\"" + panelId + "_D_" + weekDay_of_firstDay + "\" style=\"width:14px;height:10px;cursor:hand;\" onMouseOver=\"this.style.backgroundColor='#D7ECFF';this.style.border='1px solid #A4C8E9';showFullDate(" + current_year + "," + current_month + "," + dayNum + "," + 1 + "," + obj +");\" onMouseOut=\"this.style.backgroundColor='';this.style.border='';\" onClick=\"javascript:getChoseDate('" + fieldId + "'," + current_year + "," + month + "," + dayNum + "," + isShowTime + ");hideCalendar('" + panelId + "');\">" + dayNum + "</div>";	//在对象中显示日号数
+		}
+		//showFullDate(current_year,current_month,dayNum,1,obj);
+		weekDay_of_firstDay++;
+		dayNum++;
+	}//输出本月的日号数
+	while (next_dayNum < 42){
+		obj = panelId + "_Date_" + next_dayNum;	//显示日号数的对象名
+		window.eval(obj).innerHTML = "<div id=\"" + panelId + "_D_" + next_dayNum + "\" onMouseOver=\"showFullDate(" + current_year + "," + current_month + "," + nextMonthDay + "," + 2 + "," + obj +");\" style=\"width:14px;height:10px;border:none;color:#B0B0B0;cursor:default;\">" + nextMonthDay + "</div>";
+		//showFullDate(current_year,current_month,nextMonthDay,2,obj);
+		nextMonthDay++;
+		next_dayNum++;
+	}//输出下一下月初的日号数
+}
+/*
+ * @ 显示标签 年/月/日
+ */
+function showFullDate(current_year,current_month,current_date,position,obj,cTime){
+	var strDatetime = "0000-00-00";
+	var month = months[current_month];
+	if (current_date<10)current_date = "0" + current_date;
+	switch(position){
+		case 0:
+			month = months[(current_month==0)?11:current_month-1];
+			strDatetime = (current_month==0?(current_year-1):current_year) +"-"+ month + "-" + current_date;
+			window.eval(obj).title = strDatetime + " " + getCurrentChooseTime();
+			break;
+		case 1:
+			month = months[current_month];
+			strDatetime = current_year +"-"+ month + "-" + current_date;
+			window.eval(obj).title = strDatetime + " " + getCurrentChooseTime();
+			break;
+		case 2:
+			month = months[(current_month==11)?0:current_month+1];
+			strDatetime = (current_month==11?(current_year+1):current_year) +"-"+ month + "-" + current_date;
+			window.eval(obj).title = strDatetime + " " + getCurrentChooseTime();
+			break;
+		default:
+			break;
+	}
+}
+/*
+ * @ 清除日号数
+ */
+function cleanHistoryCalendar(panelId){
+	for (var i = 0;i < 42;i++){
+		window.eval(panelId + "_Date_" + i).innerHTML = "";
+	}
+}
+/*
+ * @ 判断year是否为润年,并返回天数(Array)
+ */
+function leapYear(year){
+	var days = new Array(31,28,31,30,31,30,31,31,30,31,30,31);	//初始月份中的天数
+	if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0){ //判断是否为润年 是:2=>29,否:2=>28
+		days.splice(1,1,29);	//替换days[1]中的值
+	}else{
+		days.splice(1,1,28); //替换days[1]中的值
+	}
+	return days;
+}
+/*
+ * @ 显示星期
+ */
+function displayWeekDay(panelId){
+	var weekDays = new Array(oLabel.sunday,oLabel.monday,oLabel.tuesday,oLabel.wednesday,oLabel.thursday,oLabel.friday,oLabel.saturday);
+	var fullWeekDays = new Array(oLabel.fullSunday,oLabel.fullMonday,oLabel.fullTuesday,oLabel.fullWednesday,oLabel.fullThursday,oLabel.fullFriday,oLabel.fullSaturday);
+	for (var i = 0;i < weekDays.length;i++){
+		if (i == 0 && i != currentDay){
+			window.eval(panelId + "_Week_" + i).innerHTML = "<div style=\"color:red;cursor:default;\" title=\"" + fullWeekDays[i] + "\">" + weekDays[i] + "</div>";
+		}else if (i == 6 && i != currentDay){
+			window.eval(panelId + "_Week_" + i).innerHTML = "<div style=\"color:blue;cursor:default;\" title=\"" + fullWeekDays[i] + "\">" + weekDays[i] + "</div>";
+		}else if (i == currentDay){
+			window.eval(panelId + "_Week_" + i).innerHTML = "<div style=\"width:14px;height:10px;cursor:default;color:green;border:1px solid #9FF0C1;background-color:#D7FFE8;\" title=\"" + fullWeekDays[i] + "\">" + weekDays[i] + "</div>";
+		}else{
+			window.eval(panelId + "_Week_" + i).innerHTML = "<div style=\"cursor:default;\" title=\"" + fullWeekDays[i] + "\">" + weekDays[i] + "</div>";
+		}
+		
+	}
+}
+/*
+ * @ 隐藏日历
+ */
+function hideCalendar(panelId){
+	if (cp != null){
+		eval(panelId).style.display="none";
+		cp.style.display = "none";
+	}
+}
+/*
+ * @ 取得日期
+ */
+function getChoseDate(oFieldName,oYearValue,oMonthValue,oDayValue,isShowTime){	
+	if (oMonthValue<10)oMonthValue = "0" + parseInt(oMonthValue,10);
+	if (oDayValue<10)oDayValue = "0" + parseInt(oDayValue,10);
+	
+	var ofnv = parentBrowser(oFieldName).value;
+	if (isShowTime == "true"){
+		if (ofnv == ""){
+			parentBrowser(oFieldName).value = oYearValue + "" + oMonthValue + "" + oDayValue + " " + getCurrentChooseTime();
+		}else{
+			var s = ofnv.split(" ");
+			parentBrowser(oFieldName).value = oYearValue + "" + oMonthValue + "" + oDayValue + " " + s[1];
+		}
+	}else{	
+		//parentBrowser(oFieldName).value = oYearValue + "" + oMonthValue + "" + oDayValue + " " + getCurrentChooseTime();
+		parentBrowser(oFieldName).value = oYearValue + "" + oMonthValue + "" + oDayValue ;
+	}
+}
+/*
+ * @ 清空日期
+ */
+function clean(target){
+	parentBrowser(target).value = "";
+}
+/*
+ * @ 绘制日历面板
+ * @ panelId		日历面板ID
+ * @ imgId			图片按扭ID
+ * @ fieldId		日期显示域NAME/ID
+ * @ isShowTime		是否显示时间
+ */
+function drawCalendarPanel(panelId,imgId,fieldId,isShowTime){
+	var oYF = panelId + "_oYear";
+	var oMF = panelId + "_oMonth";
+	document.writeln("<style type=\"text/css\">");
+	document.writeln("body,td,table,div,span,input{font-size:9pt;}");
+	document.writeln(".reset{");
+	document.writeln("	background-image:url(\"" + path + "img/reset.gif\");");
+	document.writeln("	background-position:center center;");
+	document.writeln("	background-repeat:no-repeat;");
+	document.writeln("  background-attachment:fix;");
+	document.writeln("	border:none;");
+	document.writeln("	width:42px;");
+	document.writeln("	height:18px;");
+	document.writeln("	font-size:9pt;");
+	document.writeln("	padding-top:2%;");
+	document.writeln("	cursor:hand;");
+	document.writeln("}");
+	document.writeln("</style>");
+	document.writeln("<input type=\"hidden\" id=\"" + oYF + "\" name=\"" + oYF + "\"><input type=\"hidden\" id=\"" + oMF + "\" name=\"" + oMF + "\">");
+	document.writeln("<div id=\""+ panelId +"\" style=\"border:1px solid #7F9DB9;padding:1px 1px 1px 1px; background-image:url('" + path + "img/bg.gif'); width:142px; height:176px;display:none;font-size:9pt;\">");
+	document.writeln("  <table width=\"140\" border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\">");
+	document.writeln("    <tr>");
+	document.writeln("      <td height=\"15\" align=\"right\" valign=\"middle\" style=\"background-image:url('" + path + "img/hbg.gif');\"><img src=\"" + path + "img/close.gif\" width=\"14\" height=\"11\" border=\"0\" align=\"absmiddle\" alt=\"" + oLabel.closeLabel + "\" onClick=\"javascript:hideCalendar('" + panelId + "');\" style=\"cursor:hand;\"></td>");
+	document.writeln("    </tr>");
+	document.writeln("  </table>");
+	document.writeln("  <table width=\"140\" border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\">");
+	document.writeln("	  <tr>");
+	document.writeln("      <td id=\"preYear\" width=\"9\" height=\"20\" align=\"right\" valign=\"middle\"><img src=\"" + path + "img/previous.gif\" width=\"6\" height=\"7\" border=\"0\" align=\"absmiddle\" onClick=\"javascript:displayCalendar(parseInt(browser('"+oYF+"').value) - 1,parseInt(browser('"+oMF+"').value),'" + panelId + "','" + imgId + "','" + fieldId + "'," + isShowTime + ");\" style=\"cursor:hand;\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Year\" width=\"34\" height=\"20\" align=\"center\" valign=\"middle\"></td>");
+	document.writeln("      <td id=\"nextYear\" width=\"8\" height=\"20\" align=\"left\" valign=\"middle\"><img src=\"" + path + "img/next.gif\" width=\"6\" height=\"7\" border=\"0\" align=\"absmiddle\" onClick=\"javascript:displayCalendar(parseInt(browser('"+oYF+"').value) + 1 ,parseInt(browser('"+oMF+"').value),'" + panelId + "','" + imgId + "','" + fieldId + "'," + isShowTime + ");\" style=\"cursor:hand;\"></td>");
+	document.writeln("      <td id=\"preMonth\" width=\"8\" height=\"20\" align=\"right\" valign=\"middle\"><img src=\"" + path + "img/previous.gif\" width=\"6\" height=\"7\" border=\"0\" align=\"absmiddle\" onClick=\"javascript:displayCalendar(parseInt(browser('"+oYF+"').value),parseInt(browser('"+oMF+"').value) - 1,'" + panelId + "','" + imgId + "','" + fieldId + "'," + isShowTime + ");\" style=\"cursor:hand;\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Month\" width=\"20\" height=\"20\" align=\"center\" valign=\"middle\"></td>");
+	document.writeln("      <td id=\"nextMonth\" width=\"9\" height=\"20\" align=\"left\" valign=\"middle\"><img src=\"" + path + "img/next.gif\" width=\"6\" height=\"7\" border=\"0\" align=\"absmiddle\" onClick=\"javascript:displayCalendar(parseInt(browser('"+oYF+"').value),parseInt(browser('"+oMF+"').value) + 1,'" + panelId + "','" + imgId + "','" + fieldId + "'," + isShowTime + ");\" style=\"cursor:hand;\"></td>");
+	document.writeln("      <td id=\"resetDatetime\" width=\"52\" height=\"20\" align=\"center\" valign=\"middle\"><input type=\"button\" name=\"reset\" value=\"" + oLabel.clearLabel + "\" class=\"reset\" onClick=\"javascript:clean('" + fieldId + "');hideCalendar('" + panelId + "');\"></td>");
+	document.writeln("	  </tr>	");
+	//document.writeln("    <tr>");
+	//document.writeln("      <td id=\"preYear\" width=\"40\" height=\"16\" align=\"center\" valign=\"middle\" onClick=\"javascript:displayCalendar(parseInt(browser('"+oYF+"').value) - 1,parseInt(browser('"+oMF+"').value),'" + panelId + "','" + imgId + "','" + fieldId + "'," + isShowTime + ");\" style=\"cursor:hand;\"><img src=\"" + path + "img/preYear.gif\" width=\"24\" height=\"15\" border=\"0\" align=\"absmiddle\"></td>");
+	//document.writeln("      <td id=\"" + panelId + "_Year\" width=\"28\" height=\"16\" align=\"center\" valign=\"middle\"></td>");
+	//document.writeln("      <td id=\"nextYear\" width=\"40\" height=\"16\" align=\"center\" valign=\"middle\" onClick=\"javascript:displayCalendar(parseInt(browser('"+oYF+"').value) + 1 ,parseInt(browser('"+oMF+"').value),'" + panelId + "','" + imgId + "','" + fieldId + "'," + isShowTime + ");\" style=\"cursor:hand;\"><img src=\"" + path + "img/nextYear.gif\" width=\"24\" height=\"15\" border=\"0\" align=\"absmiddle\"></td>");
+	//document.writeln("		<td width=\"32\" height=\"32\" rowspan=\"2\"><img name=\"resetDatetime\" src=\"" + path + "img/reset.gif\" width=\"32\" height=\"32\" border=\"0\" align=\"absmiddle\" class=\"reset\" onClick=\"javascript:clean('" + Fieldid + "');hideCalendar('" + panelId + "');\"></td>");
+	//document.writeln("    </tr>");
+	//document.writeln("    <tr>");
+	//document.writeln("      <td id=\"preMonth\" width=\"40\" height=\"16\" align=\"center\" valign=\"middle\" onClick=\"javascript:displayCalendar(parseInt(browser('"+oYF+"').value),parseInt(browser('"+oMF+"').value) - 1,'" + panelId + "','" + imgId + "','" + fieldId + "'," + isShowTime + ");\" style=\"cursor:hand;\"><img src=\"" + path + "img/preMonth.gif\" width=\"15\" height=\"15\" border=\"0\" align=\"absmiddle\"></td>");
+	//document.writeln("      <td id=\"" + panelId + "_Month\" width=\"28\" height=\"16\" align=\"center\" valign=\"middle\"></td>");
+	//document.writeln("      <td id=\"nextMonth\" width=\"40\" height=\"16\" align=\"center\" valign=\"middle\" onClick=\"javascript:displayCalendar(parseInt(browser('"+oYF+"').value),parseInt(browser('"+oMF+"').value) + 1,'" + panelId + "','" + imgId + "','" + fieldId + "'," + isShowTime + ");\" style=\"cursor:hand;\"><img src=\"" + path + "img/nextMonth.gif\" width=\"15\" height=\"15\" border=\"0\" align=\"absmiddle\"></td>");
+	//document.writeln("    </tr>");
+	document.writeln("  </table>");
+	document.writeln("  <table width=\"140\" border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\">");
+	document.writeln("    <tr align=\"center\" valign=\"middle\">");
+	document.writeln("      <td id=\"" + panelId + "_Week_0\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Week_1\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Week_2\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Week_3\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Week_4\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Week_5\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Week_6\" width=\"20\" height=\"20\"></td>");
+	document.writeln("    </tr>");
+	document.writeln("	<tr align=\"center\" valign=\"middle\">");
+	document.writeln("      <td id=\"" + panelId + "_Date_0\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_1\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_2\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_3\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_4\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_5\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_6\" width=\"20\" height=\"20\"></td>");
+	document.writeln("    </tr>");
+	document.writeln("    <tr align=\"center\" valign=\"middle\">");
+	document.writeln("      <td id=\"" + panelId + "_Date_7\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_8\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_9\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_10\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_11\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_12\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_13\" width=\"20\" height=\"20\"></td>");
+	document.writeln("    </tr>");
+	document.writeln("    <tr align=\"center\" valign=\"middle\">");
+	document.writeln("      <td id=\"" + panelId + "_Date_14\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_15\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_16\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_17\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_18\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_19\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_20\" width=\"20\" height=\"20\"></td>");
+	document.writeln("    </tr>");
+	document.writeln("    <tr align=\"center\" valign=\"middle\">");
+	document.writeln("      <td id=\"" + panelId + "_Date_21\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_22\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_23\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_24\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_25\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_26\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_27\" width=\"20\" height=\"20\"></td>");
+	document.writeln("    </tr>");
+	document.writeln("    <tr align=\"center\" valign=\"middle\">");
+	document.writeln("      <td id=\"" + panelId + "_Date_28\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_29\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_30\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_31\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_32\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_33\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_34\" width=\"20\" height=\"20\"></td>");
+	document.writeln("    </tr>");
+	document.writeln("    <tr align=\"center\" valign=\"middle\">");
+	document.writeln("      <td id=\"" + panelId + "_Date_35\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_36\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_37\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_38\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_39\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_40\" width=\"20\" height=\"20\"></td>");
+	document.writeln("      <td id=\"" + panelId + "_Date_41\" width=\"20\" height=\"20\"></td>");
+	document.writeln("    </tr>");  
+	document.writeln("  </table>");	
+	if (isShowTime == "true")
+	{
+		document.writeln("  <table id=\"timeArea\" width=\"140\" height=\"20\" border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\">");
+		document.writeln("    <tr>");
+		document.writeln("      <td>");
+		time("oHour","oMinute","oSecond",fieldId);
+		document.writeln("      </td>");
+		document.writeln("    </tr>");
+	document.writeln("  </table>");
+	}
+	document.writeln("</div>");	
+	
+	displayWeekDay(panelId);
+}
+/////////////////////////////////////////////////////////////////////////
+/*
+ * @ 检测数值范围
+ */
+function checkNumberLimit(number,maxNumber,fieldName,oHourFieldName,oMinuteFieldName,oSecondFieldName,oFieldName,position){
+	var pattern = /^[0-9]{1,2}$/;
+	var isTrue = pattern.test(number);
+	if (!isTrue){
+		browser(fieldName).value = 00;		
+	}else{
+		if (parseInt(number,10)<0){
+			browser(fieldName) = parseInt(maxNumber,10) - 1;
+		}else if (parseInt(number,10) >= parseInt(maxNumber,10)){
+			browser(fieldName).value = 00;
+		}
+	}
+	var ofnv = parentBrowser(oFieldName).value;
+	var ohnv = browser(oHourFieldName).value;
+	var omnv = browser(oMinuteFieldName).value;
+	var osnv = browser(oSecondFieldName).value;
+	var s = ofnv.split(" ");
+	var pos = getClickPosition(position);
+	var date;
+	var hour = 0;
+	var minute = 0;
+	var second = 0;
+	var datetimeArray;
+	var timeStr;
+	if (ofnv != "" || ofnv.length>0){
+		date = s[0];		
+		if (s[1].indexOf(":") != -1){
+			timeStr = s[1].split(":");
+			hour = timeStr[0];
+			minute = timeStr[1];
+			second = timeStr[2];			
+		}
+	}
+	else
+	{
+		hour = ohnv;
+		minute = omnv;
+		second = osnv;
+	}
+	if (hour < 10)hour = "0" + parseInt(hour,10);
+	if (minute < 10)minute = "0" + parseInt(minute,10);
+	if (second < 10)second = "0" + parseInt(second,10);
+	if (ohnv < 10)ohnv = "0" + parseInt(ohnv,10);
+	if (omnv < 10)omnv = "0" + parseInt(omnv,10);
+	if (osnv < 10)osnv = "0" + parseInt(osnv,10);
+	if (currentMonth < 10)currentMonth = "0" + parseInt(currentMonth,10);
+	if (currentDate < 10)currentDate = "0" + parseInt(currentDate,10);
+	if (s[0] == "" || s[0] == null)s[0] = currentYear +""+ currentMonth +""+ currentDate;	
+	if (pos == "H")parentBrowser(oFieldName).value = s[0] + " " + ohnv +":"+ minute +":"+ second;
+	if (pos == "M")parentBrowser(oFieldName).value = s[0] + " " + hour +":"+ omnv +":"+ second;
+	if (pos == "S")parentBrowser(oFieldName).value = s[0] + " " + hour +":"+ minute +":"+ osnv;
+	if (pos == null)parentBrowser(oFieldName).value = s[0] + " " + ohnv +":"+ omnv +":"+ osnv;
+	getTimeFromDatetime(oHourFieldName,oMinuteFieldName,oSecondFieldName,oFieldName);
+}
+	
+/*
+ *相应的字段值加1
+ */
+function add(number,maxNumber,fieldName,oHourFieldName,oMinuteFieldName,oSecondFieldName,oFieldName){	
+	var val = 0;
+	var sum = 0;
+	sum = parseInt(number,10) + 1;
+
+	if (parseInt(sum,10) <= 0){
+		val = parseInt(maxNumber,10) - 1;
+	}else if (parseInt(sum,10) >= parseInt(maxNumber,10)){
+			val = 00;
+	}else{
+		val = parseInt(sum,10);
+	}
+	browser(fieldName).value = val;
+	var ofnv = parentBrowser(oFieldName).value;
+	var ohnv = browser(oHourFieldName).value;
+	var omnv = browser(oMinuteFieldName).value;
+	var osnv = browser(oSecondFieldName).value;
+	var s = ofnv.split(" ");	
+	if (ohnv < 10)ohnv = "0" + parseInt(ohnv,10);
+	if (omnv < 10)omnv = "0" + parseInt(omnv,10);
+	if (osnv < 10)osnv = "0" + parseInt(osnv,10);
+	if (currentMonth < 10)currentMonth = "0" + parseInt(currentMonth,10);
+	if (currentDate < 10)currentDate = "0" + parseInt(currentDate,10);
+	if (s[0] == "" || s[0] == null)s[0] = currentYear +""+ (currentMonth+1) +""+ currentDate;
+	parentBrowser(oFieldName).value = s[0] + " " + ohnv +":"+ omnv +":"+ osnv;
+	getTimeFromDatetime(oHourFieldName,oMinuteFieldName,oSecondFieldName,oFieldName);
+}
+
+/*
+ *相应的字段值减1
+ */
+function minus(number,maxNumber,fieldName,oHourFieldName,oMinuteFieldName,oSecondFieldName,oFieldName){
+	var val = 0;
+	var sum = 0;
+	sum = parseInt(number,10) - 1;
+	
+	if (parseInt(sum,10) <= 0){
+		val = parseInt(maxNumber,10) - 1;
+	}else if (parseInt(sum,10) >= parseInt(maxNumber,10)){
+			val = 00;
+	}else{
+		val = parseInt(sum,10);
+	}	
+	browser(fieldName).value = val;
+	var ofnv = parentBrowser(oFieldName).value;
+	var ohnv = browser(oHourFieldName).value;
+	var omnv = browser(oMinuteFieldName).value;
+	var osnv = browser(oSecondFieldName).value;
+	var s = ofnv.split(" ");
+	if (ohnv < 10)ohnv = "0" + parseInt(ohnv,10);
+	if (omnv < 10)omnv = "0" + parseInt(omnv,10);
+	if (osnv < 10)osnv = "0" + parseInt(osnv,10);
+	if (currentMonth < 10)currentMonth = "0" + parseInt(currentMonth,10);
+	if (currentDate < 10)currentDate = "0" + parseInt(currentDate,10);
+	if (s[0] == "" || s[0] == null)s[0] = currentYear +""+ (currentMonth+1) +""+ currentDate;
+	parentBrowser(oFieldName).value = s[0] + " " + ohnv +":"+ omnv +":"+ osnv;
+	getTimeFromDatetime(oHourFieldName,oMinuteFieldName,oSecondFieldName,oFieldName);
+}
+
+/*
+ * @ 显示时间
+ * @ 前三个参数为任意参数,最后一个参数是指日期显示的文本框
+ */
+function time(oHourFieldName,oMinuteFieldName,oSecondFieldName,oFieldName){
+	document.writeln("<style type=\"text/css\">");
+	document.writeln(".up{");
+	document.writeln("	background-image:url(\"" + path + "img/arrow_up.gif\");");
+	document.writeln("	background-position:center center;");
+	document.writeln("	background-repeat:no-repeat;");
+	document.writeln("	border:none;");
+	document.writeln("}");
+	document.writeln(".down{");
+	document.writeln("	background-image:url(\"" + path + "img/arrow_down.gif\");");
+	document.writeln("	background-position:center center;");
+	document.writeln("	background-repeat:no-repeat;");
+	document.writeln("	border:none;");
+	document.writeln("}");
+	document.writeln(".time{");
+	document.writeln("	border:1px solid #7F9DB9;");
+	document.writeln("  text-align:center;");
+	document.writeln("}");
+	document.writeln("</style>");
+	document.writeln("<table width=\"100%\"  border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+	document.writeln("  <tr>");
+	document.writeln("	<td rowspan=\"2\" align=\"right\"><input name=\"" + oHourFieldName + "\" class=\"time\" type=\"text\" id=\"" + oHourFieldName + "\" style=\"width:20px;height:12px;\" value=\"00\" maxlength=\"2\" onBlur=\"javascript:checkNumberLimit(browser('" + oHourFieldName + "').value,24,'" + oHourFieldName + "','"+ oHourFieldName +"','"+ oMinuteFieldName +"','"+ oSecondFieldName +"','"+ oFieldName +"',0);\"></td>");
+	document.writeln("	<td align=\"center\" valign=\"bottom\"><input name=\"H_UP\" type=\"button\" class=\"up\" id=\"H_UP\" style=\"width:18px;height:8px;\" value=\"\" onClick=\"javascript:add(browser('" + oHourFieldName + "').value,24,'" + oHourFieldName + "','"+ oHourFieldName +"','"+ oMinuteFieldName +"','"+ oSecondFieldName +"','"+ oFieldName +"');\" onMouseDown=\"javascript:oIntervalId=setInterval(\'add(browser(\\'" + oHourFieldName + "\\').value,24,\\'" + oHourFieldName + "\\',\\'"+ oHourFieldName +"\\',\\'"+ oMinuteFieldName +"\\',\\'"+ oSecondFieldName +"\\',\\'"+ oFieldName +"\\')\',200);\" onMouseUp=\"javascript:clearInterval(oIntervalId);\" onMouseOut=\"javascript:try{clearInterval(oIntervalId);}catch(e){}\"></td>");
+	document.writeln("	<td rowspan=\"2\" align=\"right\"><input name=\"" + oMinuteFieldName + "\" class=\"time\" type=\"text\" id=\"" + oMinuteFieldName + "\" style=\"width:20px;height:12px;\" value=\"00\" size=\"3\" maxlength=\"2\" onBlur=\"javascript:checkNumberLimit(browser('" + oMinuteFieldName + "').value,60,'" + oMinuteFieldName + "','"+ oHourFieldName +"','"+ oMinuteFieldName +"','"+ oSecondFieldName +"','"+ oFieldName +"',1);\"></td>");
+	document.writeln("	<td align=\"center\" valign=\"bottom\"><input name=\"M_UP\" type=\"button\" class=\"up\" id=\"M_UP\" style=\"width:18px;height:8px;\" value=\"\" onClick=\"javascript:add(browser('" + oMinuteFieldName + "').value,60,'" + oMinuteFieldName + "','"+ oHourFieldName +"','"+ oMinuteFieldName +"','"+ oSecondFieldName +"','"+ oFieldName +"');\" onMouseDown=\"javascript:oIntervalId=setInterval(\'add(browser(\\'" + oMinuteFieldName + "\\').value,60,\\'" + oMinuteFieldName + "\\',\\'"+ oHourFieldName +"\\',\\'"+ oMinuteFieldName +"\\',\\'"+ oSecondFieldName +"\\',\\'"+ oFieldName +"\\')\',200);\" onMouseUp=\"javascript:clearInterval(oIntervalId);\" onMouseOut=\"javascript:try{clearInterval(oIntervalId);}catch(e){}\"></td>");
+	document.writeln("	<td rowspan=\"2\" align=\"right\"><input name=\"" + oSecondFieldName + "\" class=\"time\" type=\"text\" id=\"" + oSecondFieldName + "\" style=\"width:20px;height:12px;\" value=\"00\" size=\"3\" maxlength=\"2\" onBlur=\"javascript:checkNumberLimit(browser('" + oSecondFieldName + "').value,60,'" + oSecondFieldName + "','"+ oHourFieldName +"','"+ oMinuteFieldName +"','"+ oSecondFieldName +"','"+ oFieldName +"',2);\"></td>");
+	document.writeln("	<td align=\"center\" valign=\"bottom\"><input name=\"S_UP\" type=\"button\" class=\"up\" id=\"S_UP\" style=\"width:18px;height:8px;\" value=\"\" onClick=\"javascript:add(browser('" + oSecondFieldName + "').value,60,'" + oSecondFieldName + "','"+ oHourFieldName +"','"+ oMinuteFieldName +"','"+ oSecondFieldName +"','"+ oFieldName +"');\" onMouseDown=\"javascript:oIntervalId=setInterval(\'add(browser(\\'" + oSecondFieldName + "\\').value,60,\\'" + oSecondFieldName + "\\',\\'"+ oHourFieldName +"\\',\\'"+ oMinuteFieldName +"\\',\\'"+ oSecondFieldName +"\\',\\'"+ oFieldName +"\\')\',200);\" onMouseUp=\"javascript:clearInterval(oIntervalId);\" onMouseOut=\"javascript:try{clearInterval(oIntervalId);}catch(e){}\"></td>");
+	document.writeln("  </tr>");
+	document.writeln("  <tr>");
+	document.writeln("	<td align=\"center\" valign=\"top\"><input name=\"H_DOWN\" type=\"button\" class=\"down\" id=\"H_DOWN\" style=\"width:18px;height:8px;\" onClick=\"javascript:minus(browser('" + oHourFieldName + "').value,24,'" + oHourFieldName + "','"+ oHourFieldName +"','"+ oMinuteFieldName +"','"+ oSecondFieldName +"','"+ oFieldName +"');\" onMouseDown=\"javascript:oIntervalId=setInterval(\'minus(browser(\\'" + oHourFieldName + "\\').value,24,\\'" + oHourFieldName + "\\',\\'"+ oHourFieldName +"\\',\\'"+ oMinuteFieldName +"\\',\\'"+ oSecondFieldName +"\\',\\'"+ oFieldName +"\\')\',200);\" onMouseUp=\"javascript:clearInterval(oIntervalId);\" onMouseOut=\"javascript:try{clearInterval(oIntervalId);}catch(e){}\"></td>");
+	document.writeln("	<td align=\"center\" valign=\"top\"><input name=\"M_DOWN\" type=\"button\" class=\"down\" id=\"M_DOWN\" style=\"width:18px;height:8px;\" value=\"\" onClick=\"javascript:minus(browser('" + oMinuteFieldName + "').value,60,'" + oMinuteFieldName + "','"+ oHourFieldName +"','"+ oMinuteFieldName +"','"+ oSecondFieldName +"','"+ oFieldName +"');\" onMouseDown=\"javascript:oIntervalId=setInterval(\'minus(browser(\\'" + oMinuteFieldName + "\\').value,60,\\'" + oMinuteFieldName + "\\',\\'"+ oHourFieldName +"\\',\\'"+ oMinuteFieldName +"\\',\\'"+ oSecondFieldName +"\\',\\'"+ oFieldName +"\\')\',200);\" onMouseUp=\"javascript:clearInterval(oIntervalId);\" onMouseOut=\"javascript:try{clearInterval(oIntervalId);}catch(e){}\"></td>");
+	document.writeln("	<td align=\"center\" valign=\"top\"><input name=\"S_DOWN\" type=\"button\" class=\"down\" id=\"S_DOWN\" style=\"width:18px;height:8px;\" value=\"\" onClick=\"javascript:minus(browser('" + oSecondFieldName + "').value,60,'" + oSecondFieldName + "','"+ oHourFieldName +"','"+ oMinuteFieldName +"','"+ oSecondFieldName +"','"+ oFieldName +"');\" onMouseDown=\"javascript:oIntervalId=setInterval(\'minus(browser(\\'" + oSecondFieldName + "\\').value,60,\\'" + oSecondFieldName + "\\',\\'"+ oHourFieldName +"\\',\\'"+ oMinuteFieldName +"\\',\\'"+ oSecondFieldName +"\\',\\'"+ oFieldName +"\\')\',200);\" onMouseUp=\"javascript:clearInterval(oIntervalId);\" onMouseOut=\"javascript:try{clearInterval(oIntervalId);}catch(e){}\"></td>");
+	document.writeln("  </tr>");
+	document.writeln("</table>");
+	var datetime = parentBrowser(oFieldName).value;
+	if (datetime == "" || datetime.length == 0){
+		browser(oHourFieldName).value = currentHour;
+		browser(oMinuteFieldName).value = currentMinute;
+		browser(oSecondFieldName).value = currentSecond;
+	}
+	getTimeFromDatetime(oHourFieldName,oMinuteFieldName,oSecondFieldName,oFieldName);
+}
+
+/*
+ * @ 取得时间
+ */
+function getCurrentChooseTime(){
+	var strTime = "";
+	if (arg.isShowTime == "true")
+	{
+		strTime = "00:00:00";
+		var oH = browser("oHour").value;
+		var oM = browser("oMinute").value;
+		var oS = browser("oSecond").value;
+		strTime = oH + ":" + oM + ":" + oS;
+	}
+	return strTime;
+}
+
+/*
+ * @ 从Datetime字段里取出时间(时/分/秒)
+ */
+function getTimeFromDatetime(oHourFieldName,oMinuteFieldName,oSecondFieldName,oFieldName){
+	var datetime = parentBrowser(oFieldName).value;
+	var date,hour,minute,second;
+	var datetimeArray;
+	var timeStr;
+	if (datetime != "" || datetime.length>0){
+		datetimeArray = datetime.split(" ");
+		if (datetimeArray.length == 2)
+		{
+			date = datetimeArray[0];		
+			if (datetimeArray[1].indexOf(":") != -1){
+				timeStr = datetimeArray[1].split(":");
+				hour = timeStr[0];
+				minute = timeStr[1];
+				second = timeStr[2];
+				browser(oHourFieldName).value = hour;
+				browser(oMinuteFieldName).value = minute;
+				browser(oSecondFieldName).value = second;
+			}
+		}
+	}
+}
+
+/*
+ * @ 如果没有选择日期禁止提交
+ */
+function disableSubmit(str){	
+	var pattern = new RegExp("^[0-9]{8}");
+	if (pattern.test(str)){
+		return true;
+	}else{
+		alert("$!text.get('timermessage.timer')$!text.get('js.prompt.mustSelectDate')");
+		return false;
+	}
+}
+
+/*
+ * @ 得到鼠标操作焦点事件
+ */
+function getClickPosition(pos){
+	switch(pos){
+		case 0:
+			return "H";
+			break;
+		case 1:
+			return "M";
+			break;
+		case 2:
+			return "S";
+			break;
+		default:
+			return null;
+			break;
+	}
+}
+//-->
+</script>
+</head>
+
+<body>
+<script language="javascript" type="text/javascript">
+<!--
+drawCalendarPanel(arg.panelId,arg.imgId,arg.fieldId,arg.isShowTime);
+displayCalendar(currentYear,currentMonth,arg.panelId,arg.imgId,arg.fieldId,arg.isShowTime);
+//-->
+</script>
+</body>
+</html>

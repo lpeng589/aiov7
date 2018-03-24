@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineButtons>
+		<button name="EBOrderInsertOrder" type="execDefine" buttonName="导入系统"  defineName="EBOrder_devolve"></button>
+		<button name="EBGoodsInsertGoods" type="execDefine" buttonName="导入系统"  defineName="EBGoods_devolve"></button>
+		<button name="EBOrderOutStock" type="execDefine" buttonName="电商发货"  defineName="EBOrder_OutStock"></button>
+		<button name="RecAutoSettlement" type="execDefine" buttonName="自动结算"  defineName="RecAutoSettlement"></button>
+</defineButtons>

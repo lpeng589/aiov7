@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="Client">
+     <table>tblCompany,tblEmployee,tblDepartment</table>
+     <forwardModel>tblCompany&amp;moduleType=2&amp;ClientFlag=2</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>
+  from tblCompany
+  left join tblEmployee on tblCompany.EmployeeID=tblEmployee.id
+  left join tblDepartment on tblCompany.DepartmentCode=tblDepartment.classCode
+     </defineSQL>
+     <classCode  classSysType="Customer">tblCompany.classCode</classCode>
+     <remark></remark>
+     <condition>(tblCompany.ClientFlag=2 or tblCompany.ClientFlag=3)</condition>
+     <changeCond>(tblCompany.statusId!='-1')</changeCond>
+     <orderBy>tblCompany.ComNumber,tblCompany.ComFullName</orderBy>
+     <displayFields>
+          <field name="tblCompany.[tblCompany_2]" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblCompany.PreReceiveTotalRemain" width="100" parentDisplay="false" hiddenInput="true" />
+          <field name="tblCompany.ReceiveTotalRemain" width="100" parentDisplay="false" hiddenInput="true" />
+          <field name="case when len(tblCompany.EmployeeID)&gt;0 then tblEmployee.EmpFullName else '@Sess:UserName' end" width="80" parentDisplay="false" asName="tblCompany.EmployeeID" display="tblCompany.EmployeeID" />
+          <field name="case when len(tblCompany.DepartmentCode)&gt;0 then tblDepartment.DeptFullName else '@Sess:DepartmentName' end" width="80" parentDisplay="false" asName="tblCompany.DepartmentCode" display="tblCompany.DepartmentCode" />
+     </displayFields>
+     <saveFields>
+          <field name="tblCompany.classCode" parentName="@TABLENAME.CompanyCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

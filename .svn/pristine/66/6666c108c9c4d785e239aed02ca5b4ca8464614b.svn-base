@@ -1,0 +1,674 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+   <!--学习经历-->
+	   <define name="HRPlaceChangeManage_add_bref">
+<sql type="condition">
+	<condition>	
+		<select>select count(id) as countid from HREmpinform</select>
+    </condition>
+	<!--不存人事信息-->
+	<exec condition="@SqlReturn:countid ==0">
+  	<error>StartTime.EndTime.error</error>
+  </exec>
+	<!--请选择相应人事信息-->
+	<exec condition="&quot;@ValueofDB:HRPlaceChangeManage_f_brother&quot;.length==0 || &quot;@ValueofDB:HRPlaceChangeManage_f_brother&quot;==&quot;null&quot;">
+  	<error>StartTime.EndTime.error</error>
+  </exec>
+  </sql>
+</define>
+<define name="HRPlaceChangeManage_Add">
+	<sql>update tblEmployee 
+set DepartmentCode=ChangeDepart
+from tblEmployee outer apply(select top 1 HRPlaceChangeManage.ChangeDepart from HRPlaceChangeManage left join HREmpinform  on HREmpinform.id=HRPlaceChangeManage.f_brother left join tblemployee on tblemployee.id=HREmpinform.EmployeeID where HREmpinform.id=@ValueofDB:HRPlaceChangeManage_f_brother order by StartTime desc) as Y where id=(select EmployeeID from HREmpinform where id=@ValueofDB:HRPlaceChangeManage_f_brother)</sql>	
+	<!--<sql>update HREmpinform set Department=(select top 1 HRPlaceChangeManage.ChangeDepart from HRPlaceChangeManage left join HREmpinform  on HREmpinform.id=HRPlaceChangeManage.f_brother
+left join tblemployee on tblemployee.id=HREmpinform.EmployeeID where HREmpinform.id=@ValueofDB:HRPlaceChangeManage_f_brother order by StartTime desc) where id=@ValueofDB:HRPlaceChangeManage_f_brother</sql>-->
+	<sql>update tblEmployee set TitleID=(select top 1 HRPlaceChangeManage.ChangeEmp from HRPlaceChangeManage left join HREmpinform  on HREmpinform.id=HRPlaceChangeManage.f_brother left join tblemployee on tblemployee.id=HREmpinform.EmployeeID where HREmpinform.id=@ValueofDB:HRPlaceChangeManage_f_brother order by StartTime desc) where id=(select EmployeeID from HREmpinform where id=@ValueofDB:HRPlaceChangeManage_f_brother)</sql>
+	<!--<sql>update HREmpinform set Position=(select top 1 HRPlaceChangeManage.ChangeEmp from HRPlaceChangeManage left join HREmpinform  on HREmpinform.id=HRPlaceChangeManage.f_brother
+left join tblemployee on tblemployee.id=HREmpinform.EmployeeID where HREmpinform.id=@ValueofDB:HRPlaceChangeManage_f_brother order by StartTime desc) where id=@ValueofDB:HRPlaceChangeManage_f_brother</sql>-->
+	<!--更新薪资结构-->
+	<sql>update HRPayFrame set Department=(select top 1 HRPlaceChangeManage.ChangeDepart from HRPlaceChangeManage left join HREmpinform  on HREmpinform.id=HRPlaceChangeManage.f_brother
+left join tblemployee on tblemployee.id=HREmpinform.EmployeeID where HREmpinform.id=@ValueofDB:HRPlaceChangeManage_f_brother order by StartTime desc)</sql>
+	<sql>update HRPayFrame set Duty=(select top 1 HRPlaceChangeManage.ChangeEmp from HRPlaceChangeManage left join HREmpinform  on HREmpinform.id=HRPlaceChangeManage.f_brother
+left join tblemployee on tblemployee.id=HREmpinform.EmployeeID where HREmpinform.id=@ValueofDB:HRPlaceChangeManage_f_brother order by StartTime desc)</sql>
+	<!--更新证书信息-->
+	<!--<sql>update HRLetterInform set Department=(select top 1 HRPlaceChangeManage.ChangeDepart from HRPlaceChangeManage left join HREmpinform  on HREmpinform.id=HRPlaceChangeManage.f_brother
+left join tblemployee on tblemployee.id=HREmpinform.EmployeeID where HREmpinform.id=@ValueofDB:HRPlaceChangeManage_f_brother order by StartTime desc)</sql>-->
+	<!--更新学习经历
+	<sql>update HRStudyExperience set Department=(select top 1 HRPlaceChangeManage.ChangeDepart from HRPlaceChangeManage left join HREmpinform  on HREmpinform.id=HRPlaceChangeManage.f_brother
+left join tblemployee on tblemployee.id=HREmpinform.empfullname where HREmpinform.id=@ValueofDB:HRPlaceChangeManage_f_brother order by StartTime desc)</sql>-->
+	<!--更新培训记录-->
+	<sql>update HRTrainNote set Department=(select top 1 HRPlaceChangeManage.ChangeDepart from HRPlaceChangeManage left join HREmpinform  on HREmpinform.id=HRPlaceChangeManage.f_brother
+left join tblemployee on tblemployee.id=HREmpinform.EmployeeID where HREmpinform.id=@ValueofDB:HRPlaceChangeManage_f_brother order by StartTime desc)</sql>
+	<!--更新劳动合同-->
+	<sql>update HRWorkCntract set Department=(select top 1 HRPlaceChangeManage.ChangeDepart from HRPlaceChangeManage left join HREmpinform  on HREmpinform.id=HRPlaceChangeManage.f_brother
+left join tblemployee on tblemployee.id=HREmpinform.EmployeeID where HREmpinform.id=@ValueofDB:HRPlaceChangeManage_f_brother order by StartTime desc)</sql>
+	<!--更新家庭成员
+	<sql>update HRFamilys set Department=(select top 1 HRPlaceChangeManage.ChangeDepart from HRPlaceChangeManage left join HREmpinform  on HREmpinform.id=HRPlaceChangeManage.f_brother
+left join tblemployee on tblemployee.id=HREmpinform.empfullname where HREmpinform.id=@ValueofDB:HRPlaceChangeManage_f_brother order by StartTime desc)</sql>-->
+       <!--更新工作经验
+	<sql>update HRWorkExperience set Department=(select top 1 HRPlaceChangeManage.ChangeDepart from HRPlaceChangeManage left join HREmpinform  on HREmpinform.id=HRPlaceChangeManage.f_brother
+left join tblemployee on tblemployee.id=HREmpinform.empfullname where HREmpinform.id=@ValueofDB:HRPlaceChangeManage_f_brother order by StartTime desc)</sql>-->
+	<!--更新考勤资料导入
+	<sql>update HRAttendance set Department=(select top 1 HRPlaceChangeManage.ChangeDepart from HRPlaceChangeManage left join HREmpinform  on HREmpinform.id=HRPlaceChangeManage.f_brother
+left join tblemployee on tblemployee.id=HREmpinform.empfullname where HREmpinform.id=@ValueofDB:HRPlaceChangeManage_f_brother order by StartTime desc)</sql>-->
+	<sql type="condition">
+	<exec condition="&quot;@ValueofDB:HRPlaceChangeManage_ChangeDepart&quot; == &quot;@ValueofDB:HRPlaceChangeManage_Department&quot; &amp;&amp; &quot;@ValueofDB:HRPlaceChangeManage_Emplyee&quot; == &quot;@ValueofDB:HRPlaceChangeManage_ChangeEmp&quot;">	 					
+	<error>HRPlaceChangeManage.error</error>
+	</exec>
+	</sql>
+	</define>
+<define name="HREmpinform_Add">
+	<sql>update tblEmployee set TitleID=@ValueofDB:HREmpinform_Position where id=@ValueofDB:HREmpinform_EmployeeID</sql>
+       </define>
+<define name="tblEmpHREmp_Add">
+<!--	<sql>update HREmpinform set Department=@ValueofDB:HRPlaceChangeManage_ChangeDepart where EmployeeID=@ValueofDB:tblEmployee_id</sql>-->
+       </define>
+
+<define name="HRPayAdjust_Add">
+	<sql>update HRPayFrame set Wage=@ValueofDB:HRPayAdjust_AdjustPay where EmployeeID=@ValueofDB:HRPayAdjust_EmpName</sql>	
+	<sql>update HRPayFrame set JobSubsidy=@ValueofDB:HRPayAdjust_AdJobSubsidy where EmployeeID=@ValueofDB:HRPayAdjust_EmpName</sql>
+	<sql>update HRPayFrame set TrafficSubsidy=@ValueofDB:HRPayAdjust_AdTrafficSubsidy where EmployeeID=@ValueofDB:HRPayAdjust_EmpName</sql>
+	<sql>update HRPayFrame set FareSubsidy=@ValueofDB:HRPayAdjust_AdFareSubsidy where EmployeeID=@ValueofDB:HRPayAdjust_EmpName</sql>
+	<sql>update HRPayFrame set HouseingSubsidy=@ValueofDB:HRPayAdjust_AdHouseingSubsidy where EmployeeID=@ValueofDB:HRPayAdjust_EmpName</sql>
+	<sql>update HRPayFrame set AttendanceAward=@ValueofDB:HRPayAdjust_AdAttendanceAward where EmployeeID=@ValueofDB:HRPayAdjust_EmpName</sql>
+	<sql>update HRPayFrame set SocialInsurance=@ValueofDB:HRPayAdjust_AdSocialInsurance where EmployeeID=@ValueofDB:HRPayAdjust_EmpName</sql>
+	</define>
+	
+	<!--在线打卡-->
+	<define name="HRAttDataDet_Add">
+	<sql type="condition">
+	<condition>
+	<select>select OnDutyEndTime,OffDutyEndTime,LateConfine from HRAttendance</select> 
+	<select>select substring(createTime,12,19) as Time,convert(varchar(10),createTime,120) as Date from HROnLineCard where id=@ValueofDB:HROnLineCard_id</select>
+	<select>select BillDate,EmpName,OffDutyCardTime,id,OnDutyCardTime from HRAttData where BillDate=convert(varchar(10),getdate(),120) and EmpName=@ValueofDB:HROnLineCard_createBy</select>
+	<!--(上午上班迟到时间)-->
+	<select>select DateDiff(mi,HRAttendance.ONDutyEndTime,substring(hronlinecard.createTime,12,19)) as Later
+from HROnlinecard 
+left join hrempinform on hrempinform.EmployeeID=HROnlinecard.createby
+left join HRAttendance on HRAttendance.id=hrempinform.Attendance
+where hronlinecard.id=@ValueofDB:HROnLineCard_id </select>
+       <!--(上午上班旷工时间)-->
+	<select>select DateDiff(mi,HRAttendance.cutdutyconfine,substring(hronlinecard.createTime,12,19)) as CutDuty
+from HROnlinecard 
+left join hrempinform on hrempinform.EmployeeID=HROnlinecard.createby
+left join HRAttendance on HRAttendance.id=hrempinform.Attendance
+where hronlinecard.id=@ValueofDB:HROnLineCard_id   
+	</select>
+	<!--(上午上班早退时间)-->
+	<select>select DateDiff(mi,HRAttendance.offdutystarttime,substring(hronlinecard.createTime,12,19)) as EarlyTime
+from HROnlinecard 
+left join hrempinform on hrempinform.EmployeeID=HROnlinecard.createby
+left join HRAttendance on HRAttendance.id=hrempinform.Attendance
+where hronlinecard.id=@ValueofDB:HROnLineCard_id
+	</select>
+	<!--(下午上班迟到时间)-->
+	<select>select DateDiff(mi,HRAttendance.PmOnDutyEndTime,substring(hronlinecard.createTime,12,19)) as PmLaterTime
+from HROnlinecard 
+left join hrempinform on hrempinform.EmployeeID=HROnlinecard.createby
+left join HRAttendance on HRAttendance.id=hrempinform.Attendance
+where hronlinecard.id=@ValueofDB:HROnLineCard_id
+	</select>
+	<!--(下午下班早退时间)-->
+	<select>select DateDiff(mi,HRAttendance.Pmoffdutystarttime,substring(hronlinecard.createTime,12,19)) as PmEarlyTime
+from HROnlinecard 
+left join hrempinform on hrempinform.EmployeeID=HROnlinecard.createby
+left join HRAttendance on HRAttendance.id=hrempinform.Attendance
+where hronlinecard.id=@ValueofDB:HROnLineCard_id
+	</select>
+	<!--(加班上班迟到时间)-->
+	<select>select DateDiff(mi,HRAttendance.OvertimeEndTime,substring(hronlinecard.createTime,12,19)) as OvertimeLaterTime
+from HROnlinecard 
+left join hrempinform on hrempinform.EmployeeID=HROnlinecard.createby
+left join HRAttendance on HRAttendance.id=hrempinform.Attendance
+where hronlinecard.id=@ValueofDB:HROnLineCard_id
+	</select>
+	<!--(加班下班早退时间)-->
+	<select>select DateDiff(mi,HRAttendance.OvertimeOffDutyStart,substring(hronlinecard.createTime,12,19)) as OvertimeEarlyTime
+from HROnlinecard 
+left join hrempinform on hrempinform.EmployeeID=HROnlinecard.createby
+left join HRAttendance on HRAttendance.id=hrempinform.Attendance
+where hronlinecard.id=@ValueofDB:HROnLineCard_id
+	</select>
+       </condition>
+	<!--上午上班打卡--> 
+	<exec condition="&quot;@ValueofDB:HROnlinecard_CardType &quot; == 1">	 					
+	<sql>insert into HRAttData(empname,id,createBy,billdate,OnDutyCardTime,LaterTime,CutDutyTime,EarlyTime,PmLaterTime,PmEarlyTime,OvertimeLaterTime,OvertimeEarlyTime) values(@ValueofDB:HROnlinecard_createBy,@ValueofDB:HROnlinecard_id,@ValueofDB:HROnlinecard_createBy,@SqlReturn:Date,substring(@ValueofDB:HROnlinecard_createTime,12,19),@SqlReturn:Later,@SqlReturn:CutDuty,@SqlReturn:EarlyTime,@SqlReturn:PmLaterTime,@SqlReturn:PmEarlyTime,@SqlReturn:OvertimeLaterTime,@SqlReturn:OvertimeEarlyTime)</sql> 
+	</exec>	 
+       <!--上午下班打卡-->
+	<exec condition="&quot;@ValueofDB:HROnlinecard_CardType &quot; == 2">	 					
+       <sql>update HRAttData set OffDutyCardTime=substring(@ValueofDB:HROnlinecard_createTime,12,19) where id=@SqlReturn:id</sql>
+	 </exec>
+	<!--下午上班时间-->
+	<exec condition="&quot;@ValueofDB:HROnlinecard_CardType &quot; == 3">	 					
+       <sql>update HRAttData set PmOnDutyCardTime=substring(@ValueofDB:HROnlinecard_createTime,12,19) where id=@SqlReturn:id</sql> 
+       </exec>		
+       <!--下午下班时间-->
+	<exec condition="&quot;@ValueofDB:HROnlinecard_CardType &quot; == 4">	 					
+       <sql>update HRAttData set PmOffDutyCardTime=substring(@ValueofDB:HROnlinecard_createTime,12,19) where id=@SqlReturn:id</sql> 
+       </exec>	
+	<!--外出打卡时间1-->
+	<exec condition="&quot;@ValueofDB:HROnlinecard_CardType &quot; == 5">	 					
+	<sql>update HRAttData set OutCardTimeA=substring(@ValueofDB:HROnlinecard_createTime,12,19) where id=@SqlReturn:id</sql>
+	</exec>
+	<!--外出回来打卡时间1-->
+	<exec condition="&quot;@ValueofDB:HROnlinecard_CardType &quot; == 6">	 					
+	<sql>update HRAttData set OutBacktimeA=substring(@ValueofDB:HROnlinecard_createTime,12,19) where id=@SqlReturn:id
+       </sql> 
+       </exec>
+	<!--外出打卡时间2-->
+	<exec condition="&quot;@ValueofDB:HROnlinecard_CardType &quot; == 5">	 					
+	<sql>update HRAttData set OutCardTimeB=substring(@ValueofDB:HROnlinecard_createTime,12,19) where id=@SqlReturn:id</sql>
+	</exec>
+	<!--外出回来打卡时间2-->
+	<exec condition="&quot;@ValueofDB:HROnlinecard_CardType &quot; == 6">	 					
+       <sql>update HRAttData set OutBacktimeB=substring(@ValueofDB:HROnlinecard_createTime,12,19) where id=@SqlReturn:id
+       </sql> 
+       </exec>
+	<!--外出打卡时间3-->
+	<exec condition="&quot;@ValueofDB:HROnlinecard_CardType &quot; == 5">	 					
+	<sql>update HRAttData set OutCardTimeC=substring(@ValueofDB:HROnlinecard_createTime,12,19) where id=@SqlReturn:id</sql>
+	</exec>
+       <!--外出回来打卡时间3-->
+	<exec condition="&quot;@ValueofDB:HROnlinecard_CardType &quot; == 6">	 					
+	<sql>update HRAttData set OutBacktimeC=substring(@ValueofDB:HROnlinecard_createTime,12,19) where id=@SqlReturn:id
+       </sql> 
+       </exec>
+       <!--加班上班打卡时间-->
+	<exec condition="&quot;@ValueofDB:HROnlinecard_CardType &quot; == 11">	 					
+	<sql>update HRAttData set OvertimeOnDutyTime=substring(@ValueofDB:HROnlinecard_createTime,12,19) where id=@SqlReturn:id</sql> 
+       </exec>
+       <!--加班下班打卡时间-->
+	<exec condition="&quot;@ValueofDB:HROnlinecard_CardType &quot; == 12">	 					
+	<sql>update HRAttData set OvertimeOffDutyTime=substring(@ValueofDB:HROnlinecard_createTime,12,19) where id=@SqlReturn:id
+       </sql> 
+       </exec>
+       <!--开始出差打卡时间-->
+	<exec condition="&quot;@ValueofDB:HROnlinecard_CardType &quot; == 13">	 					
+	<sql>update HRAttData set TravelCardTime=@ValueofDB:HROnlinecard_createTime where id=@SqlReturn:id
+       </sql> 
+       </exec>		
+       <!--出差回来打卡时间-->
+	<exec condition="&quot;@ValueofDB:HROnlinecard_CardType &quot; == 14">	 					
+	<sql>update HRAttData set TravelBackTime=@ValueofDB:HROnlinecard_createTime where id=@SqlReturn:id</sql> 
+       </exec>		
+       </sql>
+       </define>
+	   <!--学习经历-->
+	   <define name="HRStudyExperience_add_bref">
+<sql type="condition">
+	<condition>	
+		<select>select count(id) as countid from HREmpinform</select>
+    </condition>
+	<!--不存人事信息-->
+	<exec condition="@SqlReturn:countid ==0">
+  	<error>StartTime.EndTime.error</error>
+  </exec>
+	<!--请选择相应人事信息-->
+	<exec condition="&quot;@ValueofDB:HRStudyExperience_f_brother&quot;.length==0 || &quot;@ValueofDB:HRStudyExperience_f_brother&quot;==&quot;null&quot;">
+  	<error>StartTime.EndTime.error</error>
+  </exec>
+  </sql>
+</define>
+	   <!--学习经历-->
+	   <define name="HRStudyExperience_add">
+    <sql type="condition">
+	<condition>	
+		<select>select school from HRStudyExperience where DATEDIFF(day, StartTime, EndTime)&lt;0 and HRStudyExperience.id=@ValueofDB:HRStudyExperience_id</select>
+    </condition>
+	<!--结束时间不能大于开始时间-->
+	<exec condition="(&quot;@SqlReturn:school&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:school&quot;.length != 0)">
+  	<error>StartTime.EndTime.error</error>
+  </exec>
+	</sql>	
+</define>
+<!--劳动合同-->
+	   <define name="HRWorkCntract_add_bref">
+<sql type="condition">
+	<condition>	
+		<select>select count(id) as countid from HREmpinform</select>
+    </condition>
+	<!--不存人事信息-->
+	<exec condition="@SqlReturn:countid ==0">
+  	<error>StartTime.EndTime.error</error>
+  </exec>
+	<!--请选择相应人事信息-->
+	<exec condition="&quot;@ValueofDB:HRWorkCntract_f_brother&quot;.length==0 || &quot;@ValueofDB:HRWorkCntract_f_brother&quot;==&quot;null&quot;">
+  	<error>StartTime.EndTime.error</error>
+  </exec>
+  </sql>
+</define>
+	   <define name="HRWorkCntract_add">
+    <sql type="condition">
+	<condition>	
+		<select>select DATEDIFF(day, StartTime, EndTime) as Date from HRWorkCntract where HRWorkCntract.id=@ValueofDB:HRWorkCntract_id</select>
+    </condition>
+	<!--结束时间不能大于开始时间-->
+	<exec condition="@SqlReturn:Date &lt;0">
+  	<error>StartTime.EndTime.error</error>
+  </exec>
+	</sql>	
+</define>
+<!--家庭成员-->
+	   <define name="HRFamily_add_bref">
+<sql type="condition">
+	<condition>	
+		<select>select count(id) as countid from HREmpinform</select>
+    </condition>
+	<!--不存人事信息-->
+	<exec condition="@SqlReturn:countid ==0">
+  	<error>StartTime.EndTime.error</error>
+  </exec>
+	<!--请选择相应人事信息-->
+	<exec condition="&quot;@ValueofDB:HRFamily_f_brother&quot;.length==0 || &quot;@ValueofDB:HRFamily_f_brother&quot;==&quot;null&quot;">
+  	<error>StartTime.EndTime.error</error>
+  </exec>
+  </sql>
+</define>
+<!--工作经历-->
+	   <define name="HRWorkExperience_add_bref">
+<sql type="condition">
+	<condition>	
+		<select>select count(id) as countid from HREmpinform</select>
+    </condition>
+	<!--不存人事信息-->
+	<exec condition="@SqlReturn:countid ==0">
+  	<error>StartTime.EndTime.error</error>
+  </exec>
+  	<!--请选择相应人事信息-->
+	<exec condition="&quot;@ValueofDB:HRWorkExperience_f_brother&quot;.length==0 || &quot;@ValueofDB:HRWorkExperience_f_brother&quot;==&quot;null&quot;">
+  	<error>StartTime.EndTime.error</error>
+  </exec>
+  </sql>
+</define>
+	   <define name="HRWorkExperience_add">
+    <sql type="condition">
+	<condition>	
+		<select>select DATEDIFF(day, StartTime, EndTime) as Date from HRWorkExperience where HRWorkExperience.id=@ValueofDB:HRWorkExperience_id</select>
+    </condition>
+	<!--结束时间不能大于开始时间-->
+	<exec condition="@SqlReturn:Date &lt;0">
+  	<error>StartTime.EndTime.error</error>
+  </exec>
+	</sql>	
+</define>
+<!--证书信息-->
+	   <define name="HRLetterInform_add_bref">
+<sql type="condition">
+	<condition>	
+		<select>select count(id) as countid from HREmpinform</select>
+    </condition>
+	<!--不存人事信息-->
+	<exec condition="@SqlReturn:countid ==0">
+  	<error>StartTime.EndTime.error</error>
+  </exec>
+	<!--请选择相应人事信息-->
+	<exec condition="&quot;@ValueofDB:HRLetterInform_f_brother&quot;.length==0 || &quot;@ValueofDB:HRLetterInform_f_brother&quot;==&quot;null&quot;">
+  	<error>StartTime.EndTime.error</error>
+  </exec>
+  </sql>
+</define>
+
+<!-- 基本工资设置表 添加 -->
+<define name="HRBasicWageSetting_add">
+	<sql type="condition">
+		<condition>
+			<select>select 'Exists' as RepeatExists,Year as RepeatYear,Month as RepeatMonth from HRBasicWageSetting group by Year,Month having count(*)>1</select>
+			<select>select 'Exists' as DoubleExists,a.Year as Year,a.Month as Month,c.EmpFullName as Employee,d.DeptFullName as Department from HRBasicWageSetting a left join HRBasicWageSettingDet b on b.f_ref=a.id left join tblEmployee c on c.id=b.EmployeeID left join tblDepartment d on d.classCode=c.DepartmentCode group by a.Year,a.Month,c.EmpFullName,d.DeptFullName having count(*)>1</select>
+			<select>select 'ExistNoEmployee' as ExistNoEmployee from HRBasicWageSetting a left join HRBasicWageSettingDet b on b.f_ref=a.id where a.id=@ValueofDB:HRBasicWageSetting_id and (b.EmployeeID='' or len(b.EmployeeID)=0)</select>
+		</condition>
+		<!-- 同一年份，同一月份，职员工资设定表只能有一张 -->
+		<exec condition="&quot;@SqlReturn:RepeatExists&quot;==&quot;Exists&quot;">
+			<error>HRBasicWageSetting.add.RepeatYear.error,@SqlReturn:RepeatYear,@SqlReturn:RepeatMonth</error>
+		</exec>
+		<!-- 职员必须录入 -->
+		<exec condition="&quot;@SqlReturn:ExistNoEmployee&quot;==&quot;ExistNoEmployee&quot;">
+			<error>HRBasicWageSetting.add.Employee.error</error>
+		</exec>
+		<!-- 同一年份，同一月份，职员必须保持唯一性 -->
+		<exec condition="&quot;@SqlReturn:DoubleExists&quot;==&quot;Exists&quot;">
+			<error>HRBasicWageSetting.add.error</error>
+		</exec>
+	</sql>
+	<!--根据情况调用另外一个define操作-->	
+	<sql type="condition">
+		<!--不启用审核流-->
+		<exec condition="&quot;@MEM:HRBasicWageSetting_IsStatart&quot; == &quot;0&quot; &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">HRBasicWageSetting_add_Audit</sql>
+		</exec>
+	</sql>
+</define>
+
+<define name="HRBasicWageSetting_add_Audit">
+	<sql type="condition">
+		<condition>
+			<select>select isnull(sum(FactAmount),0) as BillAmt from HRBasicWageSetting a left join HRBasicWageSettingDet b on b.f_ref=a.id where a.id=@ValueofDB:HRBasicWageSetting_id</select>
+			 <select>select AccYear,AccMonth,AccPeriod from tblAccPeriod where AccMonth = @ValueofDB:HRBasicWageSetting_Month and AccYear=@ValueofDB:HRBasicWageSetting_Year and SCompanyID=@Sess:SCompanyID</select>
+			<select>select @ValueofDB:HRBasicWageSetting_Year+'-'+(case when len(@ValueofDB:HRBasicWageSetting_Month)=2 then @ValueofDB:HRBasicWageSetting_Month else '0'+@ValueofDB:HRBasicWageSetting_Month end)+'-28' as BillDate</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:BillDate&quot;.length &gt; 10">	 					
+		<error>sysdate.data.error</error>
+		</exec>
+		<exec condition="@SqlReturn:BillAmt&gt;0">
+			<sql type="procedure">
+			{call proc_insert(tblExpensed,id=@ValueofDB:HRBasicWageSetting_id@SPFieldLink:BillDate=@SqlReturn:BillDate@SPFieldLink:BillNo=@CODE:[OE@y2@M@d@id4OE@]@SPFieldLink:RefBillID=@ValueofDB:HRBasicWageSetting_id@SPFieldLink:DepartmentCode=@ValueofDB:HRBasicWageSetting_DepartmentCode@SPFieldLink:EmployeeID=@ValueofDB:HRBasicWageSetting_EmployeeID@SPFieldLink:SubCode=@ValueofDB:HRBasicWageSetting_SubCode@SPFieldLink:BillAmt=@SqlReturn:BillAmt@ParamNum:@SPFieldLink:CurrencyRate=1@SPFieldLink:FcBillAmt=@SqlReturn:BillAmt@ParamNum:@SPFieldLink:PeriodYear=@SqlReturn:AccYear@ParamNum:@SPFieldLink:PeriodMonth=@SqlReturn:AccMonth@ParamNum:@SPFieldLink:Period=@SqlReturn:AccPeriod@ParamNum:@SPFieldLink:createBy=@ValueofDB:HRBasicWageSetting_createBy@SPFieldLink:createTime=@ValueofDB:HRBasicWageSetting_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:HRBasicWageSetting_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:HRBasicWageSetting_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:HRBasicWageSetting_SCompanyID@SPFieldLink:workFlowNodeName=finish@SPFieldLink:checkPersons=@SPFieldLink:workFlowNode=-1,retCode,retVal)}
+			</sql>
+			<sql type="procedure">
+			{call proc_insert(tblExpenseDet,id=0@ValueofDB:HRBasicWageSetting_id@SPFieldLink:f_ref=@ValueofDB:HRBasicWageSetting_id@SPFieldLink:DepartmentCode=@ValueofDB:HRBasicWageSetting_DepartmentCode@SPFieldLink:EmployeeID=@ValueofDB:HRBasicWageSetting_EmployeeID@SPFieldLink:RefBillID=@ValueofDB:HRBasicWageSetting_id@SPFieldLink:ExpenseCode=2211@SPFieldLink:Amt=@SqlReturn:BillAmt@ParamNum:@SPFieldLink:CurrencyRate=1@SPFieldLink:FcAmt=@SqlReturn:BillAmt@ParamNum:@SPFieldLink:SCompanyID=@ValueofDB:HRBasicWageSetting_SCompanyID@SPFieldLink:Remark=工资发放,retCode,retVal)}
+			</sql>
+		</exec>
+		<!--自动生成的单据需更新单据编号连续-->
+	<exec condition="@SqlReturn:BillAmt&gt;0&amp;&amp;&quot;@MEM:BillNoSequence&quot;==&quot;true&quot;">  
+	<sql>update tblCodeGenerate set curValue=curValue+1 where code='OE'</sql>
+	</exec>
+	</sql>
+	<sql type="condition">
+		<condition>
+			<select>select isnull(max(OrderNo),0) maxOrderNo from tblAccMain where SCompanyID=@Sess:SCompanyID  and period=(select AccPeriod from tblAccPeriod where AccMonth = @ValueofDB:HRBasicWageSetting_Month and AccYear=@ValueofDB:HRBasicWageSetting_Year and SCompanyID=@Sess:SCompanyID)</select>
+			<select>select AccYear,AccMonth,AccPeriod from tblAccPeriod where AccMonth = @ValueofDB:HRBasicWageSetting_Month and AccYear=@ValueofDB:HRBasicWageSetting_Year and SCompanyID=@Sess:SCompanyID</select>
+			<select>select id as ExpensedID,Billdate,BillNo,DepartmentCode,EmployeeID,BillAmt,SubCode from tblExpensed where RefBillID=@ValueofDB:HRBasicWageSetting_id</select>
+			  <select>select ';'+CreateBy+';' as checkPersons from HRBasicWageSetting where id=@ValueofDB:HRBasicWageSetting_id</select>
+			  <select>select isnull(sum(FactAmount),0) as HRBillAmt from HRBasicWageSetting a left join HRBasicWageSettingDet b on b.f_ref=a.id where a.id=@ValueofDB:HRBasicWageSetting_id</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:AccPeriod&quot; == &quot;null&quot; || &quot;@SqlReturn:AccPeriod&quot; == &quot;&quot; || &quot;@SqlReturn:AccPeriod&quot;.length == 0">	 					
+		<error>tblAccPeriod.IsRange.error</error>
+		</exec>
+		<exec condition="@SqlReturn:HRBillAmt&gt;0">
+			<sql>insert into tblAccMain (id,CredTypeID,OrderNo,BillDate,RefBillType,RefBillID,RefBillNo,CredYear,CredMonth,Period,createBy,createTime,lastUpdateBy,lastUpdateTime,SCompanyID,workFlowNodeName,workFlowNode,checkPersons,AutoBillMarker) values ('99'+@ValueofDB:HRBasicWageSetting_id,@MEM:AccNumberType,@SqlReturn:maxOrderNo+1,@SqlReturn:Billdate,'tblExpensed',@SqlReturn:ExpensedID,@SqlReturn:BillNo,@ValueofDB:HRBasicWageSetting_Year,@ValueofDB:HRBasicWageSetting_Month,@SqlReturn:AccPeriod,@ValueofDB:HRBasicWageSetting_createBy,@ValueofDB:HRBasicWageSetting_createTime,@ValueofDB:HRBasicWageSetting_lastUpdateBy,@ValueofDB:HRBasicWageSetting_lastUpdateTime,@ValueofDB:HRBasicWageSetting_SCompanyID,'notApprove',0,@SqlReturn:checkPersons,1)</sql>
+			<sql type="procedure">
+			{call proc_insert(tblAccDetail,id=28@ValueofDB:HRBasicWageSetting_id@SPFieldLink:RefBillID=@SqlReturn:ExpensedID@SPFieldLink:RefBillType=tblExpensed@SPFieldLink:CompanyCode=@SPFieldLink:DepartmentCode=@ValueofDB:HRBasicWageSetting_DepartmentCode@SPFieldLink:EmployeeID=@ValueofDB:HRBasicWageSetting_EmployeeID@SPFieldLink:AccCode=2211@SPFieldLink:LendAmount=0@SPFieldLink:DebitAmount=@SqlReturn:BillAmt@ParamNum:@SPFieldLink:Currency=@SPFieldLink:CurrencyRate=0@SPFieldLink:LendCurrencyAmount=0@SPFieldLink:DebitCurrencyAmount=0@ParamNum:@SPFieldLink:PeriodYear=@ValueofDB:HRBasicWageSetting_Year@ParamNum:@SPFieldLink:PeriodMonth=@ValueofDB:HRBasicWageSetting_Month@ParamNum:@SPFieldLink:AccDate=@SqlReturn:BillDate@SPFieldLink:createBy=@ValueofDB:HRBasicWageSetting_createBy@SPFieldLink:createTime=@ValueofDB:HRBasicWageSetting_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:HRBasicWageSetting_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:HRBasicWageSetting_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:HRBasicWageSetting_SCompanyID@SPFieldLink:f_ref=99@ValueofDB:HRBasicWageSetting_id@SPFieldLink:RecordComment=工资发放,retCode,retVal)}
+			</sql>
+			<sql type="procedure">
+			{call proc_insert(tblAccDetail,id=29@ValueofDB:HRBasicWageSetting_id@SPFieldLink:RefBillID=@SqlReturn:ExpensedID@SPFieldLink:RefBillType=tblExpensed@SPFieldLink:CompanyCode=@SPFieldLink:DepartmentCode=@ValueofDB:HRBasicWageSetting_DepartmentCode@SPFieldLink:EmployeeID=@ValueofDB:HRBasicWageSetting_EmployeeID@SPFieldLink:AccCode=@SqlReturn:SubCode@SPFieldLink:LendAmount=@SqlReturn:BillAmt@ParamNum:@SPFieldLink:DebitAmount=0@SPFieldLink:Currency=@SPFieldLink:CurrencyRate=0@SPFieldLink:LendCurrencyAmount=0@SPFieldLink:DebitCurrencyAmount=0@ParamNum:@SPFieldLink:PeriodYear=@ValueofDB:HRBasicWageSetting_Year@ParamNum:@SPFieldLink:PeriodMonth=@ValueofDB:HRBasicWageSetting_Month@ParamNum:@SPFieldLink:AccDate=@SqlReturn:BillDate@SPFieldLink:createBy=@ValueofDB:HRBasicWageSetting_createBy@SPFieldLink:createTime=@ValueofDB:HRBasicWageSetting_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:HRBasicWageSetting_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:HRBasicWageSetting_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:HRBasicWageSetting_SCompanyID@SPFieldLink:f_ref=99@ValueofDB:HRBasicWageSetting_id@SPFieldLink:RecordComment=工资发放,retCode,retVal)}
+			</sql>
+			<sql>update tblAccMain set EmployeeID=@SqlReturn:EmployeeID,DepartmentCode=@SqlReturn:DepartmentCode where id='99'+@ValueofDB:HRBasicWageSetting_id</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition>
+			<select>select isnull(max(OrderNo),0) maxOrderNo from tblAccMain where SCompanyID=@Sess:SCompanyID  and period=(select AccPeriod from tblAccPeriod where AccMonth = @ValueofDB:HRBasicWageSetting_Month and AccYear=@ValueofDB:HRBasicWageSetting_Year and SCompanyID=@Sess:SCompanyID)</select>
+			<select>select AccYear,AccMonth,AccPeriod from tblAccPeriod where AccMonth = @ValueofDB:HRBasicWageSetting_Month and AccYear=@ValueofDB:HRBasicWageSetting_Year and SCompanyID=@Sess:SCompanyID</select>
+			<select>select id as ExpensedID,Billdate,BillNo,DepartmentCode,EmployeeID,BillAmt,SubCode from tblExpensed where RefBillID=@ValueofDB:HRBasicWageSetting_id</select>
+			<select>select id as AccMainID from tblAccMain where RefBillId=(select id from tblExpensed where RefBillID=@ValueofDB:HRBasicWageSetting_id)</select>
+			<select>select isnull(sum(FactAmount),0) as HRBillAmt from HRBasicWageSetting a left join HRBasicWageSettingDet b on b.f_ref=a.id where a.id=@ValueofDB:HRBasicWageSetting_id</select>
+		</condition>
+		<!--如果凭证启用了审核流，则插入一条记录OAMyWorkFlow 审核人为自己-->
+<exec condition="&quot;@MEM:tblAccMain_IsStatart&quot; == &quot;1&quot; &amp;&amp; @SqlReturn:HRBillAmt&gt;0">
+		  <sql>insert into OAMyWorkFlow(id,applyDate,applyType,tableName,keyId,createBy,checkPerson,currentNode,createtime,lastUpdatetime,nextNodeIds,departmentCode,statusId)
+select 'w'+id,BillDate,(select id from oaworkflowtemplate where templateFile='tblAccMain'),'tblAccMain',id,createBy,';'+createBy+';',0,createtime,lastUpdatetime,'',(select departmentCode from tblEmployee a where a.id=tblAccMain.CreateBy),0 from tblAccMain
+where RefBillID=@ValueofDB:HRBasicWageSetting_id</sql>
+</exec>
+		<!--如果凭证管理没有启用审核流-->
+		<exec condition="&quot;@MEM:tblAccMain_IsStatart&quot; == &quot;0&quot; &amp;&amp; @MEM:OpenInvoice==false &amp;&amp; @SqlReturn:HRBillAmt&gt;0">
+			<sql>update tblaccMain set workFlowNodeName='finish',workFlowNode='-1',checkPersons=''  where id=@SqlReturn:AccMainID</sql>
+			<sql type="procedure">
+			{call proc_updateAccBalance(2211,@SqlReturn:AccPeriod,@SqlReturn:AccYear,@SqlReturn:AccMonth,@SqlReturn:BillAmt,0,0,0,@ValueofDB:HRBasicWageSetting_SCompanyID,&quot;,retCode,retVal)}
+			</sql>
+			<sql type="procedure">
+			{call proc_updateAccBalance(@SqlReturn:SubCode,@SqlReturn:AccPeriod,@SqlReturn:AccYear,@SqlReturn:AccMonth,0,@SqlReturn:BillAmt,0,0,@ValueofDB:HRBasicWageSetting_SCompanyID,&quot;,retCode,retVal)}
+			</sql>
+		</exec>
+	</sql>
+</define>
+
+<define name="HRBasicWageSetting_del">
+	<!--根据情况调用另外一个define操作-->	
+	<sql type="condition">
+		<!--不启用审核流-->
+		<exec condition="&quot;@MEM:HRBasicWageSetting_IsStatart&quot; == &quot;0&quot; &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">HRBasicWageSetting_del_Audit</sql>
+		</exec>
+	</sql>
+</define>
+
+<define name="HRBasicWageSetting_del_Audit">
+	<sql type="condition">
+		<condition>
+			<select>select id as ExpensedID from tblExpensed where RefBillID=@ValueofDB:HRBasicWageSetting_id and SCompanyID=@Sess:SCompanyID</select>
+			<select>select BillAmt,PeriodYear,PeriodMonth,Period,SCompanyID,SubCode from tblExpensed where RefBillID=@ValueofDB:HRBasicWageSetting_id and SCompanyID=@Sess:SCompanyID</select>
+			<select>select CredTypeID,OrderNo,workFlowNodeName from tblAccMain where RefBillID=@SqlReturn:ExpensedID</select>
+				<select>select isnull(sum(FactAmount),0) as HRBillAmt from HRBasicWageSetting a left join HRBasicWageSettingDet b on b.f_ref=a.id where a.id=@ValueofDB:HRBasicWageSetting_id</select>
+		</condition>
+		<!--如果凭证启用了审核流，则反审核删除记录OAMyWorkFlow 审核人为自己-->
+		<exec condition="&quot;@MEM:tblAccMain_IsStatart&quot; == &quot;1&quot;">
+		  <sql>delete from OAMyWorkFlow where tableName='tblAccMain' and keyId in (select id from tblaccMain where RefBillID=@ValueofDB:HRBasicWageSetting_id)</sql>
+		</exec>
+		<!-- 若启用了审核流，且生成的凭证已经被审核，则不允许进行反审核操作 -->
+		<exec condition="&quot;@MEM:tblAccMain_IsStatart&quot; == &quot;1&quot;&amp;&amp;&quot;@SqlReturn:workFlowNodeName&quot;==&quot;finish&quot;">
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID _ @SqlReturn:OrderNo</error>
+		</exec>
+		<!--如果凭证管理没有启用审核流-->
+		<exec condition="&quot;@MEM:tblAccMain_IsStatart&quot; == &quot;0&quot;&amp;&amp; @MEM:OpenInvoice==false &amp;&amp; @SqlReturn:HRBillAmt&gt;0">
+			<sql type="procedure">
+			{call proc_updateAccBalance(2211,@SqlReturn:Period,@SqlReturn:PeriodYear,@SqlReturn:PeriodMonth,-@SqlReturn:BillAmt,0,0,0,@SqlReturn:SCompanyID,&quot;,retCode,retVal)}
+			</sql>
+			<sql type="procedure">
+			{call proc_updateAccBalance(@SqlReturn:SubCode,@SqlReturn:Period,@SqlReturn:PeriodYear,@SqlReturn:PeriodMonth,0,-@SqlReturn:BillAmt,0,0,@SqlReturn:SCompanyID,&quot;,retCode,retVal)}
+			</sql>
+		</exec>
+		<!-- 删除生成的费用单和凭证 -->
+		<exec condition="true">
+			<sql>delete from tblAccDetail where RefBillID=@SqlReturn:ExpensedID</sql>
+			<sql>delete from tblAccMain where RefBillID=@SqlReturn:ExpensedID</sql>
+			<sql>delete from tblExpenseDet where f_ref=(select id from tblExpensed where RefBillID=@ValueofDB:HRBasicWageSetting_id)</sql>
+			<sql>delete from tblExpensed where RefBillID=@ValueofDB:HRBasicWageSetting_id</sql>
+		</exec>
+	</sql>
+</define>
+
+<!-- 任务量设置表 添加 -->
+<define name="HRTaskSetting_add">
+	<sql type="condition">
+		<condition>
+			<select>select 'Exists' as DoubleExists,a.Year as Year,a.Month as Month,b.DepartmentCode,b.EmployeeID from HRTaskSetting a left join HREmployeeTaskDet b on b.f_ref=a.id group by a.Year,a.Month,b.DepartmentCode,b.EmployeeID having count(*)>1</select>
+			<select>select 'Exists' as DoubleGoodsExists from HRTaskSetting A outer apply (select * from HREmployeeTaskDet x where x.f_ref=A.id) as B outer apply (select * from HRGoodsTaskDet x where x.f_ref=A.id) as C group by A.Year,A.Month,B.DepartmentCode,B.EmployeeID,C.GoodsCode having count(*)>1</select>
+			<select>select B.ExistsEmployee as ExistsEmployee,C.ExistsGoods as ExistsGoods from HRTaskSetting A outer apply (select 'Exists' as ExistsEmployee from HREmployeeTaskDet where HREmployeeTaskDet.f_ref=A.id) as B outer apply (select 'Exists' as ExistsGoods from HRGoodsTaskDet where HRGoodsTaskDet.f_ref=A.id) as C where A.id=@ValueofDB:HRTaskSetting_id</select>
+			<select>select GoodsName,GoodsExists from (select b.id as GoodsID,b.GoodsCode as GoodsCode,c.GoodsFullName as GoodsName from HRTaskSetting a,HRGoodsTaskDet b,tblGoods c where a.id=b.f_ref and b.GoodsCode=c.classCode and a.id=@ValueofDB:HRTaskSetting_id) as X outer apply (select 'Exists' as GoodsExists from HRTaskSetting a,HRGoodsTaskDet b where a.id=b.f_ref and a.id=@ValueofDB:HRTaskSetting_id and b.id!=X.GoodsID and ((len(b.GoodsCode)>len(X.GoodsCode) and substring(b.GoodsCode,1,len(X.GoodsCode))=X.GoodsCode) or (len(X.GoodsCode)>len(b.GoodsCode) and substring(X.GoodsCode,1,len(b.GoodsCode))=b.GoodsCode) or (len(b.GoodsCode)=len(X.GoodsCode) and b.GoodsCode=X.GoodsCode))) as Y where Y.GoodsExists='Exists'</select>
+			<select>select AccYear,AccMonth,AccPeriod from tblAccPeriod where AccMonth = @ValueofDB:HRTaskSetting_Month and AccYear=@ValueofDB:HRTaskSetting_Year and SCompanyID=@Sess:SCompanyID</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:AccPeriod&quot; == &quot;null&quot; || &quot;@SqlReturn:AccPeriod&quot; == &quot;&quot; || &quot;@SqlReturn:AccPeriod&quot;.length == 0">	 					
+		<error>tblAccPeriod.IsRange.error</error>
+		</exec>
+		<!-- 在任务设置表里，只能选择职员任务设置或商品任务设置，不能两者同时使用 -->
+		<!--<exec condition="&quot;@SqlReturn:ExistsEmployee&quot;==&quot;Exists&quot;&amp;&amp;&quot;@SqlReturn:ExistsGoods&quot;==&quot;Exists&quot;">
+			<error>HRTaskSetting.add.EmployeeOrGoods.error</error>
+		</exec>-->
+		<!-- 同一年份，同一月份，职员必须保持唯一性 -->
+		<exec condition="&quot;@SqlReturn:DoubleExists&quot;==&quot;Exists&quot;">
+			<error>HRBasicWageSetting.add.error</error>
+		</exec>
+		<!-- 同一年份，同一月份，商品必须保持唯一性 -->
+		<exec condition="&quot;@SqlReturn:DoubleGoodsExists&quot;==&quot;Exists&quot;">
+			<error>HRBasicWageSetting.add.Goods.error</error>
+		</exec>
+		<!-- 商品{0}，或其子类，或其所属类别已经设置，系统不允许多次设置 -->
+		<exec condition="&quot;@SqlReturn:GoodsExists&quot;==&quot;Exists&quot;">
+			<error>HRInterDeductSetting.add.error.GoodsSetting,@SqlReturn:GoodsName</error>
+		</exec>
+	</sql>
+</define>
+
+<!-- 区间提成设置表 添加 -->
+<define name="HRInterDeductSetting_add">
+	<sql type="condition">
+		<condition>
+			<select>select 'Exist' as GoodsReturnExist from HRInterDeductSetting where id=@ValueofDB:HRInterDeductSetting_id and BaseNumber=3 and EmployeeOrGoods!='EmployeeDepartment'</select>
+			<select>select 'Exists' as DoubleExists from HRInterDeductSetting a left join HREmployeeInterDeductDet b on b.f_ref=a.id group by a.Year,a.Month,b.DepartmentCode,b.EmployeeID having count(*)>1</select>
+			<select>select 'Exists' as DoubleGoodsExists,A.Year,A.Month,B.DepartmentCode,B.EmployeeID,C.GoodsCode from HRInterDeductSetting A outer apply (select * from HREmployeeInterDeductDet x where x.f_ref=A.id) as B outer apply (select * from HRGoodsInterDeductDet x where x.f_ref=A.id) as C group by A.Year,A.Month,B.DepartmentCode,B.EmployeeID,C.GoodsCode having count(*)>1</select>
+			<!-- 职员区间提成明细 金额1 要大于0 EmployeeExistsError "HREmployeeInterDeductDet"-->
+			<select>select 'Exists' as EmployeeExistsError from HRInterDeductSetting a left join HREmployeeInterDeductDet b on b.f_ref=a.id where a.id=@ValueofDB:HRInterDeductSetting_id and (isnull(b.SalesPrice1,0)&lt;=0)</select>
+			<!-- 商品区间提成明细 要大于0 GoodsExistsError "HRGoodsInterDeductDet"-->
+			<select>select 'Exists' as GoodsExistsError from HRInterDeductSetting a left join HRGoodsInterDeductDet b on b.f_ref=a.id where a.id=@ValueofDB:HRInterDeductSetting_id and (isnull(b.SalesPrice1,0)&lt;=0)</select>
+			<!-- 职员提成1，2，3，4必须不小于0 EmployeeDeductionExistsError-->
+			<select>select 'Exists' as EmployeeDeductionExistsError from HRInterDeductSetting a left join HREmployeeInterDeductDet b on b.f_ref=a.id where a.id=@ValueofDB:HRInterDeductSetting_id and (isnull(b.Deduction1,0)&lt;0 or isnull(b.Deduction2,0)&lt;0 or isnull(b.Deduction3,0)&lt;0 or isnull(b.Deduction4,0)&lt;0)</select>
+			<!-- 商品提成1，2，3，4必须不小于0 GoodsDeductionExistsError-->
+			<select>select 'Exists' as GoodsDeductionExistsError from HRInterDeductSetting a left join HRGoodsInterDeductDet b on b.f_ref=a.id where a.id=@ValueofDB:HRInterDeductSetting_id and (isnull(b.Deduction1,0)&lt;0 or isnull(b.Deduction2,0)&lt;0 or isnull(b.Deduction3,0)&lt;0 or isnull(b.Deduction4,0)&lt;0)</select>
+			<select>select GoodsName,GoodsExists from (select b.id as GoodsID,b.GoodsCode as GoodsCode,c.GoodsFullName as GoodsName from HRInterDeductSetting a,HRGoodsInterDeductDet b,tblGoods c where a.id=b.f_ref and b.GoodsCode=c.classCode and a.id=@ValueofDB:HRInterDeductSetting_id) as X outer apply (select 'Exists' as GoodsExists from HRInterDeductSetting a,HRGoodsInterDeductDet b where a.id=b.f_ref and a.id=@ValueofDB:HRInterDeductSetting_id and b.id!=X.GoodsID and ((len(b.GoodsCode)>len(X.GoodsCode) and substring(b.GoodsCode,1,len(X.GoodsCode))=X.GoodsCode) or (len(X.GoodsCode)>len(b.GoodsCode) and substring(X.GoodsCode,1,len(b.GoodsCode))=b.GoodsCode) or (len(b.GoodsCode)=len(X.GoodsCode) and b.GoodsCode=X.GoodsCode))) as Y where Y.GoodsExists='Exists'</select>
+			<select>select AccYear,AccMonth,AccPeriod from tblAccPeriod where AccMonth = @ValueofDB:HRInterDeductSetting_Month and AccYear=@ValueofDB:HRInterDeductSetting_Year and SCompanyID=@Sess:SCompanyID</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:AccPeriod&quot; == &quot;null&quot; || &quot;@SqlReturn:AccPeriod&quot; == &quot;&quot; || &quot;@SqlReturn:AccPeriod&quot;.length == 0">	 					
+		<error>tblAccPeriod.IsRange.error</error>
+		</exec>
+		<!-- 同一年份，同一月份，职员必须保持唯一性 -->
+		<exec condition="&quot;@SqlReturn:DoubleExists&quot;==&quot;Exists&quot;">
+			<error>HRBasicWageSetting.add.error</error>
+		</exec>
+		<!-- 同一年份，同一月份，商品必须保持唯一性 -->
+		<exec condition="&quot;@SqlReturn:DoubleGoodsExists&quot;==&quot;Exists&quot;">
+			<error>HRBasicWageSetting.add.Goods.error</error>
+		</exec>
+		<!-- 基数选择为销售回款，提成方案必须为按职员部门方式 -->
+		<exec condition="&quot;@SqlReturn:GoodsReturnExist&quot;==&quot;Exist&quot;">
+			<error>HRInterDeductSetting.add.error.ReturnAmount</error>
+		</exec>
+		<!-- 商品{0}，或其子类，或其所属类别已经设置，系统不允许多次设置 -->
+		<exec condition="&quot;@SqlReturn:GoodsExists&quot;==&quot;Exists&quot;">
+			<error>HRInterDeductSetting.add.error.GoodsSetting,@SqlReturn:GoodsName</error>
+		</exec>
+		<!-- 职员金额1 要大于0 -->
+		<exec condition="&quot;@SqlReturn:EmployeeExistsError&quot;==&quot;Exists&quot;">
+			<error>HRInterDeductSetting.add.error.EmpAmount</error>
+		</exec>
+		<!-- 商品金额1 要大于0 -->
+		<exec condition="&quot;@SqlReturn:GoodsExistsError&quot;==&quot;Exists&quot;">
+			<error>HRInterDeductSetting.add.error.GoodsAmount</error>
+		</exec>
+
+		<!-- 职员提成1，2，3，4必须不小于0 -->
+		<exec condition="&quot;@SqlReturn:EmployeeDeductionExistsError&quot;==&quot;Exists&quot;">
+			<error>HRInterDeductSetting.add.error.Deduction</error>
+		</exec>
+		<!-- 商品提成1，2，3，4必须不小于0 -->
+		<exec condition="&quot;@SqlReturn:GoodsDeductionExistsError&quot;==&quot;Exists&quot;">
+			<error>HRInterDeductSetting.add.error.Deduction</error>
+		</exec>
+		
+		<!-- 检验区间提成金额输入的合理性 -->
+		<exec condition="true">
+			<sql type="procedure">
+				{call proc_DeductAmountCheck(@ValueofDB:HRInterDeductSetting_id,retCode,retVal)}
+			</sql>
+		</exec>
+				<exec condition="&quot;@ProcReturn:retVal&quot;==&quot;Fail&quot;">
+			<error>HRInterDeductSetting.add.error.Amount</error>
+		</exec>
+		
+	</sql>
+</define>
+
+<!-- 区间提成设置表 添加 -->
+<define name="ComputeWageDeduct_add">
+	<sql type="condition">
+		<condition>
+			<select>select 'Exists' as ExistsDouble from ComputeWageDeduct group by Year,Month having count(*)>1</select>
+			<select>select AccYear,AccMonth,AccPeriod from tblAccPeriod where AccMonth = @ValueofDB:ComputeWageDeduct_Month and AccYear=@ValueofDB:ComputeWageDeduct_Year and SCompanyID=@Sess:SCompanyID</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:AccPeriod&quot; == &quot;null&quot; || &quot;@SqlReturn:AccPeriod&quot; == &quot;&quot; || &quot;@SqlReturn:AccPeriod&quot;.length == 0">	 					
+		<error>tblAccPeriod.IsRange.error</error>
+		</exec>
+		<!-- 同一年份，同一月份，只能添加一次记录，如果想重新计算工资提成，修改相应记录即可 -->
+		<exec condition="&quot;@SqlReturn:ExistsDouble&quot;==&quot;Exists&quot;">
+			<error>ComputeWageDeduct.add.error</error>
+		</exec>
+		<!-- 计算工资提成 -->
+		<exec condition="true">
+			<sql type="procedure">
+			{call proc_ComputeEmployeeDeduction(@ValueofDB:ComputeWageDeduct_Year,@ValueofDB:ComputeWageDeduct_Month,@Sess:SCompanyID,@Sess:Local,@retCode,@retVal)}
+			</sql>
+		</exec>
+	</sql>
+</define>
+
+<!-- 绩效考核 添加 -->
+<define name="HRPerformanceAssess_add">
+	<sql type="condition">
+			<condition>
+			<select>select 'Exist' as Exist from HRPerformanceAssessDet where f_ref=@ValueofDB:HRPerformanceAssess_id and (PerformEvaluate &lt; 0 or AimEvaluate &lt; 0 or FinanceEvaluate &lt; 0 or GrowupEvaluate &lt; 0 or KPIEvaluate &lt; 0 or FlowEvaluate &lt; 0 or PerformEvaluate &gt; 100 or AimEvaluate &gt; 100 or FinanceEvaluate &gt; 100 or GrowupEvaluate &gt; 100 or KPIEvaluate &gt; 100 or FlowEvaluate &gt; 100)</select>
+			<select>select 'EEcho' as EEcho from HRPerformanceAssessDet  where f_ref=@ValueofDB:HRPerformanceAssess_id group by EmployeeID having count(EmployeeID)>1 </select>
+			</condition>
+			<!-- 考核成绩必须在0-100之间 -->
+			<exec condition="&quot;@SqlReturn:Exist&quot;==&quot;Exist&quot;">
+			<error>HRPerformanceAssess.add.error</error>
+			</exec>
+			<!--职员不能重复 -->
+			<exec condition="&quot;@SqlReturn:EEcho&quot;==&quot;EEcho&quot;">
+			<error>HRPerformanceAssess.add.error.EmployeeID</error>
+			</exec>
+	</sql>
+</define>
+
+
+<!-- 年度目标评估添加 -->
+<define name="HRGoal_Add">
+	<sql type="condition">
+			<condition>
+				 <select>select id from HRGoalDet where f_ref=@ValueofDB:HRGoal_id and (Rating &gt; 5 or Rating &lt; 1 and Rating!=0)</select>
+			</condition>
+			<!-- 更新平均分-->
+			<exec condition="true">
+				<sql>update HRGoal set Rating=(select sum(Rating) from HRGoalDet where f_ref=@ValueofDB:HRGoal_id),AverageRating=case when (select count(*) from HRGoalDet where f_ref=@ValueofDB:HRGoal_id)=0 then 0 else cast((cast((select sum(Rating) from HRGoalDet where f_ref=@ValueofDB:HRGoal_id) as numeric(18,1))/(select count(*) from HRGoalDet where f_ref=@ValueofDB:HRGoal_id)) as numeric(18,1)) end where id=@ValueofDB:HRGoal_id</sql>
+			<!--回填表现评估主表-->
+		  <sql>update HRReview set MyGoal=(select AverageRating from HRGoal where HRGoal.f_brother=HRReview.id and HRGoal.id=@ValueofDB:HRGoal_id) where id=@ValueofDB:HRGoal_f_brother</sql>
+			</exec>
+			 <!--评分必须是在1-5之间且是整数-->
+			<exec condition="(&quot;@SqlReturn:id&quot;!=&quot;null&quot; &amp;&amp; &quot;@SqlReturn:id&quot;.length!=0) &amp;&amp; &quot;@Sess:BillOper&quot; == &quot;update&quot;">						
+		<error>Goal.Int.error</error>
+		</exec>
+	</sql>
+</define>
+
+<!-- 能力评估添加 -->
+<define name="HRCompetencies_Add">
+	<sql type="condition">
+			<condition>
+				<select>select id from HRCompetencies where id=@ValueofDB:HRCompetencies_id and ((Rating1 &gt; 5 or Rating1 &lt; 1 and Rating1!=0) or (Rating2 &gt; 5 or Rating2 &lt; 1 and Rating2!=0) or (Rating3 &gt; 5 or Rating3 &lt; 1 and Rating3!=0) or (Rating4 &gt; 5 or Rating4 &lt; 1 and Rating4!=0) or (Rating5 &gt; 5 or Rating5 &lt; 1 and Rating5!=0) or (Rating6 &gt; 5 or Rating6 &lt; 1 and Rating6!=0) or (Rating7 &gt; 5 or Rating7 &lt; 1 and Rating7!=0) or (Rating8 &gt; 5 or Rating8 &lt; 1 and Rating8!=0) or (Rating9 &gt; 5 or Rating9 &lt; 1 and Rating9!=0) or (Rating10 &gt; 5 or Rating10 &lt; 1 and Rating10!=0) or (Rating11 &gt; 5 or Rating11 &lt; 1 and Rating11!=0) or (Rating12 &gt; 5 or Rating12 &lt; 1 and Rating12!=0) or (Rating13 &gt; 5 or Rating13 &lt; 1 and Rating13!=0) or (Rating14 &gt; 5 or Rating14 &lt; 1 and Rating14!=0) or (Rating15 &gt; 5 or Rating15 &lt; 1 and Rating15!=0))</select>
+			</condition>
+				 <!--评分必须是在1-5之间且是整数-->
+			<exec condition="(&quot;@SqlReturn:id&quot;!=&quot;null&quot; &amp;&amp; &quot;@SqlReturn:id&quot;.length!=0) &amp;&amp; &quot;@Sess:BillOper&quot; == &quot;update&quot;">						
+		<error>Goal.Int.error</error>
+		</exec>
+			<!-- 更新平均分-->
+			<exec condition="true">
+		<sql>update HRCompetencies set Average1=cast((Rating1+Rating2+Rating3+Rating4+Rating5+Rating6+Rating7+Rating8+Rating9+Rating10)/10 as numeric(18,1)),Average2=cast((Rating11+Rating12+Rating13+Rating14+Rating15)/5 as numeric(18,1)) where id=@ValueofDB:HRCompetencies_id</sql>
+		<sql>update HRCompetencies set Average3=cast((Average1+Average2)/(case when len(ManComments11)=0 and len(ManComments12)=0 and len(ManComments13)=0 and len(ManComments14)=0 and len(ManComments15)=0 then 1 else 2 end) as numeric(18,1)) where id=@ValueofDB:HRCompetencies_id</sql>
+		<!--回填表现评估主表-->
+		<sql>update HRReview set Competency=(select Average3 from HRCompetencies where HRCompetencies.f_brother=HRReview.id and HRCompetencies.id=@ValueofDB:HRCompetencies_id) where id=(select f_brother from HRCompetencies where id=@ValueofDB:HRCompetencies_id)</sql>
+			</exec>
+	</sql>
+</define>
+<!-- 年度目标被引用不允许删除 -->
+<define name="HRNewGoal_Delete">
+	<sql type="condition">
+			<condition>
+					<!--存在对应年度目标评估引用年度目标-->
+		<select>select GoalID from HRGoal where GoalID=@ValueofDB:HRNewGoal_id</select>
+			</condition>
+				<!-- 提示：操作删除失败，该年度目标已被引用 -->
+		<exec condition="(&quot;@SqlReturn:GoalID&quot;!=&quot;null&quot; &amp;&amp; &quot;@SqlReturn:GoalID&quot;.length != 0)">
+		<error>NewGoal.BillNoDel2.error</error>
+		</exec>		  
+	</sql>
+</define>
+<!-- 题库单选时判断不可有多个正确答案 -->
+<define name="tblProblemsManage_Add">
+	<sql type="condition">
+		<condition>
+		<select>select count(tblAPreSelectAnswer.id) as correctNum from tblAPreSelectAnswer left join tblProblemsManage on tblProblemsManage.id=tblAPreSelectAnswer.f_ref where tblProblemsManage.id=@ValueofDB:id and charindex('1,',tblAPreSelectAnswer.isCorrect)>0 and tblProblemsManage.answerType='single'</select>
+		</condition>
+		<!-- 提示： -->
+		<exec condition="@SqlReturn:correctNum &gt; 1">
+		<error>ProblemsManage.DetTrue.error</error>
+		</exec>		  
+	</sql>
+</define>
+<!-- 薪资发放 -->
+<define name="HRPay_add">
+	<sql type="condition">
+		<condition>
+			<select>select HRPay.EmployeeCode as EmployeeCode from HRPay where id=@ValueofDB:HRPay_id and FactWage &lt;=0</select>
+			</condition>
+		<exec condition="&quot;@SqlReturn:EmployeeCode&quot; != &quot;&quot; &amp;&amp; &quot;@SqlReturn:EmployeeCode&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:EmployeeCode&quot;.length != 0">
+		<error>HRPay.FactWage.error</error>
+		</exec>
+	</sql>
+</define>
+</defineSqls>

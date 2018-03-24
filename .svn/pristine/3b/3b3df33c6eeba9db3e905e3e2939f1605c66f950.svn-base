@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<!--个性插件弹出框-->
+<!--通用型弹出窗选择配置文件-->
+<!---以下是往来单位、仓库、职员、部门、商品、辅助单位等基本信息的选择配置-->	
+<!--产品检验单位弹出框-->
+<select name = "SelectClientTest">
+        <table>tblCompany</table>
+        <forwardModel>tblCompany</forwardModel>
+		<relation></relation>
+		<classCode>tblCompany.classCode</classCode>
+		<condition>tblCompany.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblCompany.ComNumber"  width="150" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblCompany.ComFullName" display="@TABLENAME.CompanyCode" width="150" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblCompany.classCode" parentName="@TABLENAME.CompanyCode" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+<!--产品检验单的产品弹出框-->
+	<select name = "SelectOnlyGoodsTest">
+         <table>tblGoods,tblUnit</table>
+         <forwardModel>tblGoods</forwardModel>
+         <relation>tblGoods.BaseUnit=tblUnit.id</relation>
+         <classCode>tblGoods.classCode</classCode>
+        <condition>tblGoods.statusId!='-1' and tblGoods.workFlowNodeName='finish'</condition>
+        <displayFields>
+             <field name="tblGoods.GoodsNumber" width="100" searchType="match" parentDisplay="true" />
+             <field name="tblGoods.GoodsFullName" display="@TABLENAME.GoodsCode" width="150" searchType="match" keySearch="true" parentDisplay="true" />
+            <!-- <field name="tblGoods.MainMaterials" width="80" hiddenInput="true" searchType="match" parentDisplay="true" />
+             <field name="tblGoods.AssistMaterials" width="80" hiddenInput="true" searchType="match" parentDisplay="true" />-->
+             <field name="tblGoods.GoodsSpec" width="80" searchType="match" keySearch="true" parentDisplay="true" />
+             <field name="tblUnit.UnitName" asName="Unit.Unit" width="30" searchType="match" parentDisplay="true" />
+        </displayFields>
+     <saveFields>
+         <field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true"/>
+         <field name="tblUnit.id" parentName="@TABLENAME.Unit" relationKey="false" hidden="true"/>
+     </saveFields>
+   </select>
+   
+   <!--产品检验单检验员弹出框-->	
+	<select name = "SelectEmployeeTest">
+		<table>tblEmployee,tblDepartment</table>
+		<forwardModel>tblEmployee</forwardModel>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+		<condition>((tblEmployee.DepartmentCode='@ValueofDB:DepartmentCode' and tblEmployee.SCompanyID='@Sess:SCompanyID')and tblEmployee.statusId!='-1' or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName"  display="@TABLENAME.EmployeeID" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblDepartment.DeptFullName"  width="200" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	
+	<!--检验产品检验部门弹出框-->	
+	<select name = "SelectDepartmentTest">
+		<table>tblDepartment</table>
+		<forwardModel>tblDepartment</forwardModel>
+		<relation></relation>
+		<classCode>tblDepartment.classCode</classCode>
+		<condition>tblDepartment.statusid!='-1' and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblDepartment.DeptCode" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" display="@TABLENAME.DepartmentCode" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblDepartment.classCode" parentName="@TABLENAME.DepartmentCode" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	
+		<!--检验产品检验项目弹出框-->	
+	<select name = "SelectTestitem">
+		<table>tblTestitem</table>
+		<forwardModel>tblTestitem</forwardModel>
+		<relation></relation>
+		<classCode></classCode>
+		<condition></condition>
+		<displayFields>
+		<field name="tblTestitem.ProveItem" width="160" display="@TABLENAME.ProveItem" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblTestitem.ProveStandard" width="200"  searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblTestitem.Remark" width="180" searchType="match" parentDisplay="false" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblTestitem.ProveItem" parentName="tblProductTestDet.ProveItem" relationKey="true" hidden="false"/>
+		<field name="tblTestitem.ProveStandard" parentName="tblProductTestDet.ProveStandard"  hidden="false"/>
+		</saveFields>
+	</select>
+</popupSelect>

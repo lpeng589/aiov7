@@ -1,0 +1,17 @@
+[DEBUG] 2017-11-19 11:13:20,045 Line:83 开始启动KK消息中心,端口6333
+ [DEBUG] 2017-11-19 11:13:20,203 Line:100 MSGConnectCenter.init MSGConnectServer Successfull
+ [DEBUG] 2017-11-19 11:13:20,219 Line:110 MSGConnectCenter.init(common) SessionClearThread Successfull
+ [DEBUG] 2017-11-19 11:13:20,219 Line:118 MSGConnectCenter.init(file) SessionClearThread Successfull
+ [DEBUG] 2017-11-19 11:28:41,308 Line:83 开始启动KK消息中心,端口6333
+ [DEBUG] 2017-11-19 11:28:41,459 Line:100 MSGConnectCenter.init MSGConnectServer Successfull
+ [DEBUG] 2017-11-19 11:28:41,462 Line:110 MSGConnectCenter.init(common) SessionClearThread Successfull
+ [DEBUG] 2017-11-19 11:28:41,463 Line:118 MSGConnectCenter.init(file) SessionClearThread Successfull
+ [DEBUG] 2017-11-19 14:24:04,141 Line:83 开始启动KK消息中心,端口6333
+ [DEBUG] 2017-11-19 14:24:04,309 Line:100 MSGConnectCenter.init MSGConnectServer Successfull
+ [DEBUG] 2017-11-19 14:24:04,312 Line:110 MSGConnectCenter.init(common) SessionClearThread Successfull
+ [DEBUG] 2017-11-19 14:24:04,313 Line:118 MSGConnectCenter.init(file) SessionClearThread Successfull
+ [DEBUG] 2017-11-19 21:47:12,656 Line:83 开始启动KK消息中心,端口6333
+ [DEBUG] 2017-11-19 21:47:12,837 Line:100 MSGConnectCenter.init MSGConnectServer Successfull
+ [DEBUG] 2017-11-19 21:47:12,846 Line:110 MSGConnectCenter.init(common) SessionClearThread Successfull
+ [DEBUG] 2017-11-19 21:47:12,846 Line:118 MSGConnectCenter.init(file) SessionClearThread Successfull
+ 

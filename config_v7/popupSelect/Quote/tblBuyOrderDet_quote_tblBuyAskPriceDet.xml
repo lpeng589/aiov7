@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="tblBuyOrderDet_quote_tblBuyAskPriceDet">
+     <table>tblBuyAskPriceDet,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblBuyAskPriceDet.id f1,
+      tblGoods.GoodsNumber f2,
+      tblGoods.GoodsFullName f3,
+      tblGoods.GoodsSpec f4,
+      tblGoods.GoodsFullNamePYM f5,
+      tblBuyAskPriceDet.BatchNo f6,
+      tblBuyAskPriceDet.Inch f7,
+      tblBuyAskPriceDet.Hue f8,
+      tblBuyAskPriceDet.yearNO f9,
+      tblBuyAskPriceDet.ProDate f10,
+      tblBuyAskPriceDet.Availably f11,
+      tblBuyAskPriceDet.Qty f12,
+      tblBuyAskPriceDet.Price f13,
+      tblBuyAskPriceDet.Discount f14
+  from tblBuyAskPriceDet
+		 left join tblGoods on tblBuyAskPriceDet.GoodsCode=tblGoods.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>采购订单明细引用采购询价明细</remark>
+     <condition>tblGoods.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.GoodsNumber" width="120"  parentDisplay="false" orderBy="升" />
+          <field name="tblGoods.GoodsFullName" width="150"  parentDisplay="false" orderBy="升" />
+          <field name="tblGoods.GoodsSpec" width="150"  parentDisplay="false" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100"  parentDisplay="false" hiddenInput="true" />
+          <field name="tblBuyAskPriceDet.BatchNo" width="120"  parentDisplay="false" />
+          <field name="tblBuyAskPriceDet.Inch" width="70"  parentDisplay="false" />
+          <field name="tblBuyAskPriceDet.Hue" width="70"  parentDisplay="false" />
+          <field name="tblBuyAskPriceDet.yearNO" width="70"  parentDisplay="false" />
+          <field name="tblBuyAskPriceDet.ProDate" width="70"  parentDisplay="false" />
+          <field name="tblBuyAskPriceDet.Availably" width="70"  parentDisplay="false" />
+          <field name="tblBuyAskPriceDet.Qty" width="100" parentDisplay="false" />
+          <field name="tblBuyAskPriceDet.Price" width="100" parentDisplay="false" />
+          <field name="tblBuyAskPriceDet.Discount" width="50" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblBuyAskPriceDet.id" parentName="@TABLENAME.BuyAskPriceDetID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

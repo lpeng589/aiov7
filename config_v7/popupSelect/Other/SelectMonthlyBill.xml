@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectMonthlyBill">
+     <table>tblModules</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblModules.tblName f1,
+      tblModules.id f2,
+      tblModules.modelName f3
+from tblModules
+     </defineSQL>
+     <classCode></classCode>
+     <condition>(tblModules.tblName != '' and tblModules.tblName is not null) and tblModules.tblName in (select tableName from tblDBTableInfo)</condition>
+     <changeCond></changeCond>
+     <orderBy></orderBy>
+     <displayFields>
+          <field name="tblModules.modelName" asName="modelName.modelName" width="100" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.BillType" />
+     </displayFields>
+     <saveFields>
+          <field name="tblModules.tblName" parentName="@TABLENAME.BillType" relationKey="true" hidden="true" />
+          <field name="tblModules.id" parentName="@TABLENAME.BillID" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

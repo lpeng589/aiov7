@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>科荣短信猫下载</title>
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+<style type="text/css">
+body,h1,h2,h3,h4,h5,h6,hr,p,ul,ol,li,pre,form,fieldset,button,input,nav {margin:0;padding:0;}
+body{font:normal 12px/1.5 Microsoft Yahei;color:#000;-webkit-tap-highlight-color:-webkit-tap-highlight-color;overflow-x:hidden;}
+em,i{font-style:normal;}
+li{list-style:none;}
+img{border:none;}
+a{text-decoration:none;}
+.k-header{min-width:320px;height:160px;background:url(/style/v7/images/Tbg.jpg) no-repeat 0 0;background-size:100%;width:100%;}
+.p-btn{text-align:center;padding:30px 0 15px 0;}
+.down-btn{background:#5bb75b;padding:0 40px;color:#fff;font-size:14px;cursor:pointer;height:50px;line-height:50px;display:inline-block;border-radius:10px;background-image:-webkit-gradient(linear,0 0,0 100%,from(#62c462),to(#51a351));background-image:linear-gradient(to bottom,#62c462,#51a351);}
+.d-con{padding:0 10px;}
+.d-con h3{padding:5px 0;line-height:25px;}
+.d-con em{font-weight:bold;}
+</style>
+</head>
+<body onload='download();'>
+<div class="k-header" id="k-header">
+</div>
+<p class="p-btn" >
+<a class="down-btn" onclick='download();'>点击下载</a>
+</p>
+<div class="d-con">
+<h3>【功能介绍】</h3>
+<em>发送短信</em> <br/>
+请尽量采用WIFI网络连接系统，已免产生过多的网络流量。 <br/>
+请尽量设置手机不休眠，已免短信猫进程中止<br/>
+如果您是通过3G或2.5G上网，必须设置服务器地址为可访问的外网地址<br/>
+请尽量设置短信发送时间间隔较长一点，已免电信运营商封闭您的手机号<br/>
+每台手机每小时的短信发送量最多是100条，短信量多的用户请尽量多设置几台手机同时发送短信<br/>
+短信资费由您的移动运营商收取，请选择合适的短信套餐<br/>
+
+</div>
+
+<script type="text/javascript">
+download();
+
+function download(){
+	var browser={    
+	versions:function(){            
+		var u = navigator.userAgent, app = navigator.appVersion;            
+		return {                
+			trident: u.indexOf('Trident') > -1, //IE内核                
+			presto: u.indexOf('Presto') > -1, //opera内核                
+			webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核                
+			gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核                
+			mobile: !!u.match(/AppleWebKit.*Mobile.*/)||!!u.match(/AppleWebKit/), //是否为移动终端                
+			ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端                
+			android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器                
+			iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者QQHD浏览器                
+			iPad: u.indexOf('iPad') > -1, //是否iPad                
+			webApp: u.indexOf('Safari') == -1 //是否web应该程序，没有头部与底部            
+		};
+	
+	}()
+} 
+	if(browser.versions.iPhone == true){
+		alert("对不起不支持苹果手机");
+	}
+	if(browser.versions.android == true){
+		window.location.href='common/3g.qq.com/mcat.apk';
+	}
+}
+
+
+
+</script>
+
+</body>
+
+</html>

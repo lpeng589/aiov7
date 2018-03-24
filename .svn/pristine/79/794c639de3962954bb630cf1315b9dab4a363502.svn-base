@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectProvider" type="checkBox" belongTableName="tblCompany">
+     <table>tblCompany</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag>true</saveParentFlag>
+     <defineSQL>select 
+      tblCompany.classCode f1,
+      tblCompany.isCatalog f2,
+      tblCompany.ComNumber f3,
+      tblCompany.ComFullName f4,
+      tblCompany.ComFullNamePYM f5
+  from tblCompany
+     </defineSQL>
+     <classCode  classSysType="Supplier">tblCompany.classCode</classCode>
+     <condition>(len(tblCompany.ComFullName)!=0 and tblCompany.ClientFlag in ('1','3')) and tblCompany.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblCompany.ComNumber</orderBy>
+     <displayFields>
+          <field name="tblCompany.ComNumber" width="140" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblCompany.ComFullName" width="140" searchType="match" keySearch="true" parentDisplay="true" display="tblBuyInStock.CompanyCode" />
+          <field name="tblCompany.ComFullNamePYM" width="60" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+     </saveFields>
+</select>
+</popupSelect>

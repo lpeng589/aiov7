@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SelectSendcheckFirst"  type="checkBox" > 
+		<orderBy>tblSendcheck.BillDate,tblSendcheck.BillNo</orderBy>
+		<defineSQL>
+from tblSendcheck
+  left join tblStock on tblStock.classCode=tblSendcheck.StockCode 
+  left join tblEmployee on tblEmployee.id=tblSendcheck.EmployeeId
+  left join tblDepartment on tblDepartment.classCode=tblSendcheck.DepartmentCode
+      where 1=1  and tblSendcheck.DepartmentCode='@ValueofDB:DepartmentCode' and tblSendcheck.BillDate&lt;='@ValueofDB:BillDate'
+		</defineSQL>
+		<changeCond>tblSendcheck.workFlowNodeName ='finish'</changeCond>
+		<displayFields>
+			<field name="tblSendcheck.BillDate" parentDisplay="false" width="70" searchType="scope" keySearch="true" />
+			<field name="tblSendcheck.BillNo" display="@TABLENAME.SendcheckID" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblEmployee.EmpFullName" parentDisplay="true" width="100" searchType="match" />
+			<field name="tblStock.StockFullName" parentDisplay="true" width="100" searchType="match" />
+			<field name="tblDepartment.DeptFullName" parentDisplay="true" width="100" searchType="match" />
+		</displayFields>
+		<saveFields>
+			<field name="tblSendcheck.id" parentName="@TABLENAME.SendcheckID" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

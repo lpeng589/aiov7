@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+<!--
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ *
+ * == BEGIN LICENSE ==
+ *
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ *
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ *
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ *
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ *
+ * == END LICENSE ==
+ *
+ * Text Area dialog window.
+-->
+<html>
+	<head>
+		<title>Text Area Properties</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta content="noindex, nofollow" name="robots">
+		<script type="text/javascript" src="/js/jquery.js"></script>
+		<script src="common/fck_dialog_common.js" type="text/javascript"></script>
+		<script type="text/javascript">
+var dialog	= window.parent ;
+var oEditor = dialog.InnerDialogLoaded() ;
+var oDOM = oEditor.FCK.EditorDocument ;
+var oActiveEl = dialog.Selection.GetSelectedElement() ;
+
+window.onload = function(){
+	oEditor.FCKLanguageManager.TranslatePage(document) ;
+	if ( oActiveEl && oActiveEl.tagName == 'TEXTAREA' ){
+		GetE('txtName').value		= GetAttribute( oActiveEl, 'title' ) ;
+		GetE('txtCols').value		= GetAttribute( oActiveEl, 'cols' ) ;
+		GetE('txtRows').value		= GetAttribute( oActiveEl, 'rows' ) ;
+		
+		if(GetAttribute( oActiveEl,'isnull')=="true"){
+			GetE('isNull').checked=true;
+		}else{
+			GetE('isNull').checked=false;
+		}
+		
+		if(GetAttribute( oActiveEl,'ishtml')=="true"){
+			GetE('isHtml').checked=true;
+		}else{
+			GetE('isHtml').checked=false;
+		}
+		
+	}else{
+		oActiveEl = null ;
+	}
+	$("#oldVal").val(GetE('txtName').value);
+	dialog.SetOkButton( true ) ;
+	dialog.SetAutoSize( true ) ;
+	SelectField( 'txtName' ) ;
+}
+
+function Ok(){
+	if (GetE('txtName').value.Trim().length == 0 ){
+		alert( "控件名称不能为空！" ) ;
+		GetE('txtName').focus() ;
+		return false ;
+	}
+	
+
+	//判断是否存在重复标签
+	if(!checkTitle(window.parent.Selection.GetSelectedElement() )){
+		return false;
+	}
+	if(GetE('txtCols').value.Trim().length>0 && !isInt2( GetE('txtCols').value)){
+		alert( "控件宽度必须是正整数!" ) ;
+		GetE('txtCols').focus() ;
+		return false ;
+	}
+	if(GetE('txtRows').value.Trim().length>0 && !isInt2( GetE('txtRows').value)){
+		alert( "控件行数必须是正整数!" ) ;
+		GetE('txtRows').focus() ;
+		return false ;
+	}
+	
+	oEditor.FCKUndo.SaveUndoStep() ;
+	oActiveEl = CreateNamedElement( oEditor, oActiveEl, 'TEXTAREA', {title:  GetE('txtName').value} ) ;
+	SetAttribute( oActiveEl, 'cols', GetE('txtCols').value ) ;
+	SetAttribute( oActiveEl, 'rows', GetE('txtRows').value ) ;
+	if(GetE('isNull').checked){
+		SetAttribute( oActiveEl, 'isnull'	, 'true' ) ;
+	}else{
+		SetAttribute( oActiveEl, 'isnull'	, 'false' ) ;
+	}
+	if(GetE('isHtml').checked){
+		SetAttribute( oActiveEl, 'ishtml'	, 'true' ) ;
+	}else{
+		SetAttribute( oActiveEl, 'ishtml'	, 'false' ) ;
+	}
+	return true ;
+}
+
+</script>
+	</head>
+	<body style="overflow: hidden">
+	<input type="hidden" value="" id="oldVal" name="oldVal"/>
+		<table height="100%" width="100%">
+			<tr>
+				<td align="center">
+					<table border="0" cellpadding="0" cellspacing="0" width="80%">
+						<tr>
+							<td>
+								<span>控件名称</span><br>
+								<input type="text" id="txtName" style="WIDTH: 100%; " >
+								<span>控件宽度</span>
+								<span style="margin-left: 50px;">控件行数</span><br/>
+								<input id="txtCols" type="text" size="10">
+								<input style="margin-left: 30px;" id="txtRows" type="text" size="10">
+								<br/>
+								<span>启用html编辑器</span><input id="isHtml" type="checkbox" />
+								<span style="margin-left: 15px;">必填</span><input id="isNull" type="checkbox" />
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

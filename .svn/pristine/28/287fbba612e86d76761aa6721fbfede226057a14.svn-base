@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectFreightCom_v2" type="checkBox" version="2" belongTableName="tblCompany">
+     <table>tblFreightCom</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblFreightCom.id f1,
+      tblFreightCom.ComNbr f2,
+      tblFreightCom.ComFullName f3,
+      tblFreightCom.ComTel f4,
+      tblFreightCom.ComAddress f5,
+      tblFreightCom.ComFullNamePYM f6
+  from tblFreightCom
+     </defineSQL>
+     <classCode></classCode>
+     <condition>(tblFreightCom.SCompanyID='@Sess:SCompanyID') and tblFreightCom.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+    <!-- <orderBy></orderBy>-->
+     <displayFields>
+          <field name="tblFreightCom.ComNbr" width="80" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblFreightCom.ComFullName" width="80" searchType="match" keySearch="true" parentDisplay="true" />
+          <field name="tblFreightCom.ComTel" width="100" searchType="equal" inputType="1" parentDisplay="false" />
+          <field name="tblFreightCom.ComAddress" width="150" searchType="match" parentDisplay="false" />
+          <field name="tblFreightCom.ComFullNamePYM" width="150" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblFreightCom.id" parentName="FreightComID" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

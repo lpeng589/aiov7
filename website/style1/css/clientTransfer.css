@@ -1,0 +1,73 @@
+body,div,form,p,input,button,h1,h2,h3,h4,h5,h6,span,img,font,ul,li,ol,a,table,thead,tboady,tr,td{margin:0;padding:0;}
+body{font-size:12px;font-family:Microsoft Yahei;}
+li{list-style:none;}
+img{border:0;}
+em,i{font-style:normal;}
+.h_div{width:95%;margin:0 auto;padding:5px 0 5px 0;overflow:hidden;}
+.h_div_l{float:left;display:inline;padding:0 0 0 0;overflow:hidden;}
+.h_div_l .img_div{width:58px;height:26px;background:url(/style1/images/Left/Icon_1.gif) no-repeat 0 0;float:left;display:inline-block;}
+.h_div_l .t_span{height:25px;float:left;display:inline-block;border-bottom:1px #81B2E3 solid;line-height:25px;padding:0 10px 0 10px;color:#767271;font-weight:bold;}
+.h_div_l .t_sl_div{float:left;display:inline-block;padding:0 0 0 10px;overflow:hidden;}
+.h_div_l .t_sl_div .sl{width:100px;margin:5px 0 0 0;}
+.h_div_r{float:right;display:inline;padding:0 0 0 0;overflow:hidden;}
+.h_div_r .s_btn{height:24px;padding:0 10px 0 10px;background:url(/style/images/client/transferRecordBG.jpg) repeat-x 0 -30px;border:1px #000 solid;color:#fff;font-size:12px;font-family:΢���ź�;line-height:21px;cursor:pointer;}
+.h_div_r .div_r_u{padding:0 0 0 0;overflow:hidden;}
+.h_div_r .div_r_u .div_r_li{float:left;display:inline;padding:0 0 0 0;overflow:hidden;margin:0 0 0 5px;}
+
+.hs_div{width:95%;margin:0 auto;padding:0 0 2px 0;overflow:hidden;border-bottom:1px #a1a1a1 dashed;}
+.hs_div .s_btn{float:left;display:inline-block;padding:0 5px 0 5px;margin:5px 0 0 10px;height:20px;color:#fff;font-size:10px;line-height:18px;border:1px #000 solid;background:url(/style/images/client/transferRecordBG.jpg) repeat-x 0 -35px;cursor:pointer;}
+
+
+.type_div{padding:8px 0 8px 10px;overflow:hidden;font-size:12px;border-right:1px #a1a1a1 solid;float:left;display:inline-block;}
+.type_div .type_d_span{float:left;display:inline-block;line-height:13px;}
+.type_div .type_u{float:left;display:inline-block;}
+.type_u .type_li{float:left;display:inline-block;margin:0 10px 0 0;}
+.type_u .type_li input{float:left;display:inline-block;}
+.type_u .type_li a{float:left;display:inline-block;line-height:13px;margin:0 0 0 5px;}
+.type_u .type_li .t_label{float:left;display:inline-block;line-height:12px;margin:0 0 0 5px;}
+
+.k_div{padding:5px 10px 4px 0;overflow:hidden;font-size:12px;float:left;display:inline-block;border-right:1px #a1a1a1 solid;}
+.k_div .k_d_span{float:left;display:inline-block;line-height:20px;}
+.k_div .k_i_div{width:200px;height:18px;border:1px #000 solid;float:left;display:inline-block;}
+.k_div .k_i_div input{height:18px;width:180px;border:none;float:left;display:inline-block;}
+.k_div .k_i_div a{width:20px;height:18px;float:left;display:inline-block;background:url(/style/images/client/se.png) no-repeat 0 -1px;cursor:pointer;}
+
+.time_div{padding:5px 10px 4px 10px;overflow:hidden;font-size:12px;float:left;display:inline-block;border-right:1px #a1a1a1 solid;}
+.time_div .t_d_span{float:left;display:inline-block;line-height:20px;}
+.time_div .t_i_div{float:left;display:inline-block;padding:0 0 0 0;overflow:hidden;}
+.time_div .t_i_div .t_time{width:100px;height:18px;border:1px #000 solid;float:left;display:inline-block;}
+.time_div .t_i_div .t_i_d_span{float:left;display:inline-block;padding:0 5px 0 5px;line-height:20px;}
+
+.cz_div{width:95%;margin:0 auto;padding:5px 0 5px 0;overflow:hidden;line-height:20px;}
+.cz_div .cz_span{float:left;display:inline-block;width:5%;;padding:4px 0 0 0;background:url(/style/images/client/Add.gif) no-repeat 40px 9px;cursor:pointer;}
+.cz_div .cz_u{float:left;display:inline-block;cpadding:0 0 0 0;overflow:hidden;width:93%;}
+.cz_div .cz_u .cz_li{float:left;display:inline-block;margin:5px 5px 0 0;padding:0 2px 0 2px;cursor:pointer;border:1px #a1a1a1 dashed;}
+.cz_div .cz_u .cz_li .txt_a{float:left;display:inline-block;}
+.cz_div .cz_u .cz_li .close_a{float:left;display:inline-block;width:10px;height:20px;background:url(/style/images/client/CloseBtn.png) no-repeat 0 6px;margin:0 0 0 5px;cursor:pointer;}
+
+.ViewTable{border-top:1px #cdcdcd solid;border-left:1px #cdcdcd solid;width:100%;margin:0 auto;}
+.ViewTable tr td{padding:0 5px 0 5px; height:28px; line-height:28px;border-bottom:1px #cdcdcd solid;border-right:1px #cdcdcd solid;}
+.ViewTable tr td.detail{color:#0179BB;}
+.ViewTable tr td.detail:hover{color:#F30;}
+.ViewTable thead tr{background:url(/style/images/client/transferRecordBG.jpg) repeat-x 0 -54px; text-align:center;}
+.ViewTable tbody tr td {text-align:left;}
+.ViewTable tbody tr:hover{background:#C4D3DD;}
+
+.detail{cursor: pointer;}
+
+.fill_pop{width: 100px;height: 150px;border: 1px solid #CCD1D1;float: left;position: absolute;top: 30px;margin-left:150px;background: #fff;display:none;-moz-box-shadow: #666 0px 0px 10px;}
+
+.TransferTime{overflow:hidden;margin:15px 0 0 0;}
+
+.TransferTime>ul{overflow:hidden;}
+.TransferTime>ul li{float:left;overflow:hidden;margin:0 8px 0 0;}
+.TransferTime>ul li>i{float:left;display:inline-block;margin:2px 0 0 0;}
+.TransferTime>ul li>.txt_inp{float:left;width:120px;height:21px;box-sizing:border-box;}
+.TransferTime>ul li>b{width:16px;height:16px;display:inline-block;background:url(/style1/images/St.gif) no-repeat 0 0;cursor:pointer;margin:2px 0 0 0;}
+
+.searchBlock{overflow:hidden;padding:5px 0;}
+.searchBlock>span{float:left;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:22px;width:90px;padding:0 3px 0 0;font-weight:bold;color:#2862a1;height:20px;text-align:right;}
+.searchBlock>ul{float:left;}
+.searchBlock>ul li{float:left;display:inline-block;}
+.searchBlock>ul li>span{padding:2px 8px;cursor:pointer;}
+.searchBlock>ul .enumName{color:#fff;font-weight:bold;background:#ff5048;}

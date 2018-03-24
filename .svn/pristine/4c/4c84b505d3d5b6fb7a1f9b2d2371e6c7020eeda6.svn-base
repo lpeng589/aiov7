@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="quote_tblOtherInDet">
+     <table>tblOtherInDet</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+	      tblOtherInDet.id f1,
+	      tblGoods.GoodsNumber f2,
+	      tblGoods.GoodsFullName f3,
+	      tblGoods.GoodsSpec f4,
+	      tblGoods.GoodsFullNamePYM f5,
+	      tblOtherInDet.BatchNo f6,
+	      tblOtherInDet.Inch f7,
+	      tblOtherInDet.Hue f8,
+	      tblOtherInDet.yearNO f9,
+	      tblOtherInDet.ProDate f10,
+	      tblOtherInDet.Availably f11,
+	      tblOtherInDet.Qty f12,
+	      tblOtherInDet.Price f13,
+	      tblOtherInDet.Amount f14
+				from tblOtherInDet
+				left join tblGoods on tblOtherInDet.GoodsCode=tblGoods.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>其他出库明细引用其他入库明细</remark>
+     <condition>tblGoods.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.[tblGoods]" width="120" parentDisplay="true" orderBy="升" />
+          <field name="tblOtherInDet.BatchNo" width="120"  parentDisplay="false" />
+          <field name="tblOtherInDet.Inch" width="70" parentDisplay="false" />
+          <field name="tblOtherInDet.Hue" width="70"  parentDisplay="false" display="tblOtherInDet.Hue" />
+          <field name="tblOtherInDet.yearNO" width="70" parentDisplay="false" display="tblOtherInDet.yearNO" />
+          <field name="tblOtherInDet.ProDate" width="70" parentDisplay="false" display="tblSalesReturnStockDet.ProDate" />
+          <field name="tblOtherInDet.Availably" width="70"  parentDisplay="false" display="tblSalesReturnStockDet.Availably" />
+          <field name="tblOtherInDet.Qty" width="100" parentDisplay="false" />
+          <field name="tblOtherInDet.Price" width="100" parentDisplay="false" />
+          <field name="tblOtherInDet.Amount" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblOtherInDet.id" parentName="@TABLENAME.SourceID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

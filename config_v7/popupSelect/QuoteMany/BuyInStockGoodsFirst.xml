@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="BuyInStockGoodsFirst"  type="checkBox"  desc="采购退货单多单引用采购入库单父弹窗" > 
+		<orderBy>tblBuyInStock.BillDate,tblBuyInStock.BillNo</orderBy>
+		<defineSQL>
+from tblBuyInStock 
+left join tblCompany on tblCompany.classCode=tblBuyInStock.CompanyCode
+ left join tblDepartment on tblDepartment.classCode=tblBuyInStock.DepartmentCode
+      where 1=1  and (tblBuyInStock.moduleType=@ValueofDB:moduleType and tblBuyInStock.CompanyCode='@ValueofDB:CompanyCode' and tblBuyInStock.BillDate&lt;='@ValueofDB:BillDate' and tblBuyInStock.workFlowNodeName = 'finish')
+		</defineSQL>
+		<displayFields>
+			<field name="tblBuyInStock.BillDate" parentDisplay="false" width="70" searchType="scope" keySearch="true" />
+			<field name="tblBuyInStock.BillNo" display="@TABLENAME.BuyInStockID" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblCompany.[tblCompany_1]" parentDisplay="false" width="70" />
+			<field name="tblDepartment.DeptFullName" display="@TABLENAME.DepartmentCode" parentDisplay="false" width="50" />
+			<field name="tblBuyInStock.TotalAmount" parentDisplay="false" width="70" searchType="scope" />
+			<field name="tblBuyInStock.TotalTaxAmount" parentDisplay="false" width="70" searchType="scope" />
+		</displayFields>
+		<saveFields>
+			<field name="tblBuyInStock.id" parentName="@TABLENAME.BuyInStockID" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

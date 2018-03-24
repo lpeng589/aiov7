@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<SCRIPT language=javascript>
+<!--//
+var thisAreaId,thisCurrAreaId;
+var wp=window.parent;
+var selfFrame=wp.document.getElementById("AreaFrame"); 
+var retItemId;
+var retItemName;
+var selectedAreaId;
+var selectedAreaName;
+
+var AREA_PREFIX_ID = "areaSel";
+var AREA_SEL_NAME = "areaSelectItem";
+var allAreaList = new Array();
+var rootAreaId = "";
+
+function drawAreaSelect(areaId,currAreaId)
+{
+    var htmlStr = "<select id='"+AREA_PREFIX_ID+"2' name='"+AREA_SEL_NAME+"' style='display:none;height:20px;background-color:#BCBEDE' onChange='selOnclick(this)'><option></option></select>";
+    htmlStr += "<select id='"+AREA_PREFIX_ID+"4' name='"+AREA_SEL_NAME+"' style='display:none;height:20px;background-color:#BCBEDE' onChange='selOnclick(this)'><option></option></select>";
+    htmlStr += "<select id='"+AREA_PREFIX_ID+"6' name='"+AREA_SEL_NAME+"' style='display:none;height:20px;background-color:#BCBEDE' onChange='selOnclick(this)'><option></option></select>";
+    htmlStr += "<select id='"+AREA_PREFIX_ID+"8' name='"+AREA_SEL_NAME+"' style='display:none;height:20px;background-color:#BCBEDE' onChange='selOnclick(this)'><option></option></select>";
+    htmlStr += "<select id='"+AREA_PREFIX_ID+"10' name='"+AREA_SEL_NAME+"' style='display:none;height:20px;background-color:#BCBEDE' onChange='selOnclick(this)'><option></option></select>";
+//	document.write(htmlStr);
+	selectTdArea.innerHTML = htmlStr
+	if(areaId=="-1"){
+		areaId="";
+	}
+	rootAreaId = areaId;
+    createChildSel(areaId);	
+	if(currAreaId && currAreaId.length>areaId.length)
+	{
+	    for(var i=areaId.length+2;i<=currAreaId.length;i=i+2)
+		{
+		    var curSel = document.getElementById(AREA_PREFIX_ID+i);
+		    for(var j=0;j<curSel.length;j++)
+			{
+			    if(curSel.options[j].value==currAreaId.substring(0,i))
+				{
+				    curSel.selectedIndex=j;
+					selOnclick(curSel);
+				}
+			}
+		}
+	}
+}
+
+function createChildSel(currArea)
+{
+    var curSel = document.getElementById(AREA_PREFIX_ID+(currArea.length+2));
+    for(var i=0;i<allAreaList.length;i++)
+	{
+	    if(allAreaList[i].parentId==currArea)
+		{
+		    curSel.options[curSel.length] = new Option(allAreaList[i].name,allAreaList[i].id)
+		}
+	}
+	if(curSel.length>1)
+	{
+	    curSel.style.display="";
+	}
+}
+
+//********************************************************
+function drawAreaSelect1(areaId,currAreaId)
+{
+    var htmlStr = "<select id='"+AREA_PREFIX_ID+"2' name='"+AREA_SEL_NAME+"' style='display:none;height:20px;background-color:#BCBEDE' onChange='selOnclick(this)'><option></option></select>";
+    htmlStr += "<select id='"+AREA_PREFIX_ID+"4' name='"+AREA_SEL_NAME+"' style='display:none;height:20px;background-color:#BCBEDE' onChange='selOnclick(this)'><option></option></select>";
+    htmlStr += "<select id='"+AREA_PREFIX_ID+"6' name='"+AREA_SEL_NAME+"' style='display:none;height:20px;background-color:#BCBEDE' onChange='selOnclick(this)'><option></option></select>";
+    htmlStr += "<select id='"+AREA_PREFIX_ID+"8' name='"+AREA_SEL_NAME+"' style='display:none;height:20px;background-color:#BCBEDE' onChange='selOnclick(this)'><option></option></select>";
+    htmlStr += "<select id='"+AREA_PREFIX_ID+"10' name='"+AREA_SEL_NAME+"' style='display:none;height:20px;background-color:#BCBEDE' onChange='selOnclick(this)'><option></option></select>";
+//	document.write(htmlStr);
+	selectTdArea.innerHTML = htmlStr
+	if(areaId=="-1"){
+		areaId="";
+	}
+	if(areaId.length - 2 >=0){
+		areaId = areaId.substring(0,areaId.length-2);
+	}
+	rootAreaId = areaId;
+    createChildSel1(areaId);	
+	if(currAreaId && currAreaId.length>areaId.length)
+	{
+	    for(var i=areaId.length+2;i<=currAreaId.length;i=i+2)
+		{
+		    var curSel = document.getElementById(AREA_PREFIX_ID+i);
+		    for(var j=0;j<curSel.length;j++)
+			{
+			    if(curSel.options[j].value==currAreaId.substring(0,i))
+				{
+				    curSel.selectedIndex=j;
+					selOnclick(curSel);
+				}
+			}
+		}
+	}
+}
+
+function createChildSel1(currArea)
+{
+    var curSel = document.getElementById(AREA_PREFIX_ID+(currArea.length+2));
+    for(var i=0;i<allAreaList.length;i++)
+	{
+	    if(allAreaList[i].parentId==currArea)
+		{
+		    curSel.options[curSel.length] = new Option(allAreaList[i].name,allAreaList[i].id)
+		}
+	}
+	if(curSel.length>1)
+	{
+	    curSel.style.display="";
+	}
+}
+//********************************************************
+
+function selOnclick(sel)
+{
+    var currAreaId = sel.options[sel.selectedIndex].value;
+	selectedAreaId = currAreaId;
+	selectedAreaName = sel.options[sel.selectedIndex].text;
+	//////////////////////////////////////////////////////////////
+	//Modify By  2006-01-25
+	var indexSel = parseInt(sel.id.replace(AREA_PREFIX_ID,""));
+	if ((selectedAreaId.length == 0 || selectedAreaId == "") && indexSel > 2){
+		selectedAreaId = document.getElementById(AREA_PREFIX_ID + (indexSel - 2)).options[document.getElementById(AREA_PREFIX_ID + (indexSel - 2)).selectedIndex].value;
+		selectedAreaName = document.getElementById(AREA_PREFIX_ID + (indexSel - 2)).options[document.getElementById(AREA_PREFIX_ID + (indexSel - 2)).selectedIndex].text;
+	}
+	//////////////////////////////////////////////////////////////
+		var selItems = document.getElementsByName(AREA_SEL_NAME);
+		var thisSelId = parseInt(sel.id.replace(AREA_PREFIX_ID,""));
+		for(var i=0;i<selItems.length;i++)
+		{
+		   if(parseInt(selItems[i].id.replace(AREA_PREFIX_ID,""))>thisSelId)
+		   {
+		       clearSelect(selItems[i]);
+		   }
+		}
+//	resizeFrame();
+	if(currAreaId.length>=2)
+	{
+	    var curSel = document.getElementById(AREA_PREFIX_ID+(currAreaId.length+2));
+	    clearSelect(curSel);
+	    createChildSel(currAreaId);
+	}
+	resizeFrame();
+}
+
+function clearSelect(sel)
+{
+    for(var i=sel.length-1;i>=0;i--)
+	{
+	    if(sel.options[i].value.length>=2)
+		{
+		    sel.options[i]=null;
+		}
+	}
+	sel.style.display="none";
+}
+
+
+function resizeFrame(){
+    selfFrame.width = 300;
+	var sels = document.getElementsByName(AREA_SEL_NAME);
+	var winWidth = 0;
+	for(var i=0;i<sels.length;i++)
+	{
+	    winWidth += sels[i].offsetWidth;
+		if(sels[i].offsetWidth>0){
+		sels[i].style.width = sels[i].offsetWidth+"px";
+		}
+	}
+	winWidth=winWidth+2+selectOK.offsetWidth;
+    selfFrame.width = winWidth;
+	selfFrame.height=23;
+}
+
+function returnOk(sel){
+	try{
+		if(selectedAreaId.length>=0){
+			parent.document.getElementById(retItemName).value=selectedAreaName;
+			parent.document.getElementById(retItemId).value=selectedAreaId;
+		}
+	}catch(e){
+		parent.document.getElementById(retItemName).value="";
+		parent.document.getElementById(retItemId).value="";
+//		alert(e.message);
+	}
+	parent.hideSelectArea();
+}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bottomMargin=0 leftMargin=0 topMargin=0 rightMargin=0 style="background-color : transparent"> 
+<table border="0" cellspacing="0" cellpadding="1" id="selectTabArea"  bgcolor="#000000">
+  <tr>
+    <td>
+<TABLE cellSpacing="0" cellPadding="0" border="0"> 
+  <TBODY> 
+    <TR>
+	  <td id="selectTdArea"></td>
+      <TD>
+	  <input id="selectOK" type="image" src="/images/PLACE-OK.gif" id="selectOK" onClick="returnOk();return false;" type="button"></TD> 
+    </TR> 
+  </TBODY> 
+</TABLE> 
+</td>
+  </tr>
+</table>
+</BODY>
+</HTML>

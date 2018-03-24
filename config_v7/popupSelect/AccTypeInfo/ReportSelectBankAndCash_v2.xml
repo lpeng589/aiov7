@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectBankAndCash_v2" type="checkBox" version="2" belongTableName="tblAccTypeInfo">
+     <table>tblAccTypeInfo</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defParentCode>00001</defParentCode>
+     <saveParentFlag>true</saveParentFlag>
+     <defineSQL>select 
+      tblAccTypeInfo.classCode f1,
+      tblAccTypeInfo.isCatalog f2,
+      tblAccTypeInfo.AccNumber f3,
+      tblAccTypeInfo.AccName f4,
+      tblAccTypeInfo.AccFullName f5,
+      tblAccTypeInfo.PyCode f6
+  from tblAccTypeInfo
+     </defineSQL>
+     <classCode>tblAccTypeInfo.classCode</classCode>
+     <remark>全部科目,默认只显示现金银行,多选,回填AccCode与isCatalog,供现金银行汇总报表使用</remark>
+     <condition>(tblAccTypeInfo.statusId!='-1'  and tblAccTypeInfo.AccNumber not in ('1122','1123','2202','2203'))</condition>
+     <changeCond></changeCond>
+     <orderBy>tblAccTypeInfo.AccNumber,tblAccTypeInfo.AccName</orderBy>
+     <displayFields>
+          <field name="tblAccTypeInfo.AccNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" defaultValue="100" orderBy="升" />
+          <field name="tblAccTypeInfo.AccName" width="150" searchType="match" keySearch="true" parentDisplay="true" display="tblBuyPayAccount.Account" orderBy="升" />
+          <field name="tblAccTypeInfo.AccFullName" width="200" searchType="match" parentDisplay="false" />
+          <field name="tblAccTypeInfo.PyCode" width="50" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblAccTypeInfo.classCode" parentName="AccCode" relationKey="true" hidden="true" />
+          <field name="tblAccTypeInfo.isCatalog" parentName="isCatalog" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

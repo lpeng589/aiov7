@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SelectBuyApply"  type="checkBox" > 
+		<orderBy>tblBuyApplication.BillDate,tblBuyApplication.BillNo,tblGoods.GoodsNumber</orderBy>
+		<topPopup>SelectBuyApplyFirst</topPopup>
+		<defineSQL>
+from tblBuyApplicationDet left join tblBuyApplication on tblBuyApplicationDet.f_ref=tblBuyApplication.id
+		     left join tblGoods on tblBuyApplicationDet.goodsCode=tblGoods.classCode
+		     left join tblCustomerPriceDet on tblGoods.classcode = tblCustomerPriceDet.GoodsCode
+              and tblCustomerPriceDet.f_ref=(select id from tblCustomerPrice where companyCode='@ValueofDB:CompanyCode') and isnull(tblCustomerPriceDet.SecUnit,'')=''
+      where 1=1  and (tblBuyApplication.BillDate&lt;='@ValueofDB:BillDate' and tblBuyApplicationDet.FinishStatus=0 and tblBuyApplication.workFlowNodeName = 'finish')
+		</defineSQL>
+		<changeCond>(tblGoods.statusid!='-1') and tblBuyApplication.id='@TOPID'</changeCond>
+		<displayFields>
+			<field name="tblBuyApplication.BillDate" parentDisplay="false" width="70" searchType="scope" keySearch="true" />
+			<field name="tblBuyApplication.BillNo" display="@TABLENAME.BuyApplyID" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblGoods.[tblGoods]" parentDisplay="true" width="120" />
+			<field name="tblBuyApplicationDet.BatchNo" parentDisplay="true" width="120" searchType="match" />
+			<field name="tblBuyApplicationDet.Inch" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblBuyApplicationDet.Hue" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblBuyApplicationDet.yearNO" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblBuyApplicationDet.ProDate" parentDisplay="false" width="70" searchType="equal" />
+			<field name="tblBuyApplicationDet.Availably" parentDisplay="false" width="70" searchType="equal" />
+			<field name="tblBuyApplicationDet.ArriveDate" parentDisplay="false" width="70" searchType="equal" />
+			<field name="tblBuyApplicationDet.NoOrderQty" parentDisplay="true" width="100" />
+			<field name="(case isnull(tblCustomerPriceDet.BuyPrice,0) when 0 then tblGoods.PreBuyPrice else tblCustomerPriceDet.BuyPrice end)" asName="tblCustomerPriceDet.BuyPrice" display="tblCustomerPriceDet.BuyPrice" parentDisplay="true" width="100" />
+		</displayFields>
+		<saveFields>
+			<field name="tblGoods.[tblGoods]" parentName="@TABLENAME.tblGoods_GoodsNumber" width="0" />
+			<field name="tblBuyApplicationDet.BatchNo" parentName="@TABLENAME.BatchNo" width="0" />
+			<field name="tblBuyApplicationDet.Inch" parentName="@TABLENAME.Inch" width="0" />
+			<field name="tblBuyApplicationDet.Hue" parentName="@TABLENAME.Hue" width="0" />
+			<field name="tblBuyApplicationDet.yearNO" parentName="@TABLENAME.yearNO" width="0" />
+			<field name="tblBuyApplicationDet.ProDate" parentName="@TABLENAME.ProDate" hidden="true" width="0" />
+			<field name="tblBuyApplicationDet.Availably" parentName="@TABLENAME.Availably" hidden="true" width="0" />
+			<field name="tblBuyApplicationDet.ArriveDate" parentName="@TABLENAME.ArriveDate" hidden="true" width="0" />
+			<field name="tblBuyApplicationDet.NoOrderQty" parentName="@TABLENAME.Qty" width="0" />
+			<field name="(case isnull(tblCustomerPriceDet.BuyPrice,0) when 0 then tblGoods.PreBuyPrice else tblCustomerPriceDet.BuyPrice end)" parentName="@TABLENAME.Price" display="tblCustomerPriceDet.BuyPrice" width="0" />
+			<field name="tblBuyApplication.id" parentName="@TABLENAME.BuyApplyID" hidden="true" relationKey="true" width="0" />
+			<field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" hidden="true" width="0" />
+			<field name="tblBuyApplicationDet.SecUnit" parentName="@TABLENAME.SecUnit" width="0" />
+			<field name="tblBuyApplicationDet.SecQty" parentName="@TABLENAME.SecQty" width="0" />
+			<field name="tblBuyApplicationDet.BaseQty" parentName="@TABLENAME.BaseQty" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

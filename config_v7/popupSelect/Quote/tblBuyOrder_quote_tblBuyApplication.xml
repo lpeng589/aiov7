@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="tblBuyOrder_quote_tblBuyApplication">
+     <table>tblBuyApplication,tblEmployee,tblDepartment,tblBuyApplicationDet,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblBuyApplication.id f1,
+      tblBuyApplication.BillDate f2,
+      tblBuyApplication.BillNo f3,
+      tblDepartment.DeptFullName f4,
+      tblEmployee.EmpFullName f5,
+      tblGoods.GoodsNumber f6,
+      tblGoods.GoodsFullName f7,
+      tblGoods.GoodsSpec f8,
+      tblGoods.GoodsFullNamePYM f9,
+      tblBuyApplicationDet.Qty f10,
+      tblBuyApplicationDet.NoOrderQty f11
+  from tblBuyApplication 
+		 left join tblEmployee on tblEmployee.id=tblBuyApplication.EmployeeID
+		 left join tblDepartment on tblDepartment.classCode=tblBuyApplication.DepartmentCode
+		 left join tblBuyApplicationDet on (tblBuyApplication.id=tblBuyApplicationDet.f_ref and tblBuyApplicationDet.id=(select top 1 a.id from tblBuyApplicationDet a where a.f_ref=tblBuyApplication.id and a.GoodsCode in (select classCode from tblGoods where 1=1 and tblGoods.GoodsNumber like '%@condition:tblGoods.GoodsNumber%' and tblGoods.GoodsFullName like '%@condition:tblGoods.GoodsFullName%' and tblGoods.GoodsSpec like '@condition:tblGoods.GoodsSpec%') order by NoOrderQty desc))
+		 left join tblGoods on tblGoods.classCode=tblBuyApplicationDet.GoodsCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>采购订单引用采购申请</remark>
+     <condition>tblBuyApplication.statusId=0 and tblBuyApplication.workFlowNodeName = 'finish' and tblBuyApplication.id in (select distinct f_ref from tblBuyApplicationDet where tblBuyApplicationDet.FinishStatus=0)</condition>
+     <changeCond></changeCond>
+     <hasChild>tblBuyOrderDet_quote_tblBuyApplicationDet</hasChild>
+     <orderBy>tblBuyApplication.BillDate,tblBuyApplication.BillNo</orderBy>
+     <displayFields>
+          <field name="tblBuyApplication.BillDate" width="75" searchType="scope" parentDisplay="false" orderBy="升" />
+          <field name="tblBuyApplication.BillNo" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblDepartment.DeptFullName" width="75" searchType="match" parentDisplay="false" display="@TABLENAME.DepartmentCode" />
+          <field name="tblEmployee.EmpFullName" width="50" searchType="match" parentDisplay="false" display="@TABLENAME.EmployeeID" />
+          <field name="tblGoods.GoodsNumber" width="120" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullName" width="150" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsSpec" width="150" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+          <field name="tblBuyApplicationDet.Qty" width="100" parentDisplay="false" />
+          <field name="tblBuyApplicationDet.NoOrderQty" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblBuyApplication.id" parentName="@TABLENAME.BuyApplyID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

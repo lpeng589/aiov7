@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<!-- 只显示往来单位名称，用于职员添加默认往来单位 -->
+<select name="CompanyNameOnly">
+     <table>tblCompany</table>
+     <forwardModel>tblCompany&amp;moduleType=3&amp;ClientFlag=3</forwardModel>
+     <relation></relation>
+     <defineSQL>
+  from tblCompany
+     </defineSQL>
+     <classCode>tblCompany.classCode</classCode>
+     <condition></condition>
+     <changeCond>(tblCompany.statusId!='-1' and tblCompany.workFlowNodeName='finish')</changeCond>
+     <orderBy>tblCompany.ComNumber,tblCompany.ComFullName</orderBy>
+     <displayFields>
+          <field name="tblCompany.ComFullName" width="100" searchType="match" keySearch="true" parentDisplay="true" orderBy="升"/>  
+          <field name="(case tblCompany.ClientFlag when 1 then '供应商' when 2 then '客户' else '客户供应商' end)" asName="tblCompany.ClientFlag" width="80" searchType="equal" parentDisplay="false" display="tblCompany.ClientFlag" />
+     </displayFields>
+     <saveFields>
+          <field name="tblCompany.classCode" parentName="@TABLENAME.CompanyCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectBuyVarietal" type="checkBox">
+     <table>ViewBuyBillDet,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      ViewBuyBillDet.BillNo f1,
+      ViewBuyBillDet.NotPayQty f2,
+      ViewBuyBillDet.TaxPrice f3,
+      ViewBuyBillDet.PayAmt f4,
+      ViewBuyBillDet.NeedPayAmt f5,
+      ViewBuyBillDet.CompanyCode f6,
+      ViewBuyBillDet.ExeBalAmt f7,
+      ViewBuyBillDet.id f8,
+      ViewBuyBillDet.GoodsCode f9,
+      ViewBuyBillDet.DetId f10,
+      ViewBuyBillDet.TaxAmount f11,
+      ViewBuyBillDet.PayBillType f12,
+      ViewBuyBillDet.BillName f13,
+      ViewBuyBillDet.RefBillDate f14,
+      ViewBuyBillDet.BuyOrderID f15,
+      ViewBuyBillDet.BuyOrderNo f16,
+      ViewBuyBillDet.BillDate f17,
+      tblGoods.Varietal f18,
+      tblGoods.GoodsNumber f19,
+      tblGoods.GoodsFullName f20,
+      tblGoods.GoodsSpec f21,
+      tblGoods.BaseUnit f22,
+      ViewBuyBillDet.BatchNo f23,
+      ViewBuyBillDet.Inch f24,
+      ViewBuyBillDet.Hue f25,
+      ViewBuyBillDet.yearNO f26
+  from ViewBuyBillDet
+  left join tblGoods on ViewBuyBillDet.GoodsCode=tblGoods.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <condition>(1=2 or ViewBuyBillDet.id='@ValueofDB:tblPaydet_RefbillID' and ViewBuyBillDet.NotPayQty&gt;0)</condition>
+     <changeCond></changeCond>
+     <orderBy>ViewBuyBillDet.BillDate desc,ViewBuyBillDet.BillNo desc</orderBy>
+     <displayFields>
+          <field name="ViewBuyBillDet.BillDate" width="100" searchType="scope" parentDisplay="false" display="tblBuyOutStock.BillDate" />
+          <field name="ViewBuyBillDet.BillNo" width="120" searchType="match" parentDisplay="false" display="tblBuyOutStock.BillNo" />
+          <field name="ViewBuyBillDet.NotPayQty" width="85" parentDisplay="false" display="tblBuyOutStockDet.NotPayQty" />
+          <field name="ViewBuyBillDet.TaxPrice" width="70" parentDisplay="false" display="tblBuyOutStockDet.Price" />
+          <field name="ViewBuyBillDet.PayAmt" width="100" parentDisplay="false" display="@TABLENAME.SettledAmt" />
+          <field name="ViewBuyBillDet.NeedPayAmt" width="100" parentDisplay="false" display="@TABLENAME.WexeBalAmt" />
+          <field name="tblGoods.Varietal" width="80" searchType="equal" parentDisplay="false" />
+          <field name="tblGoods.GoodsNumber" width="100" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullName" width="150" parentDisplay="true" />
+          <field name="tblGoods.GoodsSpec" width="100" parentDisplay="false" />
+          <field name="tblGoods.BaseUnit" width="65" parentDisplay="false" />
+          <field name="ViewBuyBillDet.BatchNo" width="120" parentDisplay="false" display="tblBuyOutStockDet.BatchNo" />
+          <field name="ViewBuyBillDet.Inch" width="70" parentDisplay="false" display="tblBuyOutStockDet.Inch" />
+          <field name="ViewBuyBillDet.Hue" width="70" parentDisplay="false" display="tblBuyOutStockDet.Hue" />
+          <field name="ViewBuyBillDet.yearNO" width="70" parentDisplay="false" display="tblBuyOutStockDet.yearNO" />
+     </displayFields>
+     <saveFields>
+          <field name="ViewBuyBillDet.BillNo" parentName="@TABLENAME.RefBillNo" display="tblBuyOutStock.BillNo" relationKey="false" hidden="true" />
+          <field name="ViewBuyBillDet.NotPayQty" parentName="@TABLENAME.Qty" display="tblBuyOutStockDet.NotPayQty" relationKey="false" hidden="true" />
+          <field name="ViewBuyBillDet.TaxPrice" parentName="@TABLENAME.Price" display="tblBuyOutStockDet.Price" relationKey="false" hidden="true" />
+          <field name="ViewBuyBillDet.PayAmt" parentName="@TABLENAME.SettledAmt" display="@TABLENAME.SettledAmt" relationKey="false" hidden="true" />
+          <field name="ViewBuyBillDet.NeedPayAmt" parentName="@TABLENAME.WexeBalAmt" display="@TABLENAME.WexeBalAmt" relationKey="false" hidden="true" />
+          <field name="ViewBuyBillDet.CompanyCode" parentName="@TABLENAME.CompanyCode" display="tblBuyOutStock.CompanyCode" relationKey="false" hidden="true" />
+          <field name="ViewBuyBillDet.ExeBalAmt" parentName="@TABLENAME.ExeBalAmt" display="@TABLENAME.ExeBalAmt" relationKey="false" hidden="true" />
+          <field name="ViewBuyBillDet.id" parentName="@TABLENAME.RefbillID" relationKey="false" hidden="true" />
+          <field name="ViewBuyBillDet.GoodsCode" parentName="@TABLENAME.GoodsCode" display="tblBuyOutStockDet.GoodsCode" relationKey="true" hidden="true" />
+          <field name="ViewBuyBillDet.DetId" parentName="@TABLENAME.SourceID" relationKey="false" hidden="true" />
+          <field name="ViewBuyBillDet.TaxAmount" parentName="@TABLENAME.BillAmt" display="@TABLENAME.BillAmt" relationKey="false" hidden="true" />
+          <field name="ViewBuyBillDet.PayBillType" parentName="@TABLENAME.PayBillType" display="@TABLENAME.PayBillType" relationKey="false" hidden="true" />
+          <field name="ViewBuyBillDet.BillName" parentName="@TABLENAME.BillName" display="@TABLENAME.BillName" relationKey="false" hidden="true" />
+          <field name="ViewBuyBillDet.RefBillDate" parentName="@TABLENAME.RefBillDate" display="@TABLENAME.RefBillDate" relationKey="false" hidden="true" />
+          <field name="ViewBuyBillDet.BuyOrderID" parentName="@TABLENAME.BuyOrderID" relationKey="false" hidden="true" />
+          <field name="ViewBuyBillDet.BuyOrderNo" parentName="@TABLENAME.BuyOrderNo" display="@TABLENAME.BuyOrderNo" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

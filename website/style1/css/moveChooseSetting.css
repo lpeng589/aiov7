@@ -1,0 +1,19 @@
+html{color: #333;background: #fff;}
+body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,select,legend,button,input,textarea,th,td {margin:0;padding:0;}
+body,button,input,select,textarea {font:12px/1.5 Microsoft Yahei;outline:0;}
+em,i{font-style:normal;}
+li{list-style:none;}
+
+.wrap_dv{width:1000px;margin:0 auto;}
+.wrap_dv .wrap_lt{float:left;display:inline-block;width:160px;padding:0 0 0 10px;border:1px #a1a1a1 solid;height:400px;}
+.wrap_dv .wrap_lt .t_title{margin:10px 0 0 0;}
+.wrap_dv .wrap_lt .t_title i.w_i{display:inline-block;background:url(ti_001.gif) no-repeat left top;padding:0 0 0 25px;line-height:21px;}
+.wrap_dv .wrap_lt .ls_u{margin:5px 0 0 5px;}
+.wrap_dv .wrap_lt .ls_u .ls_li{line-height:33px;}
+.wrap_dv .wrap_lt .ls_u .ls_li .w_em{display:inline-block;color:#000;background:url(left_bgbar.png) no-repeat left;padding:0 0 0 15px;}
+
+
+
+.wrap_dv .wrap_rt{float:left;display:inline-block;margin:0 0 0 10px;border:1px #a1a1a1 solid;height:400px;}
+.wrap_dv .wrap_rt .rt_iframe{width:800px;height:400px;}
+

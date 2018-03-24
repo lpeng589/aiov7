@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="BuyOrderGoods"  type="checkBox"  desc="多单引用采购订单" > 
+		<orderBy>tblBuyOrder.BillDate,tblBuyOrder.BillNo,tblGoods.GoodsNumber</orderBy>
+		<topPopup>BuyOrderGoodsFirst</topPopup>
+		<defineSQL>
+from tblBuyOrderDet left join tblBuyOrder on tblBuyOrderDet.f_ref=tblBuyOrder.id
+	    left join tblGoods on tblBuyOrderDet.goodsCode=tblGoods.classCode
+		  left join tblProject on tblBuyOrder.ProjectCode=tblProject.id
+      where 1=1  and (tblBuyOrder.InvoiceType='@ValueofDB:InVoiceType' and tblBuyOrder.CompanyCode='@ValueofDB:CompanyCode' and tblBuyOrder.BillDate&lt;='@ValueofDB:BillDate' and tblBuyOrder.workFlowNodeName = 'finish')  and tblBuyOrder.id='@TOPID'
+		</defineSQL>
+		<changeCond>(tblGoods.statusid!='-1' and tblBuyOrder.statusId = 0 and tblBuyOrderDet.finishStatus=0)</changeCond>
+		<displayFields>
+			<field name="tblBuyOrder.BillDate" parentDisplay="false" width="70" searchType="scope" />
+			<field name="tblBuyOrder.BillNo" display="@TABLENAME.BuyOrderID" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblGoods.[tblGoods]" parentDisplay="false" width="120" searchType="match" keySearch="true" />
+			<field name="tblBuyOrderDet.BatchNo" parentDisplay="true" width="120" searchType="match" />
+			<field name="tblBuyOrderDet.Inch" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblBuyOrderDet.Hue" display="tblBuyOrderDet.Hue" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblBuyOrderDet.yearNO" display="tblBuyOrderDet.yearNO" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblBuyOrderDet.ProDate" parentDisplay="true" width="70" searchType="equal" />
+			<field name="tblBuyOrderDet.Availably" parentDisplay="true" width="70" searchType="equal" />
+			<field name="tblBuyOrderDet.NotInQty" parentDisplay="true" width="100" />
+			<field name="tblBuyOrderDet.Price" parentDisplay="true" width="100" />
+			<field name="tblBuyOrderDet.NotInQty*tblBuyOrderDet.Price" asName="tblBuyOrderDet.Amount" display="tblBuyOrderDet.Amount" parentDisplay="false" width="100" />
+			<field name="tblProject.ProjectName" parentDisplay="false" width="100" searchType="match" />
+		</displayFields>
+		<saveFields>
+			<field name="tblGoods.[tblGoods]" parentName="@TABLENAME.tblGoods_[tblGoods]" width="0" />
+			<field name="tblBuyOrderDet.BatchNo" parentName="@TABLENAME.BatchNo" width="0" />
+			<field name="tblBuyOrderDet.Inch" parentName="@TABLENAME.Inch" width="0" />
+			<field name="tblBuyOrderDet.Hue" parentName="@TABLENAME.Hue" display="tblBuyOrderDet.Hue" width="0" />
+			<field name="tblBuyOrderDet.yearNO" parentName="@TABLENAME.yearNO" display="tblBuyOrderDet.yearNO" width="0" />
+			<field name="tblBuyOrderDet.ProDate" parentName="@TABLENAME.ProDate" width="0" />
+			<field name="tblBuyOrderDet.Availably" parentName="@TABLENAME.Availably" width="0" />
+			<field name="tblBuyOrderDet.NotInQty" parentName="@TABLENAME.Qty" width="0" />
+			<field name="tblBuyOrderDet.Price" parentName="@TABLENAME.Price" width="0" />
+			<field name="tblBuyOrder.id" parentName="@TABLENAME.BuyOrderID" hidden="true" relationKey="true" width="0" />
+			<field name="tblBuyOrderDet.id" parentName="@TABLENAME.SourceID" hidden="true" width="0" />
+			<field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" hidden="true" width="0" />
+			<field name="tblBuyOrderDet.SecUnit" parentName="@TABLENAME.SecUnit" width="0" />
+			<field name="tblBuyOrderDet.SecQty" parentName="@TABLENAME.SecQty" width="0" />
+			<field name="tblBuyOrderDet.BaseQty" parentName="@TABLENAME.BaseQty" width="0" />
+			<field name="tblBuyOrderDet.Discount" parentName="@TABLENAME.Discount" width="0" />
+			<field name="tblBuyOrderDet.PresentSampleType" parentName="@TABLENAME.PresentSampleType" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

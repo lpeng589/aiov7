@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<!--
+displayFields 中的字段全都是会显示在弹出页面的字段
+   parentDisplay为true表示该字段需在主表界面显示，但不一定会保存在主表，由saveFields决定，
+   如果在主表显示，并配有display则主表显示字段对应的标签名取display的字段名，
+   searchType no:不作为查询条件，equal：等于，match：模糊查询,scope：区间查询
+saveFields 中的字段全都是必须在主表保存的字段
+   其中必须有且仅有一个relationKey="true"的字段。该字段表示的是关联字段，关联查询通过这个字段建立
+   关联关系，该关联字段在主表是否显示由hidden属性决定，如果为true表示隐藏，界面不显示，通过隐藏变
+   量传递值。
+   其它非关联字段，在主表必须存在，且可录入。
+
+-->	
+	
+		
+	
+<!-- 薪资结构弹出框-->
+<select name = "HRPayFrame">
+		<table>tblEmployee,tblDepartment</table>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode </relation>
+		<condition> tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblEmployee.EmpNumber" display="HRPayFrame.EmpNumber"  width="200" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullName"  display="HRPayFrame.EmpName" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+        <field name="tblDepartment.DeptFullName" display="HRPayFrame.Department" width="200" searchType="match" parentDisplay="true" />
+		<field name="tblEmployee.TitleID" display="HRPayFrame.Duty" width="200" searchType="match" parentDisplay="true" />
+		</displayFields>
+		<saveFields>
+		  <field name="tblEmployee.TitleID" parentName="HRPayFrame.Duty" hidden="true"/>
+		  <field name="tblEmployee.id" parentName="HRPayFrame.EmpName"  hidden="true"/>
+		  <field name="tblEmployee.DepartmentCode" parentName="HRPayFrame.Department" hidden="false" />
+		  <field name="tblEmployee.EmpNumber" relationKey="true" parentName="HRPayFrame.EmpNumber" hidden="false" />
+		  </saveFields>
+	</select>
+	
+<!-- 通用型选择职员弹出窗口:表中同时存在部门字段的时候可以用
+  --> 
+<select name="SelectEmployeeHR" type="checkBox">
+		<table>tblEmployee,tblDepartment</table> 
+		<!-- <forwardModel>tblEmployee</forwardModel> --> 
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation> 
+		<condition>(tblDepartment.DeptFullName='@ValueofDB:tblDepartment_DeptFullName' and tblEmployee.SCompanyID='@Sess:SCompanyID' and tblEmployee.statusId!='-1' or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition> 
+<displayFields>
+		<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" /> 
+		<field name="tblEmployee.EmpFullName" display="@TABLENAME.EmployeeID" width="120" searchType="match" parentDisplay="true" keySearch="true" /> 
+		<field name="tblEmployee.EmpFullNamePYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" /> 
+		<field name="tblEmployee.TitleID" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false" keySearch="true"/> 
+		<field name="tblDepartment.DeptFullName" width="120" popSelect="PoPupSelectDepartment" searchType="match" keySearch="true" parentDisplay="false" /> 
+		<field name="tblDepartment.DeptFullNamePYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" /> 
+  </displayFields>
+	<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" relationKey="true" hidden="true" /> 
+		<field name="tblEmployee.DepartmentCode" parentName="@TABLENAME.DepartmentCode" /> 
+		<field name="tblDepartment.DeptFullName" parentName="@TABLENAME.tblDepartment_DeptFullName" /> 
+	</saveFields>
+</select>
+<!-- --> 
+
+<!-- 通用型选择部门弹出窗口--> 
+<select name="SelectDepartmentHR" type="checkBox">
+  <table>tblDepartment</table> 
+ <!-- <forwardModel>tblDepartment</forwardModel>
+  --> 
+  <relation /> 
+  <classCode>tblDepartment.classCode</classCode> 
+  <condition>tblDepartment.statusid!='-1' and tblDepartment.workFlowNodeName='finish'</condition> 
+  <saveParentFlag>true</saveParentFlag>
+<displayFields>
+  <field name="tblDepartment.DeptCode" width="100" searchType="match" parentDisplay="false" keySearch="true" /> 
+  <field name="tblDepartment.DeptFullName" display="@TABLENAME.DepartmentCode" width="80" searchType="match" parentDisplay="true" keySearch="true" /> 
+  <field name="tblDepartment.DeptFullNamePYM" hiddenInput="true" width="100" searchType="match" parentDisplay="false" keySearch="true" /> 
+  </displayFields>
+<saveFields>
+  <field name="tblDepartment.classCode" parentName="@TABLENAME.DepartmentCode" relationKey="true" hidden="true" /> 
+  </saveFields>
+  </select>	
+	
+<!-- 薪资发放弹出框-->
+<select name = "HRPay">
+	<table>tblEmployee,tblDepartment,HRPayFrame</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode and HRPayFrame.EmpName=tblEmployee.id</relation>
+	<condition> tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+	<displayFields>
+		<field name="tblEmployee.EmpNumber"  width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName"  display="HRPay.EmployeeID" width="200" searchType="match" parentDisplay="true" />
+		<field name="tblEmployee.EmpFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.TitleID" width="65" inputType="1" inputValue="duty" searchType="equal" parentDisplay="false"  keySearch="true"/>
+        <field name="tblDepartment.DeptFullName" display="HRPay.Department" width="200" searchType="match" parentDisplay="true" />
+		<field name="tblDepartment.DeptFullNamePYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+		  <field name="tblEmployee.id" relationKey="true" parentName="HRPay.EmployeeID"  hidden="true"/>
+		  <field name="tblDepartment.classCode" parentName="HRPay.Department" hidden="false" />
+	</saveFields>
+</select>
+	
+<!-- 薪资发放明细弹出框-->
+<select name = "HRPayDet">
+		<table>tblEmployee,tblDepartment,HRPayFrame</table>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode and HRPayFrame.EmpName=tblEmployee.id</relation>
+		<condition> tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblEmployee.EmpNumber" display="HRPayDet.EmpNumber" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullName"  display="HRPayDet.EmployeeID" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+        <field name="tblDepartment.DeptFullName" display="HRPayDet.DepartmentCode" width="80" searchType="match" parentDisplay="true" />
+		<field name="HRPayFrame.Wage" display="HRPayDet.Wage" width="80" searchType="match" parentDisplay="false" />
+		<field name="HRPayFrame.JobSubsidy" display="HRPayDet.JobSubsidy" width="80" searchType="match" parentDisplay="false" />
+		<field name="HRPayFrame.TrafficSubsidy" display="HRPayDet.TrafficSubsidy" width="80" searchType="match" parentDisplay="false" />
+		<field name="HRPayFrame.FareSubsidy" display="HRPayDet.FareSubsidy" width="80" searchType="match" parentDisplay="false" />
+		<field name="HRPayFrame.HouseingSubsidy" display="HRPayDet.HouseingSubsidy" width="80" searchType="match" parentDisplay="false" />
+		<field name="HRPayFrame.AttendanceAward" display="HRPayDet.AttendanceAward" width="80" searchType="match" parentDisplay="false" />
+		<field name="HRPayFrame.SocialInsurance" display="HRPayDet.SocialInsurance" width="80" searchType="match" parentDisplay="false" />
+		<field name="HRPayFrame.AccountName" display="HRPayDet.AccountName" width="80" searchType="match" parentDisplay="false" />
+		<field name="HRPayFrame.Account" display="HRPayDet.Account" width="80" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+	    <field name="HRPayFrame.Wage" parentName="HRPayDet.Wage" hidden="false" />
+		 <field name="HRPayFrame.JobSubsidy" parentName="HRPayDet.JobSubsidy" hidden="false" />
+		  <field name="HRPayFrame.TrafficSubsidy" parentName="HRPayDet.TrafficSubsidy" hidden="false" /> 
+		  <field name="HRPayFrame.FareSubsidy" parentName="HRPayDet.FareSubsidy" hidden="false" /> 
+		  <field name="HRPayFrame.HouseingSubsidy" parentName="HRPayDet.HouseingSubsidy" hidden="false" /> 
+		  <field name="HRPayFrame.AttendanceAward" parentName="HRPayDet.AttendanceAward" hidden="false" />
+		  <field name="HRPayFrame.SocialInsurance" parentName="HRPayDet.SocialInsurance" hidden="false" />
+		   <field name="HRPayFrame.AccountName" parentName="HRPayDet.AccountName" hidden="false" />
+		   <field name="HRPayFrame.Account" parentName="HRPayDet.Account" hidden="false" />
+		<field name="tblEmployee.EmpNumber" relationKey="true" parentName="HRPayDet.EmpNumber" hidden="false" />
+		  <field name="tblEmployee.id"  parentName="HRPayDet.EmployeeID"  hidden="false"/>
+		  <field name="tblDepartment.classCode" parentName="HRPayDet.DepartmentCode" hidden="false" />
+		  </saveFields>
+	</select>
+	
+	
+	
+	
+	
+	<!-- 薪资调整弹出框-->
+<select name = "HRPayAdjust">
+		<table>tblEmployee,tblDepartment,HRPayFrame</table>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode and HRPayFrame.EmpName=tblEmployee.id</relation>
+		<condition> tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblEmployee.EmpNumber" display="HRPayAdjust.EmpNumber" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullName"  display="HRPayAdjust.EmpName" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+    <field name="tblDepartment.DeptFullName" display="HRPayAdjust.Department" width="80" searchType="match" parentDisplay="false" />
+		<field name="HRPayFrame.Wage" display="HRPayAdjust.Wage" width="80" searchType="match" parentDisplay="false" />
+		<field name="HRPayFrame.JobSubsidy" display="HRPayAdjust.JobSubsidy" width="80" searchType="match" parentDisplay="false" />
+		<field name="HRPayFrame.TrafficSubsidy" display="HRPayAdjust.TrafficSubsidy" width="80" searchType="match" parentDisplay="false" />
+		<field name="HRPayFrame.FareSubsidy" display="HRPayAdjust.FareSubsidy" width="80" searchType="match" parentDisplay="false" />
+		<field name="HRPayFrame.HouseingSubsidy" display="HRPayAdjust.HouseingSubsidy" width="80" searchType="match" parentDisplay="false" />
+		<field name="HRPayFrame.AttendanceAward" display="HRPayAdjust.AttendanceAward" width="80" searchType="match" parentDisplay="false" />
+		<field name="HRPayFrame.SocialInsurance" display="HRPayAdjust.SocialInsurance" width="150" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+	    <field name="HRPayFrame.Wage" parentName="HRPayAdjust.Wage" hidden="false" />
+		  <field name="HRPayFrame.JobSubsidy" parentName="HRPayAdjust.JobSubsidy" hidden="false" />
+		  <field name="HRPayFrame.TrafficSubsidy" parentName="HRPayAdjust.TrafficSubsidy" hidden="false" /> 
+		  <field name="HRPayFrame.FareSubsidy" parentName="HRPayAdjust.FareSubsidy" hidden="false" /> 
+		  <field name="HRPayFrame.HouseingSubsidy" parentName="HRPayAdjust.HouseingSubsidy" hidden="false" /> 
+		  <field name="HRPayFrame.AttendanceAward" parentName="HRPayAdjust.AttendanceAward" hidden="false" />
+		  <field name="HRPayFrame.SocialInsurance" parentName="HRPayAdjust.SocialInsurance" hidden="false" />
+		  <field name="tblEmployee.EmpNumber" relationKey="true" parentName="HRPayAdjust.EmpNumber" hidden="false" />
+		  <field name="tblEmployee.id"  parentName="HRPayAdjust.EmpName"  hidden="false"/>
+		  <field name="tblDepartment.classCode" parentName="HRPayAdjust.Department" hidden="false" />
+		  </saveFields>
+	</select>	
+	
+	<!--会计科目选择弹出窗口代码-->
+	<select name = "HRBasicWageSettingPayAccount">
+		<table>ViewTypeInfoBalance</table>
+		<relation></relation>
+		<classCode>ViewTypeInfoBalance.classCode</classCode>
+		<condition>(ViewTypeInfoBalance.AccNumber !='1012' and ViewTypeInfoBalance.Period =(select max(a.Period) as Period from tblAccBalance a where a.NYear=(select max(NYear) as NYear from tblAccBalance b where b.subCode=a.subCode and b.SCompanyID=@Sess:SCompanyID and ((b.Period &lt;=@ValueofDB:Month and b.NYear=@ValueofDB:Year) or b.NYear&lt;@ValueofDB:Year)) and a.subCode=ViewTypeInfoBalance.AccNumber and a.SCompanyID=@Sess:SCompanyID and ((a.Period &lt;=@ValueofDB:Month and a.NYear=@ValueofDB:Year) or a.NYear&lt;@ValueofDB:Year)) and ViewTypeInfoBalance.NYear=(select max(c.NYear) as Year from tblAccBalance c where c.subCode=ViewTypeInfoBalance.AccNumber and c.SCompanyID=@Sess:SCompanyID and ((c.Period &lt;=@ValueofDB:Month and c.NYear=@ValueofDB:Year) or c.NYear&lt;@ValueofDB:Year)))</condition>
+		<changeCond>(ViewTypeInfoBalance.statusId!='-1')</changeCond>
+		<orderBy>ViewTypeInfoBalance.AccNumber</orderBy>	
+		<displayFields>
+			<field name="ViewTypeInfoBalance.AccNumber"  width="100" searchType="match" parentDisplay="false" />
+			<field name="ViewTypeInfoBalance.AccName"  display="@TABLENAME.SubCode" width="180" searchType="match" parentDisplay="true" />
+			<field name="ViewTypeInfoBalance.PeriodBalaBase" width="100" searchType="no" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+			<field name="ViewTypeInfoBalance.AccNumber" parentName="@TABLENAME.SubCode" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>	
+	
+	<select name = "SelectOnlyGoodsForHRWage" type="checkBox">
+		<table>tblGoods,tblUnit,tblStock</table>
+		<saveParentFlag>true</saveParentFlag><!--选择父类-->
+		<relation>tblGoods.BaseUnit=tblUnit.id and tblGoods.StockCode = tblStock.classCode</relation>
+		<classCode>tblGoods.classCode</classCode>
+		<condition>tblGoods.workFlowNodeName='finish'</condition>
+		<changeCond>(tblGoods.statusid!='-1')</changeCond>
+		<displayFields>
+			<field name="tblGoods.BarCode"  width="100" searchType="match" parentDisplay="true" keySearch="true"  hiddenInput="true"/>
+			<field name="tblGoods.GoodsNumber" width="100" searchType="match" keySearch="true" parentDisplay="true" />
+			<field name="tblGoods.GoodsFullName" display="@TABLENAME.GoodsCode" keySearch="true" width="150" searchType="match" parentDisplay="true" />
+			<field name="tblGoods.GoodsFullNamePYM" hiddenInput="true" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblGoods.GoodsSpec" width="110" searchType="match" parentDisplay="true" keySearch="true"/>
+			<field name="tblUnit.UnitName" asName="Unit.Unit" width="30" searchType="match" parentDisplay="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true"/>
+			<field name="tblUnit.id" parentName="@TABLENAME.Unit" relationKey="false" hidden="false"/>
+		</saveFields>
+	</select>
+	
+	<!--年度目标评估引用年度目标-->
+	<select name = "HRGoal_quote_HRNewGoal">
+		<table>HRNewGoal,HRNewGoalDet</table>
+		<relation>on HRNewGoal.id=HRNewGoalDet.f_ref </relation>
+		<condition>(HRNewGoal.createBy in ('@Sess:UserId') or '@Sess:UserId'='1')</condition>
+		<orderBy>HRNewGoal.createTime desc</orderBy>
+		<displayFields>
+			<field name="HRNewGoalDet.Objectives" width="200" searchType="match"   parentDisplay="false" />
+			<field name="HRNewGoalDet.Description"  width="220" searchType="match"  parentDisplay="false"/>
+			<field name="HRNewGoalDet.TargetDate"  width="200" searchType="match"  parentDisplay="false"/>
+		</displayFields>
+		<saveFields>
+		  <field name="HRNewGoal.id" relationKey="true" parentName="HRGoal.GoalID" hidden="false"/>		 
+		</saveFields>
+</select>
+	
+	<!--培训计划上一年度计划引用下一年度计划-->
+	<select name = "HRPlan_quote_HRPlan">
+		<table>HRReview,HRPlan,HRPlanDetail</table>
+		<relation>on HRReview.id=HRPlan.f_brother on HRPlan.id=HRPlanDetail.f_ref </relation>
+		<condition>(HRPlan.createBy in ('@Sess:UserId') or '@Sess:UserId'='1')</condition>
+		<displayFields>
+			<field name="HRPlanDetail.Area" width="200" searchType="match"   parentDisplay="false" />
+			<field name="HRPlanDetail.Activity"  width="220" searchType="match"  parentDisplay="false"/>
+			<field name="HRPlanDetail.Date"  width="200" searchType="match"  parentDisplay="false"/>
+		</displayFields>
+		<saveFields>
+		  <field name="HRPlan.id" relationKey="true" parentName="HRPlan.PlanID" hidden="false"/>		 
+		</saveFields>
+</select>
+<!--表现评估选择职员-->	
+	<select name = "SelectReviewEmployee">
+		<table>tblEmployee,tblDepartment,HREmpinform</table>
+		<forwardModel>tblEmployee</forwardModel>
+		<relation>on tblEmployee.DepartmentCode=tblDepartment.classCode on tblEmployee.id=HREmpinform.EmpFullName</relation>
+		<condition>(tblDepartment.DeptFullName='@ValueofDB:tblDepartment_DeptFullName' and tblEmployee.SCompanyID='@Sess:SCompanyID' and tblEmployee.statusId!='-1' or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullName"  display="@TABLENAME.EmployeeID" width="65" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullNamePYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.TitleID" width="65" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false"  keySearch="true"/>
+		<field name="tblDepartment.DeptFullName"  width="75" popSelect="PoPupSelectDepartment" searchType="match" keySearch="true" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullNamePYM" asName="ViewtblStocks.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="HREmpinform.Title" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="HREmpinform.Position" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="HREmpinform.PositionTime" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="HREmpinform.LManager" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="HREmpinform.DottedManager" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="HREmpinform.EmployDate" width="100" searchType="no" parentDisplay="true" keySearch="true" />
+		<field name="HREmpinform.Email" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" relationKey="true" hidden="true"/>
+		<field name="tblEmployee.DepartmentCode" parentName="@TABLENAME.DepartmentCode" />
+		<field name="tblDepartment.DeptFullName" parentName="tblDepartment.tblDepartment_DeptFullName" />
+		</saveFields>
+	</select>
+</popupSelect>	

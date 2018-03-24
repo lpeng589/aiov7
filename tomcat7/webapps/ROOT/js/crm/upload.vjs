@@ -1,0 +1,104 @@
+/*图片上传开始*/
+
+function upload(type,btnId){
+	openAttachUpload(type,btnId);
+	return;	
+}
+
+var curUploadType = "";
+function openAttachUpload(type,btnId){
+	curUploadType = type;
+	var filter = "";
+	if(type == "PIC"){
+		filter = "Image";
+	}
+	
+	var attachUpload = document.getElementById("attachUpload");
+	if(attachUpload == null){
+		uploadDiv = document.createElement("div"); 
+		uploadDiv.id = "attachUpload" ;
+		uploadDiv.style.cssText = "position:fixed;top:10px;left:30px;width:600px;height:300px;display:block;z-index:100";
+		document.body.appendChild(uploadDiv);
+		attachUpload = document.getElementById("attachUpload");
+	}
+	var clientHeight = document.documentElement.clientHeight;
+	if(clientHeight==0) {
+		clientHeight = document.body.clientHeight ;
+	}
+	attachUpload.style.left=  ((document.body.clientWidth - 500) /2) +"px";
+	attachUpload.style.top=  ((clientHeight - 250) /2) +"px";
+	attachUpload.style.display="block";
+	attachUpload.innerHTML='<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" id="fileUpload" width="500" height="250" codebase="http:/'+'/fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">'+
+			' <param name="movie" value="/flash/FileUpload.swf" /><param name="quality" value="high" /><param name="bgcolor" value="#869ca7" /><param name="flashvars" value="maxSize=$!globals.getSysSetting("defaultAttachSize")&uploadUrl=/UploadServlet;jsessionid=$session.id?path=/temp/@amp;fileType='+type+'&filter='+filter+'&btnId='+btnId+'" />'+
+			' <param name="allowScriptAccess" value="sameDomain" /><embed src="/flash/FileUpload.swf" quality="high" bgcolor="#869ca7"	width="500" height="250" name="column" align="middle" play="true" loop="false"'+
+			'	flashvars="maxSize=$!globals.getSysSetting("defaultAttachSize")&uploadUrl=/UploadServlet;jsessionid=$session.id?path=/temp/@amp;fileType='+type+'&filter='+filter+'&btnId='+btnId+'"	quality="high" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="http/'+'/www.adobe.com/go/getflashplayer"></embed></object>';
+} 
+
+function onCompleteUpload(retstr,btnId){
+	retstr = decodeURIComponent(retstr);  
+	if(curUploadType == 'PIC'){
+	   var buttonId = "picuploadul";
+	   var hiddenName = "uploadpic";
+	   if(btnId!="undefined" && btnId!=null){
+	   		buttonId = "picuploadul_"+btnId;
+	   		hiddenName = btnId;
+	   }
+	   mstrs = retstr.split(";");
+	   var ul=jQuery('#'+buttonId);
+	   for(i=0;i<mstrs.length;i++){
+		   str = mstrs[i];
+		   if(str == "") continue;
+		   var imgstr = "<li class='file_li' id='uploadfile_"+str+"'><input type=hidden name="+hiddenName+" value='"+str+"'><div><a class='img_wa' href=\"/ReadFile?fileName="+str+"&realName="+encodeURI(str)+"&tempFile=true&type=PIC\" target=\"_blank\"><img src=\"/ReadFile.jpg?fileName="+encodeURI(str)+"&realName="+encodeURI(str)+"&tempFile=true&type=PIC\"  border=\"0\"></a></div><div><em class=\"txt_em\" title="+str+">"+str+"&nbsp;&nbsp;&nbsp;&nbsp;</em><a style=\"cursor:pointer;\" onclick='deleteupload(\""+str+"\",\"true\",\"$tableName\",\"PIC\");'>删除</a></div></li>";
+		   ul.append(imgstr);
+	   }
+	}else if(curUploadType == 'AFFIX'){
+		var buttonId = "affixuploadul";
+		var hiddenName = "uploadaffix";
+	   	if(btnId!="undefined" && btnId!=null){
+	   		buttonId = "affixuploadul_"+btnId;
+	   		hiddenName = btnId;
+	   	}
+		mstrs = retstr.split(";");
+	    for(i=0;i<mstrs.length;i++){
+		   str = mstrs[i];
+		   if(str == "") continue;
+		   var ul=jQuery('#'+buttonId);
+		   var imgstr = "<li class='file_li' id='uploadfile_"+str+"'><input type=hidden name="+hiddenName+" value='"+str+"'><div class='showAffix'>"+str+"</div><a class='del-a-btn' href='javascript:deleteupload(\""+str+"\",\"true\",\"$tableName\",\"AFFIX\");'>删除</a><a class='download-a-btn' href=\"/ReadFile?fileName="+encodeURI(str)+"&realName="+encodeURI(str)+"&tempFile=true&type=AFFIX\" target=_blank>下载</a></li>";
+		   ul.append(imgstr);
+	    }
+	}    
+    var attachUpload = document.getElementById("attachUpload");
+	attachUpload.style.display="none";
+}
+
+function deleteupload(fileName,tempFile,tableName,type){
+	//如果是临时文件，则需删除远程文件，正式文件，不能删除
+	if(!confirm('$text.get("common.msg.confirmDel")')){
+		return;
+	}
+	var error = "false";
+	if("true" == tempFile){
+		var url="/CRMBrotherAction.do?NOTTOKEN=NOTTOKEN&type=delPic&operation=3&fileName="+encodeURIComponent(fileName)+"&tempFile="+tempFile+"&tableName="+tableName+"&type="+type;
+		jQuery.ajax({
+			type: "POST",
+			url: url,
+			cache: false,
+			success: function(msg){
+			  	if(msg=="no"){
+			  		error ="true";
+			  	}
+			}
+		});
+	}
+	if(error == "true"){
+		return false;
+	}
+	var li = jQuery("li[id='uploadfile_"+fileName+"']");
+	if(type == "AFFIX"){
+		li.html("<input type='hidden' name='uploadDelAffix' value='"+fileName+"'>")
+	}else if(type == "PIC"){
+		li.html("<input type='hidden' name='uploadDelPic' value='"+fileName+"'>")
+	}
+	li.find("div").remove();
+}
+/*图片上传结束*/

@@ -1,0 +1,98 @@
+﻿/* CSS Document */
+body,ul,li{
+	width:100%;
+	margin:0px;
+	list-style:none;
+	padding:0px;
+}
+body{background-color: #fff;}
+img {
+	border:0px;
+}
+.Login_win{ 
+	width: 250px;
+	height: 360px;
+	margin-top: 50px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-top: 30px;
+	border-radius: 8px;
+	
+}
+.Login_Ad{
+	width: 120px;
+	height: 49px;
+	margin-left:auto;
+	margin-right:auto;
+	background:url(../v7/images/v7-logo.png);
+}
+.Login_body{
+	width:200px;
+	height:200px;
+	margin-left:auto;
+	margin-right:auto;
+}
+.Login_body ul{
+	width:200px;
+	height:200px;
+	background:none;
+	margin:30px 0px -25px 0px;
+	padding:0px;
+}
+.Login_body ul li{
+	background:none;
+	width:200px;
+	margin:0px 0px 28px 0px;
+}
+.Login_body ul li span{
+	font-size:18px;
+	font-family:"微软雅黑", "Microsoft YaHei";
+	color:#2D2929;;
+	width:58px;
+	height:30px;	
+}
+.Login_body ul li input{
+	font-size:18px;
+	font-family:"微软雅黑", "Microsoft YaHei";
+	color:#8F8F8F;
+	background:#F1F1F1;
+	width:188px;
+	height:30px;
+	border:#DCDCDC 1px solid;
+}
+.Login_body div{
+	text-align:center;
+	width:200px;
+}
+.Login_body table{
+	font-size:14px;
+	color:#2D2929;;
+	font-family:"微软雅黑", "Microsoft YaHei";
+	margin-bottom:18px;
+}
+.Login_body div button{
+	font-size:20px;
+	font-family:"微软雅黑", "Microsoft YaHei";
+	color:#5E5E5E;
+	width:136px;
+	height:52px;
+}
+#basic_prompt{
+	text-align:center;
+	position:fixed;
+	top:100px;
+	width:100%;
+	z-index:100001;
+	left:0;
+}
+#basic_prompt span{
+	font-size: 23px;
+	color: #fff;
+	display: block;
+	background-color: #EC3F3F;
+	opacity: 0.8;
+	width: 50%;
+	margin-left: 24%;
+	padding: 10px 1%;
+	border-radius: 5px;
+}

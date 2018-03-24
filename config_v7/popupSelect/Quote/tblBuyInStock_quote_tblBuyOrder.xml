@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="tblBuyInStock_quote_tblBuyOrder">
+     <table>viewBuyOrderQty,tblEmployee,tblDepartment,tblCompany,tblBuyOrderDet,tblStock,tblGoods,tblProject</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      viewBuyOrderQty.id f1,
+      viewBuyOrderQty.BillDate f2,
+      viewBuyOrderQty.BillNo f3,
+      tblDepartment.DeptFullName f4,
+      tblEmployee.EmpFullName f5,
+      tblCompany1.ComFullName f6,
+      tblStock.StockFullName f7,
+      tblGoods.GoodsNumber f8,
+      tblGoods.GoodsFullName f9,
+      tblGoods.GoodsSpec f10,
+      tblGoods.GoodsFullNamePYM f11,
+      tblProject.ProjectName f12
+  from viewBuyOrderQty
+				left join tblEmployee on tblEmployee.id=viewBuyOrderQty.EmployeeID
+				left join tblDepartment on tblDepartment.classCode=viewBuyOrderQty.DepartmentCode
+				left join tblCompany as tblCompany1 on tblCompany1.classCode=viewBuyOrderQty.CompanyCode
+				left join tblBuyOrderDet on (viewBuyOrderQty.id=tblBuyOrderDet.f_ref and tblBuyOrderDet.id=(select top 1 a.id from tblBuyOrderDet a where a.f_ref=viewBuyOrderQty.id and a.GoodsCode in (select classCode from tblGoods where 2=2 and tblGoods.GoodsNumber like '%@condition:tblGoods.GoodsNumber%' and tblGoods.GoodsFullName like '%@condition:tblGoods.GoodsFullName%' and tblGoods.GoodsSpec like '@condition:tblGoods.GoodsSpec%' and tblGoods.Spec1 like '@condition:tblGoods.Spec1%' and tblGoods.Spec2 like '@condition:tblGoods.Spec2%' and tblGoods.Spec3 like '@condition:tblGoods.Spec3%' and tblGoods.BarCode like '@condition:tblGoods.BarCode%')@condsent_tblStock.StockFullName:[ and a.StockCode in (select classCode from tblStock where 2=2 and tblStock.StockFullName like '%@condition:tblStock.StockFullName%')]))
+				left join tblStock on tblStock.classCode=tblBuyOrderDet.StockCode
+				left join tblGoods on tblGoods.classCode=tblBuyOrderDet.GoodsCode
+				left join tblProject on viewBuyOrderQty.ProjectCode=tblProject.id
+     </defineSQL>
+     <classCode></classCode>
+     <remark>采购入库引用采购订单</remark>
+     <condition>viewBuyOrderQty.workFlowNodeName = 'finish' and viewBuyOrderQty.statusId = 0 and viewBuyOrderQty.CompanyCode='@ValueofDB:CompanyCode' and viewBuyOrderQty.BillDate&lt;='@ValueofDB:BillDate'   </condition>
+     <changeCond></changeCond>
+     <hasChild>tblBuyInStockDet_quote_tblBuyOrderDet</hasChild>
+     <orderBy>viewBuyOrderQty.BillDate,viewBuyOrderQty.BillNo</orderBy>
+     <displayFields>
+          <field name="viewBuyOrderQty.BillDate" width="70" searchType="scope" parentDisplay="false" orderBy="升" />
+          <field name="viewBuyOrderQty.BillNo" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblDepartment.DeptFullName" width="75" searchType="match" parentDisplay="false" display="@TABLENAME.DepartmentCode" />
+          <field name="tblEmployee.EmpFullName" width="50" searchType="match" parentDisplay="false" display="@TABLENAME.EmployeeID" />
+          <field name="tblCompany1.ComFullName" width="200" searchType="match" parentDisplay="false" display="@TABLENAME.CompanyCode" />
+          <field name="tblStock.StockFullName" width="75" searchType="match" parentDisplay="false" display="@TABLENAME.StockCode" />
+          <field name="tblGoods.GoodsNumber" width="120" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullName" width="150" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsSpec" width="150" searchType="match" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+          <field name="tblProject.ProjectName" width="150" searchType="match" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="viewBuyOrderQty.id" parentName="@TABLENAME.BuyOrderID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

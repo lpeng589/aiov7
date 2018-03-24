@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SelectSend"  type="checkBox" > 
+		<orderBy>tblSend.BillDate,tblSend.BillNo,tblGoods.GoodsNumber</orderBy>
+		<topPopup>SelectSendFirst</topPopup>
+		<defineSQL>
+from tblSend
+		  join tblSendDet on tblSend.id=tblSendDet.f_ref
+		  left join tblGoods on tblSendDet.GoodsCode=tblGoods.classCode
+		  left join tblStock on tblSendDet.StockCode=tblStock.classCode and tblStock.StockCode='@ValueofDB:StockCode' and tblStock.StockCode='@ValueofDB:@TABLENAME_StockCode'
+      where 1=1  and (tblSendDet.DepartmentCode='@ValueofDB:DepartmentCode' and tblSend.BillDate&lt;='@ValueofDB:BillDate') and tblGoods.workFlowNodeName='finish' and tblSendDet.GoodsCode='@ValueofDB:tblSendcheckDet_GoodsCode' and tblSend.id='@TOPID'
+		</defineSQL>
+		<changeCond>(tblSendDet.FinishStatus=0 and tblSend.workFlowNodeName ='finish')</changeCond>
+		<displayFields>
+			<field name="tblSend.BillDate" parentDisplay="false" width="70" searchType="scope" keySearch="true" />
+			<field name="tblSend.BillNo" display="@TABLENAME.SendNo" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblGoods.[tblGoods]" parentDisplay="true" width="120" searchType="match" keySearch="true" />
+			<field name="tblSendDet.BatchNo" parentDisplay="true" width="120" searchType="match" />
+			<field name="tblSendDet.Inch" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblSendDet.Hue" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblSendDet.yearNO" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblSendDet.ProDate" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblSendDet.Availably" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblSendDet.NotCheckQty" parentDisplay="true" width="100" />
+		</displayFields>
+		<saveFields>
+			<field name="tblSendDet.BatchNo" parentName="@TABLENAME.BatchNo" width="0" />
+			<field name="tblSendDet.Inch" parentName="@TABLENAME.Inch" width="0" />
+			<field name="tblSendDet.Hue" parentName="@TABLENAME.Hue" width="0" />
+			<field name="tblSendDet.yearNO" parentName="@TABLENAME.yearNO" width="0" />
+			<field name="tblSendDet.ProDate" parentName="@TABLENAME.ProDate" width="0" />
+			<field name="tblSendDet.Availably" parentName="@TABLENAME.Availably" width="0" />
+			<field name="tblSendDet.NotCheckQty" parentName="@TABLENAME.Qty" width="0" />
+			<field name="tblSend.id" parentName="@TABLENAME.SendNo" hidden="true" relationKey="true" width="0" />
+			<field name="tblSendDet.id" parentName="@TABLENAME.SourceID" hidden="true" width="0" />
+			<field name="tblSendDet.GoodsCode" parentName="@TABLENAME.GoodsCode" width="0" />
+			<field name="tblSendDet.Price" parentName="@TABLENAME.Price" width="0" />
+			<field name="tblSendDet.SecQty" parentName="@TABLENAME.SecQty" width="0" />
+			<field name="tblSendDet.BaseQty" parentName="@TABLENAME.BaseQty" width="0" />
+			<field name="tblSendDet.SecUnit" parentName="@TABLENAME.SecUnit" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

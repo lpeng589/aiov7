@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SelectAccInfo">
+	     <table>tblAccTypeInfo</table>
+	     <forwardModel>tblAccTypeInfo</forwardModel>
+	     <relation></relation>
+	     <saveParentFlag></saveParentFlag>
+	     <defineSQL>select 
+	      tblAccTypeInfo.AccNumber f1,
+	      tblAccTypeInfo.AccName f2,
+	      tblAccTypeInfo.AccFullName f3,
+	      tblAccTypeInfo.PyCode f4,
+	      tblAccTypeInfo.classCode f5
+	  from tblAccTypeInfo
+	     </defineSQL>
+	     <classCode>tblAccTypeInfo.classCode</classCode>
+	     <condition>tblAccTypeInfo.SCompanyID='@Sess:SCompanyID'</condition>
+	     <changeCond>tblAccTypeInfo.statusId!='-1'</changeCond>
+	     <orderBy>tblAccTypeInfo.AccNumber</orderBy>
+	     <displayFields>
+	          <field name="tblAccTypeInfo.AccNumber" asName="AccInfo.AccInfoNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" />
+	          <field name="tblAccTypeInfo.AccName" asName="AccInfo.AccInfoName" width="180" keySearch="true" parentDisplay="true" display="@TABLENAME.AccCode" />
+	          <field name="tblAccTypeInfo.AccFullName" asName="AccInfo.AccInfoFullName" width="250" searchType="match" parentDisplay="false" />
+	          <field name="tblAccTypeInfo.PyCode" width="50" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+	     </displayFields>
+	     <saveFields>
+	          <field name="tblAccTypeInfo.AccNumber" parentName="@TABLENAME.AccCode" relationKey="true" hidden="true" />
+	     </saveFields>
+	</select>
+
+
+	<!--会计科目选择弹出窗口代码--><select name="AccInfoAccDet"  type="checkBox" > 
+		<classCode>tblAccTypeInfo.classCode</classCode>
+		<orderBy>tblAccTypeInfo.AccNumber</orderBy>
+		<defineSQL>
+from tblAccTypeInfo
+left join tblDepartment on tblAccTypeInfo.DepartmentCode=tblDepartment.classCode
+left join tblEmployee on tblAccTypeInfo.EmployeeID = tblEmployee.id
+left join tblCompany on ( case when isnull(tblAccTypeInfo.ClientCode,'')!='' then  tblAccTypeInfo.ClientCode else tblAccTypeInfo.SuplierCode end  )  = tblCompany.classCode
+left join tblProject on tblAccTypeInfo.ProjectCode = tblProject.id
+left join tblStock on tblAccTypeInfo.StockCode = tblStock.classCode
+		</defineSQL>
+		<changeCond>(tblAccTypeInfo.statusId!='-1' )</changeCond>
+		<displayFields>
+			<field name="tblAccTypeInfo.AccNumber" asName="tblAccDetail.AccCode" display="tblAccDetail.AccCode" parentDisplay="false" width="100" searchType="match" keySearch="true" />
+			<field name="tblAccTypeInfo.AccName" parentDisplay="false" width="180" searchType="match" />
+			<field name="tblAccTypeInfo.AccFullName" parentDisplay="true" width="250" searchType="match" keySearch="true" />
+			<field name="tblAccTypeInfo.PyCode" parentDisplay="false" width="0" searchType="match" keySearch="true" hiddenInput="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblAccTypeInfo.AccNumber" parentName="tblAccDetail.AccCode" relationKey="true" width="0" />
+			<field name="tblAccTypeInfo.DepartmentCode" parentName="tblAccDetail.DepartmentCode" compare="false" width="0" />
+			<field name="tblDepartment.DeptFullName" parentName="DeptName" compare="false" width="0" />
+			<field name="tblAccTypeInfo.EmployeeID" parentName="tblAccDetail.EmployeeID" compare="false" width="0" />
+			<field name="tblEmployee.EmpFullName" parentName="PersonalName" compare="false" width="0" />
+			<field name="( case when isnull(tblAccTypeInfo.ClientCode,'')!='' then  tblAccTypeInfo.ClientCode else tblAccTypeInfo.SuplierCode end  )" parentName="tblAccDetail.CompanyCode" compare="false" width="0" />
+			<field name="tblCompany.ComFullName" parentName="ComFullName" compare="false" width="0" />
+			<field name="tblAccTypeInfo.ProjectCode" parentName="tblAccDetail.ProjectCode" compare="false" width="0" />
+			<field name="tblProject.ProjectName" parentName="ProjectName" compare="false" width="0" />
+			<field name="tblAccTypeInfo.StockCode" parentName="tblAccDetail.StockCode" compare="false" width="0" />
+			<field name="tblStock.StockFullName" parentName="StockName" compare="false" width="0" />
+			<field name="tblAccTypeInfo.Currency" parentName="tblAccDetail.Currency" compare="false" width="0" />
+		</saveFields>
+	</select>	
+	
+	<!--凭证中选择会计科目弹出窗口代码-->
+	<select name = "AccTypeInfoAccDetail" type="checkBox">
+		<table>tblAccTypeInfo</table>
+		<relation></relation>	
+		<classCode>tblAccTypeInfo.classCode</classCode>
+		<changeCond>(tblAccTypeInfo.statusId!='-1' and (tblAccTypeInfo.ClientCode IS NULL or tblAccTypeInfo.ClientCode='') and
+						(tblAccTypeInfo.DepartmentCode IS NULL or tblAccTypeInfo.DepartmentCode='') and (tblAccTypeInfo.EmployeeID IS NULL or tblAccTypeInfo.EmployeeID='') and 
+						(tblAccTypeInfo.StockCode IS NULL or tblAccTypeInfo.StockCode='') and (tblAccTypeInfo.SuplierCode IS NULL or tblAccTypeInfo.SuplierCode=''))</changeCond>
+		<orderBy>tblAccTypeInfo.AccNumber</orderBy>
+		<displayFields>
+			<field name="tblAccTypeInfo.AccNumber" asName="tblAccDetail.AccCode" display="tblAccDetail.AccCode" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblAccTypeInfo.AccName"  width="180" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblAccTypeInfo.AccFullName"  width="250" searchType="match" parentDisplay="true" />
+			<field name="tblAccTypeInfo.PyCode" width="50" searchType="match" parentDisplay="false" keySearch="true" hiddenInput="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblAccTypeInfo.AccNumber" parentName="tblAccDetail.AccCode" relationKey="true" hidden="false"  width="100"/>
+		</saveFields>
+	</select>
+</popupSelect>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectAllotType">
+     <table>tblBillAccSetup</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblBillAccSetup.SubCode f1,
+      tblBillAccSetup.SubType f2
+from tblBillAccSetup
+     </defineSQL>
+     <classCode></classCode>
+     <remark>供 存货调价列表 与 变价调拨列表 使用</remark>
+     <condition>tblBillAccSetup.MainType='@ValueofDB:tableName'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblBillAccSetup.SubCode,tblBillAccSetup.SubType</orderBy>
+     <displayFields>
+          <field name="tblBillAccSetup.SubCode" width="80" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblBillAccSetup.SubType" width="150" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+     </displayFields>
+     <saveFields>
+     </saveFields>
+</select>
+</popupSelect>

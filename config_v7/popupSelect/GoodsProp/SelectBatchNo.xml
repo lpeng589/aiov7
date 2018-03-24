@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectBatchNo" type="checkBox">
+     <table>tblStockDet,tblGoods,tblStock</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblStockDet.BatchNo f1,
+      tblGoods.GoodsNumber f2,
+      tblGoods.GoodsFullName f3,
+      tblStock.StockFullName f4,
+      tblStockDet.TotalQty f5
+from tblStockDet
+left join tblGoods on tblGoods.classCode=tblStockDet.GoodsCode
+left join tblStock on tblStock.classCode=tblStockDet.StockCode
+     </defineSQL>
+     <classCode></classCode>
+     <condition>len(tblStockDet.BatchNo)!=0 and (tblStockDet.StockCode='@ValueofDB:StockCode' and tblStockDet.GoodsCode='@ValueofDB:@TABLENAME_GoodsCode' and tblStockDet.SCompanyID='@Sess:SCompanyID' and tblStockDet.TotalQty != 0 and tblStockDet.Period=(select Max(tblStockDet.Period) from tblStockDet where 1=1 and tblStockDet.StockCode='@ValueofDB:StockCode' and tblStockDet.GoodsCode='@ValueofDB:@TABLENAME_GoodsCode' and tblStockDet.SCompanyID='@Sess:SCompanyID')) and tblGoods.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.GoodsNumber" width="120" searchType="match" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullName" width="150" searchType="match" parentDisplay="false" />
+          <field name="tblStock.StockFullName" width="75" searchType="match" parentDisplay="false" />
+          <field name="tblStockDet.BatchNo" asName="BatchNo.BatchNo" width="130" searchType="match" parentDisplay="true" display="@TABLENAME.BatchNo" />
+          <field name="tblStockDet.TotalQty" width="90" searchType="scope" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblStockDet.BatchNo" parentName="@TABLENAME.BatchNo" display="@TABLENAME.BatchNo" relationKey="true" hidden="false" />
+     </saveFields>
+</select>
+</popupSelect>

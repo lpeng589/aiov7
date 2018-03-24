@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<!--采购入库单引用采购询价单-->
+	<select name="tblBuyInStock_quote_tblBuyAskPrice">
+     <table>tblBuyAskPrice,tblEmployee,tblDepartment,tblCompany,tblBuyAskPriceDet,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      tblBuyAskPrice.id f1,
+      tblBuyAskPrice.BillDate f2,
+      tblBuyAskPrice.BillNo f3,
+      tblDepartment.DeptFullName f4,
+      tblEmployee.EmpFullName f5,
+      tblCompany.ComFullName f6,
+      tblGoods.GoodsNumber f7,
+      tblGoods.GoodsFullName f8,
+      tblGoods.GoodsSpec f9
+		 from tblBuyAskPrice
+		 left join tblEmployee on tblEmployee.id=tblBuyAskPrice.EmployeeID
+		 left join tblDepartment on tblDepartment.classCode=tblBuyAskPrice.DepartmentCode
+		 left join tblCompany on tblCompany.classCode=tblBuyAskPrice.CompanyCode
+		 left join tblBuyAskPriceDet on (tblBuyAskPrice.id=tblBuyAskPriceDet.f_ref and tblBuyAskPriceDet.id=(select top 1 a.id from tblBuyAskPriceDet a where a.f_ref=tblBuyAskPrice.id and a.GoodsCode in (select classCode from tblGoods where 1=1 and tblGoods.GoodsNumber like '%@condition:tblGoods.GoodsNumber%' and tblGoods.GoodsFullName like '%@condition:tblGoods.GoodsFullName%' and tblGoods.GoodsSpec like '@condition:tblGoods.GoodsSpec%')))
+		 left join tblGoods on tblGoods.classCode=tblBuyAskPriceDet.GoodsCode
+
+     </defineSQL>
+     <classCode></classCode>
+     <condition>((tblBuyAskPrice.CompanyCode='@ValueofDB:CompanyCode' and (len(isnull(tblBuyAskPrice.Priceusefullife,''))=0 or tblBuyAskPrice.Priceusefullife&gt;=CONVERT(varchar(10),GETDATE(),20) or tblBuyAskPrice.Priceusefullife&gt;='@ValueofDB:BillDate')) and tblBuyAskPrice.workFlowNodeName = 'finish')</condition>
+     <changeCond>     </changeCond>
+     <hasChild>tblBuyInStockDet_quote_tblBuyAskPriceDet</hasChild>
+     <orderBy>tblBuyAskPrice.BillDate desc,tblBuyAskPrice.BillNo desc,tblCompany.ComFullName</orderBy>
+     <displayFields>
+          <field name="tblBuyAskPrice.BillDate" width="100" parentDisplay="false" searchType="scope" orderBy="升"/>
+          <field name="tblBuyAskPrice.BillNo" width="100" parentDisplay="false" searchType="match" keySearch="true" orderBy="升"/>
+          <field name="tblDepartment.DeptFullName" width="80" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblEmployee.EmpFullName" width="80" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblCompany.ComFullName" width="80" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullName" width="150" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsSpec" width="100" searchType="match" keySearch="true" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblBuyAskPrice.id" parentName="tblBuyInStock.BuyAskPriceID" relationKey="true" hidden="true" />
+     </saveFields>
+	</select>
+</popupSelect>

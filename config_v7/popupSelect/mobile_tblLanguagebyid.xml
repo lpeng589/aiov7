@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="mobile_tblLanguagebyid"  desc="手机端从多语言表获取中文名"  belongTableName="tblLanguage" > 
+		<defineSQL>
+from tblLanguage where id = '@ValueofDB:langageid'
+		</defineSQL>
+		<displayFields>
+			<field name="tblLanguage.zh_CN" asName="zhcn" parentDisplay="false" width="0" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+</popupSelect>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="Provider" > 
+		<classCode classSysType="Supplier">tblCompany.classCode</classCode>
+		<orderBy>tblCompany.ComNumber,tblCompany.ComFullName</orderBy>
+		<forwardModel>tblCompany&amp;moduleType=1&amp;ClientFlag=1</forwardModel>
+		<defineSQL>
+from tblCompany
+  left join tblEmployee on tblCompany.EmployeeID=tblEmployee.id
+  left join tblDepartment on tblCompany.DepartmentCode=tblDepartment.classCode
+      where 1=1  and (tblCompany.ClientFlag=1 or tblCompany.ClientFlag=3)
+		</defineSQL>
+		<changeCond>(tblCompany.statusId!='-1')</changeCond>
+		<displayFields>
+			<field name="tblCompany.[tblCompany_1]" parentDisplay="false" width="100" searchType="match" keySearch="true" />
+			<field name="case when len(tblCompany.DepartmentCode)&gt;0 then tblDepartment.DeptFullName else '@Sess:DepartmentName' end" asName="Department.DeptFullName" display="tblCompany.DepartmentCode" parentDisplay="false" width="80" />
+			<field name="case when len(tblCompany.EmployeeID)&gt;0 then tblEmployee.EmpFullName else '@Sess:UserName' end" asName="Employee.EmpFullName" display="tblCompany.EmployeeID" parentDisplay="false" width="80" />
+			<field name="tblCompany.PrePayTotalRemain" parentDisplay="false" width="100" hiddenInput="true" />
+			<field name="tblCompany.PayTotalRemain" parentDisplay="false" width="100" hiddenInput="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblCompany.classCode" parentName="@TABLENAME.CompanyCode" hidden="true" relationKey="true" width="0" />
+			<field name="case when len(tblCompany.DepartmentCode)&gt;0 then tblCompany.DepartmentCode else '@Sess:DepartmentCode' end" parentName="@TABLENAME.DepartmentCode" display="@TABLENAME.DepartmentCode" width="0" />
+			<field name="case when len(tblCompany.DepartmentCode)&gt;0 then tblDepartment.DeptFullName else '@Sess:DepartmentName' end" parentName="@TABLENAME.tblDepartment_DeptFullName" display="tblCompany.DepartmentCode" width="0" />
+			<field name="case when len(tblCompany.EmployeeID)&gt;0 then tblCompany.EmployeeID else '@Sess:UserId' end" parentName="@TABLENAME.EmployeeID" display="@TABLENAME.EmployeeID" width="0" />
+			<field name="case when len(tblCompany.EmployeeID)&gt;0 then tblEmployee.EmpFullName else '@Sess:UserName' end" parentName="@TABLENAME.tblEmployee_EmpFullName" display="tblCompany.EmployeeID" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

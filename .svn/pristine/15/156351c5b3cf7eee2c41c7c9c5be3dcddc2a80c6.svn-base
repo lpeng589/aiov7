@@ -1,0 +1,11 @@
+.custom-menu {
+background-color: #fff;color: #0188cc;z-index: 1;top: 0;left: 0;box-shadow: 0 0 8px rgba(0,0,0,0.25);}
+.custom-menu ul {padding: 0px;margin:0px;}
+.custom-menu li {border-left: 1px solid #c4c4c4;border-right: 1px solid #c4c4c4;cursor: pointer;line-height: 21px;height: 21px;padding: 0;text-align: left;position: relative;overflow: hidden; }
+.custom-menu li.first {border-top: 1px solid #c4c4c4;line-height: 20px;height: 20px;}
+.custom-menu li.split2 {border-top: 1px solid #e9e9e9;line-height: 20px;height: 20px;}
+.custom-menu li.last {border-bottom: 1px solid #c4c4c4;line-height: 20px;height: 20px;}
+.custom-menu li a, .custom-menu li span {display: block;padding-right: 18px;padding-left: 10px;}
+.custom-menu li.split {border-top: 1px solid #e9e9e9;line-height: 20px;height: 20px;}
+.custom-menu li.hover {line-height: 19px!important;height: 19px!important;color: #fff;border: 1px solid #f47c02!important;background: #fa9b3d;}
+.opbt{width:50px;background:url(/style/images/ico2.gif) no-repeat 95% ;}

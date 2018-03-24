@@ -1,0 +1,50 @@
+<%@ page language="java" import="java.util.*,com.menyi.web.util.GlobalsTool" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<title><%=GlobalsTool.getCompanyName()%></title>
+<script type=text/javascript>	
+<%
+	String user = (String) request.getAttribute("user");
+	if (user != null)
+		out.println("window.localStorage.setItem('user', '"+ user + "')");
+	String wxstate = (String) request.getSession().getAttribute("wxstate");
+	wxstate = wxstate == null ? "" : wxstate;
+	out.println("window.sessionStorage.setItem('wxstate', '" + wxstate+ "')");
+	Boolean reloadFlag = (Boolean) request.getAttribute("reloadFlag");
+	if (reloadFlag != null)
+		out.println("window.sessionStorage.setItem('reloadFlag', true)");
+	else
+		out.println("window.sessionStorage.removeItem('reloadFlag')");
+%>	
+</script>
+<%
+	// 判断需要引入的js
+	if(wxstate.equals("wx") || wxstate.equals("wxqy"))
+		out.println("<script type='text/javascript' src='http://res.wx.qq.com/open/js/jweixin-1.1.0.js'></script>");
+	else if(wxstate.equals("wxwork"))
+		out.println("<script type='text/javascript' src='http://res.wx.qq.com/wwopen/js/jsapi/jweixin-1.0.0.js'></script>");
+%>
+<style lang=scss rel=stylesheet/scss>
+#app {
+	width: 100%;
+	height: 100%;
+}
+</style>
+
+<!-- 打包时更新以下代码  -->
+<link href=<%=request.getContextPath()%>/mobile//static/css/app.e9c54ec09a5076b81728ae1e2812016a.css
+	rel=stylesheet>
+</head>
+<body>
+	<div id=app></div>
+	<script type=text/javascript
+		src=<%=request.getContextPath()%>/mobile//static/js/manifest.e35f3e2f5e309ba2c5c2.js></script>
+	<script type=text/javascript
+		src=<%=request.getContextPath()%>/mobile//static/js/vendor.271600171787af684e14.js></script>
+	<script type=text/javascript
+		src=<%=request.getContextPath()%>/mobile//static/js/app.f0424e432144cd72d6ae.js></script>
+</body>
+</html>

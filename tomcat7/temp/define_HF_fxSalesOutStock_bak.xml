@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+        <!--=======================================================  配送出库 开 始 ===========================================================-->
+        <define name="fxSalesOutStock_Add">
+			
+			<!-- 启用单一仓库 更新明细表StockCode -->
+	  		<sql type="condition">
+               <exec condition="true">				  
+					<sql>update fxSalesOutStockDet set StockCode=@ValueofDB:fxSalesOutStock_StockCode where f_ref=@ValueofDB:fxSalesOutStock_id</sql>	
+				</exec>
+         	</sql>
+		
+		<sql type="condition">
+			<exec condition=" true ">
+				<sql> update fxSalesOutStockDet set FixId=(case when isnull(FixId,'')='' then id else FixId end) where f_ref=@ValueofDB:id </sql>
+			</exec>
+		  </sql>
+	
+           <sql type="condition">
+			<condition> <select> select count(0) hasnoScan from fxSalesOutStockScan where f_ref=@ValueofDB:id and SourceId not in (select isnull(FixId,'') from fxSalesOutStockDet where f_ref=@ValueofDB:id) </select> </condition>
+			<!--不能删除已扫描出库商品-->
+			<exec condition="  @SqlReturn:hasnoScan &gt; 0 ">
+				<error>已经扫描的商品不可以再删除</error>
+			</exec>
+		</sql>
+			<!--不启用审核流-->
+            <sql type="condition">
+                <exec condition="@MEM:fxSalesOutStock_IsStatart==0">
+                    <sql type="define">fxSalesOutStock_Add_One</sql> 
+                </exec>
+            </sql>
+		  		  
+        </define>
+        
+        <define name="fxSalesOutStock_Add_One">
+        	
+        	<!-- 影响出入库 -->
+        	<sql type="condition">
+				<!--如果启用审核流，则过账时更新分仓库存-未审核字段-->
+				<exec condition="'@MEM:fxSalesOutStock_IsStatart' != '0'">
+					<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=fxSalesOutStockDet.GoodsCode,@StockCode=fxSalesOutStockDet.StockCode,@BillType=fxSalesOutStock,@InstoreQty=0,@OutstoreQty=-1*fxSalesOutStockDet.FHQty,@from=fxSalesOutStockDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+				</exec>
+				<exec condition="true"><!--插入出入库明细-->
+					<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:fxSalesOutStock_Period,@PeriodYear=@ValueofDB:fxSalesOutStock_PeriodYear,@PeriodMonth=@ValueofDB:fxSalesOutStock_PeriodMonth,@GoodsCode=fxSalesOutStockDet.GoodsCode,@StockCode=fxSalesOutStockDet.StockCode,@BillID=@ValueofDB:fxSalesOutStock_id,@BillType=fxSalesOutStock,@BillDate=@ValueofDB:fxSalesOutStock_BillDate,@BillNo=@ValueofDB:fxSalesOutStock_BillNo,@OutstoreQty=fxSalesOutStockDet.FHQty,@OutstorePrice=fxSalesOutStockDet.Price,@OutstoreAmount=fxSalesOutStockDet.Amount,@createBy=@ValueofDB:fxSalesOutStock_createBy,@lastUpdateBy=@ValueofDB:fxSalesOutStock_lastUpdateBy,@createTime=@ValueofDB:fxSalesOutStock_finishTime,@lastUpdateTime=@MEM:sysLongDate,@SCompanyID=@ValueofDB:fxSalesOutStock_SCompanyID,@MRemark=@ValueofDB:fxSalesOutStock_Remark,@DRemark=fxSalesOutStockDet.Remark,@SourceID=fxSalesOutStockDet.id,@CompanyCode=@ValueofDB:fxSalesOutStock_fxAgentID,@EmployeeID=@ValueofDB:fxSalesOutStock_EmployeeID,@DepartmentCode=@ValueofDB:fxSalesOutStock_DepartmentCode,@SalesPrice=fxSalesOutStockDet.Price,@SalesAmount=fxSalesOutStockDet.Amount,@SalesQty=fxSalesOutStockDet.Qty,@Amount=fxSalesOutStockDet.Amount,@Price=fxSalesOutStockDet.Price,@DiscountAmount=fxSalesOutStockDet.Amount,@from=fxSalesOutStockDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+				</exec>
+				<exec condition="true"><!--负库存判断-->
+					<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+				</exec>
+			</sql>
+        	
+        	<sql type="condition">
+		<!--判断数量和序列号扫描的数量是否一致-->
+			<condition><select> select b.GoodsNumber scanGN,b.GoodsFullName scanGName from fxSalesOutStockDet a join AIOERP.dbo.tblGoods b  on a.GoodsCode=b.classCode  where f_ref=@ValueofDB:id and qty&lt;&gt;scanQty and b.seqIsUsed=0 </select> </condition>
+			<exec condition="'@SqlReturn:scanGN'!='null'">
+				<error>@SqlReturn:scanGN,@SqlReturn:scanGName 扫描数量和出库数量不一致</error>
+			</exec>
+		</sql>
+		
+		<!-- 做完配送出库后，要修改对应的销售订单，和采购订单的已发货数 -->
+        	<sql type="condition">
+                <exec condition="true">
+                    <sql type="procedure">
+                        {call proc_fxSalesOutStock_UpdateQty(@ValueofDB:fxSalesOutStock_id,retCode,retVal)}
+                    </sql>
+                </exec>
+         	</sql>
+        	
+        	<sql type="condition">
+			<exec condition="true">
+                    <sql>
+					declare @retCode int 
+					declare @retVal  varchar(50) 			
+					declare @id varchar(32)
+					declare @Seq varchar(8000)
+					declare @priceDigits int
+					declare @amtDigits int
+					declare @CostingMethod varchar(10)
+
+					select @priceDigits=Setting from tblSysDeploy where SysCode='DigitsPrice'
+					select @amtDigits=Setting from tblSysDeploy where SysCode='DigitsAmount'
+					select @CostingMethod=Setting from tblSysDeploy where sysCode='GoodsCostingMethod'
+								
+					declare @tempTable table(orderId int,BillID varchar(50),BillDate varchar(10),BillNo varchar(100),BillType varchar(100),Seq varchar(4000),createTime varchar(30),CompanyCode varchar(50),GoodsCode varchar(50),InstoreQty numeric(18,8),OutstoreQty numeric(18,8),BatchNo varchar(50),yearNO varchar(50))
+					                         --seq,GoodsCode,BatchNo,yearNO,-1,BillID,BillNo,BillType,createTime,CompanyCode
+					
+					delete from @tempTable
+					
+					insert into @tempTable select ROW_NUMBER() over(order by fxSalesOutStockDet.id),@ValueofDB:id,@ValueofDB:fxSalesOutStock_BillDate,@ValueofDB:fxSalesOutStock_BillNo,'fxSalesOutStock',fxSalesOutStockScan.Seq,@ValueofDB:fxSalesOutStock_createTime,'',fxSalesOutStockDet.GoodsCode,0,fxSalesOutStockDet.Qty,LTRIM(RTRIM(fxSalesOutStockScan.BatchNo)),LTRIM(RTRIM(fxSalesOutStockScan.yearNO)) from fxSalesOutStockDet join fxSalesOutStockScan on fxSalesOutStockDet.f_ref=fxSalesOutStockScan.f_ref and fxSalesOutStockDet.Fixid=fxSalesOutStockScan.SourceId where fxSalesOutStockDet.f_ref=@ValueofDB:id and fxSalesOutStockDet.GoodsCode  like '00001%' order by fxSalesOutStockDet.id
+					
+					declare @InstoreQty numeric(18,8),@InstorePrice numeric(18,8),@InstoreAmount numeric(18,8),@OutstoreQty numeric(18,8),@OutstorePrice numeric(18,8),@OutstoreAmount numeric(18,8),@MRemark varchar(1000),@SalesQty numeric(18,8),@SalesPrice numeric(18,8),@Price numeric(18,8),@SalesAmount numeric(18,8),@Amount numeric(18,8)
+
+					declare @orderItem int select @orderItem=MAX(orderId) from @tempTable
+					declare @index int set @index=1
+					print @orderItem
+					while(@index&lt;=@orderItem)
+						begin
+							
+							--判断序列号字段是否有值,如果有值，则根据序列号个数循环插入到物流码出入库明细中
+							select @Seq=isnull(Seq,''),@InstoreQty=InstoreQty,@OutstoreQty=OutstoreQty from @tempTable where orderId=@index 							
+							
+							declare @seqItem varchar(50)
+							set @seqItem=@Seq
+							set @id=substring(replace(newid(),'-',''),1,30)
+							if(len(@seqItem)&gt;0)
+								begin
+									if(cast(@InstoreQty as numeric(18,8))&gt;0)
+									begin 										
+										insert into AIOFW.dbo.stockRecord(seq,GoodsCode,BatchNo,yearNo,inout,refBillId,refBillNo,refBillType,createTime,CompanyCode)  select @seqItem,GoodsCode,BatchNo,yearNO,1,BillID,BillNo,BillType,createTime,CompanyCode from @tempTable where orderId=@index										
+									end
+									if(cast(@OutstoreQty as numeric(18,8))&gt;0)
+									begin 										
+										insert into AIOFW.dbo.stockRecord(seq,GoodsCode,BatchNo,yearNo,inout,refBillId,refBillNo,refBillType,createTime,CompanyCode)  select @seqItem,GoodsCode,BatchNo,yearNO,-1,BillID,BillNo,BillType,createTime,CompanyCode from @tempTable where orderId=@index										
+									end																		
+								end
+																					  							
+							set @index=@index+1
+						end
+
+                    </sql>
+                </exec>
+		</sql>
+		
+        </define>
+        
+        
+        <define name="fxSalesOutStock_Delete">
+        	
+        	<!--采购订单已确认收货,不能再反审核出库单 -->
+        	
+            <!--不启用审核流-->
+            <sql type="condition">
+                <exec condition="@MEM:fxSalesOutStock_IsStatart==0">
+                    <sql type="define">fxSalesOutStock_Del_One</sql> 
+                </exec>
+            </sql>
+        </define>
+        
+        <define name="fxSalesOutStock_Del_One">
+            
+            <!-- 反审核配送出库后，更新对应的销售订单，和采购订单的已发货数 -->
+        	<sql type="condition">
+                <exec condition="true">
+                    <sql type="procedure">
+                        {call proc_fxSalesOutStock_DelUpdateQty(@ValueofDB:fxSalesOutStock_id,retCode,retVal)}
+                    </sql>
+                </exec>
+         	</sql>
+        	
+        	
+			<sql type="condition">
+				<!--如果启用审核流，则过账时更新分仓库存+未审核字段-->
+				<exec condition="'@MEM:tblSalesOutStock_IsStatart' != '0'">
+					<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=fxSalesOutStockDet.GoodsCode,@StockCode=fxSalesOutStockDet.StockCode,@BillType=fxSalesOutStock,@InstoreQty=0,@OutstoreQty=fxSalesOutStockDet.FHQty,@from=fxSalesOutStockDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+				</exec>
+				<exec condition="true"><!--删除出入库明细-->
+					<sql type="procedure">{call proc_delStockDet(@ValueofDB:fxSalesOutStock_id,fxSalesOutStock,2,retCode,retVal)}</sql>
+				</exec>
+			</sql>
+            
+        </define>
+    
+    
+</defineSqls>

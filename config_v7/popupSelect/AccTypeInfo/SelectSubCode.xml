@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectSubCode">
+     <table>tblAccTypeInfo</table>
+     <forwardModel>tblAccTypeInfo</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblAccTypeInfo.AccNumber f1,
+      tblAccTypeInfo.AccName f2,
+      tblAccTypeInfo.AccFullName f3,
+      tblAccTypeInfo.PyCode f4,
+      tblAccTypeInfo.classCode f5
+  from tblAccTypeInfo
+     </defineSQL>
+     <classCode>tblAccTypeInfo.classCode</classCode>
+     <remark>回填销售成本科目</remark>
+     <condition>tblAccTypeInfo.SCompanyID='@Sess:SCompanyID'</condition>
+     <changeCond>tblAccTypeInfo.statusId!='-1'</changeCond>
+     <orderBy>tblAccTypeInfo.AccNumber</orderBy>
+     <displayFields>
+          <field name="tblAccTypeInfo.AccNumber" asName="SubCode.SubCodeNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblAccTypeInfo.AccName" asName="SubCode.SubCode" width="150" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.ExpendAccCode" />
+          <field name="tblAccTypeInfo.AccFullName" asName="SubCode.SubCodeName" width="200" searchType="match" parentDisplay="false" />
+          <field name="tblAccTypeInfo.PyCode" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblAccTypeInfo.AccNumber" parentName="@TABLENAME.ExpendAccCode" relationKey="true" hidden="true" orderBy="升" />
+     </saveFields>
+</select>
+</popupSelect>

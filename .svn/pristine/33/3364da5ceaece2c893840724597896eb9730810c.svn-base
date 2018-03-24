@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="GoodsAccPropSelect">
+     <table>tblGoodsAccProp</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblGoodsAccProp.AccCode f1,
+      tblGoodsAccProp.id f2,
+      tblGoodsAccProp.GoodsAccName f3,
+      tblGoodsAccProp.IncomeAccCode f4,
+      tblGoodsAccProp.ExpendAccCode f5
+  from tblGoodsAccProp
+     </defineSQL>
+     <classCode></classCode>
+     <remark></remark>
+     <condition>tblGoodsAccProp.statusId!='-1'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoodsAccProp.AccCode,tblGoodsAccProp.GoodsAccName</orderBy>
+     <displayFields>
+          <field name="tblGoodsAccProp.AccCode" width="100" searchType="match" parentDisplay="false" orderBy="升" />
+          <field name="tblGoodsAccProp.GoodsAccName" width="100" searchType="match" parentDisplay="true" display="tblGoods.CostMethod" orderBy="升" />
+          <field name="tblGoodsAccProp.IncomeAccCode" width="100" searchType="match" parentDisplay="false" />
+          <field name="tblGoodsAccProp.ExpendAccCode" width="100" searchType="match" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblGoodsAccProp.AccCode" parentName="tblGoods.AccCode" relationKey="false" hidden="true" orderBy="升" />
+          <field name="tblGoodsAccProp.id" parentName="tblGoods.CostMethod" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

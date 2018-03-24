@@ -1,0 +1,403 @@
+
+function mdiwin(url,title,alertId){ 
+	top.showreModule(title,url);
+	if(typeof(alertId)!="undefined"){
+		AjaxRequest("UtilServlet?operation=updateAlertStatus&alertId="+alertId) ;
+	} 
+	
+}
+
+function addWins(url,title){
+	mdiwin(url+"&name="+encodeURIComponent(title),title) ;
+}
+
+function goCSPrograme(varPath){
+   		var obj = new ActiveXObject("KoronCom.MACAddress") ;
+    	var isExist = obj.findapp(varPath) ;
+    	if(isExist==1){
+    		obj.runapp(varPath) ;
+    	}else{
+    		alert("$text.get('com.programe.not.exist')") ;
+    	}
+}
+function leftmdiwin(url,title){
+	if(url.length > 3){
+		if(url.substr(0,3)=="BS:"){
+			window.open(url.substr(3),"_blank");
+			return;
+		}else if(url.substr(0,3)=="CS:"){
+			goCSPrograme(url.substr(3));
+			return;
+		}
+	}
+	if(url.indexOf("?") >0){
+		url +="&src=menu";
+	}else{
+		url +="?src=menu";
+	}
+	top.showreModule(title,url);
+}
+function init2(){
+	/*--初始ShortCut快捷方式--*/
+	ShortCut.cut = new KB('div@shortcut');
+	var f = ShortCut.cut.getChild('*');
+	for(var i=0; i<f.length; i++){
+		(function(i){
+			KB.reg(f[i],'mouseover',ShortCut.show);
+		})(i);	
+	}
+	//ShortCut.autoCu=true;
+	var scubtn = new KB('b=short_cu');
+	ShortCut.cuBtn = scubtn.nod[0];
+	ShortCut.title1 = '$text.get("common.lb.openFrontShow")';
+	ShortCut.title2 = '$text.get("common.lb.closeFrontShow")';
+	ShortCut.cutBtn = new KB('div=shortcut_btn');
+	//scubtn.show();
+	ShortCut.initShortCut();
+}
+
+KB.ready(init2);
+
+function load(){
+	jQuery.get("/moduleFlow.do?operation=left_menu",function(data){
+		document.getElementById("shortcutId").innerHTML = data ;
+		GetMenuID();	
+		menuFix();
+	});
+	$("#organization").mouseover(function(){
+		this.className = "organizationHover" ;
+	}) ;
+	$("#organization").mouseout(function(){
+		this.className = "organization" ;
+	}) ;
+}
+
+function leftMove(isUp){
+	var v_content = document.getElementById("shortcutBody");
+	var scrollTop = v_content.scrollTop;
+	
+	if(isUp){
+		v_content.scrollTop = scrollTop -300;
+	}else{
+		v_content.scrollTop = scrollTop +300;
+	}
+}
+ 
+function  setMyDest(){
+	addWins("/moduleFlow.do?operation=my_dest",'$text.get("aio.lb.mynav")') 
+}
+function sendmsg(id){ 
+	window.open("/MessageAction.do?operation=70&empId='+id,'$text.get('message.lb.pageTitle')"+"&src=menu&MOID=$MOID&MOOP=add","","width=500,height=408"); 
+}
+
+function setCookie(name,value,hours,path){
+    var name = escape(name);
+    var value = escape(value);
+    var expires = new Date();
+    expires.setTime(expires.getTime() + hours*3600000);
+    path = path == "" ? "" : ";path=" + path;
+    _expires = (typeof hours) == "string" ? "" : ";expires=" + expires.toUTCString();
+    document.cookie = name + "=" + value + _expires + path;
+}
+function getCookieValue(name){
+    var name = escape(name);
+    var allcookies = document.cookie;
+    name += "=";
+    var pos = allcookies.indexOf(name); 
+    if (pos != -1){
+        var start = pos + name.length;
+        var end = allcookies.indexOf(";",start);
+        if (end == -1) end = allcookies.length;
+        var value = allcookies.substring(start,end);
+        return unescape(value);
+    }   
+    else return "";
+}
+
+function clickMenu(mbutton){
+	header = top.header;
+	
+	if(header.style.display != "none"){	
+		mbutton.className = "flexible_down";
+		mbutton.title= "$text.get('common.title.displayMenu')";
+		header.style.display = "none";
+		top.setCwinHeightResize(true);
+		jQuery.get("/UtilServlet?operation=changeViewMenu&type=viewTopMenu&value=2", function(data){});
+	}else{
+		mbutton.className = "flexible_up";
+		mbutton.title= "$text.get('common.title.hiddenMenu')";
+		header.style.display = "block";
+		top.setCwinHeightResize(false);
+		jQuery.get("/UtilServlet?operation=changeViewMenu&type=viewTopMenu&value=1", function(data){});
+	}
+}
+var showorganizaion = false;
+function organization(){
+	jQuery.get("/UtilServlet?operation=showEmp&departmentCode="+encodeURI("$text.get("emList.Title")")+"&"+new Date().getTime(), function(data){ 	
+		$("#PopUp_organizationDIV").html("<IFRAME id='orgFrame' class=PopUp_organizationFrame  frameborder=0></IFRAME>"+data);
+		$("#PopUp_organizationDIV").css("display","block");
+		$("#PopUp_organizationDIVBg").css("display","block");
+		showorganizaion  = true;
+		$("#navigation").treeview({	
+			animated: false,
+			collapsed: false,
+			unique: false
+		});	
+		 
+		$("#PopUp_organizationDIV").unbind();		
+		$("#PopUp_organizationDIV").bind("mouseout", function(){  
+			if(event.srcElement == document.getElementById("PopUp_organizationDIVBg") || 
+				event.srcElement == document.getElementById("PopUp_organizationDIV") || 
+				event.srcElement == document.getElementById("orgFrame")||
+				event.srcElement == document.getElementById("organizationOut")||
+				event.srcElement == document.getElementById("organizationBody")
+				){
+				 $("#PopUp_organizationDIV").css("display","none");
+				 $("#PopUp_organizationDIVBg").css("display","none");
+				 
+			} 
+		}); 
+		$("#PopUp_organizationDIVBg").unbind();		
+		$("#PopUp_organizationDIVBg").bind("mouseout", function(){ 
+			if(event.srcElement == document.getElementById("PopUp_organizationDIVBg") || 
+				event.srcElement == document.getElementById("PopUp_organizationDIV") || 
+				event.srcElement == document.getElementById("orgFrame")||
+				event.srcElement == document.getElementById("organizationOut")||
+				event.srcElement == document.getElementById("organizationBody")
+				){
+				 $("#PopUp_organizationDIV").css("display","none");
+				 $("#PopUp_organizationDIVBg").css("display","none");				 
+			} 
+		}); 
+		
+		var s = document.getElementById("PopUp_organizationDIV").getElementsByTagName('*');				
+		for(i=0;i<s.length;i++){		
+			regEvent(s[i],'mouseover',function(){
+				$("#PopUp_organizationDIV").css("display","block"); 
+				$("#PopUp_organizationDIVBg").css("display","block"); 
+				window.event.cancelBubble = true;
+			});
+		}		
+			
+	 }); 
+}
+function regEvent(target, type, func){
+	if (target.addEventListener){
+       	target.addEventListener(type, func, false);
+	}else if (target.attachEvent){
+        target.attachEvent("on" + type, func);
+    }else{ target["on" + type] = func;}
+}
+
+function departChange(){	
+	jQuery.get("/UtilServlet?operation=showEmp&departmentCode="+encodeURI($("#departmentCode").val())+"&"+new Date().getTime(), function(data){ 		
+		$("#PopUp_organizationDIV").html("<IFRAME id=orgFrame width=100% height=100% class=PopUp_organizationFrame  frameborder=0></IFRAME>"+data);
+		$("#PopUp_organizationDIV").css("display","block");
+		$("#PopUp_organizationDIVBg").css("display","block");
+		$("#navigation").treeview({	
+			animated: false,
+			collapsed: $("#departmentCode").val()=="" || $("#departmentCode").val()=="$text.get("oa.oamessage.usergroup")",
+			unique: false
+		});	
+
+		$("#PopUp_organizationDIV").unbind();		
+		$("#PopUp_organizationDIV").bind("mouseout", function(){  
+			if(event.srcElement == document.getElementById("PopUp_organizationDIVBg") || 
+				event.srcElement == document.getElementById("PopUp_organizationDIV") || 
+				event.srcElement == document.getElementById("orgFrame")||
+				event.srcElement == document.getElementById("organizationOut")||
+				event.srcElement == document.getElementById("organizationBody")
+				){
+				 $("#PopUp_organizationDIV").css("display","none");
+				 $("#PopUp_organizationDIVBg").css("display","none");
+				 
+			} 
+		}); 
+		$("#PopUp_organizationDIVBg").unbind();		
+		$("#PopUp_organizationDIVBg").bind("mouseout", function(){ 
+			if(event.srcElement == document.getElementById("PopUp_organizationDIVBg") || 
+				event.srcElement == document.getElementById("PopUp_organizationDIV") || 
+				event.srcElement == document.getElementById("orgFrame")||
+				event.srcElement == document.getElementById("organizationOut")||
+				event.srcElement == document.getElementById("organizationBody")
+				){
+				 $("#PopUp_organizationDIV").css("display","none");
+				 $("#PopUp_organizationDIVBg").css("display","none");				 
+			} 
+		}); 
+		
+		var s = document.getElementById("PopUp_organizationDIV").getElementsByTagName('*');				
+		for(i=0;i<s.length;i++){		
+			regEvent(s[i],'mouseover',function(){
+				$("#PopUp_organizationDIV").css("display","block"); 
+				$("#PopUp_organizationDIVBg").css("display","block"); 
+				window.event.cancelBubble = true;
+			});
+		}
+			 
+	 }); 
+}
+function doPopMenu(index,title,url){
+	if(index != 1){
+		$("#menuPopBg").html("<a href='javascript:void(0);' onclick='addMyDest(\""+title+"\",\""+url+"\")' style='position:relative;'>$text.get("common.lb.addto")$text.get("aio.lb.mynav")</a>");
+		$("#menuPop").css("display","block");
+		$("#menuPop").css("left",event.clientX-20);
+	}
+}
+function onHideMenu(){
+	$("#menuPop").css("display","none");
+}
+function addMyDest(title,url){
+	//if(url.indexOf("src=menu") >0){
+	//	url = url.substring(0,url.indexOf("src=menu") -1);
+	//}
+	jQuery.get("/moduleFlow.do?operation=addMyDest&title="+encodeURIComponent(title)+"&url="+encodeURIComponent(url), function(data){ 		
+		alert(data); 
+		for(i=0;i<document.frames.length;i++){
+			if(document.frames[i].frameElement.src.indexOf("/moduleFlow.do?operation=my_dest")>-1){				
+				document.frames[i].location.href = document.frames[i].location.href;
+				document.frames[i].location.href=document.frames[i].location.href+"&noDefault=true" ;				
+			}
+		}		
+	 }); 
+}
+document.onclick=onHideMenu;
+
+var bodyWidth=0;
+
+
+var LastLeftID = "ChildMenu";
+function menuFix() {
+	var obj = document.getElementById("nav").getElementsByTagName("li");
+	
+	for (var i=0; i<obj.length; i++) {
+		obj[i].onmouseover=function() {
+			this.className+=(this.className.length>0? " ": "") + "sfhover";
+		}
+		obj[i].onMouseDown=function() {
+			this.className+=(this.className.length>0? " ": "") + "sfhover";
+		}
+		obj[i].onMouseUp=function() {
+			this.className+=(this.className.length>0? " ": "") + "sfhover";
+		}
+		obj[i].onmouseout=function() {
+			this.className=this.className.replace(new RegExp("( ?|^)sfhover\\b"), "");
+		}
+	}
+}
+
+function DoMenu(emid)
+{
+	var obj = document.getElementById(emid);	
+	obj.className = (obj.className.toLowerCase() == "expanded"?"collapsed":"expanded");
+	if((LastLeftID!="")&&(emid!=LastLeftID))	//关闭上一个Menu
+	{
+		document.getElementById(LastLeftID).className = "collapsed";
+	}
+	LastLeftID = emid;
+}
+
+function GetMenuID()
+{
+
+	var MenuID="";
+	var _paramStr = new String(window.location.href);
+
+	var _sharpPos = _paramStr.indexOf("#");
+	
+	if (_sharpPos >= 0 && _sharpPos < _paramStr.length - 1)
+	{
+		_paramStr = _paramStr.substring(_sharpPos + 1, _paramStr.length);
+	}
+	else
+	{
+		_paramStr = "";
+	}
+	
+	if (_paramStr.length > 0)
+	{
+		var _paramArr = _paramStr.split("&");
+		if (_paramArr.length>0)
+		{
+			var _paramKeyVal = _paramArr[0].split("=");
+			if (_paramKeyVal.length>0)
+			{
+				MenuID = _paramKeyVal[1];
+			}
+		}
+		/*
+		if (_paramArr.length>0)
+		{
+			var _arr = new Array(_paramArr.length);
+		}
+		
+		//取所有#后面的，菜单只需用到Menu
+		//for (var i = 0; i < _paramArr.length; i++)
+		{
+			var _paramKeyVal = _paramArr[i].split('=');
+			
+			if (_paramKeyVal.length>0)
+			{
+				_arr[_paramKeyVal[0]] = _paramKeyVal[1];
+			}		
+		}
+		*/
+	}
+	
+	if(MenuID!="")
+	{
+		DoMenu(MenuID)
+	}
+}
+
+function changeTab(tab){
+	var tabList = $(".mag_list li") ;
+	for(var i=0;i<tabList.length;i++){
+		var cName = tabList[i].className ;
+		if(tabList[i].id == tab){
+			if(cName.indexOf("_a")<0){
+				tabList[i].className = cName+"_a" ;
+			}
+			if("deptTab"==tab || "groupTab"==tab){
+				jQuery.get("/UtilServlet?operation=showEmp&tabType="+tab+"&"+(new Date().getTime()), function(data){
+					$("#navigation").html(data) ;
+					$("#navigation").treeview({	
+						animated: false,
+						collapsed: true,
+						unique: false
+					});	
+				});
+				$("#deptLlist").show() ;
+				$("#userList").hide() ;
+			}else{
+				$("#deptLlist").hide() ;
+				$("#userList").show() ;
+			}
+		}else{
+			if("onlineTab"==tab){
+				jQuery.get("/UtilServlet?operation=showEmp&tabType="+tab+"&"+(new Date().getTime()), function(data){
+					$("#userList").html(data) ;
+				});
+				$("#deptLlist").hide() ;
+				$("#userList").show() ;
+			}
+			if(cName.indexOf("_a")>0){
+				tabList[i].className = cName.substring(0,cName.indexOf("_a"))
+			}
+		}
+	}
+}
+
+function searchUser(keyWord){
+	if(keyWord.length>0){
+		jQuery.get("/UtilServlet?operation=showEmp&keyWord="+encodeURI(keyWord)+"&"+(new Date().getTime()), function(data){
+			$("#userList").html(data) ;
+		});
+	}else{
+		jQuery.get("/UtilServlet?operation=showEmp&tabType=onlineTab&"+(new Date().getTime()), function(data){
+			$("#userList").html(data) ;
+		});
+	}
+	$("#deptLlist").hide() ;
+	$("#userList").show() ;
+}

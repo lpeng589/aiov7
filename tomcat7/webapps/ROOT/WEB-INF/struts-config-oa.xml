@@ -1,0 +1,962 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN" "http://struts.apache.org/dtds/struts-config_1_2.dtd">
+<struts-config>
+	<!-- 注：每个Action必须写上相应的注释 否则后果自负-->
+	<form-beans>
+		<!-- 公司新闻 -->
+		<form-bean name="NewsForm" type="com.koron.oa.publicMsg.newsInfo.OANewsForm" />
+		<form-bean name="NewsSearchForm" type="com.koron.oa.publicMsg.newsInfo.OANewsSearchForm" />
+		<!-- 通知通告 -->
+		<form-bean name="adviceForm" type="com.koron.oa.publicMsg.newadvice.OAAdviceForm" />	
+		<form-bean name="adviceSearchForm" type="com.koron.oa.publicMsg.newadvice.OAAdviceSearchForm" />
+		
+       <!-- 规章制度 -->
+        <form-bean name="ordainForm" type="com.koron.oa.publicMsg.newordain.OAOrdainForm" />	
+		<form-bean name="ordainSearchForm" type="com.koron.oa.publicMsg.newordain.OAOrdainSearchForm" />
+		<form-bean name="ordainGroupForm" type="com.koron.oa.publicMsg.newordain.OAOrdainGroupForm" />	
+		<form-bean name="ordainGroupSearchForm" type="com.koron.oa.publicMsg.newordain.OAOrdainGroupSearchForm" />
+		
+		
+		<form-bean name="tableImportForm" type="com.koron.oa.workflow.TableImportForm" />
+		
+		<form-bean name="OAFavoriteSearchForm" type="com.koron.oa.favorite.OAFavoriteSearchForm" />
+		<form-bean name="OAMyDataSearchForm" type="com.koron.oa.mydata.OAMyDataSearchForm" />
+		
+		<!-- 工作计划 -->
+		<form-bean name="OADayWorkPlanForm" type="com.koron.oa.individual.workPlan.OADayWorkPlanForm" />
+		<form-bean name="OADayWorkPlanSearchForm" type="com.koron.oa.individual.workPlan.OADayWorkPlanSearchForm" />
+		<form-bean name="OADayWorkPlanCheckSearchForm" type="com.koron.oa.individual.workPlan.OADayWorkPlanCheckSearchForm" />
+		<form-bean name="messageSearchForm" type="com.koron.oa.message.MessageSearchForm" />
+		
+		<!-- 工作协助单Form begin -->
+		<form-bean name="OAJobSearchForm" type="com.koron.oa.executive.job.OAJobSearchForm" />
+		<form-bean name="OAjobRestoreForm" type="com.koron.oa.executive.job.OAjobRestoreForm" />
+		<form-bean name="OAJobAuditingForm" type="com.koron.oa.executive.job.OAJobAuditingForm" />
+		
+		<!-- 工作流 -->
+		<form-bean name="OAWorkFlowDesignForm" type="com.koron.oa.workflow.template.OAWorkFlowDesignForm" />
+		<form-bean name="OAWorkFlowTempSearchForm" type="com.koron.oa.workflow.template.OAWorkFlowTempSearchForm" />
+		<form-bean name="OAFileWorkFlowSearchForm" type="com.koron.oa.fileflow.OAFileWorkFlowSearchForm" />
+		<form-bean name="workFlowForm" type="com.koron.oa.workflow.OAMyWorkFlowForm" />
+		<form-bean name="consignForm" type="com.koron.oa.workflow.consignation.OAConsignSearchForm" />
+		
+		<!-- 我的邮件 -->
+		<form-bean name="EMailSearchForm" type="com.menyi.email.EMailSearchForm" />
+		<form-bean name="EMailAccountSearchForm" type="com.menyi.email.EMailAccountSearchForm" />
+		<form-bean name="EMailAccountForm" type="com.menyi.email.EMailAccountForm" />
+		<form-bean name="EMailForm" type="com.menyi.email.EMailForm" />
+		<form-bean name="EMailImportForm" type="com.menyi.email.ImportForm" />
+		<form-bean name="EMaiBlackSearchForm" type="com.menyi.email.EMaiBlackSearchForm" />
+		
+		<!-- 工作台图片上传 -->
+		<form-bean name="uploadImage" type="com.koron.oa.mydesktop.UploadImageForm" />
+		<form-bean name="logForm" type="com.koron.oa.individual.myLog.OAMyLogForm" />
+		<form-bean name="logSearchForm" type="com.koron.oa.individual.myLog.OAMyLogSearchForm" />
+		
+		<!-- 企业论坛 -->
+		<form-bean name="forumForm" type="com.koron.oa.bbs.forum.OABBSForumForm" />
+		<form-bean name="forumSearchForm" type="com.koron.oa.bbs.forum.OABBSForumSearchForm" />
+		<form-bean name="voteForm" type="com.koron.oa.bbs.vote.OABBSVoteForm" />
+		<form-bean name="OABBSUserForm" type="com.koron.oa.bbs.forum.OABBSUserForm" />
+		
+		<!-- 过滤邮件-->
+		<form-bean name="emailFilterForm" type="com.menyi.email.emailFilter.EmailFilterForm" />
+		<form-bean name="emailFilterSearchForm" type="com.menyi.email.emailFilter.EmailFilterSearchForm" />
+		<!-- 企业相册 -->
+		<form-bean name="albumTreeForm" type="com.koron.oa.albumTree.AlbumTreeForm"/>
+		<!-- 网络硬盘 -->
+		<form-bean name="netDiskForm" type="com.koron.oa.netDisk.NetDiskForm" />
+		
+		<!-- 我的日历 -->
+		<form-bean name="oaCalendarForm" type="com.koron.oa.calendar.OAMyCalendarForm" />
+		<form-bean name="oaCalendarSearchForm" type="com.koron.oa.calendar.OAMyCalendarSearchForm" />
+		
+		<!-- 知识中心 -->
+		<form-bean name="OAKnowForm" type="com.koron.oa.publicMsg.knowledgeCenter.OAKnowForm" />
+		<form-bean name="OAKnowSearchForm" type="com.koron.oa.publicMsg.knowledgeCenter.OAKnowSearchForm" />
+		<form-bean name="OAKnowFolderForm"  type="com.koron.oa.publicMsg.knowledgeCenter.OAKnowFolderForm" />
+		<form-bean name="OAKnowFolderSearchForm"  type="com.koron.oa.publicMsg.knowledgeCenter.OAKnowFolderSearchForm" />
+		
+		<!-- 即时消息 -->
+		<form-bean name="messageForm" type="com.koron.oa.message.MessageForm" />
+		
+		<!-- 职员部门弹出框搜索 -->
+		<form-bean name="AccreditSearchForm"  type="com.koron.oa.accredit.AccreditSearchForm" />
+		<!-- 控制面板 -->
+	    
+	    <!-- 会议管理 -->
+	    <form-bean name="meetingForm" type="com.koron.oa.office.meeting.OAMeetingForm" />
+	    <form-bean name="meetingSearchForm" type="com.koron.oa.office.meeting.OAMeetingSearchForm" />
+	    <form-bean name="boardroomForm" type="com.koron.oa.office.meeting.OABoardroomForm" />
+	    
+	    <!-- wuyingyuan 办公用品 strat -->
+		<form-bean name="GoodsSearchForm" type="com.koron.oa.office.goods.GoodsSearchForm" />
+		
+		<!-- 车辆管理wyy -->
+		<form-bean name="CarInfoForm" type="com.koron.oa.office.car.carInfo.CarInfoForm" />
+		<form-bean name="CarOperateForm" type="com.koron.oa.office.car.carOut.CarOperateForm" />
+		
+		<!-- 我的项目 -->
+		<form-bean name="OAItemsForm" type="com.koron.oa.oaItems.OAItemsForm" />
+		<form-bean name="OAItemsSearchForm" type="com.koron.oa.oaItems.OAItemsSearchForm" />
+		
+		<!-- 我的待办 -->
+		<form-bean name="ToDoForm" type="com.koron.oa.toDo.ToDoForm" />
+		
+		<!-- 日程 -->
+		<form-bean name="OACalendarForm" type="com.koron.oa.OACalendar.OACalendarForm" />
+		
+		<!-- 我的任务 -->
+		<form-bean name="OATaskSearchForm" type="com.koron.oa.oaTask.OATaskSearchForm" />
+		
+		<!-- 职员 -->
+		<form-bean name="EmployeeForm" type="com.koron.oa.employeeDepartment.EmployeeForm" />
+		
+		<!-- 我的项目 -->
+		<form-bean name="OAWorkLogSearchForm" type="com.koron.oa.oaWorkLog.OAWorkLogForm" />
+		<form-bean name="OAWorkLogSearchForm" type="com.koron.oa.oaWorkLog.OAWorkLogSearchForm" />
+		
+		<!-- 我的通讯录 -->
+		<form-bean name="CommunicationNoteSearchForm" type="com.koron.oa.communicationNote.CommunicationNoteSearchForm"/>
+		
+		<!-- 我的收藏 -->
+		<form-bean name="OACollectionForm" type="com.koron.oa.oaCollection.OACollectionForm"/>
+		
+		<!-- 日志模板设置 -->
+		<form-bean name="OAWorkLogTemplateForm" type="com.koron.oa.oaWorkLogTemplate.OAWorkLogTemplateForm"/>
+	</form-beans>
+	
+	<global-forwards>
+
+	</global-forwards>
+	
+	<action-mappings>
+		<!-- OA工作台   -->
+		<action path="/MyDesktopAction"  name="uploadImage" parameter="/MyDesktopAction.do"
+			type="com.koron.oa.mydesktop.MyDesktopAction">
+			<forward name="main" path="/vm/oa/mydesktop/oaDeskTop.jsp" />
+			<forward name="picNews" path="/vm/oa/mydesktop/picNews.jsp" />
+			<forward name="workflow" path="/vm/oa/mydesktop/workflow.jsp" />
+			<forward name="person" path="/vm/oa/mydesktop/personInfo.jsp" />
+			<forward name="wish" path="/vm/oa/mydesktop/wish.jsp" />
+			<forward name="common" path="/vm/oa/mydesktop/common.jsp" />
+			<forward name="set" path="/vm/oa/mydesktop/deskTopSet.jsp" />
+			<forward name="mysales" path="/vm/oa/mydesktop/chart.jsp" />
+			<forward name="countdown" path="/vm/oa/mydesktop/countDown.jsp"  />
+			<forward name="uploadImage" path="/vm/oa/mydesktop/uploadImage.jsp"  />
+			<forward name="attentionList" path="/vm/oa/mydesktop/attentionList.jsp"  />
+			<forward name="queryfameTopDet" path="/vm/oa/mydesktop/queryfameTop.jsp"  />
+			<forward name="queryCollection" path="/vm/oa/dayOffice/myCollection/myCollection.jsp"  />
+		</action>
+		
+		<!-- TH工作台   -->
+		<action path="/THDesktopAction"  name="uploadImage" parameter="/THDesktopAction.do"
+			type="com.koron.oa.thdesktop.THDesktopAction">			
+			<forward name="workflow" path="/vm/oa/thdesktop/workflow.jsp" />
+			<forward name="common" path="/vm/oa/thdesktop/common.jsp" />			
+			<forward name="queryCollection" path="/vm/oa/dayOffice/myCollection/myCollection.jsp"  />
+		</action>
+		
+		<!-- 我的工作流 -->
+		<action path="/MobileAction" 
+			type="com.menyi.aio.web.mobile.MobileAction"
+			parameter="/MobileAction.do">
+			<forward name="mWorkFlow" path="/mobile/mWorkFlow.jsp" />
+			<forward name="mBody" path="/mobile/mBody.jsp" />
+		</action>
+		<action path="/MobileQueryAction" name="workFlowForm" 
+			type="com.menyi.aio.web.mobile.MobileAction" scope="session"
+			parameter="/MobileAction.do">
+			<forward name="mWorkFlowList" path="/mobile/mWorkFlowList.jsp" />
+			<forward name="mBody" path="/mobile/mBody.jsp" />
+		</action>
+		<action path="/OAMyWorkFlow" name="workFlowForm" 
+			type="com.koron.oa.workflow.OAMyWorkFlowAction"
+			parameter="/OAMyWorkFlow.do">
+			<forward name="index" path="/vm/oa/workflow/myWorkFlowIndex.jsp" />
+			<forward name="deliverTo" path="/vm/oa/workflow/deliverTo.jsp" />
+			<forward name="workFlowView" path="/vm/oa/workflow/workFlowView.jsp" />
+			<forward name="button" path="/vm/oa/workflow/button.jsp" />
+			<forward name="list" path="/vm/oa/workflow/myWorkFlowList.jsp" />
+			<forward name="queryList" path="/vm/oa/workflow/OAWorkFlowList.jsp" />
+			<forward name="addAffix" path="/vm/oa/workflow/addAffix.jsp" />
+			<forward name="workflowTH" path="/vm/oa/thdesktop/workflow.jsp" />
+			<forward name="mWorkFlowList" path="/mobile/mWorkFlowList.jsp" />
+			
+		</action>
+
+		<action path="/OAMyWorkFlowQuery" name="workFlowForm" 
+			type="com.koron.oa.workflow.OAMyWorkFlowAction"
+			parameter="/OAMyWorkFlowQuery.do?type=$type&amp;operation=4">
+			<forward name="queryList" path="/vm/oa/workflow/OAWorkFlowList.jsp" />
+		</action>
+
+		<action path="/WorkFlowQueryAction"
+			type="com.menyi.aio.web.wokflow.WokFlowAction"
+			parameter="/WorkFlowQueryAction.do?flowType=$flowType">
+			<forward name="newwokflow"
+				path="/vm/wokflow/workflowtypelist.jsp" />
+			<forward name="queryWorkFlow"
+				path="/vm/wokflow/workFlowTypeByQuery.jsp" />
+		</action>
+
+		<action path="/MyWorkFlowAction"
+			type="com.menyi.aio.web.wokflow.WokFlowAction"
+			parameter="/OAMyWorkFlow.do">
+			<forward name="workFlowWindow"
+				path="/vm/wokflow/workFlowWindow.jsp" />
+		</action>
+		
+		<!--工作流 假期设置 -->
+		<action path="/HolidaySettingAction"
+			parameter="/HolidaySettingAction.do"
+			type="com.koron.oa.holidaySetting.HolidaySettingAction">
+			<forward name="main" path="/vm/oa/workflow/holidaySetting.jsp" />
+		</action>
+		
+		<!-- 工作流设计 -->
+		<action path="/OAWorkFlowTempAction" name="OAWorkFlowDesignForm" scope="request"
+			type="com.koron.oa.workflow.template.OAWorkFlowTempAction"
+			parameter="/OAWorkFlowTempQueryAction.do">
+			<forward name="addSel" path="/vm/oa/workflow/template/OAWorkFlowTempTypeSel.jsp"  />
+			<forward name="add" path="/vm/oa/workflow/template/OAWorkFlowTempAdd.jsp"  />
+			<forward name="update" path="/vm/oa/workflow/template/OAWorkFlowTempUpdate.jsp"  />
+			<forward name="uploadResult" path="/vm/oa/workflow/template/uploadResult.jsp"  />
+			<forward name="openUpload" path="/vm/oa/workflow/template/OAWorkFlowTempFile.jsp"  />
+			<forward name="addTable" path="/vm/oa/workflow/template/addTable.jsp"  />
+			<forward name="designFlow" path="/vm/oa/workflow/template/workFlowDesign.jsp"  />
+			<forward name="flowfields" path="/vm/oa/workflow/template/OAWorkFlowFields.jsp"  />
+			
+			<forward name="settingFlow" path="/vm/oa/workflow/template/workFlowSetting.jsp"  />	
+		</action>
+		<action path="/WorkFlowTableAction"
+			type="com.menyi.aio.web.customize.CustomizeAction"
+			parameter="/OAWorkFlowTempQueryAction.do">
+			<forward name="simpleTableMgt" path="/vm/tableInfo/simpleTableMgt.jsp" />
+			<forward name="tableMgt" path="/vm/tableInfo/tableMgt.jsp" />
+			<forward name="popupSet" path="/vm/tableInfo/popupSet.jsp"  />
+			<forward name="popupQuery" path="/vm/tableInfo/popupQuery.jsp"  />
+			<forward name="popupUpdate" path="/vm/tableInfo/popupUpdate.jsp"  />
+		</action>
+		<action path="/OAWorkFlowCreateAction" name="OAWorkFlowTempSearchForm" scope="request"
+			type="com.koron.oa.workflow.template.OAWorkFlowTempAction"
+			parameter="/OAMyWorkFlow.do">
+			<forward name="classList" path="/vm/oa/workflow/workflowClassTree.jsp"  />
+			<forward name="frame" path="/vm/oa/workflow/OAWorkFlowAddFrame.jsp"  />
+			<forward name="detail" path="/vm/oa/workflow/template/OAWorkFlowTempDetail.jsp"  />
+			<forward name="workflowAdd" path="/vm/oa/thdesktop/workflow.jsp" />
+		</action>
+		<action path="/OAWorkFlowTempQueryAction"
+			type="com.koron.oa.workflow.template.OAWorkFlowTempAction"
+			name="OAWorkFlowTempSearchForm" scope="session"
+			parameter="/OAWorkFlowTempQueryAction.do">
+			<forward name="list" path="/vm/oa/workflow/template/OAWorkFlowTempList.jsp"  />
+			<forward name="toframe" path="/vm/oa/workflow/template/frame.jsp"  />
+			<forward name="totree"  path="/vm/oa/workflow/template/tree.jsp"  />
+			<forward name="version" path="/vm/oa/workflow/template/OAWorkFlowTempVersion.jsp"  />
+			
+		</action>	
+					
+		<!-- lwx -->		
+		<action path="/OAWorkFlowTableAction" name="tableImportForm"  scope="request"
+			type="com.koron.oa.workflow.OAWorkFlowTableAction"
+			parameter="/OAWorkFlowTableAction.do">
+			<forward name="layoutHTML" path="/vm/oa/workflow/template/layoutHTML.jsp"  />
+			<forward name="tableDesign" path="/vm/oa/workflow/template/tableDesign.jsp"  />
+			<forward name="importForm" path="/vm/oa/workflow/importForm.jsp"  />
+			<forward name="tableVesrion"  path="/vm/oa/workflow/tableVersion.jsp"  />
+		</action>
+		
+		<action path="/OAWorkFlowAction"
+			type="com.koron.oa.workflow.OAWorkFlowAction"
+			parameter="/OAWorkFlowAction.do">
+			<forward name="add" path="/vm/oa/workflow/OAWorkFlowAdd.jsp"  />
+			<forward name="update" path="/vm/oa/workflow/OAWorkFlowUpdate.jsp"  />
+			<forward name="detail" path="/vm/oa/workflow/OAWorkFlowDetail.jsp"  />
+		</action>
+		
+		<!-->工作委托<-->
+		<action path="/WorkConsignAction" name="consignForm"
+			type="com.koron.oa.workflow.consignation.OAConsignationAction"
+			scope="request" parameter="/WorkConsignAction.do">
+			<forward name="addWorkConsign" path="/vm/oa/workflow/consignation/addWorkConsign.jsp"  />
+			<forward name="updateWorkConsign" path="/vm/oa/workflow/consignation/updateWorkConsign.jsp"  />
+			<forward name="flowType" path="/vm/oa/workflow/consignation/selectFlowType.jsp"  />
+			<forward name="workConsignIndex" path="/vm/oa/workflow/consignation/workConsignIndex.jsp"  />
+			<forward name="workConsignList" path="/vm/oa/workflow/consignation/workConsignList.jsp"  />
+		</action>
+		
+		<!-- 我的工作计划 -->
+		<action path="/OAWorkPlanAction"  name="OADayWorkPlanForm" scope="request"
+			 type="com.koron.oa.individual.workPlan.OAWorkPlanAction"
+			 parameter="/OAWorkPlanAction.do">
+			<forward name="addDayWork" path="/vm/oa/individual/myWork/addDayWork.jsp" />
+			<forward name="addDaySummary" path="/vm/oa/individual/myWork/addDaySummary.jsp" />
+			<forward name="workIndex" path="/vm/oa/individual/myWork/myWorkIndex.jsp" />
+			<forward name="workList" path="/vm/oa/individual/myWork/workList.jsp" />
+			<forward name="frameleft" path="/vm/oa/individual/myWork/Frameleft.jsp" />
+			<forward name="planParam" path="/vm/oa/individual/myWork/planParam.jsp" />
+			<forward name="calendar" path="/vm/oa/individual/myWork/calendar.jsp" />
+			<forward name="selPersonBox" path="/vm/oa/individual/myWork/selPersonBox.jsp" />
+			
+			<forward name="planAdd" path="/vm/crm/plan/planAdd.jsp" />
+			<forward name="planIndex" path="/vm/crm/plan/planIndex.jsp" />
+			<forward name="planLeft" path="/vm/crm/plan/planLeft.jsp" />
+			<forward name="planList" path="/vm/crm/plan/planList.jsp" />
+			<forward name="weekList" path="/vm/crm/plan/weekList.jsp" />
+			<forward name="sumaryAdd" path="/vm/crm/plan/sumaryAdd.jsp" />
+		</action>
+		
+		<action path="/OAWorkPlanQueryAction" name="OADayWorkPlanSearchForm" scope="session"
+			type="com.koron.oa.individual.workPlan.OAWorkPlanAction"
+			parameter="/OAWorkPlanQueryAction.do?operation=4&amp;opType=eventWorkList">
+			<forward name="EventWorkList" path="/vm/oa/individual/myWork/EventWorkList.jsp" />
+		</action>
+		
+		<!-- 工作计划检查 -->
+		<action path="/OAWorkPlanCheckAction" name="OADayWorkPlanCheckSearchForm" scope="session" 
+			type="com.koron.oa.individual.workPlan.OAWorkPlanAction"
+			parameter="/OAWorkPlanCheckAction.do?operation=4&amp;opType=check">
+			<forward name="planCheck" path="/vm/oa/individual/myWork/planCheck.jsp" />
+		</action>
+		
+		<!-- 工作计划权限查看设置 -->
+		<action path="/OAWorkPopedomeActon" type="com.koron.oa.individual.workPlan.OAWorkPlanPopedomeAction"
+			parameter="/OAWorkPopedomeActon.do" name="" scope="request">
+			<forward name="showList" path="/vm/oa/individual/myWork/WorkPopedome/seePersonList.jsp" />
+			<forward name="addPrepare" path="/vm/oa/individual/myWork/WorkPopedome/addSeePerson.jsp" />
+		</action>
+		
+		<action path="/OAWorkPopedAction" type="com.koron.oa.individual.workPlan.OAWorkPlanPopedomeAction"
+			parameter="/OAWorkPlanAction.do" name="" scope="request">
+			<forward name="showList" path="/vm/oa/individual/myWork/WorkPopedome/seePersonList.jsp" />
+			<forward name="addPrepare" path="/vm/oa/individual/myWork/WorkPopedome/addSeePerson.jsp" />
+		</action>
+		
+		<!--  工作计划管理下级中的 设置  -->
+		<action path="/OAPlanWorkSettingAction" type="com.koron.oa.individual.planWorkSetting.OAPlanWorkSettingAction"
+			parameter="/OAplanWorkSettingAction.do" name="" scope="request">
+			<forward name="setIndex" path="/vm/oa/individual/planWorkSetting/index.jsp" />
+			<forward name="operationIndex" path="/vm/oa/individual/planWorkSetting/operationIndex.jsp" />
+		</action>
+		
+		<!-- 我的邮件 -->
+		<action path="/EMailAction"  name="EMailForm" scope="request" 
+			type="com.menyi.email.EMailAction"
+			parameter="/EMailAction.do">
+			<forward name="frameIndex" path="/vm/oa/mail/Frameindex.jsp" />
+			<forward name="frameLeft" path="/vm/oa/mail/Frameleft.jsp" />
+			<forward name="readStatus" path="/vm/oa/mail/readStatus.jsp" />
+			<forward name="mailGroupManage" path="/vm/oa/mail/MailGroupManage.jsp" />
+			<forward name="mailGroup" path="/vm/oa/mail/MailGroup.jsp" />
+			<forward name="mailDetail" path="/vm/oa/mail/MailDetail.jsp" />
+			<forward name="mailContent" path="/vm/oa/mail/MailContent.jsp" />
+			<forward name="mailAccountList" path="/vm/oa/mail/MailAccountList.jsp" />
+			<forward name="mailAccount" path="/vm/oa/mail/MailAccount.jsp" />
+			<forward name="mailSign" path="/vm/oa/mail/MailSign.jsp" />
+			<forward name="mailShare" path="/vm/oa/mail/mailShare.jsp" />
+			<forward name="blank" path="/vm/oa/mail/blank.jsp" />
+			<forward name="MailReceive" path="/vm/oa/mail/MailReceive.jsp" />
+			<forward name="MailWrite" path="/vm/oa/mail/MailWrite.jsp" />
+			<forward name="MailCRM" path="/vm/oa/mail/MailCRM.jsp" />
+		</action>
+		<action path="/EMailQueryAction" name="EMailSearchForm" scope="session"
+			type="com.menyi.email.EMailAction"
+			parameter="/EMailAction.do">
+			<forward name="list" path="/vm/oa/mail/MailList.jsp" />
+			<forward name="export" path="/vm/oa/mail/export.jsp" />
+		</action>
+		<action path="/EMailImportAction" name="EMailImportForm" 
+			type="com.menyi.email.EMailAction" scope="request"
+			parameter="/EMailAction.do">
+			<forward name="Import" path="/vm/oa/mail/Import.jsp" />
+		</action>
+		<action path="/EMailBlackAction"
+			type="com.menyi.email.EMailSettingAction"
+			parameter="/EMailBlackQueryAction.do">
+			<forward name="mailBlack" path="/vm/oa/mail/MailBlack.jsp" />
+		</action>
+		<action path="/EMailBlackQueryAction" name="EMaiBlackSearchForm"  scope="session"
+			type="com.menyi.email.EMailSettingAction"
+			parameter="/EMailBlackQueryAction.do">
+			<forward name="mailBlackList" path="/vm/oa/mail/MailBlackList.jsp" />
+		</action>
+		<action path="/EMailSettingAction"
+			type="com.menyi.email.EMailSettingAction"
+			parameter="/EMailSettingAction.do?operation=7">
+			<forward name="mailSetting" path="/vm/oa/mail/MailSetting.jsp" />
+		</action>
+
+		<!-- 邮件帐户设置-->
+		<action path="/EMailAccountAction" name="EMailAccountForm" scope="request"
+			type="com.menyi.email.EMailAccountAction"
+			parameter="/EMailAccountQueryAction.do">
+			<forward name="mailAccount" path="/vm/oa/mail/MailAccount.jsp" />
+			<forward name="mailSign" path="/vm/oa/mail/MailSign.jsp" />
+			<forward name="mailShare" path="/vm/oa/mail/MailShare.jsp" />
+		</action>
+		<action path="/EMailAccountQueryAction" name="EMailAccountSearchForm" scope="session"
+			type="com.menyi.email.EMailAccountAction"
+			parameter="/EMailAccountQueryAction.do">
+			<forward name="mailAccountList" path="/vm/oa/mail/MailAccountList.jsp" />
+		</action>
+		
+		<!--邮件过滤 -->
+		<action path="/EmailFilterAction" name="emailFilterForm" 
+			type="com.menyi.email.emailFilter.EmailFilterAction"
+			parameter="/EmailFilterQueryAction.do?operation=4">
+			<forward name="emailFilterAdd" path="/vm/oa/mail/emailFilter/emailFilterAdd.jsp" />
+			<forward name="emailFilterUpdate" path="/vm/oa/mail/emailFilter/emailFilterUpdate.jsp" />
+			<forward name="emailFilterDetail" path="/vm/oa/mail/emailFilter/emailFilterDetail.jsp" />
+		</action>
+		<action path="/EmailFilterQueryAction" name="emailFilterSearchForm" scope="session"
+			type="com.menyi.email.emailFilter.EmailFilterAction"
+			parameter="/EmailFilterQueryAction.do?operation=4">
+			<forward name="emailFilterList" path="/vm/oa/mail/emailFilter/emailFilterList.jsp"/>
+		</action>
+		
+		<!--企业相册 -->
+		<action path="/AlbumQueryAction"
+			type="com.koron.oa.album.AlbumAction" scope="request"
+			parameter="/AlbumQueryAction.do">
+			<forward name="albumAdd" path="/vm/oa/album/albumAdd.jsp" />
+			<forward name="albumUpdate" path="/vm/oa/album/albumUpdate.jsp" />
+			<forward name="albumDetail" path="/vm/oa/album/albumDetail.jsp" />
+			<forward name="albumList" path="/vm/oa/album/albumList.jsp" />
+			<forward name="uploadPhoto" path="/vm/oa/album/upload.jsp"  />
+			<forward name="uploadPhotoEnd" path="/vm/oa/album/uploadSuccess.jsp" />
+		</action>
+		
+		<!--目录设置-->
+		<action path="/DirectorySettingAlbumQueryAction"
+			type="com.koron.oa.directorySeting.DirectorySettingAction"
+			parameter="/DirectorySettingAlbumQueryAction.do">
+			<forward name="add" path="/vm/oa/directorySetting/add.jsp" />
+			<forward name="update" path="/vm/oa/directorySetting/update.jsp" />
+			<forward name="index" path="/vm/oa/directorySetting/index.jsp" />
+		</action>
+		<!-- 目录设置-->
+		<action path="/DirectorySettingNetDiskQueryAction"
+			type="com.koron.oa.directorySeting.DirectorySettingAction"
+			parameter="/DirectorySettingNetDiskQueryAction.do">
+			<forward name="add" path="/vm/oa/directorySetting/add.jsp" />
+			<forward name="update" path="/vm/oa/directorySetting/update.jsp" />
+			<forward name="index" path="/vm/oa/directorySetting/index.jsp"  />
+		</action>
+		
+		
+		<!-- 企业相册 -->
+		<action path="/AlbumTreeQueryAction"  name="albumTreeForm" 
+			type="com.koron.oa.albumTree.AlbumTreeAction" 
+			parameter="/AlbumTreeQueryAction.do">
+			<forward name="albumTreeDetail" path="/vm/oa/album/albumTree/albumTreeDetail.jsp" />
+			<forward name="photoInfoList" path="/vm/oa/album/albumTree/photoInfoList.jsp" />
+			<forward name="albumTreeList" path="/vm/oa/album/albumTree/albumTreeList.jsp" />
+			<forward name="uploadTreePhoto" path="/vm/oa/album/albumTree/uploadTree.jsp"  />
+			<forward name="uploadPhotoEndTree" path="/vm/oa/album/albumTree/uploadSuccessTree.jsp" />
+			<forward name="open" path="/vm/oa/album/ui/tongda/open.jsp" />
+			<forward name="open_main" path="/vm/oa/album/ui/tongda/open_main.jsp" />
+			<forward name="open_control" path="/vm/oa/album/ui/tongda/open_control.jsp" />
+			<forward name="index" path="/vm/oa/album/albumTree/index.jsp" />
+		</action>
+		<action path="/AlbumTreeSearch" name="albumTreeForm" scope="session"
+			type="com.koron.oa.albumTree.AlbumTreeAction"
+			parameter="/AlbumTreeQueryAction.do">
+			<forward name="photoInfoList" path="/vm/oa/album/albumTree/photoInfoList.jsp"/>
+		</action>
+		
+		<!-- 网络硬盘 -->
+		<action path="/NetDiskQueryAction" scope="request" name="netDiskForm" 
+			type="com.koron.oa.netDisk.NetDiskAction" 
+			parameter="/NetDiskQueryAction.do">
+			<forward name="filesList" path="/vm/oa/netDisk/filesList.jsp"/>
+			<forward name="netDiskIndex" path="/vm/oa/netDisk/netDiskIndex.jsp"/>
+		</action>
+		<action path="/NetDiskSearch" name="netDiskForm" scope="session"
+			type="com.koron.oa.netDisk.NetDiskAction"
+			parameter="/NetDiskQueryAction.do">
+			<forward name="filesList" path="/vm/oa/netDisk/filesList.jsp"/>
+		</action>
+		
+		<!-- 即时消息 -->
+		<action path="/MessageAction"
+			type="com.koron.oa.message.MessageAction" name="messageForm"
+			parameter="/MessageQueryAction.do">
+			<forward name="msgRevert" path="/vm/oa/message/msgRevert.jsp" />
+			<forward name="msgDetail" path="/vm/oa/message/msgDetail.jsp" />
+			<forward name="msgSend" path="/vm/oa/message/msgSend.jsp" />
+			<forward name="msgReceive" path="/vm/oa/message/msgReceive.jsp" />
+			<forward name="msgHistory" path="/vm/oa/message/msgHistory.jsp" />
+		</action>
+		<action path="/MessageQueryAction" name="messageSearchForm" type="com.koron.oa.message.MessageAction"
+			parameter="/MessageQueryAction.do">
+			<forward name="msgList" path="/vm/oa/message/msgList.jsp" />
+		</action>
+		
+
+		<!-- userGroup收藏夹管理begin-->
+		<action path="/OAFavorite"
+			type="com.koron.oa.favorite.OAFavoriteAction" scope="session"
+			parameter="/OAFavorite.do" name="OAFavoriteSearchForm">
+			<forward name="frame" path="/vm/oa/favorite/favorite_frame.jsp" />
+			<forward name="FavoriteView" path="/vm/oa/favorite/favoriteView.jsp" />
+			<forward name="querySingleOAFavoriteGroup" path="/vm/oa/favorite/favoritegroup.jsp" />
+			<forward name="addPrepareOAFavoriteGroup" path="/vm/oa/favorite/addFavoriteGroup.jsp" />
+			<forward name="updatePrepareOAFavoriteGroup" path="/vm/oa/favorite/updateFavoriteGroup.jsp" />
+			<forward name="addPrepareOAFavorite" path="/vm/oa/favorite/addFavorite.jsp" />
+			<forward name="updatePrepareOAFavorite" path="/vm/oa/favorite/updateFavorite.jsp" />
+			
+			<forward name="toTree" path="/vm/oa/favorite/tree.jsp" />
+			<forward name="toTop" path="/vm/oa/favorite/top.jsp" />
+			<forward name="stat" path="/vm/oa/alert/stat.jsp" />
+			<forward name="FavoriteManager" path="/vm/oa/favorite/favoriteManager.jsp" />
+		</action>
+
+
+		<!-- MyData我的资料夹begin-->
+		<action path="/OAMyData"  name="OAMyDataSearchForm"  scope="session"
+			type="com.koron.oa.mydata.OAMyDataAction"
+			parameter="/OAMyData.do">
+			<forward name="list" path="/vm/oa/mydata/OADataManager.jsp" />
+			<forward name="toTree" path="/vm/oa/mydata/tree.jsp" />
+			<forward name="toTop" path="/vm/oa/mydata/top.jsp" />
+			<forward name="frame" path="/vm/oa/mydata/mydata_frame.jsp" />
+
+			<forward name="OAMyDataeView" path="/vm/oa/mydata/mydataView.jsp" />
+			<forward name="querySingleOAMyDataFolder" path="/vm/oa/mydata/mydataFolder.jsp" />
+
+			<forward name="addPrepareOAMyDataFolder" path="/vm/oa/mydata/addMydataFolder.jsp" />
+			<forward name="addPrepareOAMyData" path="/vm/oa/mydata/addMyData.jsp" />
+
+			<forward name="updatePrepareOAMyData" path="/vm/oa/mydata/updateMydata.jsp" />
+			<forward name="updatePrepareOAMyDataFolder" path="/vm/oa/mydata/updateMydataFolder.jsp" />
+		</action>
+		
+		<!-- 内部新闻-->
+		<action path="/OANewsAction" name="NewsForm"
+			type="com.koron.oa.publicMsg.newsInfo.OANewsAction"
+			parameter="/OANewsAction.do">
+			<!-- 新闻首页 -->
+			<forward name="newsIndex" path="/vm/oa/publicMsg/news/newsIndex.jsp" />
+			<forward name="frame" path="/vm/oa/publicMsg/news/frame.jsp" />
+			<!-- 跳转到新增新闻页 -->
+			<forward name="to_addNews" path="/vm/oa/publicMsg/news/addNews.jsp" />
+			<!-- 跳转到修改新闻页 -->
+			<forward name="to_updateNews" path="/vm/oa/publicMsg/news/updateNews.jsp" />
+			<!-- 跳转到详细新闻页 -->
+			<forward name="to_detailNews" path="/vm/oa/publicMsg/news/detailNews.jsp" />
+		</action>
+		<action path="/OANews" name="NewsSearchForm" scope="session"
+			type="com.koron.oa.publicMsg.newsInfo.OANewsAction"
+			parameter="/OANewsAction.do" >
+			<forward name="newsIndex" path="/vm/oa/publicMsg/news/newsIndex.jsp" />
+			<forward name="tree" path="/vm/oa/publicMsg/news/tree.jsp" />
+			<!-- 跳转到新增新闻页 -->
+			<forward name="to_addNews" path="/vm/oa/publicMsg/news/addNews.jsp" />
+			<!-- 跳转到详细新闻页 -->
+			<forward name="to_detailNews" path="/vm/oa/publicMsg/news/detailNews.jsp" />
+			<forward name="to_addreply" path="/vm/oa/publicMsg/news/addreply.jsp" />
+		</action>
+		
+		<!-- 通知通告begin-->
+		<action path="/OAnewAdviceAction" name="adviceForm" 
+			type="com.koron.oa.publicMsg.newadvice.OAAdviceAction"
+			parameter="/OAnewAdviceAction.do">
+			<!-- 通知通告首页 -->
+			<forward name="adviceIndex" path="/vm/oa/publicMsg/newadvice/adviceIndex.jsp"  />		
+			<forward name="frame" path="/vm/oa/publicMsg/newadvice/frame.jsp"  />
+			<!-- 跳转到新增通知通告页 -->
+			<forward name="to_addAdvice" path="/vm/oa/publicMsg/newadvice/addAdvice.jsp"  />
+			<!-- 跳转到修改通知通告页 -->
+			<forward name="to_updateAdvice" path="/vm/oa/publicMsg/newadvice/updateAdvice.jsp" />
+			<!-- 跳转到详细通知通告页 -->
+			<forward name="to_detailAdvice" path="/vm/oa/publicMsg/newadvice/detailAdvice.jsp" />
+			<!-- 跳转到回复详细列表页 -->
+			<forward name="toReply" path="/vm/oa/publicMsg/newadvice/addreply.jsp" />
+		</action>
+		<action path="/OAnewAdvice" name="adviceSearchForm"  scope="session"
+			type="com.koron.oa.publicMsg.newadvice.OAAdviceAction"
+			parameter="/OAnewAdviceAction.do">
+			<forward name="adviceIndex" path="/vm/oa/publicMsg/newadvice/adviceIndex.jsp"  />
+			<forward name="tree" path="/vm/oa/publicMsg/newadvice/tree.jsp"  />
+			<!-- 跳转到新增通知通告页 -->
+			<forward name="to_addAdvice" path="/vm/oa/publicMsg/newadvice/addAdvice.jsp"  />
+			<!-- 跳转到详细新闻页 -->
+			<forward name="to_detailAdvice" path="/vm/oa/publicMsg/newadvice/detailAdvice.jsp" />
+			<forward name="to_addreply" path="/vm/oa/publicMsg/newadvice/addreply.jsp" />
+		</action>
+		
+		<!-- 新的规章制度-->
+		<action path="/OAnewOrdainAction" name="ordainForm"
+			type="com.koron.oa.publicMsg.newordain.OAOrdainAction"
+			parameter="/OAnewOrdainAction.do">
+			<!-- 规章制度首页 -->
+			<forward name="ordainIndex" path="/vm/oa/publicMsg/newordain/ordainIndex.jsp" />
+			<forward name="frame" path="/vm/oa/publicMsg/newordain/frame.jsp"  />
+			<!-- 跳转到新增规章制度页 -->
+			<forward name="to_addOrdain" path="/vm/oa/publicMsg/newordain/addOrdain.jsp" />
+			<!-- 跳转到修改规章制度页 -->
+			<forward name="to_updateOrdain" path="/vm/oa/publicMsg/newordain/updateOrdain.jsp" />
+			<!-- 跳转到详细规章制度页 -->
+			<forward name="to_detailOrdain" path="/vm/oa/publicMsg/newordain/detailOrdain.jsp" />
+		</action>
+		<action path="/OAnewOrdain" name="ordainSearchForm"  scope="session"
+			type="com.koron.oa.publicMsg.newordain.OAOrdainAction"
+			parameter="/OAnewOrdainAction.do">
+			<!-- 规章制度首页 -->
+			<forward name="ordainIndex" path="/vm/oa/publicMsg/newordain/ordainIndex.jsp"  />			
+			<forward name="tree" path="/vm/oa/publicMsg/newordain/tree.jsp"  />
+			<!-- 跳转到新增规章制度页 -->
+			<forward name="to_addOrdain" path="/vm/oa/publicMsg/newordain/addOrdain.jsp"  />
+			<!-- 跳转到详细规章制度页 -->
+			<forward name="to_detailOrdain" path="/vm/oa/publicMsg/newordain/detailOrdain.jsp"  />
+		</action>
+		
+		<!-- 新的规章制度 目录设置-->
+		<action path="/OAOrdainGroup" 
+			type="com.koron.oa.publicMsg.newordain.OAOrdainAction"
+			name="ordainGroupSearchForm" parameter="/OAnewOrdainAction.do" scope="session">
+			<forward name="queryGroup"  path="/vm/oa/publicMsg/newordain/queryFolder.jsp"/>
+		</action>
+		<action path="/OAOrdainGroupCenter" 
+			type="com.koron.oa.publicMsg.newordain.OAOrdainAction"
+			name="ordainGroupForm" parameter="/OAnewOrdainAction.do">
+			<forward name="dealGroup" path="/vm/oa/publicMsg/newordain/dealGroup.jsp"/>
+		</action>
+		
+		<!-- 知识中心-->
+		<action path="/OAKnowledgeCenter" name="OAKnowForm" 
+			type="com.koron.oa.publicMsg.knowledgeCenter.OAKnowCenterAction"
+			parameter="/OAKnowledgeCenter.do">
+			<forward name="toFarme"  path="/vm/oa/publicMsg/knowCenter/toFrame.jsp"/>
+			<forward name="toTree"  path="/vm/oa/publicMsg/knowCenter/tree.jsp"/>
+			<forward name="addPrepareFile" path="/vm/oa/publicMsg/knowCenter/addFile.jsp"/>
+			<forward name="updateFile"  path="/vm/oa/publicMsg/knowCenter/updateFile.jsp"/>
+		</action>
+		<action path="/OAKnowCenter" name="OAKnowSearchForm"  scope="session"
+			type="com.koron.oa.publicMsg.knowledgeCenter.OAKnowCenterAction"
+			parameter="/OAKnowledgeCenter.do">
+			<forward name="knowCenterList" path="/vm/oa/publicMsg/knowCenter/knowCenterManager.jsp"/>
+			<forward name="detail"  path="/vm/oa/publicMsg/knowCenter/detail.jsp"/>
+		</action>
+		<!-- 知识中心 目录设置-->
+		<action path="/OAKnowFolderCenter" name="OAKnowFolderForm" 
+			type="com.koron.oa.publicMsg.knowledgeCenter.OAKnowCenterAction"
+			parameter="/OAKnowledgeCenter.do">
+			<forward name="dealGroup" path="/vm/oa/publicMsg/knowCenter/dealGroup.jsp"/>
+		</action>
+		<action path="/OAKnowFolder" name="OAKnowFolderSearchForm" 
+			type="com.koron.oa.publicMsg.knowledgeCenter.OAKnowCenterAction"
+			parameter="/OAKnowledgeCenter.do" scope="session">
+			<forward name="quertGroup"  path="/vm/oa/publicMsg/knowCenter/queryFolder.jsp"/>
+		</action> 
+		
+		<!-- 我的文件柜 -->
+		<action path="/OAFileFolderAction"
+			type="com.koron.oa.folder.OAFileFolderAction"
+			parameter="/OAFileFolderAction.do">
+			<forward name="fileList" path="/vm/oa/folderShare/folderIndex.jsp" />
+		</action>
+		
+		<!-- 我的日程 -->
+		<action path="/OAMyCalendar" name="oaCalendarForm"
+			type="com.koron.oa.calendar.MyCalendarsAction"
+			parameter="/OAMyCalendar.do">
+			<forward name="calendar" path="/vm/oa/calendar/calendarview.jsp" />
+			<forward name="singleMyCalendar" path="/vm/oa/calendar/singleMyCalendar.jsp" />
+			<forward name="myCalender_frame" path="/vm/oa/calendar/myCalender_frame.jsp" />
+			<forward name="myCalenders" path="/vm/oa/calendar/myCalenders.jsp" />
+			<forward name="addPrepareCalendar" path="/vm/oa/calendar/addCalendar.jsp" />
+			<forward name="updatePrepareCalendar" path="/vm/oa/calendar/updatePrepareCalendar.jsp" />
+		</action>
+		<action path="/OAMyCalendarList" name="oaCalendarSearchForm"
+			type="com.koron.oa.calendar.MyCalendarsAction"
+			parameter="/OAMyCalendar.do">
+			<forward name="myCalenderlist" path="/vm/oa/calendar/calendarList.jsp" />
+		</action>
+		
+		<!-- 我的日志begin-->
+		<action path="/OAMyLogAction" name="logForm"
+			type="com.koron.oa.individual.myLog.OAMyLogAction"
+			parameter="/OAMyLog.do">
+			<!-- 日志首页 -->
+			<forward name="myLogIndex" path="/vm/oa/individual/myLog/myLogIndex.jsp"  />
+			<!-- 跳转到新增日志页 -->
+			<forward name="to_addLog" path="/vm/oa/individual/myLog/addLog.jsp" />
+			<!-- 跳转到修改日志页 -->
+			<forward name="to_updMyLog" path="/vm/oa/individual/myLog/updateLog.jsp" />
+			<!-- 跳转到详细日志页 -->
+			<forward name="to_dedail" path="/vm/oa/individual/myLog/dedailLog.jsp" />
+		</action>
+		
+		<action path="/OAMyLog" name="logSearchForm"  scope="session"
+			type="com.koron.oa.individual.myLog.OAMyLogAction"
+			parameter="/OAMyLog.do">
+			<forward name="myLogIndex" path="/vm/oa/individual/myLog/myLogIndex.jsp" />
+		</action>
+		<!-- 我的日志end-->
+		
+		<!-- 工作协助单 -->
+		<action path="/OAJob"  name="OAJobSearchForm"
+			type="com.koron.oa.executive.job.OAJobAction"
+			parameter="/OAJob.do">
+			<forward name="jobindex" path="/vm/oa/job/jobindex.jsp" />
+			<forward name="addjob" path="/vm/oa/job/addjob.jsp" />
+			<forward name="updatejob" path="/vm/oa/job/updatejob.jsp" />
+			<forward name="to_detailjob" path="/vm/oa/job/detailjob.jsp" />
+			<forward name="sendemail" path="/vm/classFunction/sendBill2.jsp" />
+		</action>
+		<!-- 工作协助单 回复 -->
+		<action path="/OAjobRestore"  name="OAjobRestoreForm" scope="request"
+			type="com.koron.oa.executive.job.OAJobAction"
+			parameter="/OAJob.do">
+			<forward name="jobindex" path="/vm/oa/job/jobindex.jsp" />
+			<forward name="addjob" path="/vm/oa/job/addjob.jsp" />
+			<forward name="updatejob" path="/vm/oa/job/updatejob.jsp" />
+			<forward name="to_detailjob" path="/vm/oa/job/detailjob.jsp" />
+		</action>
+		<!-- 工作协助单 审核 -->
+		<action path="/OAJobAuditing"  name="OAJobAuditingForm" scope="request"
+			type="com.koron.oa.executive.job.OAJobAction"
+			parameter="/OAJob.do">
+			<forward name="jobindex" path="/vm/oa/job/jobindex.jsp" />
+			<forward name="addjob" path="/vm/oa/job/addjob.jsp" />
+			<forward name="updatejob" path="/vm/oa/job/updatejob.jsp" />
+			<forward name="to_detailjob" path="/vm/oa/job/detailjob.jsp" />
+		</action>
+		<!-- 工作协助单end -->
+		
+		<!-- 阅读痕迹 -->
+		<action path="/OAReadingRecordAction"
+			type="com.koron.oa.oaReadingRecord.OAReadingRecordAction"
+			parameter="/OAReadingRecordAction.do">
+		</action>
+		
+		<!-- 企业论坛 -->
+		<action path="/OABBSForumAction" name="forumForm"  scope="request"
+			parameter="/OABBSForumAction.do"
+			type="com.koron.oa.bbs.forum.OABBSForumAction" >
+			<forward name="displayTopic" path="/vm/oa/oabbs/oabbsindex.jsp" />
+			<forward name="displayForum" path="/vm/oa/oabbs/oabbsShowSends.jsp" />
+			<forward name="addForum" path="/vm/oa/oabbs/oabbsSend.jsp" />
+			<forward name="detailForum" path="/vm/oa/oabbs/oabbsShowReplays.jsp" />
+			<forward name="updateForum" path="/vm/oa/oabbs/oabbsUpdSend.jsp" />
+			<forward name="updateVote" path="/vm/oa/oabbs/oabbsUpdVote.jsp" />
+		</action>
+		<!-- 企业论坛 用户设置-->
+		<action path="/OABBSUserAction" name="OABBSUserForm" scope="request"
+			type="com.koron.oa.bbs.forum.OABBSForumAction" >
+			<forward name="updateUser" path="/vm/oa/oabbs/oabbsUpdUser.jsp" />
+		</action>
+		<action path="/OABBSForumQueryAction" name="forumSearchForm"
+			type="com.koron.oa.bbs.forum.OABBSForumAction" 
+			parameter="/OABBSForumAction.do" >
+			<forward name="displayTopic" path="/vm/oa/oabbs/oabbsindex.jsp" />
+			<forward name="displayForum" path="/vm/oa/oabbs/oabbsShowSends.jsp" />
+		</action>
+		<!-- 企业论坛 投票-->
+		<action path="/OABBSVoteAction" name="voteForm" parameter="/OABBSVoteAction.do"
+			type="com.koron.oa.bbs.vote.OABBSVoteAction" >
+			<forward name="addVote" path="/vm/oa/oabbs/addVote.jsp" />
+			<forward name="displayForum" path="/vm/oa/oabbs/oabbsShowSends.jsp" />
+			<forward name="addForum" path="/vm/oa/oabbs/oabbsSend.jsp" />
+			<forward name="detailForum" path="/vm/oa/oabbs/oabbsShowReplays.jsp" />
+			<forward name="updateForum" path="/vm/oa/oabbs/oabbsUpdSend.jsp" />
+			<forward name="updateVote" path="/vm/oa/oabbs/oabbsUpdVote.jsp" />
+			<forward name="updateUser" path="/vm/oa/oabbs/oabbsUpdUser.jsp" />
+		</action>
+			
+		<!-- 职员部门弹出框 -->
+		<action path="/AccreditAction"  parameter="/AccreditAction.do" name="AccreditSearchForm"
+			type="com.koron.oa.accredit.AccreditAction" scope="request">
+			<forward name="accreditIndex" path="/vm/oa/accreditChoose/accreditIndex.jsp" />
+			<forward name="accreditInfo" path="/vm/oa/accreditChoose/chooseInfo.jsp" />
+		</action>
+		<action path="/Accredit" name="AccreditSearchForm"  scope="request"
+			type="com.koron.oa.accredit.AccreditAction"
+			parameter="/AccreditAction.do">
+			<forward name="accreditIndex" path="/vm/oa/accreditChoose/accreditIndex.jsp" />
+		</action>
+		
+		<!-- 控制面板 -->
+		<action path="/ControlPanelAction" name="controlPanelForm" scope="session"
+			type="com.koron.oa.controlPanel.ControlPanelAction"
+			parameter="/ControlPanelAction.do" >
+			<forward name="frame" path="/vm/oa/controlPanel/frame.html"/>
+			<forward name="main" path="/vm/oa/mydesktop/oaDeskTop.jsp" />
+			<forward name="updatePwd" path="/vm/oa/controlPanel/updatePwd.jsp" />
+			<forward name="updateEmployee" path="/vm/oa/controlPanel/myCount.jsp" />
+			<forward name="nickname" path="/vm/oa/controlPanel/nickName.jsp" />	
+		</action>
+		
+		<action path="/ControlPanel" name="controlPanelSearchForm"  scope="session"
+			type="com.koron.oa.controlPanel.ControlPanelAction"
+			parameter="/ControlPanelAction.do" >
+			<forward name="frame" path="/vm/oa/controlPanel/frame.html"/>
+		</action>
+		
+		<!-- wyy 办公用品  strat -->
+		<action path="/ApplyGoodsAction" scope="request" name="GoodsSearchForm"
+			type="com.koron.oa.office.goods.applyUse.ApplyUseAction" parameter="/ApplyGoodsAction.do">		
+			<forward name="ApplyGoods" path="/vm/oa/office/goods/apply/applyIndex.jsp" contextRelative="true"/>
+			<forward name="to_addApply" path="/vm/oa/office/goods/apply/to_addApply.jsp" contextRelative="true"/>
+			<forward name="to_updateApply" path="/vm/oa/office/goods/apply/to_updateApply.jsp" contextRelative="true"/>
+			<forward name="allApply" path="/vm/oa/office/goods/apply/allApply.jsp" contextRelative="true"/>			
+		</action>
+		<action path="/BackGoodsAction" scope="request" name="GoodsSearchForm"
+			type="com.koron.oa.office.goods.backed.BackedAction" parameter="/BackGoodsAction.do">
+			<forward name="BackedGoods" path="/vm/oa/office/goods/backed/backIndex.jsp" contextRelative="true"/>
+			<forward name="to_addBack" path="/vm/oa/office/goods/backed/to_addBack.jsp" contextRelative="true"/>
+			<forward name="to_updateBack" path="/vm/oa/office/goods/backed/to_updateBack.jsp" contextRelative="true"/>
+			<forward name="allBack" path="/vm/oa/office/goods/backed/allBack.jsp" contextRelative="true"/>	
+			<forward name="selectBack" path="/vm/oa/office/goods/backed/selectBack.jsp" contextRelative="true"/>			
+		</action>
+		<!-- end -->
+		
+		<!-- 组织架构 -->
+		<action path="/FrameworkAction" 
+			type="com.koron.oa.framework.FrameworkAction"
+			parameter="/FrameworkAction.do">
+			<forward name="toFramework" path="/vm/framework/framework_frame.jsp"  />
+			<forward name="toTree" path="/vm/framework/tree.jsp"  />
+			<forward name="list" path="/vm/framework/frameworkallist.jsp"  />
+			<forward name="workdept" path="/vm/framework/workdepartment.jsp"  />
+			<forward name="deptInfo" path="/vm/framework/departmentInfo.jsp"  />	     
+		     <forward name="tochart" path="/vm/framework/orgchart.jsp"  />
+		</action>
+		
+		<!-- 会议管理   kezhiliang -->
+		<action path="/Meeting" name="meetingForm"  scope="request"
+			type="com.koron.oa.office.meeting.OAMeetingAction"
+			parameter="/OASearchMeeting.do" >
+			<forward name="to_addMeeting" path="/vm/oa/office/meeting/meetingForm.jsp"/>
+		    <forward name="to_note" path="/vm/oa/office/meeting/note.jsp"/>
+		    <forward name="to_whyBox" path="/vm/oa/office/meeting/whyBox.jsp"/>   
+		    <forward name="to_boardroomweek" path="/vm/oa/office/meeting/boardroomWeek.jsp"/>
+		    <forward name="roomUsing" path="/vm/oa/office/meeting/roomUsing.jsp"/>
+		</action>
+		
+		<action path="/OASearchMeeting" name="meetingSearchForm"  scope="request"
+			type="com.koron.oa.office.meeting.OAMeetingAction"
+			parameter="/OASearchMeeting.do">
+			<forward name="to_queryMeeting" path="/vm/oa/office/meeting/meetingIndex.jsp"/>
+			<forward name="oameeting" path="/vm/oa/thdesktop/oameeting.jsp" />
+		</action>
+		
+		<action path="/OABoardroom" name="boardroomForm"  scope="request"
+			type="com.koron.oa.office.meeting.OABoardroomAction"
+			parameter="/OABoardroom.do">
+			 <forward name="to_addboardroom" path="/vm/oa/office/meeting/addBoardroom.jsp"/>
+			 <forward name="to_allboardroom" path="/vm/oa/office/meeting/boardroomIndex.jsp"/>
+		</action>
+		<!-- end会议管理   kezhiliang -->
+		
+		<!-- wyy 车辆管理  strat -->
+		<action path="/CarInfoAction" scope="request" name="CarInfoForm"
+			type="com.koron.oa.office.car.carInfo.CarInfoAction" parameter="/CarInfoAction.do">		
+			<forward name="queryCar" path="/vm/oa/office/car/carInfo/queryCar.jsp" contextRelative="true"/>
+			<forward name="addPre" path="/vm/oa/office/car/carInfo/addPre.jsp" contextRelative="true"/>
+			<forward name="checkPre" path="/vm/oa/office/car/carInfo/checkPre.jsp" contextRelative="true"/>
+			<forward name="updateOther" path="/vm/oa/office/car/carInfo/updateOther.jsp" contextRelative="true"/>			
+		</action>
+		<action path="/CarOperateAction" scope="request" name="CarOperateForm"
+			type="com.koron.oa.office.car.carOut.CarOperateAction" parameter="/CarOperateAction.do">		
+			<forward name="carOut" path="/vm/oa/office/car/carOperate/carOut.jsp" contextRelative="true"/>
+			<forward name="addOutPre" path="/vm/oa/office/car/carOperate/addOutPre.jsp" contextRelative="true"/>
+			<forward name="allOut" path="/vm/oa/office/car/carOperate/allOut.jsp" contextRelative="true"/>			
+		</action>
+		<!-- end -->
+		
+		<!-- 我的项目 -->
+		<action path="/OAItemsAction" name="OAItemsSearchForm" 
+			type="com.koron.oa.oaItems.OAItemsAction"
+			parameter="/OAItemsAction.do">
+			<forward name="query" path="/vm/oa/oaItems/oaItemsIndex.jsp" contextRelative="true"/>	
+			<forward name="detail" path="/vm/oa/oaItems/detail.jsp" contextRelative="true"/>
+			<forward name="oaitems" path="/vm/oa/thdesktop/oaitems.jsp" />	
+		</action>
+		
+		<!-- 我的任务 -->
+		<action path="/OATaskAction" name="OATaskSearchForm"  
+			type="com.koron.oa.oaTask.OATaskAction"
+			parameter="/OATaskAction.do">
+			<forward name="detailByItem" path="/vm/oa/oaTask/detailByItem.jsp" contextRelative="true"/>	
+			<forward name="detail" path="/vm/oa/oaTask/detail.jsp" contextRelative="true"/>	
+			<forward name="query" path="/vm/oa/oaTask/oaTaskIndex.jsp" contextRelative="true"/>	
+			<forward name="update" path="/vm/oa/oaTask/update.jsp" contextRelative="true"/>
+			<forward name="addTask" path="/vm/oa/oaTask/addTask.jsp" contextRelative="true"/>
+			<forward name="oaTask" path="/vm/oa/thdesktop/oaTask.jsp" />		
+		</action>
+
+		
+		<!--我的待办  -->
+		<action path="/ToDoAction" scope="request" name="ToDoForm"
+			type="com.koron.oa.toDo.ToDoAction" parameter="/ToDoAction.do">		
+			<forward name="detail" path="/vm/oa/dayOffice/toDo/toDoPrepare.jsp" contextRelative="true"/>
+			<forward name="queryToDo" path="/vm/oa/dayOffice/toDo/toDo.jsp" contextRelative="true"/>		
+		</action>
+		<!--日程  -->
+		<action path="/OACalendarAction" scope="request" name="OACalendarForm"
+			type="com.koron.oa.OACalendar.OACalendarAction" parameter="/OACalendarAction.do">		
+			<forward name="queryCalendar" path="/vm/oa/dayOffice/myCalendar/myCalendarView.jsp" contextRelative="true"/>
+			<forward name="calendarList" path="/vm/oa/dayOffice/myCalendar/calendarList.jsp" contextRelative="true"/>	
+			<forward name="addCalendarPrepare" path="/vm/oa/dayOffice/myCalendar/addCalendarPrepare.jsp" contextRelative="true"/>	
+			<forward name="detail" path="/vm/oa/dayOffice/myCalendar/detail.jsp" contextRelative="true"/>	
+		</action>
+		<!-- 讨论 -->
+		<action path="/DiscussAction"  
+			type="com.koron.oa.discuss.DiscussAction"
+			parameter="/DiscussAction.do">
+			<forward name="index" path="/vm/oa/discuss/discussIndex.jsp" contextRelative="true"/>	
+		</action>
+		
+		<!-- 职员部门 -->
+		<action path="/EmployeeDepartmentAction" scope="request" name="EmployeeForm"
+			type="com.koron.oa.employeeDepartment.EmployeeDepartmentAction" parameter="/EmployeeDepartmentAction.do">
+			<forward name="toTree" path="/vm/oa/employeeDepartment/toTree.jsp" />
+			<forward name="employeeList" path="/vm/oa/employeeDepartment/list.jsp" />
+			<forward name="dealEmployee" path="/vm/oa/employeeDepartment/dealEmployee.jsp" />
+		</action>
+		
+		<!--我的日志-->
+		<action path="/OAWorkLogAction" name="OAWorkLogSearchForm"
+			type="com.koron.oa.oaWorkLog.OAWorkLogAction"
+			parameter="/OAWorkLogAction.do">
+			<forward name="query" path="/vm/oa/oaWorkLog/oaWorkLogIndex.jsp" contextRelative="true"/>
+			<forward name="update" path="/vm/oa/oaWorkLog/update.jsp" contextRelative="true"/>
+			<forward name="detail" path="/vm/oa/oaWorkLog/detail.jsp" contextRelative="true"/>	
+			<forward name="queryByFollow" path="/vm/oa/oaWorkLog/oaWorkLogIndexByFollow.jsp" contextRelative="true"/>
+			<forward name="addWorkLogDet" path="/vm/oa/oaWorkLog/addWorkLogDet.jsp" contextRelative="true"/>
+			<forward name="oaworklog" path="/vm/oa/thdesktop/oaworklog.jsp" />	
+			<forward name="addoaworklog" path="/vm/oa/thdesktop/addoaworklog.jsp" />
+			<forward name="workLogList" path="/vm/oa/oaWorkLog/workLogList.jsp"/>	
+		</action>
+		
+		<!-- 我的通讯录 -->
+		<action path="/CommunicationNoteAction" name="CommunicationNoteSearchForm"
+			type="com.koron.oa.communicationNote.CommunicationNoteAction" parameter="/CommunicationNoteAction.do">
+			<forward name="toTree" path="/vm/oa/CommunicationNote/toTree.jsp" />
+			<forward name="sendPrepare" path="/vm/crm/client/sendMessage.jsp"/>
+		</action>
+		
+		<!-- 我的收藏 -->
+		<action path="/OACollectionAction" name="OACollectionForm"
+			type="com.koron.oa.oaCollection.OACollectionAction" parameter="/OACollectionAction.do">
+			<forward name="query" path="/vm/oa/dayOffice/myCollection/myCollection.jsp" />		
+		</action>
+		
+		<!-- 我的日志模板设置 -->
+		<action path="/OAWorkLogTemplateAction" name="OAWorkLogTemplateForm" 
+			type="com.koron.oa.oaWorkLogTemplate.OAWorkLogTemplateAction" parameter="/OAWorkLogTemplateAction.do">
+			<forward name="index" path="/vm/oa/oaWorkLogTemplate/index.jsp" />		
+			<forward name="update" path="/vm/oa/oaWorkLogTemplate/update.jsp" />		
+		</action>
+		
+		<action path="/MYSroceAction" 
+			type="com.koron.oa.mySroce.MYSroceAction" parameter="/MYSroceAction.do">
+			<forward name="mySroce" path="/vm/oa/thdesktop/mySroce.jsp" />
+			<forward name="setSroce" path="/vm/oa/thdesktop/setSroce.jsp" />			
+		</action>
+	</action-mappings>
+
+</struts-config>

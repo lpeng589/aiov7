@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectCertificateFixedClean_Acc" type="checkBox">
+     <table>tblFixedAssetClean</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      tblFixedAssetClean.id f1,
+      tblFixedAssetClean.BillDate f2,
+      tblFixedAssetClean.BillNo f3,
+      tblFixedAssetAdd.GoodsNumber f4,
+      tblFixedAssetAdd.GoodsName f5,
+      tblFixedAssetAdd.GoodsSpec f6,
+      tblFixedAssetAccType.TypeName f7,
+      tblFixedAssetClean.Remark f8
+	  from tblFixedAssetClean
+	  left join tblFixedAssetAdd on tblFixedAssetClean.AssetsAddId=tblFixedAssetAdd.id
+	  left join tblFixedAssetAccType on tblFixedAssetAccType.id=tblFixedAssetClean.AssetsAccType
+     </defineSQL>
+     <classCode></classCode>
+     <condition>tblFixedAssetClean.workFlowNodeName = 'finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblFixedAssetClean.BillDate,tblFixedAssetClean.BillNo</orderBy>
+     <displayFields>
+          <field name="tblFixedAssetClean.BillDate" width="70" searchType="scope" keySearch="true" parentDisplay="false" />
+          <field name="tblFixedAssetClean.BillNo" width="100" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblFixedAssetAdd.GoodsNumber" width="120" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblFixedAssetAdd.GoodsName" width="150" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblFixedAssetAdd.GoodsSpec" width="150" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblFixedAssetClean.AssetsAccType" width="90" parentDisplay="false" />
+          <field name="tblFixedAssetClean.Remark" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblFixedAssetClean.id" parentName="@TABLENAME.id" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

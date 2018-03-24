@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="FixAssesAddTypeAccInfo"  type="checkBox"  desc="固定资选择增加方式" > 
+		<classCode>tblAccTypeInfo.classCode</classCode>
+		<orderBy>tblAccTypeInfo.AccNumber</orderBy>
+		<defineSQL>
+from tblAccTypeInfo
+      where 1=1  and (isnull(tblAccTypeInfo.isCalculate,0) !=1 )
+		</defineSQL>
+		<changeCond>tblAccTypeInfo.statusId!='-1'</changeCond>
+		<displayFields>
+			<field name="tblAccTypeInfo.AccNumber" parentDisplay="false" width="100" searchType="match" keySearch="true" />
+			<field name="tblAccTypeInfo.AccName" parentDisplay="false" width="150" />
+			<field name="tblAccTypeInfo.AccFullName" display="@TABLENAME.AccCode" parentDisplay="true" width="200" />
+			<field name="tblAccTypeInfo.PyCode" parentDisplay="false" width="50" searchType="match" keySearch="true" hiddenInput="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblAccTypeInfo.AccNumber" parentName="@TABLENAME.AccCode" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

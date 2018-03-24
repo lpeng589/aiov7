@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://xfire.codehaus.org/config/1.0">
+  <service>
+    <serviceClass>org.tempuri.mfmi_javaImpl</serviceClass>
+    <wsdlURL>http://c8mff.m2.magic2008.cn/manage/mfmi_java.asmx?WSDL</wsdlURL>
+    <serviceFactory>org.codehaus.xfire.jaxb2.JaxbServiceFactory</serviceFactory>
+  </service>
+</beans>
+

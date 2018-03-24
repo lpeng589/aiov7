@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="Employee1" > 
+		<orderBy>tblEmployee.EmpNumber,tblEmployee.EmpFullName</orderBy>
+		<defineSQL>
+from tblEmployee left join tblDepartment on tblEmployee.DepartmentCode=tblDepartment.classCode
+      where 1=1  and ((tblEmployee.SCompanyID='@Sess:SCompanyID' and (tblEmployee.statusId!='-1' or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish') and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish')
+		</defineSQL>
+		<displayFields>
+			<field name="tblEmployee.EmpNumber" parentDisplay="false" width="100" searchType="match" keySearch="true" />
+			<field name="tblEmployee.EmpFullName" display="@TABLENAME.EmployeeID" parentDisplay="true" width="65" searchType="match" keySearch="true" />
+			<field name="tblEmployee.EmpFullNamePYM" parentDisplay="false" width="80" searchType="match" keySearch="true" hiddenInput="true" />
+			<field name="tblEmployee.TitleID" parentDisplay="false" width="65" searchType="equal" keySearch="true" />
+			<field name="tblDepartment.DeptFullName" display="@TABLENAME.DepartmentCode" parentDisplay="true" width="75" searchType="match" keySearch="true" />
+			<field name="tblDepartment.DeptFullNamePYM" parentDisplay="false" width="100" searchType="match" keySearch="true" hiddenInput="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" hidden="true" relationKey="true" width="0" />
+			<field name="tblEmployee.DepartmentCode" parentName="@TABLENAME.DepartmentCode" hidden="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

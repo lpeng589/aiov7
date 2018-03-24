@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectCertificateFixedAssetAdd_Acc" type="checkBox">
+     <table>tblFixedAssetAdd,tblFixedAssetAccType,tblFixedAssetType,tblDepartment</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblFixedAssetAdd.id f1,
+      tblFixedAssetAdd.GoodsNumber f2,
+      tblFixedAssetAdd.GoodsName f3,
+      tblFixedAssetAdd.GoodsSpec f4,
+      tblDepartment.DeptFullName f5,
+      tblFixedAssetAdd.StockCode f6,
+      tblFixedAssetAdd.BillDate f7,
+      tblFixedAssetType.TypeName f8,
+      tblFixedAssetAccType.TypeName f9
+  from tblFixedAssetAdd
+	  left join tblFixedAssetAccType on tblFixedAssetAccType.AccCode=tblFixedAssetAdd.AssetsAccType 
+	  left join tblFixedAssetType on tblFixedAssetType.id=tblFixedAssetAdd.AssetsType 
+	  left join tblDepartment on tblDepartment.classCode=tblFixedAssetAdd.DepartmentCode
+
+     </defineSQL>
+     <classCode></classCode>
+     <remark>固定资产增加手工生成凭证弹窗</remark>
+     <condition>tblFixedAssetAdd.moduleType=1 and len(isnull(tblFixedAssetAdd.CertificateNo,''))=0 and len(isnull(tblFixedAssetAdd.referDeprecia,''))!=0</condition>
+     <changeCond>tblFixedAssetAdd.statusId='0'</changeCond>
+     <orderBy>tblFixedAssetAdd.GoodsNumber,tblFixedAssetAdd.GoodsName</orderBy>
+     <hasChild>tblFixedAssetChangeDet_quote_FixedAssetAddDet</hasChild>
+     <displayFields>
+          <field name="tblFixedAssetAdd.GoodsNumber" width="120" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblFixedAssetAdd.GoodsName" width="150" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblFixedAssetAdd.GoodsSpec" width="150" searchType="match" parentDisplay="false" />
+          <field name="tblDepartment.DeptFullName" width="75" searchType="match" parentDisplay="false" display="tblFixedAssetAdd.DepartmentCode" />
+          <field name="tblFixedAssetAdd.StockCode" width="80" searchType="match" parentDisplay="false" />
+          <field name="tblFixedAssetAdd.BillDate" width="70" searchType="scope" parentDisplay="false" />
+          <field name="tblFixedAssetType.TypeName" width="150" searchType="match" parentDisplay="false" display="tblFixedAssetAdd.AssetsType" />
+          <field name="tblFixedAssetAccType.TypeName" width="100" parentDisplay="false" display="tblFixedAssetAdd.AssetsAccType" />
+     </displayFields>
+     <saveFields>
+          <field name="tblFixedAssetAdd.id" parentName="@TABLENAME.id" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

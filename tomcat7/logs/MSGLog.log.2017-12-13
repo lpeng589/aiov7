@@ -1,0 +1,52 @@
+[DEBUG] 2017-12-13 09:17:36,695 Line:83 开始启动KK消息中心,端口6333
+ [DEBUG] 2017-12-13 09:17:36,799 Line:100 MSGConnectCenter.init MSGConnectServer Successfull
+ [DEBUG] 2017-12-13 09:17:36,805 Line:110 MSGConnectCenter.init(common) SessionClearThread Successfull
+ [DEBUG] 2017-12-13 09:17:36,805 Line:118 MSGConnectCenter.init(file) SessionClearThread Successfull
+ [DEBUG] 2017-12-13 10:58:49,825 Line:83 开始启动KK消息中心,端口6333
+ [ERROR] 2017-12-13 10:58:49,986 Line:66 MSGConnectServer.init Create ServerSoket Error 
+ java.net.BindException: Address already in use: bind
+	at sun.nio.ch.Net.bind0(Native Method)
+	at sun.nio.ch.Net.bind(Net.java:433)
+	at sun.nio.ch.Net.bind(Net.java:425)
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:223)
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:74)
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:67)
+	at com.menyi.msgcenter.server.MSGConnectServer.init(MSGConnectServer.java:59)
+	at com.menyi.msgcenter.server.MSGConnectCenter.init(MSGConnectCenter.java:96)
+	at com.menyi.web.util.InitMenData.initDog(InitMenData.java:3003)
+	at com.menyi.web.util.InitMenData.initSystem(InitMenData.java:3850)
+	at com.menyi.web.util.BaseFilter.init(BaseFilter.java:215)
+	at org.apache.catalina.core.ApplicationFilterConfig.initFilter(ApplicationFilterConfig.java:279)
+	at org.apache.catalina.core.ApplicationFilterConfig.getFilter(ApplicationFilterConfig.java:260)
+	at org.apache.catalina.core.ApplicationFilterConfig.<init>(ApplicationFilterConfig.java:105)
+	at org.apache.catalina.core.StandardContext.filterStart(StandardContext.java:4854)
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:5542)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:150)
+	at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:901)
+	at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:877)
+	at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:649)
+	at org.apache.catalina.startup.HostConfig.deployDescriptor(HostConfig.java:672)
+	at org.apache.catalina.startup.HostConfig$DeployDescriptor.run(HostConfig.java:1859)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+[ERROR] 2017-12-13 10:58:49,987 Line:97 MSGConnectCenter.init MSGConnectServer Error
+ [DEBUG] 2017-12-13 11:00:03,021 Line:83 开始启动KK消息中心,端口6333
+ [DEBUG] 2017-12-13 11:00:03,208 Line:100 MSGConnectCenter.init MSGConnectServer Successfull
+ [DEBUG] 2017-12-13 11:00:03,219 Line:110 MSGConnectCenter.init(common) SessionClearThread Successfull
+ [DEBUG] 2017-12-13 11:00:03,220 Line:118 MSGConnectCenter.init(file) SessionClearThread Successfull
+ [DEBUG] 2017-12-13 14:22:38,648 Line:83 开始启动KK消息中心,端口6333
+ [DEBUG] 2017-12-13 14:22:38,861 Line:100 MSGConnectCenter.init MSGConnectServer Successfull
+ [DEBUG] 2017-12-13 14:22:38,874 Line:110 MSGConnectCenter.init(common) SessionClearThread Successfull
+ [DEBUG] 2017-12-13 14:22:38,874 Line:118 MSGConnectCenter.init(file) SessionClearThread Successfull
+ [DEBUG] 2017-12-13 16:39:17,261 Line:83 开始启动KK消息中心,端口6333
+ [DEBUG] 2017-12-13 16:39:17,460 Line:100 MSGConnectCenter.init MSGConnectServer Successfull
+ [DEBUG] 2017-12-13 16:39:17,472 Line:110 MSGConnectCenter.init(common) SessionClearThread Successfull
+ [DEBUG] 2017-12-13 16:39:17,473 Line:118 MSGConnectCenter.init(file) SessionClearThread Successfull
+ [DEBUG] 2017-12-13 20:12:43,031 Line:83 开始启动KK消息中心,端口6333
+ [DEBUG] 2017-12-13 20:12:43,397 Line:100 MSGConnectCenter.init MSGConnectServer Successfull
+ [DEBUG] 2017-12-13 20:12:43,417 Line:110 MSGConnectCenter.init(common) SessionClearThread Successfull
+ [DEBUG] 2017-12-13 20:12:43,417 Line:118 MSGConnectCenter.init(file) SessionClearThread Successfull
+ 

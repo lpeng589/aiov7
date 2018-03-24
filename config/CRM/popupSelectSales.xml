@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<!--CRM系统中商业线索调用销售线索-->
+<select name = "quote_business">
+			<table>tblCRMsaleline</table>
+			<relation></relation>
+			<condition></condition>
+			<displayFields>
+				<field name="tblCRMsaleline.Company" width="200" searchType="match"  parentDisplay="true"  />
+				<field name="tblCRMsaleline.Salechance" width="200" searchType="match"  parentDisplay="true"  />
+				<field name="tblCRMsaleline.Telephone"  width="200" searchType="match"   parentDisplay="true"/>
+				<field name="tblCRMsaleline.Mobile" width="200" searchType="match"   parentDisplay="true" />
+				<field name="tblCRMsaleline.Email" width="200" searchType="match"   parentDisplay="true" />
+				
+			</displayFields>
+			<saveFields>
+			  <field name="tblCRMsaleline.id" relationKey="true" parentName="tblCRMbusinesslineD.id" hidden="true"/>
+			</saveFields>
+	</select>
+		<!--商业线索商品选择弹出窗口代码-->
+	<select name = "GoodsCRMsalelineInfo">
+		<table>tblGoods,tblStocks,tblUnit</table>
+		<relation>tblGoods.classCode=tblStocks.GoodsCode and tblUnit.id = tblGoods.BaseUnit </relation>
+		<classCode>tblGoods.classCode</classCode>
+		<condition>(tblStocks.StoreCode=@ValueofDB:StockCode and tblStocks.period=Month('@ValueofDB:BillDate')) and tblGoods.workFlowNodeName='finish'</condition>
+		<displayFields>
+			<field name="tblGoods.BarCode"  width="100" searchType="match" parentDisplay="true" keySearch="true"  hiddenInput="true"/>
+			<field name="tblGoods.GoodsNumber"  width="70" searchType="match" parentDisplay="true" />
+			<field name="tblGoods.GoodsFullName"  display="tblCRMsalelineDet.GoodsCode" width="80" searchType="match" parentDisplay="true" />
+			<field name="tblGoods.GoodsSpec"  width="80" searchType="match" parentDisplay="true" />
+			<field name="tblUnit.UnitName"  width="70"  searchType="match" parentDisplay="true" />
+			<field name="tblStocks.lastQty"  width="200" searchType="no" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+		  <field name="tblGoods.classCode" parentName="tblCRMsalelineDet.GoodsCode" relationKey="true" hidden="true"/>
+		  <field name="tblUnit.id" parentName="tblCRMsalelineDet.Unit" relationKey="false" hidden="true"/>
+	  </saveFields>
+	</select>
+	<!--CRM系统中销售机会调用商业线索-->
+<select name = "quote_salechanceToComplete">
+			<table>tblCRMbusinesslineD</table>
+			<relation></relation>
+			<condition></condition>
+			<displayFields>
+				<field name="tblCRMbusinesslineD.Company" width="200" searchType="match"  parentDisplay="true"  />
+				<field name="tblCRMbusinesslineD.Salechance" width="200" searchType="match"  parentDisplay="true"  />
+				<field name="tblCRMbusinesslineD.Telephone"  width="200" searchType="match"   parentDisplay="true"/>
+				<field name="tblCRMbusinesslineD.Mobile" width="200" searchType="match"   parentDisplay="true" />
+				<field name="tblCRMbusinesslineD.Email" width="200" searchType="match"   parentDisplay="true" />
+			</displayFields>
+			<saveFields>
+			  <field name="tblCRMbusinesslineD.id" relationKey="true" parentName="tblCRMsalechance.id" hidden="true"/>
+			</saveFields>
+	</select>
+
+	<!--CRM系统中销售合同调用客户报备-->
+<select name = "quote_CRMsaleconcract">
+			<table>tblCRMcustomstock</table>
+			<relation></relation>
+			<condition></condition>
+			<displayFields>
+				<field name="tblCRMcustomstock.Company" width="200" searchType="match"  parentDisplay="true"  />
+				<field name="tblCRMcustomstock.Salechance" width="200" searchType="match"  parentDisplay="true"  />
+				<field name="tblCRMcustomstock.Telephone"  width="200" searchType="match"   parentDisplay="true"/>
+				<field name="tblCRMcustomstock.Mobile" width="200" searchType="match"   parentDisplay="true" />
+				<field name="tblCRMcustomstock.Email" width="200" searchType="match"   parentDisplay="true" />
+			</displayFields>
+			<saveFields>
+			  <field name="tblCRMcustomstock.id" relationKey="true" parentName="tblCRMsaleconcract.id" hidden="true"/>
+			</saveFields>
+	</select>
+	<!--CRM系统中执行订单调用销售合同-->
+<select name = "quote_saleorders">
+			<table>tblCRMsaleconcract</table>
+			<relation></relation>
+			<condition></condition>
+			<displayFields>
+				<field name="tblCRMsaleconcract.Company" width="200" searchType="match"  parentDisplay="true"  />
+				<field name="tblCRMsaleconcract.Salechance" width="200" searchType="match"  parentDisplay="true"  />
+				<field name="tblCRMsaleconcract.Telephone"  width="200" searchType="match"   parentDisplay="true"/>
+				<field name="tblCRMsaleconcract.Mobile" width="200" searchType="match"   parentDisplay="true" />
+				<field name="tblCRMsaleconcract.Email" width="200" searchType="match"   parentDisplay="true" />
+			</displayFields>
+			<saveFields>
+			  <field name="tblCRMsaleconcract.id" relationKey="true" parentName="tblCRMsaleorder .id" hidden="true"/>
+			</saveFields>
+	</select>
+
+<!--CRM系统中商业活动调用客户报备-->
+<select name = "quote_CRMcustomstock">
+			<table>tblCRMcustomstock</table>
+			<relation></relation>
+			<condition></condition>
+			<displayFields>
+				<field name="tblCRMcustomstock.Company" width="200" searchType="match"  parentDisplay="true"  />
+				<field name="tblCRMcustomstock.Salechance" width="200" searchType="match"  parentDisplay="true"  />
+				<field name="tblCRMcustomstock.Telephone"  width="200" searchType="match"   parentDisplay="true"/>
+				<field name="tblCRMcustomstock.Mobile" width="200" searchType="match"   parentDisplay="true" />
+				<field name="tblCRMcustomstock.Email" width="200" searchType="match"   parentDisplay="true" />
+			</displayFields>
+			<saveFields>
+			  <field name="tblCRMcustomstock.id" relationKey="true" parentName="tblCRMbusinessactive.id" hidden="true"/>
+			</saveFields>
+	</select>
+</popupSelect>	

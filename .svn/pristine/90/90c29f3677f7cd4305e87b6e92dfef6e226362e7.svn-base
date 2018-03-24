@@ -1,0 +1,94 @@
+﻿.ilabel{padding-right: 10px;}
+
+//审核记录
+.view-ul-wp {
+margin-top: 10px;
+}
+.view-ul-wp .t-p {
+border: 1px solid #bbb;
+position: relative;
+color: #000;
+margin: 0;
+font-size: 12px;
+line-height: 28px;
+padding: 0 5px;
+height: 28px;
+background: #eee;
+//background-image: -webkit-linear-gradient(top,#5fa3e7,#4086ce);
+//background-image: linear-gradient(top,#5fa3e7,#4086ce);
+}
+.view-ul {
+border: 1px #bbb solid;
+border-top: 0;
+margin: 0px;
+padding: 0px;
+}
+.view-ul em{
+font-style: normal;
+}
+
+.view-ul .view-li {
+padding-left: 120px;
+position: relative;
+min-height: 50px;
+border-bottom: 1px #A1AAAF solid;
+list-style: none;
+font-style: normal;
+}
+.view-ul .view-li .d-pa {
+width: 160px;
+position: absolute;
+left: 5px;
+top: 5px;
+}
+.d-pa .node-em {
+display: block;
+font-size: 12px;
+font-weight: bold;
+color: #000;
+}
+.d-pa .check-person {
+display: block;
+font-size: 14px;
+color: #0179bb;
+padding: 10px 0 0 20px;
+font-weight: bold;
+}
+.view-ul .view-li .d-dbk {
+padding: 5px 0;
+font-size: 12px;
+}
+.d-dbk .end-time {
+padding-bottom: 3px;
+display: inline-block;
+width: 100%;
+margin-left: 30px;
+}
+.d-dbk .app-work-check {
+color: #333;
+font-size: 14px;
+line-height: 21px;
+}
+.d-dbk .node-type {
+padding-top: 3px;
+display: inline-block;
+width: 100%;
+}
+
+// 下拉按扭
+.dropOperations{}
+.dropOperations ul{
+ 	padding: 10px;
+  	margin: 0px;
+ } 
+.dropOperations ul li{
+ 	padding: 10px;
+  	margin: 0px;
+  	list-style: none;
+  	border-bottom: 1px solid #E8E0E8;
+  	line-height: 27px;
+ } 
+.dropOperations ul li a{
+  	color: #797372;
+  	text-decoration: none;
+ }  

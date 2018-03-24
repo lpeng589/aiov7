@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="ReportSelectGoodsFullName"  type="checkBox"  desc="ReportSelectGoods_v2"  belongTableName="tblGoods" > 
+		<saveParentFlag>true</saveParentFlag>
+		<classCode>tblGoods.classCode</classCode>
+		<orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+		<defineSQL>
+from tblGoods
+      where 1=1  and tblGoods.workFlowNodeName='finish'
+		</defineSQL>
+		<displayFields>
+			<field name="tblGoods.[tblGoods]" parentDisplay="false" width="120" searchType="match" keySearch="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblGoods.GoodsFullName" parentName="GoodsFullName" hidden="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

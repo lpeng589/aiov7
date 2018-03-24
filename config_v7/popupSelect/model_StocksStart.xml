@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="model_StocksStart"  desc="手机端多仓库开启"  belongTableName="tblSysDeploy" > 
+		<defineSQL>
+from tblSysDeploy where id = 'SalesInstockbill'
+		</defineSQL>
+		<displayFields>
+			<field name="Setting" asName="Setting" parentDisplay="false" width="0" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+</popupSelect>

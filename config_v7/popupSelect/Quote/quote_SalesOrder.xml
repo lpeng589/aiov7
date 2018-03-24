@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="quote_SalesOrder">
+     <table>viewSalesOrderQty,tblEmployee,tblDepartment,tblCompany,tblSalesOrderDet,tblStock,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      viewSalesOrderQty.id f1,
+      viewSalesOrderQty.BillDate f2,
+      viewSalesOrderQty.BillNo f3,
+      tblDepartment.DeptFullName f4,
+      tblEmployee.EmpFullName f5,
+      tblCompany.ComFullName f6,
+      tblStock.StockFullName f7,
+      viewSalesOrderQty.Qty f8,
+      viewSalesOrderQty.OutQty f9,
+      viewSalesOrderQty.TotalTaxAmount f10,
+      tblGoods.GoodsNumber f11,
+      tblGoods.GoodsFullName f12,
+      tblGoods.GoodsSpec f13,
+      tblGoods.GoodsFullNamePYM f14,
+      viewSalesOrderQty.lastQty f15
+  from viewSalesOrderQty
+				left join tblEmployee on tblEmployee.id=viewSalesOrderQty.EmployeeID
+				left join tblDepartment on tblDepartment.classCode=viewSalesOrderQty.DepartmentCode
+				left join tblCompany on tblCompany.classCode=viewSalesOrderQty.CompanyCode
+				left join tblSalesOrderDet on (viewSalesOrderQty.id=tblSalesOrderDet.f_ref and tblSalesOrderDet.id=(select top 1 a.id from tblSalesOrderDet a where a.f_ref=viewSalesOrderQty.id and a.GoodsCode in (select classCode from tblGoods as k where 1=1 and k.GoodsNumber like '%@condition:tblGoods.GoodsNumber%' and k.GoodsFullName like '%@condition:tblGoods.GoodsFullName%' and k.GoodsSpec like '@condition:tblGoods.GoodsSpec%' and k.Spec1 like '@condition:tblGoods.Spec1%' and k.Spec2 like '@condition:tblGoods.Spec2%' and k.Spec3 like '@condition:tblGoods.Spec3%' and k.BarCode like '@condition:tblGoods.BarCode%')@condsent_tblStock.StockFullName:[ and a.StockCode in (select classCode from tblStock as k where 1=1 and k.StockFullName like '%@condition:tblStock.StockFullName%')]))
+				left join tblstock on tblStock.classCode=tblSalesOrderDet.StockCode
+				left join tblGoods on tblGoods.classCode=tblSalesOrderDet.GoodsCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>销售出库引用销售订单</remark>
+     <condition>(viewSalesOrderQty.statusId=0 and viewSalesOrderQty.CompanyCode='@ValueofDB:CompanyCode' and viewSalesOrderQty.workFlowNodeName = 'finish') and tblGoods.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <hasChild>quote_SalesOrderDet</hasChild>
+     <orderBy>viewSalesOrderQty.BillDate,viewSalesOrderQty.BillNo</orderBy>
+     <displayFields>
+          <field name="viewSalesOrderQty.BillDate" width="70" searchType="scope" parentDisplay="false" orderBy="升" />
+          <field name="viewSalesOrderQty.BillNo" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblDepartment.DeptFullName" width="75" searchType="match" keySearch="true" parentDisplay="false" display="@TABLENAME.DepartmentCode" />
+          <field name="tblEmployee.EmpFullName" width="50" searchType="match" keySearch="true" parentDisplay="false" display="@TABLENAME.EmployeeID" />
+          <field name="tblCompany.ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="false" display="@TABLENAME.CompanyCode" />
+          <field name="tblStock.StockFullName" width="75" searchType="match" parentDisplay="false" display="@TABLENAME.StockCode" />
+          <field name="viewSalesOrderQty.Qty" width="100" parentDisplay="false" />
+          <field name="viewSalesOrderQty.OutQty" width="100" parentDisplay="false" />
+          <field name="viewSalesOrderQty.TotalTaxAmount" width="100" parentDisplay="false" />
+          <field name="tblGoods.GoodsNumber" width="120" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullName" width="150" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsSpec" width="150" searchType="match" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+          <field name="viewSalesOrderQty.lastQty" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="viewSalesOrderQty.id" parentName="@TABLENAME.SalesOrderID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

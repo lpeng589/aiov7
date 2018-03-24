@@ -1,0 +1,84 @@
+body,div,ul,li,input,span,a,img,p,h1,h2,h3,h4,h5,h6,ol,table,tbody,tr,td{margin:0;padding:0;}
+body{font-size:12px;font-family:����;}
+li{list-style:none;}
+img{border:none;}
+
+.Wrap{width:98%; min-width:950px; padding:0 0 0 10px; overflow:hidden;}
+.OnTop{width:100%; padding:10px 0 20px 0; overflow:hidden; border-bottom:1px #a1a1a1 solid;}
+.OnTop p span{font-weight:bold;font-size:18px;color:#4d92d9;}
+
+.SanBu{padding:10px 0 0 0; overflow:hidden; width:800px;}
+.SanBuU{border:1px #a1a1a1 solid; border-right:2px #a1a1a1 solid; overflow:hidden;}
+.SanBuU .SanBuLi{overflow:hidden; border-bottom:1px #a1a1a1 solid; width:800px; background:#f0f0f0;}
+.SanBuU .SanBuLi .SanBuLiLeft{float:left;min-height:25px;display:inline-block; width:130px; overflow:hidden; text-align:center; line-height:30px; background:#F0F0F0;}
+.SanBuU .SanBuLi .SanBuLiRight{float:left;min-height:25px;display:inline-block; text-align:left; background:#fff; width:660px; padding:5px 0 0px 8px;  border-left:1px #a1a1a1 solid;}
+.SanBuU .SanBuLi .SanBuLiRight .txtInput{width:130px; height:21px; border:1px #a1a1a1 solid;}
+.SanBu .HuanBiXiaLa{height:21px; border:1px #a1a1a1 solid;}
+.SanBuLiRight .SuoYouZhe{ padding:1px 0 0px 0; overflow:hidden; color:#808080; border-bottom:1px #a1a1a1 solid;}
+.SuoYouZhe .SuoYouZheSpan{display:inline-block; float:left; text-align:left; line-height:18px;  color:#4D4D4D;}
+.SuoYouZhe .SuoYouZheU{display:inline; float:left; padding:2px 0 0 5px; width:550px; overflow:hidden;}
+.SuoYouZhe .SuoYouZheU .SuoYouZheLi{width: 70px;height:20px; display:inline; float:left; padding:0 0 1px 0; overflow:hidden;}
+.SuoYouZhe .SuoYouZheU .SuoYouZheLi .WordName{display:inline-block; float:left; cursor:pointer;}
+.SuoYouZhe .SuoYouZheU .SuoYouZheLi .CloseImg{display:inline-block; margin:0 0 2px 4px; width:7px; height:0; background:url(/style/images/client/CloseBtn.png) no-repeat 0 0; cursor:pointer;}
+.SuoYouZhe .SuoYouZheU .SuoYouZheLi .SelectWord{padding:0 5px 0 5px; color:#0060FF; cursor:pointer;}
+.SuoYouZhe .SuoYouZheU .SuoYouZheLi .WordCheckbox{display:inline-block; float:left; margin:0 4px 0 0;}
+
+
+.ChaKanTongJi{padding:20px 0 0 0; overflow:hidden;}
+.ChaKanTongJi .ChaKanBtn{width:118px; height:48px; background:url(/style/images/client/ReadBtn.jpg) no-repeat 0 0; border:none;cursor: pointer;}
+
+
+.QieHuan{padding:5px 0 0 0; overflow:hidden;}
+.QieHuan .QieHuanP{font-weight:bold; padding:0 0 5px 0;}
+.QieHuanData{padding:0 0 0 0; overflow:hidden;}
+.QieHuanData .QieHuanDataLeft{float:left; display:inline; width:80px; height:34px; line-height:34px; border-bottom:1px #a1a1a1 dashed; background:#EAEAEA; text-align:center;}
+.QieHuanData .QieHuanDataRight{float:left; display:inline;}
+.QieHuanData .QieHuanDataRight li{float:left; display:inline; padding:8px 0 5px 5px;}
+.QieHuanData .QieHuanDataRight li input{padding:0 3px 0 3px;}
+
+
+.QieHuan .ChaXunJieGuo{font-weight:bold; font-size:18px; padding:30px 0 20px 0;}
+.QieHuan .ChaXunJieGuo span{color:red;}
+.TongJiDiv .TongJiDivP{font-weight:bold; line-height:21px;}
+.TongJiTable{border-left:1px #CCCCCC solid; border-top:1px #CCCCCC solid;}
+.TongJiTable tr td{height:28px; text-align:right; line-height:28px; padding:0 2px 0 8px; border-right:1px #CCCCCC solid; border-bottom:1px #CCCCCC solid;}
+.TongJiTable thead tr td{background:url(/style/images/client/TheadBG.jpg) repeat-x 0 0; text-align:center; padding:0 5px 0 5px;}
+.TongJiTable thead tr .TDTitle{font-weight:bold;}
+.TongJiTable tfoot{background:#EFEFEF;}
+
+.colorRed{color:red; font-weight:bold; background:#EFEFEF;}
+.colorGreen{color:#007F00; font-weight:bold; background:#EFEFEF;}
+.colorH{color:#656565;}
+.backgorundMonth{background:#DCEDFE; color:#656565;}
+.fontWeight{font-weight:bold; color:#656565;}
+.fontWeightSpan{font-weight:bold;}
+.underline{text-decoration:underline; color:#656565; font-weight:bold;}
+
+.BottomImg{padding:5px 0 10px 0;}
+
+/*���±���?*/
+.TongJiView{padding:5px 0 5px 0; overflow:hidden;width: 800px;}
+.TongJiView .TextP{font-size:18px; font-weight:bold;}
+.TongJiView .TextP span{color:#BC2328;}
+.TongJiView .TongJiViewU{padding:20px 0 10px 0; overflow:hidden;}
+.TongJiView .TongJiViewU .TongJiViewLi{float:left; display:inline; margin:0 15px 10px 0;}
+.TongJiView .TongJiViewU .TongJiViewLi .NameCheckbox{float:left; display:inline-block; margin:4px 0 0 0;}
+.TongJiView .TongJiViewU .TongJiViewLi .NameSpan{float:left; display:inline-block; margin:0 0 0 3px; line-height:22px;}
+.TongJiView .TongJiViewU .TongJiViewLi .ShaiXuanBtb{padding:0 3px 0 3px; height:21px; line-height:19px;}
+.TongJiView .RemindP{font-size:12px; color:#878076; padding:0 0 5px 0; overflow:hidden;}
+.TongJiView .ViewTable{border-top:1px #cdcdcd solid;border-left:1px #cdcdcd solid;width: 100%;}
+.TongJiView .ViewTable tr td{padding:0 5px 0 5px; height:28px; line-height:28px;border-bottom:1px #cdcdcd solid;border-right:1px #cdcdcd solid;}
+.TongJiView .ViewTable thead tr{background:url(/style/images/client/TheadBG.jpg) repeat-x 0 0; text-align:center;}
+.TongJiView .ViewTable thead tr td {text-align:right;}
+.TongJiView .ViewTable thead tr td .Line{text-decoration:underline; cursor:pointer;}
+.TongJiView .ViewTable thead tr td .SelectLine{color:#4B4643; cursor:pointer;}
+.TongJiView .ViewTable tbody tr td {text-align:right;}
+.TongJiView .ViewTable tfoot tr td {text-align:right; font-weight:bold; background:#F7F7F7;}
+
+.mulTr{background-color: #C2F6D1;}
+.timeScope{color: #A0A19F;}
+/*��ѯ��ť*/
+.BtnA{width:115px; height:35px; display:inline-block; border:none; line-height:35px; text-align:center; background:url(/style/images/client/weekMonthBtn.png) no-repeat;cursor: pointer;}
+.BtnA:hover{background-position:0 -35px;}
+#TongJiView table thead tr td{border-bottom: 0;}
+.sort{background:url(/style/images/mail/desc.gif) no-repeat 0 1px; text-align:center;padding-left: 15px;display: none;}

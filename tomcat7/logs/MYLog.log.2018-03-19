@@ -1,0 +1,325 @@
+[INFO ] 2018-03-19 10:44:26,291 Line:206 系统开始启动，最大内存：1792;目前总内存：251;目前空闲内存：161
+ [INFO ] 2018-03-19 10:44:26,706 Line:284 ===========Tomcat Port=8888
+ [INFO ] 2018-03-19 10:44:39,436 Line:2660 ---------------------------------first read dog =======-----------
+ [DEBUG] 2018-03-19 10:44:39,954 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canJxc=1 
+ [DEBUG] 2018-03-19 10:44:40,001 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canOa=1 
+ [DEBUG] 2018-03-19 10:44:40,012 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canCrm=1 
+ [DEBUG] 2018-03-19 10:44:40,025 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canHr=1 
+ [DEBUG] 2018-03-19 10:44:40,067 Line:594 select AccPeriod,AccMonth,AccYear,scompanyId,statusId,isBegin from tblAccPeriod where statusId=1 or isBegin=1
+ [DEBUG] 2018-03-19 10:44:40,089 Line:626 ------Init initAccPeriod record:0
+ [DEBUG] 2018-03-19 10:44:44,622 Line:1061 ------Init Enumeration record:446
+ [DEBUG] 2018-03-19 10:44:44,713 Line:1091 ------Init WorkProfession record:58
+ [DEBUG] 2018-03-19 10:44:44,818 Line:1121 ------Init District record:3984
+ [DEBUG] 2018-03-19 10:44:44,858 Line:1152 ------Init deptMap record:11
+ [DEBUG] 2018-03-19 10:44:48,603 Line:1832 ------Init ModuleList record:
+ [DEBUG] 2018-03-19 10:44:48,604 Line:2855 --------Init ModuleList Successful---------------
+ [DEBUG] 2018-03-19 10:44:51,000 Line:297  select * from tblDBTableInfo order by TableName 
+ [DEBUG] 2018-03-19 10:44:51,324 Line:370 select * from tblDBFieldInfo order by tableId,listOrder
+ [DEBUG] 2018-03-19 10:44:54,679 Line:538 ------Init TableInfo record:633
+ [DEBUG] 2018-03-19 10:44:54,784 Line:651  select cataName,disName,module,tableName,nameField,codeField from tblScopeCataData order by orderby 
+ [DEBUG] 2018-03-19 10:44:54,810 Line:682 ------Init TableInfo record:4
+ [DEBUG] 2018-03-19 10:44:54,850 Line:775 ------Init initModuleField record:0
+ [DEBUG] 2018-03-19 10:44:54,899 Line:702  select tableName,sentence from tblPopDisSentence where statusId=0 order by tableName 
+ [DEBUG] 2018-03-19 10:44:54,920 Line:721 ------Init TableInfo record:26
+ [DEBUG] 2018-03-19 10:44:55,040 Line:891 ------Init PropInfo record:7
+ [DEBUG] 2018-03-19 10:45:05,109 Line:2947 --------Init Config File ---------------
+ [ERROR] 2018-03-19 10:45:05,947 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\ffd4bcdd_1701241708235230006.xml (系统找不到指定的文件。)
+ [DEBUG] 2018-03-19 10:45:05,976 Line:1873 ------Init RefreshTime 
+ [DEBUG] 2018-03-19 10:45:06,072 Line:2994 --------Init SMS Start ---------------
+ [INFO ] 2018-03-19 10:45:06,928 Line:3011 -------System init Secussful Set Normal status--------------
+ [DEBUG] 2018-03-19 10:45:06,929 Line:3855 --------Init Dog Successful---------------
+ [DEBUG] 2018-03-19 10:45:12,662 Line:549 ReportDataMgt.getReportData SQL=select      tblSalesOutStock.BillDate as BillDate,     tblSalesOutStock.BillNo as BillNo,     tblProject.ProjectName as ProjectName,     tblStock.classCode as StockCode,     tblGoods.classCode as GoodsCode,     tblCompany.ComFullName as ComFullName,     tblCompany.ComNumber as ComNumber,     tblDepartment.DeptFullName as DeptFullName,     tblEmployee.EmpFullName as EmpFullName,     tblEmployee2.EmpFullName as createBy,     tblStock.StockFullName as StockFullName,     tblGoods.GoodsNumber as GoodsNumber,     tblGoods.GoodsFullName as GoodsFullName,     tblGoods.GoodsSpec as GoodsSpec,     tblGoods.BaseUnit as BaseUnit,     tblSalesOutStockDet.BatchNo as BatchNo,     tblSalesOutStockDet.Inch as Inch,     tblSalesOutStockDet.Hue as Hue,     tblSalesOutStockDet.yearNO as yearNO,     tblSalesOutStockDet.ProDate as ProDate,     tblSalesOutStockDet.Availably as Availably,     tblSalesOutStockDet.Qty as Qty,     tblSalesOutStockDet.Price as Price,     tblSalesOutStockDet.Amount as Amount,     tblSalesOutStockDet.SecUnit as SecName,     tblSalesOutStockDet.UnitIntQty as SecUnitQty,     tblSalesOutStockDet.UnitBaseQty as SecBaseQty,     tblSalesOutStockDet.UnitQty as SecQty,     tblSalesOutStockDet.UnitPrice as SecPrice,     tblSalesOutStockDet.Discount as Discount,     tblSalesOutStockDet.DisPrice as DisPrice,     tblSalesOutStockDet.DisBackAmt as DisBackAmt,     tblSalesOutStockDet.DisAmount as DisAmount,     tblSalesOutStock.Tax as Tax,     tblSalesOutStockDet.TaxPrice as TaxPrice,     tblSalesOutStockDet.TaxAmount as TaxAmount,     tblSalesOutStockDet.CoTaxAmt as CoTaxAmt,     tblCurrency.CurrencyName as CurrencyName,     tblSalesOutStock.CurrencyRate as CurrencyRate,     tblSalesOutStockDet.CurPrice as CurPrice,     tblSalesOutStockDet.CurAmount as CurTaxAmount,     tblSalesOutStockDet.AccountingPrice as AccountingPrice,     tblSalesOutStockDet.PreferAmount as DiscountAmount,     tblSalesOutStock.id as id,     tblSalesOutStockDet.BackQty as BackQty,     tblSalesOutStockDet.FactOutQty as FactOutQty,     tblSalesOutStock.SCompanyID as SCompanyID,     tblSalesOutStockDet.InvoiceQty as InvoiceQty,     tblSalesOutStockDet.NoInvoiceQty as NoInvoiceQty,     tblSalesOutStockDet.BuyQty as BuyQty,     tblSalesOutStockDet.NotBuyQty as NotBuyQty,     tblSalesOrder.BillNo as SalesOrderNo,     tblSalesOutStockDet.PresentSampleType as PresentSampleType,     tblSalesOutStockDet.PresentPrice as PresentPrice,     tblSalesOutStockDet.PresentAmt as PresentAmt,     case when len(isnull(tblSalesOutStockDet.Seq,''))=0 then '' else (select top 1 languageId from tblDBEnumerationItem where enumValue='seq') end as Seq,     tblSalesOutStock.Remark as Remark,     tblSalesOutStockDet.Remark as ReRemark,     tblSalesOutStockDet.SalesOrderID as SalesOrderID,     tblSalesOutStockDet.NeedReceiveAmt as NeedReceiveAmt,     tblStock.classCode+';'+CAST(tblStock.isCatalog as varchar(2))+';;' as hideStockCode,     tblGoods.classCode+';'+CAST(tblGoods.isCatalog as varchar(2))+';;' as hideGoodsCode,     tblSalesOutStock.workFlowNodeName as workFlowNodeName,     tblSalesOutStock.AcceptDate as AcceptDate,     REPLACE(Seq,'~',',') as SeqCond from tblSalesOutStockDet    left join tblSalesOrder noRight on tblSalesOutStockDet.SalesOrderID=tblSalesOrder.id   join tblGoods on tblGoods.ClassCode=tblSalesOutStockDet.GoodsCode   join tblSalesOutStock on tblSalesOutStockDet.f_ref=tblSalesOutStock.id   left join tblStock on tblStock.classCode=tblSalesOutStockDet.StockCode   left join tblCurrency on tblCurrency.id=tblSalesOutStock.Currency   join tblEmployee on tblEmployee.id = tblSalesOutStock.EmployeeID   join tblEmployee as tblEmployee2 on tblEmployee2.id = tblSalesOutStock.createBy   join tblCompany on tblCompany.classCode = tblSalesOutStock.CompanyCode   left join tblDepartment on tblDepartment.classCode = tblSalesOutStock.DepartmentCode   left join tblProject on tblSalesOutStock.ProjectCode=tblProject.id  where 1=1        and (tblSalesOutStock.BillDate >= '2018-03-01')                                                                                                                              and (tblSalesOutStock.SCompanyID like ''+'%' escape '!')                                          and (tblSalesOutStock.NeedReturnAmt>0 AND len(tblSalesOutStock.AcceptDate)>0 AND tblSalesOutStock.AcceptDate<GETDATE()+1 AND CAST(tblSalesOutStock.AcceptDate AS DATETIME)>(GETDATE()-CAST((SELECT MIN(tmp.days) FROM (SELECT ? AS days UNION SELECT 5000 AS days) AS tmp) AS INT)-1))       and (tblSalesOutStock.workFlowNodeName ='finish')         
+ [DEBUG] 2018-03-19 10:45:12,962 Line:582 ReportDataMgt.getReportData 参数1:2
+ [INFO ] 2018-03-19 10:45:12,966 Line:89 SAFE 数据库第一个备份任务启动，时间2018-03-19 00:00:00
+ [INFO ] 2018-03-19 10:45:12,966 Line:144 SAFE 备份任务开始执行，时间2018-03-19 10:45:12
+ [INFO ] 2018-03-19 10:45:12,969 Line:137 SAFE 碎片任务启动，时间2018-03-25 00:00:00
+ [ERROR] 2018-03-19 10:45:12,993 Line:1394 ReportDataMgt.getReportData() Error:
+ com.microsoft.sqlserver.jdbc.SQLServerException: 无法绑定由多个部分组成的标识符 "tblSalesOrder.id"。
+	at com.microsoft.sqlserver.jdbc.SQLServerException.makeFromDatabaseError(SQLServerException.java:197)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.getNextResult(SQLServerStatement.java:1493)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.doExecutePreparedStatement(SQLServerPreparedStatement.java:390)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement$PrepStmtExecCmd.doExecute(SQLServerPreparedStatement.java:340)
+	at com.microsoft.sqlserver.jdbc.TDSCommand.execute(IOBuffer.java:4575)
+	at com.microsoft.sqlserver.jdbc.SQLServerConnection.executeCommand(SQLServerConnection.java:1400)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeCommand(SQLServerStatement.java:179)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeStatement(SQLServerStatement.java:154)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.executeQuery(SQLServerPreparedStatement.java:283)
+	at org.apache.tomcat.dbcp.dbcp.DelegatingPreparedStatement.executeQuery(DelegatingPreparedStatement.java:96)
+	at org.apache.tomcat.dbcp.dbcp.DelegatingPreparedStatement.executeQuery(DelegatingPreparedStatement.java:96)
+	at com.menyi.aio.web.report.ReportDataMgt$12$1.execute(ReportDataMgt.java:584)
+	at org.hibernate.impl.SessionImpl.doWork(SessionImpl.java:1850)
+	at com.menyi.aio.web.report.ReportDataMgt$12.exec(ReportDataMgt.java:553)
+	at com.dbfactory.hibernate.DBUtil.execute(DBUtil.java:364)
+	at com.menyi.aio.web.report.ReportDataMgt.getReportData(ReportDataMgt.java:551)
+	at com.menyi.aio.web.alert.AlertCenterMgt.showData(AlertCenterMgt.java:933)
+	at com.menyi.aio.web.alert.AlertCenterMgt.queryAlertTotals(AlertCenterMgt.java:177)
+	at com.menyi.web.util.TimingMsgThread.run(TimingMsgThread.java:44)
+[INFO ] 2018-03-19 10:45:33,041 Line:148 SAFE 备份任务执行成功，时间2018-03-19 10:45:33
+ [DEBUG] 2018-03-19 10:46:07,130 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-19 10:46:26,419 Line:5242 GlobalsTool.js 生成js 时间191:/js/gen/login.vjs_zh_CN.js
+ [DEBUG] 2018-03-19 10:46:26,639 Line:88 CommonServlet.service 请求地址：/CommonServlet?operation=qrcodeDownload
+ [DEBUG] 2018-03-19 10:46:26,645 Line:99 CommonServlet.service 操作人:;请求数据：operation=[qrcodeDownload,];
+ [DEBUG] 2018-03-19 10:46:27,236 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=valpwd&time=1521427587224
+ [DEBUG] 2018-03-19 10:46:27,236 Line:163 UtilServlet.service 操作人:;请求数据：operation=[valpwd,];time=[1521427587224,];
+ [DEBUG] 2018-03-19 10:46:28,104 Line:135 BaseAction.execute 请求地址：/loginAction.do?operation=15
+ [DEBUG] 2018-03-19 10:46:28,108 Line:146 BaseAction.execute 操作人:;请求数据：operation=[15,];
+ [DEBUG] 2018-03-19 10:46:30,733 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=getUserInfo&name=admin&time=1521427590729
+ [DEBUG] 2018-03-19 10:46:30,733 Line:163 UtilServlet.service 操作人:;请求数据：operation=[getUserInfo,];name=[admin,];time=[1521427590729,];
+ [DEBUG] 2018-03-19 10:46:31,061 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=sunCompany&name=admin&time=1521427591053
+ [DEBUG] 2018-03-19 10:46:31,061 Line:163 UtilServlet.service 操作人:;请求数据：operation=[sunCompany,];name=[admin,];time=[1521427591053,];
+ [DEBUG] 2018-03-19 10:46:31,417 Line:135 BaseAction.execute 请求地址：/loginAction.do
+ [DEBUG] 2018-03-19 10:46:31,419 Line:146 BaseAction.execute 操作人:;请求数据：org.apache.struts.taglib.html.TOKEN=[,];NOTTOKEN=[true,];operation=[10,];ukId=[,];strM1=[,];strM2=[,];clientKey=[,];random=[,];screenWidth=[1218,];sunCompany=[1,];style=[style1,];system=[new,];loc=[zh_CN,];name=[admin,];password=[0192023A7BBD73250516F069DF18B500,];
+ [DEBUG] 2018-03-19 10:46:31,692 Line:2987 select count(*) from tblSunCompanys a where a.classCode like '00001_____%'
+ [DEBUG] 2018-03-19 10:46:31,769 Line:530 select AccYear,AccOverYear from  tblAccPeriod group by Accyear,AccOverYear
+ [DEBUG] 2018-03-19 10:46:32,349 Line:135 BaseAction.execute 请求地址：/AIO.do
+ [DEBUG] 2018-03-19 10:46:32,350 Line:146 BaseAction.execute 操作人:admin;请求数据：
+ [DEBUG] 2018-03-19 10:46:32,410 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-19 10:46:33,518 Line:5242 GlobalsTool.js 生成js 时间106:/js/gen/body2.vjs_zh_CN.js
+ [DEBUG] 2018-03-19 10:46:34,311 Line:135 BaseAction.execute 请求地址：/newMenu.do?keyId=fca2035a_0910281034230930020&name=%E6%88%91%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8F%B0&operation=0&winCurIndex=0
+ [DEBUG] 2018-03-19 10:46:34,312 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=1&loadMenu=true
+ [DEBUG] 2018-03-19 10:46:34,314 Line:146 BaseAction.execute 操作人:admin;请求数据：keyId=[fca2035a_0910281034230930020,];name=[???????·??????°,];operation=[0,];winCurIndex=[0,];
+ [DEBUG] 2018-03-19 10:46:34,315 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[1,];loadMenu=[true,];
+ [DEBUG] 2018-03-19 10:46:34,319 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-19 10:46:34,392 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=2&loadMenu=true
+ [DEBUG] 2018-03-19 10:46:34,393 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[2,];loadMenu=[true,];
+ [DEBUG] 2018-03-19 10:46:34,396 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-19 10:46:34,442 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=3&loadMenu=true
+ [DEBUG] 2018-03-19 10:46:34,444 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[3,];loadMenu=[true,];
+ [DEBUG] 2018-03-19 10:46:34,447 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-19 10:46:34,482 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=0&loadMenu=true
+ [DEBUG] 2018-03-19 10:46:34,484 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[0,];loadMenu=[true,];
+ [DEBUG] 2018-03-19 10:46:34,487 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-19 10:46:46,018 Line:135 BaseAction.execute 请求地址：/AdvanceAction.do?src=menu&winCurIndex=1
+ [DEBUG] 2018-03-19 10:46:46,019 Line:146 BaseAction.execute 操作人:admin;请求数据：src=[menu,];winCurIndex=[1,];
+ [DEBUG] 2018-03-19 10:46:46,020 Line:215 ---------->SET Page 1 DEFAULT URL = /AdvanceAction.do
+ [DEBUG] 2018-03-19 10:46:47,154 Line:135 BaseAction.execute 请求地址：/AdvanceAction.do?optype=index
+ [DEBUG] 2018-03-19 10:46:47,156 Line:146 BaseAction.execute 操作人:admin;请求数据：optype=[index,];
+ [DEBUG] 2018-03-19 10:46:48,603 Line:135 BaseAction.execute 请求地址：/CustomQueryAction.do?src=menu&winCurIndex=2
+ [DEBUG] 2018-03-19 10:46:48,604 Line:146 BaseAction.execute 操作人:admin;请求数据：src=[menu,];winCurIndex=[2,];
+ [DEBUG] 2018-03-19 10:46:48,605 Line:215 ---------->SET Page 2 DEFAULT URL = /CustomQueryAction.do
+ [DEBUG] 2018-03-19 10:48:29,949 Line:135 BaseAction.execute 请求地址：/CustomQueryAction.do
+ [DEBUG] 2018-03-19 10:48:29,951 Line:146 BaseAction.execute 操作人:admin;请求数据：operation=[4,];org.apache.struts.taglib.html.TOKEN=[,];winCurIndex=[2,];search=[费用报销,];
+ [DEBUG] 2018-03-19 10:48:58,364 Line:135 BaseAction.execute 请求地址：/OAWorkFlowTempQueryAction.do?moduleType=sys&src=menu&winCurIndex=3
+ [DEBUG] 2018-03-19 10:48:58,364 Line:146 BaseAction.execute 操作人:admin;请求数据：moduleType=[sys,];src=[menu,];winCurIndex=[3,];
+ [DEBUG] 2018-03-19 10:48:58,368 Line:215 ---------->SET Page 3 DEFAULT URL = /OAWorkFlowTempQueryAction.do?moduleType=sys
+ [DEBUG] 2018-03-19 10:48:58,436 Line:135 BaseAction.execute 请求地址：/OAWorkFlowTempQueryAction.do?actionType=toTree&moduleType=sys
+ [DEBUG] 2018-03-19 10:48:58,437 Line:146 BaseAction.execute 操作人:admin;请求数据：actionType=[toTree,];moduleType=[sys,];
+ [DEBUG] 2018-03-19 10:48:58,441 Line:135 BaseAction.execute 请求地址：/OAWorkFlowTempQueryAction.do?operation=4&selectType=status&val=1&moduleType=sys
+ [DEBUG] 2018-03-19 10:48:58,442 Line:146 BaseAction.execute 操作人:admin;请求数据：operation=[4,];selectType=[status,];val=[1,];moduleType=[sys,];
+ [DEBUG] 2018-03-19 10:48:58,473 Line:388 OAWorkFlowTempMgt.query 查询工作流sql =select work.id,work.templateName,templateType,a.moduleName,templateStatus,work.templateClass,work.statusId,work.flowOrder,templateFile,work.designType,work.workflowFile,work.fileFinish from OAWorkFlowTemplate work left join  tblWorkFlowType a  on work.templateClass=a.classCode  where  work.statusId=0 and templateStatus = ?  and ( a.classCode like '00001%'   OR a.classCode like '00002%'   OR a.classCode like '00003%'  ) order by work.templateStatus desc
+ [DEBUG] 2018-03-19 10:49:03,056 Line:135 BaseAction.execute 请求地址：/OAWorkFlowTempQueryAction.do?operation=4&winCurIndex=&selectType=keyword&val=%E8%B4%B9%E7%94%A8%E6%8A%A5%E9%94%80&moduleType=sys
+ [DEBUG] 2018-03-19 10:49:03,056 Line:146 BaseAction.execute 操作人:admin;请求数据：operation=[4,];winCurIndex=[,];selectType=[keyword,];val=[è????¨???é??,];moduleType=[sys,];
+ [DEBUG] 2018-03-19 10:49:03,060 Line:388 OAWorkFlowTempMgt.query 查询工作流sql =select work.id,work.templateName,templateType,a.moduleName,templateStatus,work.templateClass,work.statusId,work.flowOrder,templateFile,work.designType,work.workflowFile,work.fileFinish from OAWorkFlowTemplate work left join  tblWorkFlowType a  on work.templateClass=a.classCode  where  work.statusId=0 and (upper(templateName) like '%费用报销%' or upper(templateName) like '%费用报销%') and ( a.classCode like '00001%'   OR a.classCode like '00002%'   OR a.classCode like '00003%'  ) order by work.templateStatus desc
+ [DEBUG] 2018-03-19 10:49:49,624 Line:73 --------Destroy Config Refresh Thread---------------
+ [DEBUG] 2018-03-19 10:49:49,628 Line:105 --------Destroy Hibernate---------------
+ [INFO ] 2018-03-19 10:49:49,637 Line:127 测试执行路径
+ java.lang.Exception
+	at com.menyi.web.util.BaseFilter.destroy(BaseFilter.java:125)
+	at org.apache.catalina.core.ApplicationFilterConfig.release(ApplicationFilterConfig.java:313)
+	at org.apache.catalina.core.StandardContext.filterStop(StandardContext.java:4890)
+	at org.apache.catalina.core.StandardContext.stopInternal(StandardContext.java:5711)
+	at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:232)
+	at org.apache.catalina.core.ContainerBase.removeChild(ContainerBase.java:1028)
+	at org.apache.catalina.startup.HostConfig.undeploy(HostConfig.java:1498)
+	at org.apache.catalina.startup.HostConfig.checkResources(HostConfig.java:1425)
+	at org.apache.catalina.startup.HostConfig.check(HostConfig.java:1646)
+	at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:328)
+	at org.apache.catalina.util.LifecycleSupport.fireLifecycleEvent(LifecycleSupport.java:117)
+	at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:90)
+	at org.apache.catalina.core.ContainerBase.backgroundProcess(ContainerBase.java:1374)
+	at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1546)
+	at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1556)
+	at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.run(ContainerBase.java:1524)
+	at java.lang.Thread.run(Thread.java:745)
+[INFO ] 2018-03-19 10:50:04,433 Line:206 系统开始启动，最大内存：1792;目前总内存：548;目前空闲内存：226
+ [INFO ] 2018-03-19 10:50:04,465 Line:284 ===========Tomcat Port=8888
+ [INFO ] 2018-03-19 10:50:14,945 Line:2660 ---------------------------------first read dog =======-----------
+ [DEBUG] 2018-03-19 10:50:15,408 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canJxc=1 
+ [DEBUG] 2018-03-19 10:50:15,448 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canOa=1 
+ [DEBUG] 2018-03-19 10:50:15,456 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canCrm=1 
+ [DEBUG] 2018-03-19 10:50:15,464 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canHr=1 
+ [DEBUG] 2018-03-19 10:50:15,493 Line:594 select AccPeriod,AccMonth,AccYear,scompanyId,statusId,isBegin from tblAccPeriod where statusId=1 or isBegin=1
+ [DEBUG] 2018-03-19 10:50:15,513 Line:626 ------Init initAccPeriod record:1
+ [DEBUG] 2018-03-19 10:50:18,953 Line:1061 ------Init Enumeration record:392
+ [DEBUG] 2018-03-19 10:50:19,034 Line:1091 ------Init WorkProfession record:58
+ [DEBUG] 2018-03-19 10:50:19,123 Line:1121 ------Init District record:3984
+ [DEBUG] 2018-03-19 10:50:19,155 Line:1152 ------Init deptMap record:2
+ [DEBUG] 2018-03-19 10:50:22,356 Line:1832 ------Init ModuleList record:
+ [DEBUG] 2018-03-19 10:50:22,356 Line:2855 --------Init ModuleList Successful---------------
+ [INFO ] 2018-03-19 10:50:44,197 Line:206 系统开始启动，最大内存：1792;目前总内存：301;目前空闲内存：208
+ [INFO ] 2018-03-19 10:50:44,586 Line:284 ===========Tomcat Port=8888
+ [INFO ] 2018-03-19 10:50:56,655 Line:2660 ---------------------------------first read dog =======-----------
+ [DEBUG] 2018-03-19 10:50:57,092 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canJxc=1 
+ [DEBUG] 2018-03-19 10:50:57,096 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canOa=1 
+ [DEBUG] 2018-03-19 10:50:57,100 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canCrm=1 
+ [DEBUG] 2018-03-19 10:50:57,104 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canHr=1 
+ [DEBUG] 2018-03-19 10:50:57,128 Line:594 select AccPeriod,AccMonth,AccYear,scompanyId,statusId,isBegin from tblAccPeriod where statusId=1 or isBegin=1
+ [DEBUG] 2018-03-19 10:50:57,136 Line:626 ------Init initAccPeriod record:1
+ [DEBUG] 2018-03-19 10:51:00,247 Line:1061 ------Init Enumeration record:392
+ [DEBUG] 2018-03-19 10:51:00,324 Line:1091 ------Init WorkProfession record:58
+ [DEBUG] 2018-03-19 10:51:00,412 Line:1121 ------Init District record:3984
+ [DEBUG] 2018-03-19 10:51:00,440 Line:1152 ------Init deptMap record:2
+ [DEBUG] 2018-03-19 10:51:03,233 Line:1832 ------Init ModuleList record:
+ [DEBUG] 2018-03-19 10:51:03,233 Line:2855 --------Init ModuleList Successful---------------
+ [DEBUG] 2018-03-19 10:51:04,498 Line:297  select * from tblDBTableInfo order by TableName 
+ [DEBUG] 2018-03-19 10:51:04,788 Line:370 select * from tblDBFieldInfo order by tableId,listOrder
+ [DEBUG] 2018-03-19 10:51:07,558 Line:538 ------Init TableInfo record:644
+ [DEBUG] 2018-03-19 10:51:07,650 Line:651  select cataName,disName,module,tableName,nameField,codeField from tblScopeCataData order by orderby 
+ [DEBUG] 2018-03-19 10:51:07,670 Line:682 ------Init TableInfo record:4
+ [DEBUG] 2018-03-19 10:51:07,706 Line:775 ------Init initModuleField record:0
+ [DEBUG] 2018-03-19 10:51:07,754 Line:702  select tableName,sentence from tblPopDisSentence where statusId=0 order by tableName 
+ [DEBUG] 2018-03-19 10:51:07,777 Line:721 ------Init TableInfo record:26
+ [DEBUG] 2018-03-19 10:51:07,885 Line:891 ------Init PropInfo record:7
+ [DEBUG] 2018-03-19 10:51:16,278 Line:2947 --------Init Config File ---------------
+ [ERROR] 2018-03-19 10:51:16,889 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\16498250_1107301011023635761.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:16,894 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\1696218b_1303071432056211826.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:16,898 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\1e49ec73_1310141513554302768.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:16,901 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\2b637a85_1301151535291656265.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:16,905 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\2b637a85_1301161408119037671.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:16,910 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\3222e73f_1303110904036610349.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:16,914 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\33eaec0d_1301050950293021694.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:16,918 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\33eaec0d_1301061557287273935.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:16,922 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\33eaec0d_1301061608391253982.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:16,966 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\41c430d2_1208141805027402835.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,022 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\46a78652_1210151349025782027.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,082 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\4f7f6b1e_1303221111597339437.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,234 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\5fcf5f77_1304021554367043609.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,238 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\5fcf5f77_1304071406166069339.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,238 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\5fcf5f77_1304090927277926103.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,246 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\5fcf5f77_1304091008228756401.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,310 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\634bf574_1209071615094958205.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,313 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\634bf574_1209080902548768433.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,317 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\634bf574_1209121614089763945.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,321 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\6b602213_1205210942199878477.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,327 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\6b602213_1205221639204860973.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,331 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\6b602213_1205301613391641532.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,376 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\73eed876_1309241732076726431.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,477 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\8161d7ca_1312251105052885382.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,481 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\84e5c0c2_1203162038085610023.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,485 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\93da24a1_1205160946069131222.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,489 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\948d1bcf_1203241057415520350.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,493 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\978c0b22_1204191406175403275.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,497 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\978c0b22_1204251048517142444.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,557 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\a348895a_1306281020552880950.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,557 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\a348895a_1307010903526496874.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,561 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\a95dce41_1204281406032060703.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,693 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\ad48c0ba_1204141758384922624.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,781 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\c60c0a1d_1305161604424726111.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,921 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\eae3edac_0906121936590150223.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,969 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\eb548c0f_1203161107216570078.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:17,973 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\eb548c0f_1203162014422750845.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-19 10:51:18,029 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\ffd4bcdd_1701241708235230006.xml (系统找不到指定的文件。)
+ [DEBUG] 2018-03-19 10:51:18,065 Line:1873 ------Init RefreshTime 
+ [DEBUG] 2018-03-19 10:51:18,178 Line:2994 --------Init SMS Start ---------------
+ [INFO ] 2018-03-19 10:51:19,319 Line:3011 -------System init Secussful Set Normal status--------------
+ [DEBUG] 2018-03-19 10:51:19,319 Line:3855 --------Init Dog Successful---------------
+ [INFO ] 2018-03-19 10:51:23,382 Line:89 SAFE 数据库第一个备份任务启动，时间2018-03-19 00:00:00
+ [INFO ] 2018-03-19 10:51:23,382 Line:144 SAFE 备份任务开始执行，时间2018-03-19 10:51:23
+ [INFO ] 2018-03-19 10:51:23,387 Line:137 SAFE 碎片任务启动，时间2018-03-25 00:00:00
+ [INFO ] 2018-03-19 10:51:30,489 Line:148 SAFE 备份任务执行成功，时间2018-03-19 10:51:30
+ [DEBUG] 2018-03-19 10:52:19,527 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-19 10:56:43,855 Line:135 BaseAction.execute 请求地址：/AIO.do
+ [DEBUG] 2018-03-19 10:56:43,859 Line:146 BaseAction.execute 操作人:;请求数据：
+ [DEBUG] 2018-03-19 10:56:43,860 Line:59 MenuManager.doAuth() ---------- loginBean is null
+ [DEBUG] 2018-03-19 10:56:45,651 Line:5242 GlobalsTool.js 生成js 时间286:/js/gen/login.vjs_zh_CN.js
+ [DEBUG] 2018-03-19 10:56:45,764 Line:88 CommonServlet.service 请求地址：/CommonServlet?operation=qrcodeDownload
+ [DEBUG] 2018-03-19 10:56:45,768 Line:99 CommonServlet.service 操作人:;请求数据：operation=[qrcodeDownload,];
+ [DEBUG] 2018-03-19 10:56:46,560 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=valpwd&time=1521428206436
+ [DEBUG] 2018-03-19 10:56:46,608 Line:163 UtilServlet.service 操作人:;请求数据：operation=[valpwd,];time=[1521428206436,];
+ [DEBUG] 2018-03-19 10:56:46,883 Line:135 BaseAction.execute 请求地址：/loginAction.do?operation=15
+ [DEBUG] 2018-03-19 10:56:46,884 Line:146 BaseAction.execute 操作人:;请求数据：operation=[15,];
+ [DEBUG] 2018-03-19 10:56:47,516 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=getUserInfo&name=admin&time=1521428207508
+ [DEBUG] 2018-03-19 10:56:47,516 Line:163 UtilServlet.service 操作人:;请求数据：operation=[getUserInfo,];name=[admin,];time=[1521428207508,];
+ [DEBUG] 2018-03-19 10:56:47,999 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=sunCompany&name=admin&time=1521428207996
+ [DEBUG] 2018-03-19 10:56:48,000 Line:163 UtilServlet.service 操作人:;请求数据：operation=[sunCompany,];name=[admin,];time=[1521428207996,];
+ [DEBUG] 2018-03-19 10:56:48,295 Line:135 BaseAction.execute 请求地址：/loginAction.do
+ [DEBUG] 2018-03-19 10:56:48,296 Line:146 BaseAction.execute 操作人:;请求数据：org.apache.struts.taglib.html.TOKEN=[,];NOTTOKEN=[true,];operation=[10,];ukId=[,];strM1=[64-6E-69-E1-08-3F,];strM2=[2E8CA13C48A0837F681D884E1EB8E0B2,];clientKey=[,];random=[,];screenWidth=[1218,];sunCompany=[1,];style=[style1,];system=[new,];loc=[zh_CN,];name=[admin,];password=[0192023A7BBD73250516F069DF18B500,];
+ [DEBUG] 2018-03-19 10:56:51,598 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=getUserInfo&name=admin&time=1521428211594
+ [DEBUG] 2018-03-19 10:56:51,598 Line:163 UtilServlet.service 操作人:;请求数据：operation=[getUserInfo,];name=[admin,];time=[1521428211594,];
+ [DEBUG] 2018-03-19 10:56:51,825 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=sunCompany&name=admin&time=1521428211822
+ [DEBUG] 2018-03-19 10:56:51,826 Line:163 UtilServlet.service 操作人:;请求数据：operation=[sunCompany,];name=[admin,];time=[1521428211822,];
+ [DEBUG] 2018-03-19 10:56:51,859 Line:135 BaseAction.execute 请求地址：/loginAction.do
+ [DEBUG] 2018-03-19 10:56:51,860 Line:146 BaseAction.execute 操作人:;请求数据：org.apache.struts.taglib.html.TOKEN=[,];NOTTOKEN=[true,];operation=[10,];ukId=[,];strM1=[64-6E-69-E1-08-3F,];strM2=[8E0440BBBAF20C4278C053BC758CDC2E,];clientKey=[,];random=[,];screenWidth=[1218,];sunCompany=[1,];style=[style1,];system=[new,];loc=[zh_CN,];name=[admin,];password=[202cb962ac59075b964b07152d234b70,];
+ [DEBUG] 2018-03-19 10:56:52,097 Line:2987 select count(*) from tblSunCompanys a where a.classCode like '00001_____%'
+ [DEBUG] 2018-03-19 10:56:52,153 Line:530 select AccYear,AccOverYear from  tblAccPeriod group by Accyear,AccOverYear
+ [DEBUG] 2018-03-19 10:56:52,386 Line:135 BaseAction.execute 请求地址：/AIO.do
+ [DEBUG] 2018-03-19 10:56:52,387 Line:146 BaseAction.execute 操作人:admin;请求数据：
+ [DEBUG] 2018-03-19 10:56:52,425 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-19 10:56:54,124 Line:5242 GlobalsTool.js 生成js 时间127:/js/gen/body2.vjs_zh_CN.js
+ [DEBUG] 2018-03-19 10:56:54,682 Line:135 BaseAction.execute 请求地址：/newMenu.do?keyId=28141812_0811271603291400086&name=%E6%88%91%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8F%B0&operation=0&winCurIndex=0
+ [DEBUG] 2018-03-19 10:56:54,683 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=1&loadMenu=true
+ [DEBUG] 2018-03-19 10:56:54,684 Line:146 BaseAction.execute 操作人:admin;请求数据：keyId=[28141812_0811271603291400086,];name=[???????·??????°,];operation=[0,];winCurIndex=[0,];
+ [DEBUG] 2018-03-19 10:56:54,684 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[1,];loadMenu=[true,];
+ [DEBUG] 2018-03-19 10:56:54,688 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-19 10:56:54,740 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=2&loadMenu=true
+ [DEBUG] 2018-03-19 10:56:54,741 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[2,];loadMenu=[true,];
+ [DEBUG] 2018-03-19 10:56:54,743 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-19 10:56:54,781 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=3&loadMenu=true
+ [DEBUG] 2018-03-19 10:56:54,783 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[3,];loadMenu=[true,];
+ [DEBUG] 2018-03-19 10:56:54,786 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-19 10:56:54,819 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=0&loadMenu=true
+ [DEBUG] 2018-03-19 10:56:54,820 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[0,];loadMenu=[true,];
+ [DEBUG] 2018-03-19 10:56:54,822 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-19 10:57:00,455 Line:135 BaseAction.execute 请求地址：/AdvanceAction.do?src=menu&winCurIndex=1
+ [DEBUG] 2018-03-19 10:57:00,456 Line:146 BaseAction.execute 操作人:admin;请求数据：src=[menu,];winCurIndex=[1,];
+ [DEBUG] 2018-03-19 10:57:00,457 Line:215 ---------->SET Page 1 DEFAULT URL = /AdvanceAction.do
+ [DEBUG] 2018-03-19 10:57:01,354 Line:135 BaseAction.execute 请求地址：/AdvanceAction.do?optype=index
+ [DEBUG] 2018-03-19 10:57:01,356 Line:146 BaseAction.execute 操作人:admin;请求数据：optype=[index,];
+ [DEBUG] 2018-03-19 10:57:02,673 Line:135 BaseAction.execute 请求地址：/CustomQueryAction.do?src=menu&winCurIndex=2
+ [DEBUG] 2018-03-19 10:57:02,675 Line:146 BaseAction.execute 操作人:admin;请求数据：src=[menu,];winCurIndex=[2,];
+ [DEBUG] 2018-03-19 10:57:02,676 Line:215 ---------->SET Page 2 DEFAULT URL = /CustomQueryAction.do
+ [DEBUG] 2018-03-19 10:57:07,826 Line:135 BaseAction.execute 请求地址：/CustomQueryAction.do
+ [DEBUG] 2018-03-19 10:57:07,828 Line:146 BaseAction.execute 操作人:admin;请求数据：operation=[4,];org.apache.struts.taglib.html.TOKEN=[,];winCurIndex=[2,];search=[销售订单,];
+ [DEBUG] 2018-03-19 10:57:12,116 Line:135 BaseAction.execute 请求地址：/CustomQueryAction.do
+ [DEBUG] 2018-03-19 10:57:12,117 Line:146 BaseAction.execute 操作人:admin;请求数据：operation=[4,];org.apache.struts.taglib.html.TOKEN=[,];winCurIndex=[2,];search=[费用报销单,];
+ [DEBUG] 2018-03-19 10:57:15,305 Line:135 BaseAction.execute 请求地址：/CustomAction.do?operation=7&keyId=tblexpenseaccount&search=%E8%B4%B9%E7%94%A8%E6%8A%A5%E9%94%80%E5%8D%95&popWinName=TablemgtDiv
+ [DEBUG] 2018-03-19 10:57:15,307 Line:146 BaseAction.execute 操作人:admin;请求数据：operation=[7,];keyId=[tblexpenseaccount,];search=[è????¨???é?????,];popWinName=[TablemgtDiv,];
+ [DEBUG] 2018-03-19 10:57:16,811 Line:5242 GlobalsTool.js 生成js 时间47:/js/gen/editPage.vjs_zh_CN.js
+ [DEBUG] 2018-03-19 10:57:20,870 Line:135 BaseAction.execute 请求地址：/OAWorkFlowCreateAction.do?operation=4&src=menu&winCurIndex=3
+ [DEBUG] 2018-03-19 10:57:20,871 Line:146 BaseAction.execute 操作人:admin;请求数据：operation=[4,];src=[menu,];winCurIndex=[3,];
+ [DEBUG] 2018-03-19 10:57:20,872 Line:215 ---------->SET Page 3 DEFAULT URL = /OAWorkFlowCreateAction.do?operation=4
+ [DEBUG] 2018-03-19 10:57:20,874 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-19 10:57:23,829 Line:135 BaseAction.execute 请求地址：/UserFunctionQueryAction.do?tableName=tblexpenseaccount&src=menu&operation=6&designId=12bbe4d0_1309251420149973794&popWinName=PopMainOpdiv
+ [DEBUG] 2018-03-19 10:57:23,831 Line:146 BaseAction.execute 操作人:admin;请求数据：tableName=[tblexpenseaccount,];src=[menu,];operation=[6,];designId=[12bbe4d0_1309251420149973794,];popWinName=[PopMainOpdiv,];
+ [DEBUG] 2018-03-19 10:57:23,831 Line:220 ---------->SET DEFAULT URL = /UserFunctionQueryAction.do?tableName=tblexpenseaccount
+ [DEBUG] 2018-03-19 10:57:27,947 Line:5242 GlobalsTool.js 生成js 时间686:/js/gen/validate.vjs_zh_CN.js
+ [DEBUG] 2018-03-19 10:57:33,971 Line:5242 GlobalsTool.js 生成js 时间6021:/js/gen/define.vjstblexpenseaccount_zh_CN.js
+ [DEBUG] 2018-03-19 10:58:12,116 Line:135 BaseAction.execute 请求地址：/CustomAction.do?OAWorkFlowId=$designId
+ [DEBUG] 2018-03-19 10:58:12,123 Line:146 BaseAction.execute 操作人:admin;请求数据：OAWorkFlowId=[$designId,];operation=[2,];org.apache.struts.taglib.html.TOKEN=[,];winCurIndex=[,];popWinName=[TablemgtDiv,];tableId=[16498250_1107300945503685461,];tableType=[0,];isSunCmpShare=[0,];needsCopy=[0,];hasNext=[0,];relationTable=[,];classCount=[6,];tableName=[tblexpenseaccount,];oldtableName=[tblexpenseaccount,];tableDisplay=[zh_CN:费用报销单;,];tableDisplayDis=[费用报销单,];MainModule=[0,];sysParameter=[CommonFunction,];tableSysType=[Normal,];tWidth=[0,];tHeight=[0,];isUsed=[1,];draftFlag=[1,];fieldCalculate=[,];extendButton=[<button type="copy" operation="list">,];tableDesc=[,];PopDisSentence=[,];fieldId=[16498250_1107300945503685467,16498250_1107300945503685469,16498250_1107300945503685471,16498250_1107301038124806020,fe9c7752_1712201033438551368,16498250_1107300945503685473,16498250_1107301058088856138,16498250_1107300945503695495,16498250_1108021942363562023,16498250_1108021942363562025,16498250_1107300945503695487,16498250_1107300945503695483,16498250_1107300945503695489,16498250_1107300945503695491,16498250_1107300945503695493,d37e18c8_1108041937079020024,016498250_1107300945503685461,];languageId=[d37e18c8_1108041937079010007,d37e18c8_1108041937079010008,d37e18c8_1108041937079010009,d37e18c8_1108041937079010010,fe9c7752_1712201033438551369,d37e18c8_1108041937079010011,d37e18c8_1108041937079010012,d37e18c8_1108041937079010013,d37e18c8_1108041937079010014,d37e18c8_1108041937079020015,702f761a_1109221159024491333,d37e18c8_1108041937079020016,d37e18c8_1108041937079020019,d37e18c8_1108041937079020020,d37e18c8_1108041937079020021,d37e18c8_1108041937079020025,016498250_1107300945503685461,];listOrder=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,];isStat=[0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,];isNull=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,];isUnique=[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,];digits=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,];refEnumerationName=[,,,,,,,,,,,,,,,,,];inputValue=[,,Department:Department,Employee:Employee,Employee:Employee,,,,,,,,,,,,,];calculate=[,,,,,,,,{backBlance}=' ';if({originalBorrow}>=0.01){backBlance}=Number({originalBorrow})-Number(sum{tblexpenseaccountDet_Business});,,,,,,,,,];fieldSysType=[Normal,,,,,,,,,,,,,,,,,];fieldIdentityStr=[BillNo,,,,,,,,,,,,,,,,,];copyType=[,,,,,,,,,,,,,,,,,];logicValidate=[,,,,,,,,,,,,,,,,,];popupType=[,,,,,,,,,,,,,,,,,];groupLanguageId=[,,,,,,,,,,,,,,,,,];groupName=[zh_CN:;,,,,,,,,,,,,,,,,,];insertTable=[,,,,,,,,,,,,,,,,,];isCopy=[1,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,];isReAudit=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,];isLog=[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,];inputTypeOld=[8,0,2,2,2,0,0,0,0,8,0,100,100,100,100,100,0,];isMobile=[2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,];fieldName=[BillNo,oaTitle,DepartmentCode,EmployeeCode,EmployeeID,ApplyDate,appendixno,accessories,originalBorrow,backBlance,remark,AuditingAttitude,approve1,approve2,approve3,createtime,CheckPersont,];fieldDisplay=[zh_CN:单据编号;,zh_CN:主题;,zh_CN:报销部门;,zh_CN:报销人;,zh_CN:报销人;,zh_CN:申请日期;,zh_CN:附件数量;,zh_CN:附件;,zh_CN:原借款;,zh_CN:应退余款;,zh_CN:报销说明;,zh_CN:审核意见;,zh_CN:部门领导签批;,zh_CN:公司领导审批;,zh_CN:三级审核意见;,zh_CN:创建时间;,zh_CN:复核人;,];fieldDisplayDis=[单据编号,主题,报销部门,报销人,报销人,申请日期,附件数量,附件,原借款,应退余款,报销说明,审核意见,部门领导签批,公司领导审批,三级审核意见,创建时间,复核人,];fieldType=[2,18,2,2,2,5,2,14,1,1,18,3,3,3,3,6,2,];maxLength=[100,200,100,100,100,20,20,500,0,0,5000,500,30,30,30,19,500,];defaultValue=[,,@Sess:DepartmentCode;@Sess:DepartmentName,@Sess:UserId;@Sess:UserName,@Sess:UserId;@Sess:UserName,2017-12-27,,,,,,,,,,,,];isNullId=[1,1,1,];isUniqueId=[1,];width=[200,200,200,200,200,200,200,500,200,200,200,500,200,200,200,200,0,];inputType=[8,100,3,3,2,0,0,0,0,8,0,100,100,100,100,100,100,];moreInputId=[Department,Employee,Employee,];zhWidth=[200,];isLogId=[1,];inputTypeOldId=[8,];fieldSysTypeId=[Normal,];fieldIdentityStrId=[BillNo,];groupNameId=[,];logicValidateId=[,];copyTypeId=[,];isCopyId=[1,];
+ [DEBUG] 2018-03-19 10:58:12,192 Line:1235  update tblDBTableInfo set lastUpdateTime='2018-03-19 10:58:12' where tableName='tblexpenseaccount'
+ [DEBUG] 2018-03-19 10:58:12,199 Line:1235  update tblDBFieldInfo set inputType='8',inputTypeOld='8',fieldSysType='Normal' where tableid=(select id from tblDBTableInfo where tableName='tblexpenseaccount') and fieldName = 'BillNo'
+ [DEBUG] 2018-03-19 10:58:12,215 Line:1643 update tblInitTime set lastTime = ? where initName=?
+ [DEBUG] 2018-03-19 10:58:13,719 Line:297  select * from tblDBTableInfo where tableName = 'tblexpenseaccount'
+ [DEBUG] 2018-03-19 10:58:13,734 Line:370 select * from tblDBFieldInfo where tableId = (select id from tblDBTableInfo where tableName='tblexpenseaccount') order by tableId,listOrder
+ [DEBUG] 2018-03-19 10:58:13,780 Line:538 ------Init TableInfo record:1
+ [DEBUG] 2018-03-19 10:58:15,515 Line:135 BaseAction.execute 请求地址：/CustomAction.do?operation=7&keyId=tblexpenseaccount&popWinName=TablemgtDiv&winCurIndex=
+ [DEBUG] 2018-03-19 10:58:15,516 Line:146 BaseAction.execute 操作人:admin;请求数据：operation=[7,];keyId=[tblexpenseaccount,];popWinName=[TablemgtDiv,];winCurIndex=[,];
+ [DEBUG] 2018-03-19 11:22:45,062 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-19 11:53:10,356 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-19 12:23:26,125 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-19 13:33:42,318 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-19 14:03:53,771 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-19 14:34:08,857 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-19 15:04:25,285 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-19 15:11:35,504 Line:88 CommonServlet.service 请求地址：/CommonServlet?operation=qrcodeDownload
+ [DEBUG] 2018-03-19 15:11:35,507 Line:99 CommonServlet.service 操作人:;请求数据：operation=[qrcodeDownload,];
+ [DEBUG] 2018-03-19 15:11:38,947 Line:88 CommonServlet.service 请求地址：/CommonServlet?operation=qrcodeDownload
+ [DEBUG] 2018-03-19 15:11:38,948 Line:99 CommonServlet.service 操作人:;请求数据：operation=[qrcodeDownload,];
+ [DEBUG] 2018-03-19 15:11:39,651 Line:135 BaseAction.execute 请求地址：/loginAction.do?operation=15
+ [DEBUG] 2018-03-19 15:11:39,652 Line:146 BaseAction.execute 操作人:;请求数据：operation=[15,];
+ [DEBUG] 2018-03-19 15:11:39,842 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=valpwd&time=1521443499836
+ [DEBUG] 2018-03-19 15:11:39,843 Line:163 UtilServlet.service 操作人:;请求数据：operation=[valpwd,];time=[1521443499836,];
+ [DEBUG] 2018-03-19 15:22:55,347 Line:88 CommonServlet.service 请求地址：/CommonServlet?operation=qrcodeDownload
+ [DEBUG] 2018-03-19 15:22:55,347 Line:99 CommonServlet.service 操作人:;请求数据：operation=[qrcodeDownload,];
+ [DEBUG] 2018-03-19 15:22:55,832 Line:135 BaseAction.execute 请求地址：/loginAction.do?operation=15
+ [DEBUG] 2018-03-19 15:22:55,833 Line:146 BaseAction.execute 操作人:;请求数据：operation=[15,];
+ [DEBUG] 2018-03-19 15:22:55,988 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=valpwd&time=1521444175981
+ [DEBUG] 2018-03-19 15:22:55,990 Line:163 UtilServlet.service 操作人:;请求数据：operation=[valpwd,];time=[1521444175981,];
+ [DEBUG] 2018-03-19 15:22:57,998 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=getUserInfo&name=admin&time=1521444177995
+ [DEBUG] 2018-03-19 15:22:57,999 Line:163 UtilServlet.service 操作人:;请求数据：operation=[getUserInfo,];name=[admin,];time=[1521444177995,];
+ [DEBUG] 2018-03-19 15:22:58,261 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=sunCompany&name=admin&time=1521444178257
+ [DEBUG] 2018-03-19 15:22:58,262 Line:163 UtilServlet.service 操作人:;请求数据：operation=[sunCompany,];name=[admin,];time=[1521444178257,];
+ [DEBUG] 2018-03-19 15:22:58,306 Line:135 BaseAction.execute 请求地址：/loginAction.do
+ [DEBUG] 2018-03-19 15:22:58,307 Line:146 BaseAction.execute 操作人:;请求数据：org.apache.struts.taglib.html.TOKEN=[,];NOTTOKEN=[true,];operation=[10,];ukId=[,];strM1=[64-6E-69-E1-08-3F,];strM2=[D63F1961C4598E5AA04F423D22E07D64,];clientKey=[,];random=[,];screenWidth=[1218,];sunCompany=[1,];style=[style1,];system=[new,];loc=[zh_CN,];name=[admin,];password=[21232f297a57a5a743894a0e4a801fc3,];
+ [DEBUG] 2018-03-19 15:34:51,400 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ 

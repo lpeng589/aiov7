@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<!-- 资产计提折旧 查询框 选择固定资产(供报表引用,不是多单引用弹窗) -->
+	<select name = "ReportSelectFixedAsset">
+		<table>tblFixedAssetAdd</table>
+		<condition>tblFixedAssetAdd.statusId!='-1'</condition>
+		<displayFields>
+			<field name="tblFixedAssetAdd.GoodsNumber"  width="150" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblFixedAssetAdd.GoodsName" display="tblFixedAssetDevalue.AssetsAddId"  width="150" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblFixedAssetAdd.GoodsSpec"  width="100" searchType="match" parentDisplay="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblFixedAssetAdd.GoodsNumber" parentName="GoodsNumber" relationKey="true" hidden="false"/>
+			<field name="tblFixedAssetAdd.GoodsName" parentName="GoodsName" relationKey="false" hidden="false"/>
+			<field name="tblFixedAssetAdd.GoodsSpec" parentName="GoodsSpec" relationKey="false" hidden="false"/>
+		</saveFields>
+	</select>
+</popupSelect>

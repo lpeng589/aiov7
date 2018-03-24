@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="GoodsAllot" type="checkBox">
+     <table>tblGoods,tblStocks,tblGoodsUnit</table>
+     <forwardModel>tblGoods</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>
+     from tblGoods left join tblStocks on tblStocks.GoodsCode=tblGoods.classCode and tblStocks.StockCode='@ValueofDB:StockCode' and tblStocks.StockCode='@ValueofDB:@TABLENAME_StockCode' and tblStocks.LastQty&gt;0
+  left join tblGoodsUnit with(index(IX_tblGoodsUnit_refdefault)) on tblGoodsUnit.f_ref=tblGoods.id and tblGoodsUnit.DefaultAssit=1
+     </defineSQL>
+     <classCode>tblGoods.classCode</classCode>
+     <remark>回填零售价</remark>
+     <condition></condition>
+     <changeCond>tblGoods.workFlowNodeName='finish' and tblGoods.statusid!='-1'</changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName,tblStocks.ProDate,tblStocks.Availably</orderBy>
+     <displayFields>
+          <field name="tblGoods.[tblGoods]" width="120" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+          <field name="tblStocks.BatchNo" width="120" searchType="match" parentDisplay="true" />
+          <field name="tblStocks.Inch" width="70" searchType="match" parentDisplay="true" />
+          <field name="tblStocks.Hue" width="70" searchType="match" parentDisplay="true" />
+          <field name="tblStocks.yearNO" width="70" searchType="match" parentDisplay="true" />
+          <field name="tblStocks.ProDate" width="80" searchType="equal" parentDisplay="true" orderBy="升" />
+          <field name="tblStocks.Availably" width="80" searchType="equal" parentDisplay="true" orderBy="升" />
+          <field name="tblGoods.FacePrice" width="80" parentDisplay="true" display="@TABLENAME.RetailPrice" />
+          <field name="(case tblGoods.isCatalog when 0 then tblStocks.lastQty else -99999999 end)" asName="tblStocks.lastQty" width="90" parentDisplay="true" display="tblStocks.lastQty" />
+          <field name="(case tblGoods.isCatalog when 0 then tblStocks.LastQty+tblStocks.inQtyNotAudit+tblStocks.SInQtyNotAudit-tblStocks.outQtyNotAudit-tblStocks.BOutQtyNotAudit else -99999999 end)" asName="ViewVirtualStock.UseQty" width="90" parentDisplay="true" display="ViewVirtualStock.UseQty" />
+     </displayFields>
+     <saveFields>
+          <field name="tblStocks.BatchNo" parentName="@TABLENAME.BatchNo" relationKey="false" hidden="false" />
+          <field name="tblStocks.Inch" parentName="@TABLENAME.Inch" relationKey="false" hidden="false" />
+          <field name="tblStocks.Hue" parentName="@TABLENAME.Hue" relationKey="false" hidden="false" />
+          <field name="tblStocks.yearNO" parentName="@TABLENAME.yearNO" relationKey="false" hidden="false" />
+          <field name="tblStocks.ProDate" parentName="@TABLENAME.ProDate" relationKey="false" hidden="false" orderBy="升" />
+          <field name="tblStocks.Availably" parentName="@TABLENAME.Availably" relationKey="false" hidden="false" orderBy="升" />
+          <field name="tblGoods.FacePrice" parentName="@TABLENAME.RetailPrice" display="@TABLENAME.RetailPrice" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true" />
+          <field name="tblGoodsUnit.SecUnit" parentName="@TABLENAME.SecUnit" relationKey="false" hidden="true"  compare="false"/>
+          <field name="tblGoodsUnit.UnitD" parentName="@TABLENAME.BaseQty" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblGoodsUnit.SecUnitD" parentName="@TABLENAME.SecQty" relationKey="false" hidden="false"  compare="false"/>
+		  <field name="tblStocks.lastPrice" parentName="@TABLENAME.Price" relationKey="false" hidden="false"  compare="false"/>
+	<!--	  <field name="tblStocks.lastAmount" parentName="@TABLENAME.Amt" relationKey="false" hidden="false" />-->
+     </saveFields>
+</select>
+</popupSelect>

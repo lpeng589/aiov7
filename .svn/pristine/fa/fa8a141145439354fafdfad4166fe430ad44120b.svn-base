@@ -1,0 +1,338 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>$globals.getTableDisplayName($!mainTableName)审核</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
+<link rel="stylesheet" href="/mobile/css/themes/default/jquery.mobile-1.4.5.min.css">
+<link rel="stylesheet" href="/mobile/css/mWorkFlowList.css" type="text/css" /> 
+<link rel="stylesheet" type="text/css" href="/mobile/css/scrollbar.css">
+<link rel="stylesheet" type="text/css" href="/mobile/css/mobile.css">
+
+<link rel="shortcut icon" href="/favicon.ico"> 
+<script src="/mobile/js/jquery.min.js"></script> 
+<script src="/mobile/js/jquery.mobile-1.4.5.min.js"></script>
+<script src="/mobile/js/mobileapi.min.js?201510161555=1"></script>
+<script type="text/javascript">          
+$(document).ready(function() {   
+	$("#backbt").hide(); //隐藏返回按扭
+	showWeiXinPic("pageUpdate"); //用微信显示表框中图片  
+});
+</script>
+</head>
+<body>
+<div class="pull-demo-page"  data-role="page"  id="pageUpdate">
+  <div data-role="header" id="workFlowListHeader" data-position="fixed" data-tap-toggle="false" data-disable-page-zoom="false" style="position: fixed;">
+  	<a href="#pageone" data-role="button" id="backbt" data-icon="back">返回</a> 
+    <h1>$globals.getTableDisplayName($!mainTableName)</h1>
+    #if($!checkRight)
+    <a href="javascript:checkBillDeliver('$mainTableName','$keyId',deliverCallback)" data-transition="flip" data-role="button" data-icon="eye">审核</a>
+    #elseif($!retCheckRight)
+    <a href="javascript:retCheck('$keyId','$mainTableName',retCheckCallback)" data-transition="flip" data-role="button" data-icon="eye">反审核</a>
+    #elseif($!hurryTrans)
+    <a href="javascript:hurryTrans('$keyId','$mainTableName','$moduleName')" data-transition="flip" data-role="button" data-icon="eye">催办</a>
+    #elseif($!hasCancel)
+    <a href="javascript:cancelTo('$keyId','$mainTableName',cancelCallback)" data-transition="flip" data-role="button" data-icon="eye">撤回</a>
+    #end  	
+  </div>
+  <script type="text/javascript">
+    function deliverCallback(){//撤回回调函数
+    	ajaxUpdateHtml("/MobileAction.do?operation=82&tableName=$mainTableName&keyId=$keyId","pageUpdate",function(){			
+			$("#pageUpdate").trigger('create');
+		});
+	}
+    function cancelCallback(){//撤回回调函数
+    	ajaxUpdateHtml("/MobileAction.do?operation=82&tableName=$mainTableName&keyId=$keyId","pageUpdate",function(){			
+			$("#pageUpdate").trigger('create');
+		});
+	}
+	
+	function retCheckCallback(){//反审核回调函数
+		ajaxUpdateHtml("/MobileAction.do?operation=82&tableName=$mainTableName&keyId=$keyId","pageUpdate",function(){			
+			$("#pageUpdate").trigger('create');
+		});
+	}
+  
+  </script>
+
+  <div data-role="content">
+  <div class="dataDiv">
+  #set($values = $datavalues)
+  #set($tableName = $mainTableName)
+  #foreach ($row in $fieldInfos )
+  	#if("$row.inputType" != "100" && "$row.fieldType" != "16"   && $row.fieldName != "id" && $row.fieldName != "createBy" && $row.fieldName != "createTime" && $row.fieldName != "lastUpdateBy" && $row.fieldName != "lastUpdateTime" && "$row.fieldName"!="moduleType" && "$row.fieldName"!="f_brother")
+		#if("$row.inputType" == "3" || "$row.inputType" == "6")
+		#elseif("$row.inputTypeOld" == "1" || "$row.inputType"=="10")
+			#set($enumName = "")
+			#foreach($erow in $globals.getEnumerationItems($row.refEnumerationName))
+				#if("$!erow.value" == "$values.get($row.fieldName)")
+					#set($enumName = $erow.name)
+				#end
+			#end
+   	<p><span class=st>$row.display.get("$globals.getLocale()"):</span><span class=sv>$!globals.rereplaceSpecLitter2("$enumName")</span></p>
+   		#elseif("$row.inputTypeOld" == "5")
+   	<p><span class=st>$row.display.get("$globals.getLocale()"):</span><span class=sv>
+   			#foreach($erow in $globals.getEnumerationItems($row.refEnumerationName))
+				#foreach($fieldValue in $globals.strSplit("$!values.get($row.fieldName)",",")) 
+					#if($erow.value == $fieldValue)
+						$erow.name ,
+					#end
+				#end
+			#end</span>
+			</p>	
+		#elseif("$row.inputType" == "4") ##多语言
+			#set($lstr = $!values.get($row.fieldName))
+			
+			#if("$lstr" != "")
+			   #set($lan= $!values.get("LANGUAGEQUERY").get($lstr).get("$globals.getLocale()"))
+			   #set($lstr = $!values.get("LANGUAGEQUERY").get($lstr)) 
+			#end	
+			
+			#set($cs = ${row.fieldName}+"_lan")
+	<p><span class=st>$row.display.get("$globals.getLocale()"):</span><span class=sv>$!globals.rereplaceSpecLitter2("$!lan")</span></p>			
+		#elseif("$row.fieldType" == "13") ##图片
+	<p  style="overflow:scroll"><span class=st>$row.display.get("$globals.getLocale()"):</span><span class=sv>
+			#set($pfn = $!values.get("$row.fieldName").replaceAll("&#92;","/") )
+			#foreach($uprow in $pfn.split(";")) 
+				#if($uprow.indexOf("http:") > -1)	
+					<a href='javascript:showpic("$uprow")' target='_blank'><img src='$uprow' height='200' border='0'></a>
+				#elseif($uprow.indexOf(":") > -1)	
+					<a href='javascript:showpic("/ReadFile.jpg?fileName=$globals.urlEncode($!globals.get($uprow.split(":"),0))&realName=$globals.urlEncode($!globals.get($uprow.split(":"),1))&tempFile=false&type=PIC&tableName=$mainTableName")' target='_blank'><img src='/ReadFile.jpg?fileName=$globals.urlEncode($!globals.get($uprow.split(":"),0))&realName=$globals.urlEncode($!globals.get($uprow.split(":"),1))&tempFile=false&type=PIC&tableName=$mainTableName' height='200' border='0'></a>
+				#elseif($uprow != "")
+					<img weixinshow=true src='/ReadFile.jpg?fileName=$globals.urlEncode($uprow)&realName=$globals.urlEncode($uprow)&tempFile=false&type=PIC&tableName=$mainTableName' height='200' border='0'>
+				#end
+				<br/>
+			#end 
+	</span></p>						
+		#elseif("$row.fieldType" == "14") ##附件
+	<p><span class=st>$row.display.get("$globals.getLocale()"):</span><span class=sv>
+			#set($pfn = $!values.get("$row.fieldName").replaceAll("&#92;","/") )
+			#foreach($uprow in $pfn.split(";")) 
+				#if($uprow.indexOf(":") > -1)	
+					<a href='/ReadFile?fileName=$globals.urlEncode($!globals.get($uprow.split(":"),0))&realName=$globals.urlEncode($!globals.get($uprow.split(":"),1))&tempFile=false&type=AFFIX&tableName=$mainTableName' target='_blank'>$!globals.rereplaceSpecLitter2("$uprow")</a>
+				#elseif($uprow != "")
+					<a href='/ReadFile?fileName=$globals.urlEncode($uprow)&realName=$globals.urlEncode($uprow)&tempFile=false&type=AFFIX&tableName=$mainTableName' target='_blank'>$!globals.rereplaceSpecLitter2("$uprow")</a>
+				#end
+			#end	
+	</span></p>							
+   		#elseif("$row.inputType" == "2"||"$row.inputTypeOld" == "2")  
+			#if($row.getSelectBean().relationKey.hidden)
+			#elseif("$row.fieldSysType"=="GoodsField" and $globals.getPropBean($row.fieldName).isSequence=="1")				
+			#else
+	<p><span class=st>$row.display.get("$globals.getLocale()"):</span><span class=sv>$!globals.rereplaceSpecLitter2("$!values.get($row.fieldName)")</span></p>
+			#end ##relationKey=true且非序列号   
+
+			#if(!("$row.fieldSysType"=="GoodsField" and $globals.getPropBean($row.fieldName).isSequence=="1"))
+				#foreach($srow in $row.getSelectBean().viewFields)	
+					#set($totalFields=$totalFields+1)
+					#set($colName="")
+					#if($!srow.display!="")
+						#if($!srow.display.indexOf("@TABLENAME")==0)
+							#set($index=$srow.display.indexOf(".")+1)#set($tableField=$tableName+"."+$srow.display.substring($index))
+						#else
+							#set($tableField=$srow.display)
+						#end
+					#else
+						#set($tableField="")
+					#end
+					#set($colName="$srow.asName")
+					#if("$!srow.display" !="" && $!srow.display.indexOf(".")==-1)
+						#set($dis = $srow.display)
+					#else 
+						#set($dis = $globals.getFieldDisplay($tableName,$srow.getSelectBean().name,$tableField))
+						#if($dis == "") #set($dis = $globals.getFieldDisplay($srow.fieldName)) #end
+					#end
+					#set($sValue ='')
+					#set($sValue =$!values.get($srow.asName))
+					#set($sbean = $globals.getFieldBean($colName))
+					#if($sbean == "") #set($sbean = $globals.getFieldBean($srow.fieldName)) #end
+					#if("$sbean.inputType" == "4") 
+						#set($sValue =$datavalues.get("LANGUAGEQUERY").get($sValue).get("$globals.getLocale()") )
+					#end
+					
+					#if($allConfigList.size()>0)  
+						#if($globals.colIsExistConfigList("$tableName","$colName","bill") || $!srow.display!="")
+	<p><span class=st>$dis:</span><span class=sv>$!globals.rereplaceSpecLitter2($sValue)</span></p>							
+							#set($tableField="")
+						#end  ##列配置存在  
+					#else ##没有列配置时
+						#if("$srow.hiddenInput"=="true")
+						#else
+	<p><span class=st>$dis:</span><span class=sv>$!globals.rereplaceSpecLitter2($sValue)</span></p>	
+							#set($tableField="")
+						#end  ##hiddenInput不为true
+					#end	##没有列配置结束时			
+				#end	##弹出窗显示字段循环			
+			#end	##非序列号
+   		
+   		#elseif("$row.inputType" != "3" && "$row.inputType" != "6")
+   			#if("$row.fieldType" == "1")
+   	<p><span class=st>$row.display.get("$globals.getLocale()"):</span><span class=sv>$!globals.newFormatNumber($!values.get($row.fieldName),false,false,$!globals.getSysIntswitch(),$tableName,$row.fieldName,true)</span></p>			
+   			#else
+   	<p><span class=st>$row.display.get("$globals.getLocale()"):</span><span class=sv>$!globals.rereplaceSpecLitter2("$!values.get($row.fieldName)").replace("\n","<br/>")</span></p>	
+   			#end
+   		#end
+   	#end
+  #end 	
+  
+  #if("$!ErrorMsg" != "")
+  <p>$ErrorMsg</p>	
+  #else  
+  <p><span class=st>制单人:</span><span class=sv>$!values.get('createByName')</span></p>	
+  <p><span class=st>制单时间:</span><span class=sv>$!values.get('createTime')</span></p>	
+  #end
+  </div>
+  
+  #foreach ($childTable in $childTableList )   
+  #set($kn = "TABLENAME_"+$childTable)
+  #set($tableName = $childTable) 
+  #foreach ($values  in $datavalues.get($kn))
+  <fieldset style="border: 1px solid #9F96A1;border-radius: 8px;">
+    <legend>$globals.getTableDisplayName($childTable)</legend>
+  <div class="dataDiv">
+  #foreach ($row in $childShowField.get($childTable) )
+  	#if("$row.inputType" != "100"   && "$row.fieldType" != "16"   && $row.fieldName != "id"   && $row.fieldName != "f_ref"   && $row.fieldName != "f_borther" && $row.fieldName != "createBy" && $row.fieldName != "createTime" && $row.fieldName != "lastUpdateBy" && $row.fieldName != "lastUpdateTime" && "$row.fieldName"!="moduleType")
+		#if("$row.inputType" == "3" || "$row.inputType" == "6")
+		#elseif("$row.inputTypeOld" == "1" || "$row.inputType"=="10")
+			#set($enumName = "")
+			#foreach($erow in $globals.getEnumerationItems($row.refEnumerationName))
+				#if("$!erow.value" == "$values.get($row.fieldName)")
+					#set($enumName = $erow.name)
+				#end
+			#end
+   	<p><span class=st>$row.display.get("$globals.getLocale()"):</span><span class=sv>$!globals.rereplaceSpecLitter2("$enumName")</span></p>
+   		#elseif("$row.inputTypeOld" == "5")
+   	<p><span class=st>$row.display.get("$globals.getLocale()"):</span><span class=sv>
+   			#foreach($erow in $globals.getEnumerationItems($row.refEnumerationName))
+				#foreach($fieldValue in $globals.strSplit("$!values.get($row.fieldName)",",")) 
+					#if($erow.value == $fieldValue)
+						$erow.name ,
+					#end
+				#end
+			#end</span>
+			</p>	
+		#elseif("$row.inputType" == "4") ##多语言
+			#set($lstr = $!values.get($row.fieldName).replaceAll("&#92;","/"))
+			
+			#if("$lstr" != "")
+			   #set($lan= $!datavalues.get("LANGUAGEQUERY").get($lstr).get("$globals.getLocale()"))
+			   #set($lstr = $!datavalues.get("LANGUAGEQUERY").get($lstr)) 
+			#end	
+			
+			#set($cs = ${row.fieldName}+"_lan")
+	<p><span class=st>$row.display.get("$globals.getLocale()"):</span><span class=sv>$!globals.rereplaceSpecLitter2("$!lan")</span></p>		
+		#elseif("$row.fieldType" == "13") ##图片
+	<p style="overflow:scroll"><span class=st>$row.display.get("$globals.getLocale()"):</span><span class=sv>
+			#set($pfn = $!values.get("$row.fieldName").replaceAll("&#92;","/") )
+			#foreach($uprow in $pfn.split(";")) 
+				#if($uprow.indexOf("http:") > -1)	
+					<a href='javascript:showpic("$uprow")' target='_blank'><img src='$uprow' height='200' border='0'></a>
+				#elseif($uprow.indexOf(":") > -1)	
+					<a href='javascript:showpic("/ReadFile.jpg?fileName=$globals.urlEncode($!globals.get($uprow.split(":"),0))&realName=$globals.urlEncode($!globals.get($uprow.split(":"),1))&tempFile=false&type=PIC&tableName=$mainTableName")' target='_blank'><img src='/ReadFile.jpg?fileName=$globals.urlEncode($!globals.get($uprow.split(":"),0))&realName=$globals.urlEncode($!globals.get($uprow.split(":"),1))&tempFile=false&type=PIC&tableName=$mainTableName' height='200' border='0'></a>
+				#elseif($uprow != "")
+					<a href='javascript:showpic("/ReadFile.jpg?fileName=$globals.urlEncode($uprow)&realName=$globals.urlEncode($uprow)&tempFile=false&type=PIC&tableName=$mainTableName")' target='_blank'><img src='/ReadFile.jpg?fileName=$globals.urlEncode($uprow)&realName=$globals.urlEncode($uprow)&tempFile=false&type=PIC&tableName=$mainTableName' height='200' border='0'></a>
+				#end
+				<br/>
+			#end 
+	</span></p>				
+   		#elseif("$row.inputType" == "2"||"$row.inputTypeOld" == "2") 
+			#if($row.getSelectBean().relationKey.hidden)
+			#elseif("$row.fieldSysType"=="GoodsField" and $globals.getPropBean($row.fieldName).isSequence=="1")				
+			#else
+	<p><span class=st>$row.display.get("$globals.getLocale()"):</span><span class=sv>$!globals.rereplaceSpecLitter2("$!values.get($row.fieldName)")</span></p>
+			#end ##relationKey=true且非序列号   
+			#if(!("$row.fieldSysType"=="GoodsField" and $globals.getPropBean($row.fieldName).isSequence=="1"))
+				#foreach($srow in $row.getSelectBean().viewFields)	
+					#set($totalFields=$totalFields+1)
+					#set($colName="")
+					
+					#if($!srow.display!="")
+						#if($!srow.display.indexOf("@TABLENAME")==0)
+							#set($index=$srow.display.indexOf(".")+1)#set($tableField=$tableName+"."+$srow.display.substring($index))
+						#else
+							#set($tableField=$srow.display)
+						#end
+					#else
+						#set($tableField="")
+					#end
+					#set($colName="$srow.asName")
+					#if("$!srow.display" !="" && $!srow.display.indexOf(".")==-1)
+						#set($dis = $srow.display)
+					#else 
+						#set($dis = $globals.getFieldDisplay($tableName,$srow.getSelectBean().name,$tableField))
+						#if($dis == "") #set($dis = $globals.getFieldDisplay($srow.fieldName)) #end
+					#end
+					#set($sValue ='')
+					#set($sValue =$!values.get($srow.asName))
+					#set($sbean = $globals.getFieldBean($colName))
+					#if($sbean == "") #set($sbean = $globals.getFieldBean($srow.fieldName)) #end
+					#if("$sbean.inputType" == "4") 
+						#set($sValue =$datavalues.get("LANGUAGEQUERY").get($sValue).get("$globals.getLocale()") )
+					#end
+						
+					#if($allConfigList.size()>0)  
+						#if($globals.colIsExistConfigList("$tableName","$colName","bill") || $!srow.display!="")
+	<p><span class=st>$dis:</span><span class=sv> $!globals.rereplaceSpecLitter2($sValue)</span></p>							
+							#set($tableField="")
+						#end  ##列配置存在  
+					#else ##没有列配置时
+						#if("$srow.hiddenInput"=="true")
+						#else
+	<p><span class=st>$dis:</span><span class=sv> $!globals.rereplaceSpecLitter2($sValue)</span></p>	
+							#set($tableField="")
+						#end  ##hiddenInput不为true
+					#end	##没有列配置结束时			
+				#end	##弹出窗显示字段循环			
+			#end	##非序列号
+   		
+   		#elseif("$row.inputType" != "3" && "$row.inputType" != "6")
+   			#if("$row.fieldType" == "1")
+   	<p><span class=st>$row.display.get("$globals.getLocale()"):</span><span class=sv>$!globals.newFormatNumber($!values.get($row.fieldName),false,false,$!globals.getSysIntswitch(),$tableName,$row.fieldName,true)</span></p>			
+   			#else
+   	<p><span class=st>$row.display.get("$globals.getLocale()"):</span><span class=sv>$!globals.rereplaceSpecLitter2("$!values.get($row.fieldName)")</span></p>	
+   			#end
+   		#end
+   	#end
+  #end 	
+  </div>    
+    
+   
+  </fieldset>
+  #end ##值 $rowdata循环
+  #end ##表childTable循环
+  
+  #if($!delivers.size()>0)
+	<div class="view-ul-wp">
+		<p class="t-p">审核记录</p>
+		<ul class="view-ul">
+			#foreach($!deliver in $!delivers)
+			<li class="view-li">
+				<div class="d-pa">
+					<em class="node-em">第$!velocityCount步&nbsp;&nbsp;$!deliver.nodeID</em>
+					<span class="check-person">$!deliver.checkPerson</span>
+				</div>
+				<div class="d-dbk">
+					<em class="end-time">[$!deliver.endTime]</em>
+					<div class="app-work-check">
+						&nbsp;$!deliver.approvalOpinions<br>
+						#foreach($affix in $globals.strSplitByFlag($deliver.affix,';'))
+							#if("$!affix"!="")
+							$affix <a href="/ReadFile?fileName=$globals.urlEncode($affix)&realName=$globals.urlEncode($affix)&tempFile=false&type=AFFIX&tableName=$mainTableName&down=true" target="_blank">$text.get("common.lb.download")</a>
+							#end
+						#end
+					</div>
+					<em class="node-type">
+						$!deliver.nodeType #if("$!deliver.workFlowNode"!="")-> [$!deliver.workFlowNode]-$!deliver.checkPersons #end
+					</em>
+				</div>
+			</li>
+			#end
+		</ul>
+	</div>
+ 	#end
+  
+  </div>
+ </div>
+</body>
+</html>
+			

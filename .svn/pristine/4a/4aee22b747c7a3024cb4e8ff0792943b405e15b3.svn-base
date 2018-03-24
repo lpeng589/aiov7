@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<!--
+displayFields 中的字段全都是会显示在弹出页面的字段
+   parentDisplay为true表示该字段需在主表界面显示，但不一定会保存在主表，由saveFields决定，
+   如果在主表显示，并配有display则主表显示字段对应的标签名取display的字段名，
+   searchType no:不作为查询条件，equal：等于，match：模糊查询,scope：区间查询
+saveFields 中的字段全都是必须在主表保存的字段
+   其中必须有且仅有一个relationKey="true"的字段。该字段表示的是关联字段，关联查询通过这个字段建立
+   关联关系，该关联字段在主表是否显示由hidden属性决定，如果为true表示隐藏，界面不显示，通过隐藏变
+   量传递值。
+   其它非关联字段，在主表必须存在，且可录入。
+
+-->	
+	
+		
+	
+<!--培训记录部门弹出框-->
+<select name = "HRTrainNote">
+		<table>tblDepartment</table>
+		<relation></relation>
+		<classCode>tblDepartment.classCode</classCode>
+		<condition>tblDepartment.workFlowNodeName='finish'</condition>
+		<saveParentFlag>true</saveParentFlag>
+		<displayFields>
+		<field name="tblDepartment.DeptCode" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" asName="@TABLENAME.Departmemt"  display="@TABLENAME.Department" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblDepartment.classCode" parentName="@TABLENAME.Department" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	<!-- 选择部门  -->
+	<select name = "SelectDepartmentForHR">
+		<table>tblDepartment</table>
+		<relation></relation>
+		<saveParentFlag>true</saveParentFlag> 
+		<classCode>tblDepartment.classCode</classCode>
+		<condition>(tblDepartment.statusid!='-1') and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblDepartment.DeptCode" width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" display="@TABLENAME.Department" width="70" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblDepartment.classCode" parentName="@TABLENAME.Department" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+
+<!--培训考试经手人弹出框-->
+<select name = "TrainTest">
+		<table>tblEmployee,tblDepartment</table>
+		<forwardModel>tblEmployee</forwardModel>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+		<condition>(tblDepartment.DeptFullName='@ValueofDB:tblDepartment_DeptFullName' and tblEmployee.SCompanyID='@Sess:SCompanyID' and (tblEmployee.statusId!='-1' or tblEmployee.id='1')) and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+			<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblEmployee.EmpFullName"  display="@TABLENAME.TrainMan" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblEmployee.TitleID" width="100" searchType="match" parentDisplay="false" />
+			<field name="tblDepartment.DeptFullName" width="120" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+			<field name="tblEmployee.id" parentName="@TABLENAME.TrainMan" relationKey="true" hidden="true"/>
+			<field name="tblEmployee.DepartmentCode" parentName="@TABLENAME.Department" />
+			<field name="tblDepartment.DeptFullName" parentName="tblDepartment.tblDepartment_DeptFullName" />
+		</saveFields>
+	</select>
+	<!-- 选择部门  -->
+	<select name = "SelectDepartmentForHR1" type="checkBox">
+		<table>tblDepartment</table>
+		<relation></relation>
+		<classCode>tblDepartment.classCode</classCode>
+		<saveParentFlag>true</saveParentFlag>
+		<condition>(tblDepartment.statusid!='-1') and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblDepartment.DeptCode" width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" display="@TABLENAME.Department" width="70" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblDepartment.classCode" parentName="@TABLENAME.Department" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+
+<!--培训考试经手人弹出框-->
+<select name = "TrainTest1" type="checkBox">
+		<table>tblEmployee,tblDepartment</table>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+		<condition>(tblEmployee.DepartmentCode='@ValueofDB:@TABLENAME_Department' and tblEmployee.SCompanyID='@Sess:SCompanyID'and tblEmployee.statusId!='-1'or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+			<field name="tblEmployee.EmpNumber" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblEmployee.EmpFullName" display="@TABLENAME.EmpName" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblEmployee.EmpFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblEmployee.TitleID" width="65" searchType="equal" parentDisplay="false"  keySearch="true"/>
+			<field name="tblDepartment.DeptFullName" width="80" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false"  keySearch="true"/>
+			<field name="tblDepartment.DeptFullNamePYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblEmployee.id" parentName="@TABLENAME.EmpName" relationKey="true" hidden="true"/>
+			<field name="tblEmployee.DepartmentCode" parentName="@TABLENAME.Department" />
+			<field name="tblDepartment.DeptFullName"  parentName="@TABLENAME.tblDepartment_DeptFullName" />
+		</saveFields>
+	</select>
+	<!--培训考试职员弹出框-->
+	<select name = "HRTrainTestDet" type="checkBox">
+		<table>tblEmployee,tblDepartment</table>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode </relation>
+		<condition> tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblEmployee.EmpFullName"  display="HRTrainTestDet.EmpName" width="80" searchType="match" parentDisplay="true" />
+        <field name="tblDepartment.DeptFullName" display="HRTrainTestDet.Department" width="80" searchType="match" parentDisplay="true" />
+		</displayFields>
+		<saveFields>
+		  <field name="tblEmployee.id" relationKey="true" parentName="HRTrainTestDet.EmpName"  hidden="true"/>
+		  <field name="tblEmployee.DepartmentCode"  parentName="HRTrainTestDet.Department" hidden="false" />
+		  </saveFields>
+	</select>
+
+</popupSelect>	

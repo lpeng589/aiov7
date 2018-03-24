@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectCurrency_v2" version="2">
+     <table>tblCurrency</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblCurrency.id f1,
+      tblCurrency.CurrencyName f2
+	  from tblCurrency
+
+     </defineSQL>
+     <classCode></classCode>
+     <remark></remark>
+     <condition></condition>
+     <changeCond></changeCond>
+     <orderBy>tblCurrency.CurrencyName</orderBy>
+     <displayFields>
+          <field name="tblCurrency.CurrencyName" width="80" display="tblBuyInStock.Currency" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+     </displayFields>
+     <saveFields>
+          <field name="tblCurrency.id" parentName="Currency" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

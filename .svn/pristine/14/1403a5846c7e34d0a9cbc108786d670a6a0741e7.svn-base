@@ -1,0 +1,318 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN" "http://struts.apache.org/dtds/struts-config_1_2.dtd">
+<struts-config>
+	<!-- 注：每个Action必须写上相应的注释 否则后果自负-->
+	<form-beans>
+		<!-- 客户模版 -->
+		<form-bean name="clientModuleForm" type="com.koron.crm.setting.ClientModuleForm" />
+		<!-- 字段权限设置 -->	
+		<form-bean name="fieldScopeSetForm" type="com.koron.crm.setting.FieldScopeSetForm" />
+		<!-- 客户关怀 -->
+		<form-bean name="CareforForm" type="com.koron.crm.carefor.CareforForm" />
+		<form-bean name="CareforSearchForm" type="com.koron.crm.carefor.CareforSearchForm" />
+		<form-bean name="CareforDelForm" type="com.koron.crm.carefor.CareforDelForm" />
+		<!-- 机器人搜索 -->
+		<form-bean name="RobotForm" type="com.koron.crm.robot.RobotForm" />
+		<!-- 兄弟表字段设置 -->
+		<form-bean name="CRMBrotherSettingForm" type="com.koron.crm.brotherSetting.CRMBrotherSettingForm" />
+		<!-- 兄弟表字段只读隐藏 -->
+		<form-bean name="CRMBrotherFieldScopeForm" type="com.koron.crm.brotherSetting.CRMBrotherFieldScopeForm" />
+		<!-- 兄弟表导入导出设置 -->
+		<form-bean name="CRMBrotherPublicScopeForm" type="com.koron.crm.brotherSetting.CRMBrotherPublicScopeForm" />
+		<!-- 客户移交 -->
+		<form-bean name="CRMClientTransferForm" type="com.koron.crm.clientTransfer.CRMClientTransferForm" />
+		
+		<!-- QA库 -->
+		<form-bean name="CRMQASearchForm" type="com.koron.crm.qa.CRMQASearchForm" />
+		<form-bean name="CRMQAForm" type="com.koron.crm.qa.CRMQAForm" />
+		
+		<!-- 新任务分派 -->
+		<form-bean name="CRMTaskAssignSearchForm" type="com.koron.crm.taskAssign.CRMTaskAssignSearchForm" />
+		<form-bean name="CRMTaskAssignForm" type="com.koron.crm.taskAssign.CRMTaskAssignForm" />
+	</form-beans>
+	
+	<global-forwards>
+		
+		
+	</global-forwards>
+	
+
+	<action-mappings>
+		
+		<!-- 客户列表 -->
+		<action path="/CRMClientAction" parameter="/CRMClientAction.do" 
+			type="com.koron.crm.client.CRMClientAction" scope="session">
+			<forward name="index" path="/vm/crm/client/index.jsp"/>
+			<forward name="sendPrepare" path="/vm/crm/client/sendMessage.jsp"/>
+			<forward name="addPrepare" path="/vm/crm/client/add.jsp"/>
+			<forward name="updatePrepare" path="/vm/crm/client/update.jsp"/>
+			<forward name="detail" path="/vm/crm/client/detail.jsp"/>
+			<forward name="importClient" path="/vm/crm/client/importClient.jsp"/>
+			<forward name="brotherTable" path="/vm/crm/client/brotherTable.jsp"/>
+			<forward name="brotherIframe" path="/vm/crm/client/brotherIframe.jsp"/>
+			<forward name="shareClient" path="/vm/crm/client/shareClient.jsp"/>
+			<forward name="clientLog" path="/vm/crm/client/clientLog.jsp"/>
+			<forward name="moduleTransfer" path="/vm/crm/client/moduleTransfer.jsp"/>
+			<forward name="addEnumerPrepare" path="/vm/crm/client/addEnumer.jsp"/>
+			<forward name="history" path="/vm/crm/client/clientHistory.jsp"/>
+			<forward name="histroyDetail"  path="/vm/crm/client/histroyDetail.jsp"/>
+			<forward name="linkManDetail"  path="/vm/crm/client/linkManDetail.jsp"/>
+			<forward name="addlabelPrepare"  path="/vm/crm/client/addLabel.jsp"/>
+			<forward name="label"  path="/vm/crm/client/labelManager.jsp"/>
+			<forward name="updateLabelPrepare"  path="/vm/crm/client/updateLabel.jsp"/>
+			<forward name="selectStatus"  path="/vm/crm/client/selectStatus.jsp"/>
+			<forward name="showTransfer"  path="/vm/crm/client/showTransfer.jsp"/>
+			<forward name="transferRecord"  path="/vm/crm/client/transferRecord.jsp"/>
+			<forward name="detailNew"  path="/vm/crm/client/detailNew.jsp"/>
+			<forward name="addContact"  path="/vm/crm/client/addContact.jsp"/>
+			<forward name="contactDetail"  path="/vm/crm/client/contactDetail.jsp"/>
+			<forward name="updateContact"  path="/vm/crm/client/updateContact.jsp"/>
+			<forward name="clientLog" path="/vm/crm/client/clientNewlyLog.jsp"/>
+			<forward name="postpayIndex" path="/vm/crm/client/postpayIndex.jsp"/>
+		</action>
+		
+		<!-- 客户移交 -->
+		<action path="/CRMClientTransferAction" name="CRMClientTransferForm"
+			parameter="/CRMClientTransferAction.do" 
+			type="com.koron.crm.clientTransfer.CRMClientTransferAction" scope="request">
+			<forward name="clientTransfer" path="/vm/crm/clientTransfer/clientTransfer.jsp"/>			
+		</action>
+		
+		<!-- 快递单打印 -->
+		<action path="/CRMPrintSetAction" 
+			parameter="/CRMPrintSetAction.do" 
+			type="com.koron.crm.printSet.CRMPrintSetAction" scope="request">
+			<forward name="printDesign" path="/vm/crm/printSetting/printDesign.jsp"/>	
+			<forward name="printDetail" path="/vm/crm/printSetting/printDetail.jsp"/>
+			<forward name="printPreview" path="/vm/crm/printSetting/printPreview.jsp"/>
+			<forward name="printKnows" path="/vm/crm/printSetting/printKnows.jsp"/>	
+			<forward name="prePrintSet" path="/vm/crm/printSetting/prePrintSet.jsp"/>	
+			<forward name="printDSetting" path="/vm/crm/printSetting/printDSetting.jsp"/>
+			<forward name="selectFile" path="/vm/crm/printSetting/selectFiled.jsp"/>
+		</action>
+		
+		<!-- CRM 详情页面 -->
+		<action path="/CrmTabAction"
+			type="com.koron.crm.client.CRMClientAction" scope="request"
+			parameter="/CrmTabAction.do">
+			<forward name="detailClient" path="/vm/crm/client/detailClient.jsp"/>
+			<forward name="detailNew"  path="/vm/crm/client/detailNew.jsp"/>
+		</action>
+		
+		<!-- 客户模版+字段维护 -->
+		<action path="/ClientSettingAction" name="clientModuleForm" scope="request" 
+			type="com.koron.crm.setting.ClientSettingAction" 
+		    parameter="/ClientSettingAction.do" >
+			<forward name="frame" path="/vm/crm/clientManager/frame.jsp"/>
+			<forward name="viewFrame" path="/vm/crm/clientManager/viewFrame.jsp"/>
+			<forward name="left" path="/vm/crm/clientManager/left.jsp"/>
+			<forward name="clientModuleList" path="/vm/crm/clientManager/clientModuleList.jsp"/>
+			<forward name="modules" path="/vm/crm/clientManager/modules.jsp"/>
+			<forward name="broTabSort" path="/vm/crm/clientManager/broTabSort.jsp"/>
+			<forward name="brotherSort" path="/vm/crm/clientManager/broTabSort.jsp"/>
+			<forward name="to_addClientModule" path="/vm/crm/clientManager/addClientModule.jsp"/>
+			<forward name="to_updateClientModule" path="/vm/crm/clientManager/updateClientModule.jsp"/>	
+			<forward name="to_updateClientModuleView" path="/vm/crm/clientManager/updateClientModuleView.jsp"/>	
+			<forward name="fieldsMtain" path="/vm/crm/clientManager/fieldsMtain.jsp"/>	
+			<forward name="crmEnumerateList" path="/vm/crm/clientManager/crmEnumerateList.jsp"/>	
+			<forward name="crmScope" path="/vm/crm/clientManager/crmScopeSet.jsp"/>
+			<forward name="views" path="/vm/crm/clientManager/views.jsp"/>	
+			<forward name="clientTransfer" path="/vm/crm/clientManager/clientTransfer.jsp"/>	
+			<forward name="updateChildDisplay" path="/vm/crm/clientManager/updateChildDisplay.jsp"/>
+		</action>
+		
+		<!-- 字段权限设置 -->
+		<action path="/FieldScopeSetAction" 
+			parameter="/ClientSettingAction.do" 
+			type="com.koron.crm.setting.ClientSettingAction" scope="request" name="fieldScopeSetForm">
+			<forward name="fieldScopeSetList" path="/vm/crm/clientManager/fieldScopeSetList.jsp"/>
+			<forward name="addfieldScopeSet" path="/vm/crm/clientManager/addfieldScopeSet.jsp"/>
+			<forward name="updfieldScopeSet" path="/vm/crm/clientManager/updfieldScopeSet.jsp"/>	
+		</action>
+		
+		<!-- CRM行业，地区弹出框 -->
+		<action path="/CRMopenSelectAction" name="controlPanelForm" parameter="/CRMopenSelectAction.do"
+			type="com.koron.crm.openSelect.CRMopenSelectAction" scope="session">
+			<forward name="workTrade" path="/vm/crm/client/workTradeSelect.jsp"/>
+			<forward name="district" path="/vm/crm/client/districtSelect.jsp"/>
+			<forward name="districtMul" path="/vm/crm/client/districtSelectMul.jsp"/>
+		</action>
+		
+		<!-- CRM报表 -->
+		<action path="/CRMReportAction"  scope="session" parameter="/CRMReportAction.do" 
+			type="com.koron.crm.report.CRMReportAction">
+			<forward name="frame" path="/vm/crm/report/frame.jsp"/>
+			<forward name="left" path="/vm/crm/report/left.jsp"/>
+			<forward name="charts" path="/vm/crm/report/charts.jsp"/>
+			<forward name="detail" path="/vm/crm/report/detail.jsp"/>
+			<forward name="compareCharts" path="/vm/crm/report/compareCharts.jsp"/>
+			<forward name="weekMonth" path="/vm/crm/report/weekMonth.jsp"/>
+			<forward name="weekMonthDetail" path="/vm/crm/report/weekMonthDetail.jsp"/>
+		</action>
+		
+		<!-- CRM兄弟表 -->
+		<action path="/CRMBrotherAction" parameter="/CRMBrotherAction.do?tableName=$tableName" 
+			type="com.koron.crm.brother.CRMBrotherAction" scope="session">
+			<forward name="index" path="/vm/crm/brother/index.jsp"/>
+			<forward name="add" path="/vm/crm/brother/addNew.jsp"/>
+			<forward name="update" path="/vm/crm/brother/updateNew.jsp"/>
+			<forward name="detail" path="/vm/crm/brother/detailNew.jsp"/>
+			<forward name="comment" path="/vm/crm/brother/comment.jsp"/>
+			<forward name="goodsSelect" path="/vm/crm/brother/goodsSelect.jsp"/>
+			<forward name="showGoods" path="/vm/crm/brother/showGoods.jsp"/>
+			<forward name="brotherList" path="/vm/crm/brother/brotherList.jsp"/>
+		</action>
+
+		<!-- CRM兄弟表字段管理 -->
+		<action path="/CRMBrotherSettingAction" parameter="/CRMBrotherSettingAction.do" name="CRMBrotherSettingForm" 
+			type="com.koron.crm.brotherSetting.CRMBrotherSettingAction" scope="session">
+			<forward name="index" path="/vm/crm/brotherSetting/index.jsp"/>
+			<forward name="updateFieldDisplay" path="/vm/crm/brotherSetting/updateFieldDisplay.jsp"/>
+			<forward name="updateFieldMaintain" path="/vm/crm/brotherSetting/updateFieldMaintain.jsp"/>
+			<forward name="fieldScopeList" path="/vm/crm/brotherSetting/fieldScopeList.jsp"/>
+			<forward name="addFieldScope" path="/vm/crm/brotherSetting/addFieldScope.jsp"/>
+			<forward name="updateFieldScope" path="/vm/crm/brotherSetting/updateFieldScope.jsp"/>
+			<forward name="updatePublicScope" path="/vm/crm/brotherSetting/updatePublicScope.jsp"/>
+			<forward name="updateFieldMapping" path="/vm/crm/brotherSetting/updateFieldMapping.jsp"/>
+		</action>
+		
+		<!-- CRM兄弟表字段自读隐藏设置 -->
+		<action path="/CRMBrotherFieldScopeAction" parameter="/CRMBrotherSettingAction.do" name="CRMBrotherFieldScopeForm" 
+			type="com.koron.crm.brotherSetting.CRMBrotherSettingAction" scope="session">
+			<forward name="fieldScopeList" path="/vm/crm/brotherSetting/fieldScopeList.jsp"/>
+		</action>
+		
+		<!-- CRM兄弟表导入导出打印设置 -->
+		<action path="/CRMBrotherPublicScopeAction" parameter="/CRMBrotherSettingAction.do" name="CRMBrotherPublicScopeForm" 
+			type="com.koron.crm.brotherSetting.CRMBrotherSettingAction" scope="session">
+			<forward name="updatePublicScope" path="/vm/crm/brotherSetting/updatePublicScope.jsp"/>
+			
+		</action>
+		
+		<!-- 客户联系人列表 -->
+		<action path="/ClientLinkmanAction"
+			type="com.koron.crm.clientLinkman.ClientLinkManAction"
+			parameter="/ClientLinkmanAction.do">
+			<forward name="LinkmanIndex" path="/vm/crm/clientLinkman/clientLinkman.jsp" />
+			<forward name="LinkmanLeft" path="/vm/crm/clientLinkman/clientLinkmanLeft.jsp" />
+			<forward name="LinkmanMain" path="/vm/crm/clientLinkman/clientLinkmanMain.jsp" />
+		</action>
+		
+		<!-- 客户联系人纪念日 -->
+		<action path="/ClientLinkmanMemoryDayAction"
+			type="com.koron.crm.memoryDay.ClientLinkmanMemoryDayAction"
+			parameter="/ClientLinkmanMemoryDayAction.do">
+			<forward name="LinkmanMemoryDayIndex" path="/vm/crm/clientLinkmanMemoryDay/CLMemoryDay.jsp" />
+			<forward name="LinkmanMemoryDayLeft" path="/vm/crm/clientLinkmanMemoryDay/CLMemoryDayLeft.jsp" />
+			<forward name="LinkmanMemoryDayMain" path="/vm/crm/clientLinkmanMemoryDay/CLMemoryDayMain.jsp" />
+		</action>
+		
+		<!-- 客户移交 -->
+		<action path="/TransferCRMAction" parameter="/TransferCRMAction.do"
+			type="com.koron.crm.TransferCRMAction" scope="request" >
+			<forward name="transfer" path="/vm/sysAcc/transferCRM.jsp"/>
+		</action>
+		
+		<!-- CRM 座席台 -->
+		<action path="/ClientServiceAction"
+			parameter="/ClientServiceAction.do"
+			type="com.koron.crm.service.ClientServiceAction">
+			<forward name="index" path="/vm/crm/service/index.jsp"  />
+			<forward name="left" path="/vm/crm/service/left.jsp" />
+			<forward name="right" path="/vm/crm/service/right.jsp"  />
+			<forward name="bottom" path="/vm/crm/service/bottom.jsp"  />
+			<forward name="empty" path="/vm/crm/service/empty.jsp" />
+			<forward name="clientList" path="/vm/crm/service/clientList.jsp"/>
+		</action>
+		
+		<!-- 客户关怀 -->
+		<action path="/CareforAction"
+			type="com.koron.crm.carefor.CareforAction" name="CareforForm"
+			scope="request" parameter="/CareforQueryAction.do">
+			<forward name="add" path="/vm/crm/carefor/careforAdd.jsp"
+				contextRelative="true" />
+			<forward name="update"
+				path="/vm/crm/carefor/careforUpdate.jsp" />
+		</action>
+		<action path="/CareforQueryAction" name="CareforSearchForm" scope="session"
+			type="com.koron.crm.carefor.CareforAction"
+			parameter="/CareforQueryAction.do">
+			<forward name="list" path="/vm/crm/carefor/careforList.jsp" />
+		</action>
+		<action path="/CareforDelAction" name="CareforDelForm" scope="request"
+			type="com.koron.crm.carefor.CareforDelAction"
+			parameter="/CareforQueryAction.do">
+			<forward name="add" path="/vm/crm/carefor/careforDelAdd.jsp" />
+			<forward name="update" path="/vm/crm/carefor/careforDelUpdate.jsp" />
+			<forward name="email" path="/vm/crm/carefor/emailSetting.jsp" />
+		</action>
+		
+		<!-- 客户关怀执行 -->
+		<action path="/CareforExecuteAction"
+			type="com.koron.crm.carefor.CareforExecuteAction"
+			parameter="/CareforExecuteAction.do">
+			<forward name="list" path="/vm/crm/carefor/careforActionList.jsp" />
+			<forward name="ifarme" path="/vm/crm/carefor/clientActionCarefor.jsp" />
+			<forward name="add" path="/vm/crm/carefor/careforAction.jsp" />
+			<forward name="addDel" path="/vm/crm/carefor/careforActionDel.jsp" />
+			<forward name="detail" path="/vm/crm/carefor/careforActionDetail.jsp" />
+		</action>
+		
+		<!-- 机器人 -->
+		<action path="/RobotAction" name="RobotForm" parameter="/RobotAction.do"
+			type="com.koron.crm.robot.RobotAction" >
+			<forward name="detail" path="/vm/crm/robot/TaskDetail.jsp" />
+			<forward name="list" path="/vm/crm/robot/TaskList.jsp" />
+		</action>
+		
+		<!-- CRM流程设置 -->
+		<action path="/CRMSalesFlowAction" parameter="/CRMSalesFlowAction.do" 
+			type="com.koron.crm.salesFlow.CRMSalesFlowAction" scope="session">
+			<forward name="salesFlowIndex" path="/vm/crm/salesFlow/salesFlowIndex.jsp"/>
+		</action>
+		
+		
+		<!-- QA库查询 -->
+		<action path="/CRMQASearchAction" name="CRMQASearchForm"  scope="session"
+			type="com.koron.crm.qa.CRMQAAction"
+			parameter="/CRMQASearchAction.do">
+			<forward name="to_queryQA" path="/vm/crm/qa/qalist.jsp"/>
+		</action>
+		
+		<!-- QA库操作 -->
+		<action path="/CRMQAAction" name="CRMQAForm"  
+			type="com.koron.crm.qa.CRMQAAction"
+			parameter="/CRMQASearchAction.do">
+			<forward name="to_detail" path="/vm/crm/qa/detailQA.jsp"/>
+			<forward name="to_form" path="/vm/crm/qa/qaform.jsp"/>
+		</action>
+		
+		<!-- 客户控制台 -->
+		<action path="/ServiceConsoleAction" parameter="/ServiceConsoleAction.do" 
+			type="com.koron.crm.serviceConsole.ServiceConsoleAction" scope="session">
+			<forward name="index" path="/vm/crm/serviceConsole/index.jsp"/>
+			<forward name="keyWordQuery" path="/vm/crm/serviceConsole/keyWordQuery.jsp"/>
+		</action>
+		
+		<!-- 新任务分派 -->
+		<action path="/CRMTaskAssignQueryAction" name="CRMTaskAssignSearchForm" parameter="/CRMTaskAssignQueryAction.do" 
+			type="com.koron.crm.taskAssign.CRMTaskAssignAction" scope="session">
+			<forward name="query" path="/vm/crm/taskAssign/taskAssignIndex.jsp"/>
+		</action>
+		
+		<!-- 新任务分派 -->
+		<action path="/CRMTaskAssignAction" name="CRMTaskAssignForm" parameter="/CRMTaskAssignQueryAction.do" 
+			type="com.koron.crm.taskAssign.CRMTaskAssignAction" scope="session">
+			<forward name="add" path="/vm/crm/taskAssign/add.jsp"/>
+			<forward name="update" path="/vm/crm/taskAssign/update.jsp"/>
+			<forward name="detal" path="/vm/crm/taskAssign/detail.jsp"/>
+			<forward name="finishStatus" path="/vm/crm/taskAssign/finishStatus.jsp"/>
+		</action>
+		
+		<!-- 微信客户接口 -->
+		<action path="/WeixinClientAction" parameter="/WeixinClientAction.do" 
+			type="com.koron.crm.weixin.client.ClientAction" scope="session">
+		</action>
+	</action-mappings>
+
+</struts-config>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="popuptblSalesReturnStock" type="checkBox">
+     <table>tblSalesReturnStock,tblCompany,tblDepartment,tblEmployee</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblSalesReturnStock.id f1,
+      tblSalesReturnStock.BillDate f2,
+      tblSalesReturnStock.BillNo f3,
+      tblCompany.ComFullName f4,
+      tblDepartment.DeptFullName f5,
+      tblEmployee.EmpFullName f6,
+      tblSalesReturnStock.TotalTaxAmount f7,
+      tblSalesReturnStock.CurTotalAmount f8,
+	  tblSalesReturnStock.InVoiceType f9
+  from tblSalesReturnStock 
+  left join tblCompany on tblSalesReturnStock.CompanyCode=tblCompany.classCode
+  left join tblDepartment on tblSalesReturnStock.DepartmentCode=tblDepartment.classCode
+  left join tblEmployee on tblSalesReturnStock.EmployeeID=tblEmployee.id
+     </defineSQL>
+     <classCode></classCode>
+     <condition>tblSalesReturnStock.workFlowNodeName ='finish' and LEN(ISNULL(CertificateNo,''))=0 and (AccountAmount!=0 or TotalTaxAmount!=0)</condition>
+     <changeCond></changeCond>
+     <orderBy>tblSalesReturnStock.BillDate,tblSalesReturnStock.BillNo</orderBy>
+     <displayFields>
+          <field name="tblSalesReturnStock.BillDate" width="90" searchType="scope" parentDisplay="false" orderBy="升"/>
+          <field name="tblSalesReturnStock.BillNo" width="120" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"/>
+          <field name="tblCompany.ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="false" display="tblSalesReturnStock.CompanyCode" />
+          <field name="tblDepartment.DeptFullName" width="80" searchType="match" keySearch="true" parentDisplay="false" display="tblSalesReturnStock.DepartmentCode" />
+          <field name="tblEmployee.EmpFullName" width="80" searchType="match" keySearch="true" parentDisplay="false" display="tblSalesReturnStock.EmployeeID" />
+          <field name="tblSalesReturnStock.TotalTaxAmount" width="100" parentDisplay="false" />
+          <field name="tblSalesReturnStock.CurTotalAmount" width="100" parentDisplay="false" />
+		  <field name="tblSalesReturnStock.InVoiceType" width="75" searchType="equal" parentDisplay="false" inputType="1" inputValue="InvoiceType"/>
+     </displayFields>
+     <saveFields>
+          <field name="tblSalesReturnStock.id" parentName="ID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

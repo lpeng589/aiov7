@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="PayAdjustSelect"  type="checkBox" > 
+		<orderBy>tblBuyInStock.BillNo</orderBy>
+		<defineSQL>
+from tblBuyInStock 
+  left join tblCompany on tblBuyInStock.CompanyCode = tblCompany.classCode
+  left join tblDepartment on tblBuyInStock.DepartmentCode = tblDepartment.classCode
+  left join tblEmployee on tblBuyInStock.EmployeeId = tblEmployee.id
+      where 1=1  and (tblBuyInStock.workFlowNodeName != 'draft' and tblBuyInStock.BillDate&lt;='@ValueofDB:BillDate' and tblBuyInStock.workFlowNodeName = 'finish' and (tblBuyInStock.PayAmount &lt; tblBuyInStock.TotalTaxAmount and tblBuyInStock.NeedPayAmt &lt;&gt; 0) and tblBuyInStock.CompanyCode='@ValueofDB:CompanyCode' and (((select IsStatart from TableInfo_WokFlow where TableName='tblBuyInStock' and SCompanyID=@Sess:SCompanyID)=1 and tblBuyInStock.workFlowNodeName != 'notApprove') or (select IsStatart from TableInfo_WokFlow where TableName='tblBuyInStock' and SCompanyID=@Sess:SCompanyID)=0))
+		</defineSQL>
+		<displayFields>
+			<field name="tblBuyInStock.BillNo" display="tblPayAdjustDet.RefbillNo" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblBuyInStock.TotalTaxAmount" display="tblPayAdjustDet.BillAmt" parentDisplay="true" width="80" />
+			<field name="tblBuyInStock.AlreadyPayAmt" display="tblPayAdjustDet.SettledAmt" parentDisplay="false" width="80" />
+			<field name="tblBuyInStock.BackAmount" display="tblPayAdjustDet.BackAmt" parentDisplay="false" width="80" />
+			<field name="tblBuyInStock.NeedPayAmt" display="tblPayAdjustDet.WexeBalAmt" parentDisplay="false" width="80" />
+			<field name="tblBuyInStock.CurTotalAmount" display="tblPayAdjustDet.CurBillAmt" parentDisplay="true" width="80" keySearch="true" />
+			<field name="tblBuyInStock.CurAlreadyPayAmt" display="tblPayAdjustDet.CurSettledAmt" parentDisplay="true" width="80" keySearch="true" />
+			<field name="tblBuyInStock.CurBackAmount" display="tblPayAdjustDet.CurBackAmt" parentDisplay="true" width="80" keySearch="true" />
+			<field name="tblBuyInStock.CurNeedPayAmt" display="tblPayAdjustDet.CurWexeBalAmt" parentDisplay="true" width="80" keySearch="true" />
+			<field name="tblDepartment.DeptFullName" display="tblPayAdjust.DepartmentCode" parentDisplay="false" width="100" />
+			<field name="tblEmployee.EmpFullName" display="tblPayAdjust.EmployeeID" parentDisplay="false" width="50" />
+		</displayFields>
+		<saveFields>
+			<field name="tblBuyInStock.BillNo" parentName="tblPayAdjustDet.RefBillNo" relationKey="true" display="tblPayAdjustDet.RefbillNo" width="0" />
+			<field name="tblBuyInStock.TotalTaxAmount" parentName="tblPayAdjustDet.BillAmt" display="tblPayAdjustDet.BillAmt" width="0" />
+			<field name="tblBuyInStock.AlreadyPayAmt" parentName="tblPayAdjustDet.SettledAmt" hidden="true" display="tblPayAdjustDet.SettledAmt" width="0" />
+			<field name="tblBuyInStock.BackAmount" parentName="tblPayAdjustDet.BackAmt" hidden="true" display="tblPayAdjustDet.BackAmt" width="0" />
+			<field name="tblBuyInStock.NeedPayAmt" parentName="tblPayAdjustDet.WexeBalAmt" hidden="true" display="tblPayAdjustDet.WexeBalAmt" width="0" />
+			<field name="tblBuyInStock.id" parentName="tblPayAdjustDet.RefBillID" hidden="true" width="0" />
+			<field name="tblBuyInStock.CurTotalAmount" parentName="tblPayAdjustDet.CurBillAmt" compare="false" width="0" />
+			<field name="tblBuyInStock.CurAlreadyPayAmt" parentName="tblPayAdjustDet.CurSettledAmt" compare="false" width="0" />
+			<field name="tblBuyInStock.CurBackAmount" parentName="tblPayAdjustDet.CurBackAmt" compare="false" width="0" />
+			<field name="tblBuyInStock.CurNeedPayAmt" parentName="tblPayAdjustDet.CurWexeBalAmt" compare="false" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

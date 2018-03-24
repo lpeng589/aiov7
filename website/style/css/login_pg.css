@@ -1,0 +1,149 @@
+/* CSS Document */
+body{
+	width:100%;
+	margin:0 auto;
+	padding-left:10px;
+	padding-right:10px;
+	font-size:12px;
+	overflow-x:hidden;
+	background:url(../images/login_pg/bg.jpg) no-repeat right top;
+}
+a:link {
+	text-decoration: none;
+	color:#333333;
+}
+a:visited {
+	text-decoration: none;
+	color:#333333;
+}
+a:hover {
+	text-decoration:underline;
+	color:#000;
+}
+a:active {
+	text-decoration: none;
+	color:#000;
+}
+img {
+	border:0px;
+}
+li {
+	list-style:none;
+}
+.login_all {
+	width:100%;
+	padding-top:100px;
+}
+.login_min {
+	width:100%;
+}
+.logo {
+	width:350px;
+	overflow:hidden;
+	text-align:left;
+	float:left;
+	height:auto;
+}
+.login_minleft {
+	float:left;
+	width:60%;
+	border:1px #FF0000 solid;
+	height:340px;
+}
+.login_in {
+	float:left;
+	width:300px;
+	height:340px;
+	border:1px #0000ff solid;
+}
+.login_minright {
+	float:right;
+	height:340px;
+	width:100px;
+	border:1px #cccccc solid;
+}
+.right_bg {
+	padding-left:120px;
+}
+.login_minbg {
+	background:url(../images/login_pg/login_minbg.gif) repeat-y;
+}
+.koron_info {
+	vertical-align:baseline;
+	padding:0px;
+	margin:0px;
+	font-size:12px;
+	height:30px;
+	color:#333333;
+	height:30px;
+	padding-top:8px;
+	text-indent:95px;
+	background:url(../images/login_pg/koron_info.gif) no-repeat;
+}
+.koron_info span {
+	vertical-align:middle;
+}
+.koron_info li {
+	float:left;
+	text-align:left;
+}
+.login_into {
+	width:300px;
+	padding-left:30px;
+	text-align:center;
+	height:auto;
+	padding:0px;
+	margin:0px;
+}
+.login_into li {
+	float:left;
+	width:290px;
+	height:35px;
+	line-height:180%;
+	color:#666666;
+	text-align:right;
+	font-weight:600;
+	font-size:14px;
+	list-style:none;
+	padding-right:30px;
+}
+.login_into span {
+	width:140px;
+	text-align:left;
+}
+.login_into select {
+	width:140px;
+}
+.login_user {
+	padding:0px;
+	margin:0px;
+}
+.login_user li {
+	width:260px;
+	text-align:right;
+	height:31px;
+
+}
+.login_user button {
+	width:132px;
+	height:31px;
+	line-height:31px;
+	border:0px;
+	background:url(../images/login_pg/login_buttonbg.gif) no-repeat;
+	font-size:16px;
+	color:#666666;
+	font-weight:600;
+	text-align:center;
+	cursor:pointer;
+}
+.left_bp {
+	width:287px;
+	height:206px;
+	margin:0px;
+	padding:0px;
+	background:url(../images/login_pg/left_pg.gif) no-repeat;
+}
+.bigbg {
+background:#863B35 url(../images/login_pg/bgbk.gif);
+
+}

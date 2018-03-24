@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelecttblFixedAssetDepAdd">
+     <table>tblFixedAssetAdd</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblFixedAssetAdd.id f1,
+      tblFixedAssetAdd.BillDate f2,
+      tblFixedAssetAdd.GoodsNumber f3,
+      tblFixedAssetAdd.GoodsName f4,
+      tblFixedAssetAdd.GoodsSpec f5
+  from tblFixedAssetAdd
+     </defineSQL>
+     <classCode></classCode>
+     <condition></condition>
+     <changeCond>tblFixedAssetAdd.statusId!='-1'</changeCond>
+     <orderBy>tblFixedAssetAdd.BillDate,tblFixedAssetAdd.GoodsNumber</orderBy>
+     <displayFields>
+          <field name="tblFixedAssetAdd.BillDate" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"/>
+          <field name="tblFixedAssetAdd.GoodsNumber" width="150" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"/>
+          <field name="tblFixedAssetAdd.GoodsName" width="150" searchType="match" keySearch="true" parentDisplay="true" display="tblFixedAssetDevalue.AssetsAddId" />
+          <field name="tblFixedAssetAdd.GoodsSpec" width="100" searchType="match" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblFixedAssetAdd.id" parentName="tblFixedAssetDepreciate.AssetsAddId" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

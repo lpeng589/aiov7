@@ -1,0 +1,2937 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<!--归属部门字段为ClientDepart时各个客户创建人部门弹出框-->
+<select name = "pop_tblCMAimClient">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>(tblEmployee.DepartmentCode=@ValueofDB:ClientDepart and tblEmployee.statusId!='-1'or tblEmployee.id='1')</condition> 
+	<displayFields>
+	<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblEmployee.EmpFullName"  display="@TABLENAME.EmployeeID" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblEmployee.EmpFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblEmployee.TitleID" width="65" searchType="equal" parentDisplay="false"  keySearch="true"/>
+	<field name="tblDepartment.DeptFullName"  width="200" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" relationKey="true" hidden="true"/>
+	<field name="tblEmployee.DepartmentCode" parentName="@TABLENAME.ClientDepart" />
+	<field name="tblDepartment.DeptFullName" parentName="@TABLENAME.tblDepartment_DeptFullName" /> 
+	</saveFields>
+</select>
+
+<!--市场管理 关联活动弹出窗-->	
+	<select name = "SelectAssAction">
+		<table>CRMMartAction,tblDepartment,tblEmployee</table>
+		<relation>tblDepartment.classCode=CRMMartAction.DepartmentCode and tblEmployee.id=CRMMartAction.EmployeeID</relation>
+		<condition>CRMMartAction.workFlowNodeName='finish'</condition>
+		<orderBy>CRMMartAction.BeginDate desc</orderBy>
+		<displayFields>
+		<field name="CRMMartAction.BeginDate" width="90" searchType="equal" parentDisplay="false" />
+		<field name="CRMMartAction.EndDate" width="90" searchType="equal" parentDisplay="false"/>
+		<field name="tblDepartment.DeptFullName" popSelect="PoPupSelectDepartment" width="75" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" popSelect="PoPupSelectAssEmployee" width="65" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullNamePYM" hiddenInput="true" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="CRMMartAction.Address" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="CRMMartAction.Topic"  display="@TABLENAME.AssociatedAaction" width="200" searchType="match" parentDisplay="true" keySearch="true" />		
+		</displayFields>
+		<saveFields>
+		<field name="CRMMartAction.id" parentName="@TABLENAME.AssociatedAaction" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+<select name = "PoPupSelectAssEmployee">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>tblEmployee.statusId!='-1' and tblEmployee.openflag=1</condition>  
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" display="@TABLENAME.UserId" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" width="100" searchType="match" parentDisplay="false" keySearch="true"/>
+	</displayFields>
+		<saveFields>
+		</saveFields>
+</select>
+<!--市场管理 活动费用活动弹出窗-->	
+	<select name = "SelectActionExp">
+		<table>CRMMartAction,tblDepartment,tblEmployee</table>
+		<relation>tblDepartment.classCode=CRMMartAction.DepartmentCode and tblEmployee.id=CRMMartAction.EmployeeID</relation>
+		<condition>CRMMartAction.workFlowNodeName='finish'</condition>
+		<orderBy>CRMMartAction.BeginDate desc</orderBy>
+		<displayFields>
+		<field name="CRMMartAction.BeginDate" width="90" searchType="equal" parentDisplay="false" />
+		<field name="CRMMartAction.EndDate" width="90" searchType="equal" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullName" popSelect="PoPupSelectDepartment" width="75" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" popSelect="PoPupSelectAssEmployee" width="65" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullNamePYM" hiddenInput="true" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="CRMMartAction.Address" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="CRMMartAction.Topic"  display="@TABLENAME.Action" width="200" searchType="match" parentDisplay="true" keySearch="true" />		
+		</displayFields>
+		<saveFields>
+		<field name="CRMMartAction.id" parentName="@TABLENAME.Action" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	
+	<select name = "SelectActionMat">
+		<table>CRMMartAction,tblDepartment,tblEmployee</table>
+		<relation>tblDepartment.classCode=CRMMartAction.DepartmentCode and tblEmployee.id=CRMMartAction.EmployeeID</relation>
+		<condition>CRMMartAction.workFlowNodeName='finish'</condition>
+		<orderBy>CRMMartAction.BeginDate desc</orderBy>
+		<displayFields>
+		<field name="CRMMartAction.BeginDate" width="90" searchType="equal" parentDisplay="false" />
+		<field name="CRMMartAction.EndDate" width="90" searchType="equal" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullName" popSelect="PoPupSelectDepartment" width="75" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" popSelect="PoPupSelectAssEmployee" width="65" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullNamePYM" hiddenInput="true" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="CRMMartAction.Address" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="CRMMartAction.Topic"  display="@TABLENAME.Action" width="200" searchType="match" parentDisplay="true" keySearch="true" />		
+		</displayFields>
+		<saveFields>
+		<field name="CRMMartAction.Topic" parentName="Action" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+<!--弹出其他表归属部门字段为DepartmentCode时创建人部门弹出框-->
+<select name = "pop_CRMother">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>(tblEmployee.statusId!='-1'or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish'  and tblDepartment.workFlowNodeName='finish'</condition> 
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" display="@TABLENAME.EmployeeID" popSelect="PoPupSelectsuoEmployee" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.TitleID" width="65" searchType="equal" parentDisplay="false"  keySearch="true"/>
+		<field name="tblDepartment.DeptFullName" width="200" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false"  keySearch="true" />
+		<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" relationKey="true" hidden="true"/>
+		<field name="tblEmployee.DepartmentCode" parentName="@TABLENAME.DepartmentCode" />
+		<field name="tblDepartment.DeptFullName" parentName="@TABLENAME.tblDepartment_DeptFullName" /> 
+	</saveFields>
+</select>
+
+
+<!--销售合同代表人弹出窗口-->
+	<select name = "pop_CRMsaleconcract">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>(tblEmployee.DepartmentCode=@ValueofDB:DepartmentCode and tblEmployee.statusId!='-1'or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish'  and tblDepartment.workFlowNodeName='finish'</condition> 
+	<displayFields>
+	<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblEmployee.EmpFullName"  display="@TABLENAME.EmployeeCode" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblEmployee.EmpFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblDepartment.DeptFullName"  width="200" searchType="match" parentDisplay="false" keySearch="true"/>
+	<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeCode" relationKey="true" hidden="true"/>
+	<field name="tblEmployee.DepartmentCode" parentName="@TABLENAME.DepartmentCode" />
+	<field name="tblDepartment.DeptFullName" parentName="@TABLENAME.tblDepartment_DeptFullName" /> 
+	</saveFields>
+</select>
+
+
+<!--服务管理创建人弹出窗口-->
+<select name = "pop_CRMServiceHome">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>(tblEmployee.DepartmentCode=@ValueofDB:DepartmentCode and tblEmployee.statusId!='-1'or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish'  and tblDepartment.workFlowNodeName='finish'</condition> 
+	<displayFields>
+	<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblEmployee.EmpFullName"  display="@TABLENAME.servicecreator" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblEmployee.EmpFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblDepartment.DeptFullName"  width="200" searchType="match" parentDisplay="false" keySearch="true"/>
+	<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblEmployee.id" parentName="@TABLENAME.servicecreator" relationKey="true" hidden="true"/>
+	<field name="tblEmployee.DepartmentCode" parentName="@TABLENAME.DepartmentCode" />
+	<field name="tblDepartment.DeptFullName" parentName="@TABLENAME.tblDepartment_DeptFullName" /> 
+	</saveFields>
+</select>
+
+
+	<!--商务活动审核对象弹出窗口-->
+<select name = "pop_crmBussAction">
+	<table>tblEmployee,tblDepartment</table>  
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>(tblEmployee.statusId!='-1'or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish'  and tblDepartment.workFlowNodeName='finish'</condition> 
+	<displayFields>
+	<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblEmployee.EmpFullName"  display="@TABLENAME.EmployeeID" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblEmployee.EmpFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblEmployee.TitleID" width="65" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false"  keySearch="true"/>
+	<field name="tblDepartment.DeptFullName" width="200" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false" keySearch="true"/>
+	<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" relationKey="true" hidden="true"/>
+	<field name="tblDepartment.DeptFullName" parentName="@TABLENAME.tblDepartment_DeptFullName" /> 
+	</saveFields>
+</select>
+
+		<!--商务、KPI指定审核人弹出窗口-->
+<select name = "pop_crmBussAction_tblEmployID">
+	<table>tblEmployee,tblDepartment</table>  
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>(tblEmployee.statusId!='-1'or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish'  and tblDepartment.workFlowNodeName='finish'</condition>  
+	<displayFields>
+	<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblEmployee.EmpFullName" asName="tblEmploy.EmpFullName" display="@TABLENAME.AuditingMan" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblEmployee.EmpFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblEmployee.TitleID" width="65" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false"  keySearch="true"/>
+	<field name="tblDepartment.DeptFullName" width="200" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false" keySearch="true"/>
+	<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblEmployee.id" parentName="@TABLENAME.AuditingMan" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+
+<!--我的审核引用我的活动-->
+<select name = "quote_crmBussAction">
+	<table>crmBussAction,tblEmployee</table>
+	<relation>tblEmployee.id=crmBussAction.createBy</relation>
+	<condition>crmBussAction.ApproveStatus=0 and crmBussAction.EmployeeID=(case '@Sess:UserId' when '1' then crmBussAction.EmployeeID else '@Sess:UserId' end)</condition>
+	<orderBy>crmBussAction.BillNo desc</orderBy>
+	<displayFields>
+		<field name="crmBussAction.BillNo"  width="120" searchType="match"  parentDisplay="false"/>
+		<field name="crmBussAction.BillDate" width="90" searchType="equal"  parentDisplay="false"  />
+		<field name="tblEmployee.EmpFullName" width="90" searchType="match"   parentDisplay="false" />
+		<field name="crmBussAction.Title" width="90" searchType="equal"  parentDisplay="false"  />
+		<field name="crmBussAction.RelationClient" width="90" searchType="math"  parentDisplay="false"  />
+		
+	</displayFields>
+	<saveFields>
+	  <field name="crmBussAction.id" relationKey="true" parentName="crmBussAuditing.BILLID" hidden="true"/>		 
+	</saveFields>
+</select>
+	
+<!--上门服务、电话服务弹出窗口服务接单-->
+
+<select name = "CRMServiceHome">
+		<table>tblCompany,tblCompanyEmployeeDet</table>
+		<relation>tblCompanyEmployeeDet.f_ref=tblCompany.id</relation>
+		<condition>(tblCompany.ClientFlag=2 or tblCompany.ClientFlag=3)and tblCompany.createBy in (case '@Sess:UserId' when '1' then tblCompany.createBy else '@Sess:UserId' end)and tblCompany.statusId!='-1'</condition>
+		<displayFields>
+		<field name="tblCompany.ComFullName"  width="120" display="@TABLENAME.clientname" searchType="match" parentDisplay="true" />	
+		<field name="tblCompanyEmployeeDet.ContactMan" display="@TABLENAME.clientlinkman" width="150" searchType="match" parentDisplay="true" />
+		<field name="tblCompanyEmployeeDet.Mobile" display="@TABLENAME.mobile" width="150" searchType="match" parentDisplay="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblCompany.classCode" parentName="@TABLENAME.clientname" relationKey="true" hidden="true"/>
+		<field name="tblCompanyEmployeeDet.contactCode" parentName="@TABLENAME.clientlinkman"  hidden="false"/>
+		<field name="tblCompanyEmployeeDet.Mobile" parentName="@TABLENAME.mobile" hidden="false"/>
+		<field name="tblCompanyEmployeeDet.Telephone" parentName="@TABLENAME.clientlinkphone" hidden="false"/>
+		<field name="tblCompany.ComAddress"  parentName="@TABLENAME.CompanyAddress" hidden="true" />
+		</saveFields>
+</select>
+	
+<!--上门服务引用服务接单-->
+
+<select name = "quote_CRMServiceHome">
+		<table>CRMServiceRet,tblCMCompleteClient,tblCMCompleteClientDet</table>
+		<relation>CRMServiceRet.clientname=tblCMCompleteClient.id and tblCMCompleteClientDet.UserName=CRMServiceRet.clientlinkman</relation>
+		<condition>CRMServiceRet.createBy in (case '@Sess:UserId' when '1' then CRMServiceRet.createBy else '@Sess:UserId' end)</condition>
+		<displayFields>
+	<field name="tblCMCompleteClient.CompanyNo"  width="100" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblCMCompleteClient.CompanyName" display="@TABLENAME.clientname" width="150" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblCMCompleteClientDet.UserName" display="@TABLENAME.clientlinkman" width="80" searchType="match" parentDisplay="true" />
+	<field name="tblCMCompleteClientDet.Mobile" display="@TABLENAME.mobile" width="100" searchType="match" parentDisplay="false" />
+	<field name="tblCMCompleteClient.CompanyAddress" width="170" searchType="match" parentDisplay="true" />
+		</displayFields>
+		<saveFields>
+		  <field name="CRMServiceRet.id"  parentName="CRMTelephons.CRMServiceRecID" hidden="false"/>
+		</saveFields>
+</select>
+<!--电话服务引用服务接单-->
+<select name = "quote_CRMTelephone">
+		<table>CRMServiceRet,tblCMCompleteClient,tblCMCompleteClientDet</table>
+		<relation>CRMServiceRet.clientname=tblCMCompleteClient.id and tblCMCompleteClientDet.UserName=CRMServiceRet.clientlinkman</relation>
+		<condition>CRMServiceRet.createBy in (case '@Sess:UserId' when '1' then CRMServiceRet.createBy else '@Sess:UserId' end)</condition>
+		<displayFields>
+	<field name="tblCMCompleteClient.CompanyNo"  width="100" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblCMCompleteClient.CompanyName" display="@TABLENAME.clientname" width="150" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblCMCompleteClientDet.UserName" display="@TABLENAME.clientlinkman" width="80" searchType="match" parentDisplay="true" />
+	<field name="tblCMCompleteClientDet.Mobile" display="@TABLENAME.mobile" width="100" searchType="match" parentDisplay="false" />
+	<field name="tblCMCompleteClient.CompanyAddress" width="170" searchType="match" parentDisplay="true" />
+		</displayFields>
+		<saveFields>
+		  <field name="CRMServiceRet.id"  parentName="CRMTelephons.CRMServiceRecID" hidden="false"/>
+		</saveFields>
+</select>
+			<!--服务处理弹出服务人员-->
+<select name = "pop_serviceworker1">
+	<table>tblEmployee</table>
+	<relation></relation>
+	<condition> tblEmployee.workFlowNodeName='finish' </condition> 
+	<displayFields>
+	<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblEmployee.EmpFullName" asName="tblEmploy.EmpFullName" display="CRMServiceHome.serviceworker1" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblEmployee.id" parentName="CRMServiceHome.serviceworker1" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+<!--服务处理弹出协助人员1-->
+<select name = "pop_serviceworker2">
+	<table>tblEmployee</table>
+	<relation></relation>
+	<condition> tblEmployee.workFlowNodeName='finish' </condition> 
+	<displayFields>
+	<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblEmployee.EmpFullName" asName="tblEmploy1.EmpFullName" display="CRMServiceHome.serviceworker2" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblEmployee.id" parentName="CRMServiceHome.serviceworker2" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+	<!--服务处理弹出协助人员2-->
+<select name = "pop_serviceworker3">
+	<table>tblEmployee</table>
+	<relation></relation>
+	<condition> tblEmployee.workFlowNodeName='finish' </condition> 
+	<displayFields>
+	<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblEmployee.EmpFullName" asName="tblEmploy2.EmpFullName" display="CRMServiceHome.serviceworker3" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblEmployee.id" parentName="CRMServiceHome.serviceworker3" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+
+<!-- 销售合同弹出客户窗口-->
+<select name = "popu_CRMsaleconcract">
+	<table>ViewCRMCompanyAll,tblEmployee</table>
+	<relation>tblEmployee.id=ViewCRMCompanyAll.createBy</relation>
+	<condition>ViewCRMCompanyAll.createBy in (case '@Sess:UserId' when '1' then ViewCRMCompanyAll.createBy else '@Sess:UserId' end)</condition>
+	<displayFields>
+	 <field name="ViewCRMCompanyAll.CompanyNo"  width="120" searchType="match" parentDisplay="false" keySearch="true" />	
+	<field name="ViewCRMCompanyAll.CompanyCategory"  width="100" searchType="equal" parentDisplay="false" />
+	<field name="ViewCRMCompanyAll.CompanyName"  width="250" searchType="match" parentDisplay="false" keySearch="true" />	
+	</displayFields>
+	<saveFields>
+	  <field name="ViewCRMCompanyAll.CompanyName" relationKey="true" parentName="@TABLENAME.CompanyName" hidden="false" />
+	  <field name="ViewCRMCompanyAll.id"  parentName="CRMsaleconcract.f_brother" hidden="false" />	
+	  </saveFields>
+</select>
+
+<!-- 销售跟单弹出客户窗口-->
+<select name = "popu_CRMsaleFollow">
+	<table>ViewCRMCompanyAll,tblEmployee</table>
+	<relation>tblEmployee.id=ViewCRMCompanyAll.createBy</relation>
+	<condition>ViewCRMCompanyAll.createBy in (case '@Sess:UserId' when '1' then ViewCRMCompanyAll.createBy else '@Sess:UserId' end)</condition>
+	<displayFields>
+	 <field name="ViewCRMCompanyAll.CompanyNo"  width="120" searchType="match" parentDisplay="false" keySearch="true" />	
+	<field name="ViewCRMCompanyAll.CompanyCategory"  width="100" searchType="equal" parentDisplay="false" />
+	<field name="ViewCRMCompanyAll.CompanyName"  width="250" searchType="match" parentDisplay="false" keySearch="true" />	
+	</displayFields>
+	<saveFields>
+	  <field name="ViewCRMCompanyAll.CompanyName" relationKey="true" parentName="@TABLENAME.ClientName" hidden="false" />
+	  <field name="ViewCRMCompanyAll.id"  parentName="CRMsaleFollow.f_brother" hidden="false" />	
+	  </saveFields>
+</select>
+
+	<!-- 销售报价弹出客户窗口-->
+<select name = "popu_CRMsalesQuot">
+	<table>ViewCRMCompanyAll,tblEmployee</table>
+	<relation>tblEmployee.id=ViewCRMCompanyAll.createBy</relation>
+	<condition>ViewCRMCompanyAll.createBy in (case '@Sess:UserId' when '1' then ViewCRMCompanyAll.createBy else '@Sess:UserId' end)</condition>
+	<displayFields>
+		<field name="ViewCRMCompanyAll.CompanyNo"  width="120" searchType="match" parentDisplay="false" keySearch="true" />	
+		<field name="ViewCRMCompanyAll.CompanyCategory"  width="100" searchType="equal" parentDisplay="false" />
+		<field name="ViewCRMCompanyAll.CompanyName"  width="250" searchType="match" parentDisplay="false" keySearch="true" />	
+	</displayFields>
+	<saveFields>
+		<field name="ViewCRMCompanyAll.CompanyName" relationKey="true" parentName="@TABLENAME.CompanyName" hidden="false" />
+		<field name="ViewCRMCompanyAll.id"  parentName="CRMsalesQuot.f_brother" hidden="false" />	
+	</saveFields>
+</select>
+
+
+	<!-- 商务活动弹出客户窗口-->
+<select name = "popu_crmBussAction">
+	<table>ViewCRMCompanyAll,tblEmployee</table>
+	<relation>tblEmployee.id=ViewCRMCompanyAll.createBy</relation>
+	<condition>ViewCRMCompanyAll.createBy in (case '@Sess:UserId' when '1' then ViewCRMCompanyAll.createBy else '@Sess:UserId' end)</condition>
+	<displayFields>
+	 <field name="ViewCRMCompanyAll.CompanyNo"  width="120" searchType="match" parentDisplay="false" keySearch="true" />	
+	<field name="ViewCRMCompanyAll.CompanyCategory"  width="100" searchType="equal" parentDisplay="false" />
+	<field name="ViewCRMCompanyAll.CompanyName"  width="250" searchType="match" parentDisplay="false" keySearch="true" />	
+	</displayFields>
+	<saveFields>
+	  <field name="ViewCRMCompanyAll.CompanyName" relationKey="true" parentName="@TABLENAME.RelationClient" hidden="false" />
+	  <field name="ViewCRMCompanyAll.id"  parentName="crmBussAction.f_brother" hidden="false" />	
+	  </saveFields>
+</select>
+
+<!--通用型选择CRM部门弹出窗口-->	
+<select name = "SelectCrmDepartment">
+	<table>tblDepartment</table>
+	<relation></relation>
+	<classCode>tblDepartment.classCode</classCode>
+	<saveParentFlag>true</saveParentFlag>
+   <condition>tblDepartment.statusid!='-1' and tblDepartment.workFlowNodeName='finish'</condition>
+	<displayFields>
+	<field name="tblDepartment.DeptCode" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblDepartment.DeptFullName" display="@TABLENAME.ClientDepart" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblDepartment.classCode" parentName="@TABLENAME.ClientDepart" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+	<!--通用型选择CRM服务部门弹出窗口-->	
+<select name = "SelectCrmDepartmentF">
+	<table>tblDepartment</table>
+	<relation></relation>
+	<classCode>tblDepartment.classCode</classCode>
+	<saveParentFlag>true</saveParentFlag>
+	<condition> tblDepartment.workFlowNodeName='finish' </condition>
+	<displayFields>
+	<field name="tblDepartment.DeptCode" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblDepartment.DeptFullName" display="@TABLENAME.belongdepartment" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblDepartment.classCode" parentName="@TABLENAME.belongdepartment" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+		<!--通用型选择CRM销售合同部门弹出窗口-->	
+<select name = "SelectCrmDepartmentX">
+	<table>tblDepartment</table>
+	<relation></relation>
+	<classCode>tblDepartment.classCode</classCode>
+	<saveParentFlag>true</saveParentFlag>
+	<condition> tblDepartment.workFlowNodeName='finish' </condition>
+	<displayFields>
+	<field name="tblDepartment.DeptCode" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblDepartment.DeptFullName" display="@TABLENAME.tblCRMsaleconcractDet" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblDepartment.classCode" parentName="@TABLENAME.tblCRMsaleconcractDet" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+	
+
+<!--CRM使用的商品选择弹出窗口-->
+<select name = "SelectOnlyGood" type="checkBox">
+	<table>tblGoods,tblUnit</table>
+	<relation>tblGoods.BaseUnit=tblUnit.id</relation>
+	<classCode>tblGoods.classCode</classCode>
+	<condition>tblGoods.statusId!='-1' and tblGoods.workFlowNodeName='finish'</condition>
+	<displayFields>
+		<field name="tblGoods.BarCode"  width="100" searchType="match" parentDisplay="true" keySearch="true"  hiddenInput="true"/>
+		<field name="tblGoods.GoodsNumber"  width="110" searchType="match" parentDisplay="true" />
+		<field name="tblGoods.GoodsFullName"  display="@TABLENAME.GoodsCode" width="200" searchType="match" parentDisplay="true" />
+		<field name="tblGoods.GoodsSpec"  width="80" searchType="match" parentDisplay="true" />
+		<field name="tblUnit.UnitName"  width="80"  searchType="match" parentDisplay="true" />
+	</displayFields>
+	<saveFields>
+	  <field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true"/>
+	 <field name="tblUnit.id" parentName="@TABLENAME.Unit" relationKey="false" hidden="true"/>
+	 </saveFields>
+</select>
+
+<!--KPI审核人弹出窗-->
+<select name = "pop_ApproveName">
+	<table>tblEmployee</table>
+	<relation></relation>
+	<condition>tblEmployee.workFlowNodeName='finish'</condition> 
+	<displayFields>
+	<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblEmployee.EmpFullName" asName="tblEmployA.EmpFullName" display="@TABLENAME.ApproveName" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblEmployee.id" parentName="@TABLENAME.ApproveName" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+<!--KPI审核引用KPI设定-->
+<select name = "quote_formulate">
+	<table>CrmKPIformulate,tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.id=CrmKPIformulate.ExamineeName,CrmKPIformulate.ExamineeDepart=tblDepartment.classCode</relation>
+	<condition>CrmKPIformulate.ApproveStatus=0 and CrmKPIformulate.EmployeeID=(case '@Sess:UserId' when '1' then CrmKPIformulate.EmployeeID else '@Sess:UserId' end)</condition>
+	<orderBy>CrmKPIformulate.KPINO desc</orderBy>
+	<displayFields>
+		<field name="CrmKPIformulate.KPINO"  width="100" searchType="match"  parentDisplay="false"/>
+		<field name="tblEmployee.EmpFullName" width="100" searchType="match"   parentDisplay="false" />
+		<field name="CrmKPIformulate.TargetName" width="100" searchType="equal"  parentDisplay="false"  />
+		<field name="CrmKPIformulate.BillDate" width="90" searchType="equal"  parentDisplay="false"  />
+		<field name="tblDepartment.DeptFullName" display="CrmKPIAuditing.ClientDepart" width="100" searchType="match"  parentDisplay="true"  />
+	</displayFields>
+	<saveFields>
+	  <field name="CrmKPIformulate.id" relationKey="true" parentName="CrmKPIAuditing.BILLID" hidden="true"/>		 
+	</saveFields>
+</select>
+
+<!--归属部门字段为ClientDepart时客户移交“现归属人”弹出框-->
+<select name = "pop_NewClientRemove">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>tblEmployee.statusId!='-1'  and tblEmployee.workFlowNodeName='finish'  and tblDepartment.workFlowNodeName='finish'</condition> 
+	<displayFields>
+	<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblEmployee.EmpFullName"  asName="emp2.EmpFullName" display="@TABLENAME.NewCreateName" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblEmployee.EmpFullNamePYM" asName="emp2.EmpFullNamePYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblDepartment.DeptFullName"  width="200" searchType="match" parentDisplay="false" keySearch="true"/>
+	<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblEmployee.id" parentName="@TABLENAME.NewCreateName" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+	<!--客户移交表“现归属人”部门弹出窗口	-->
+<select name = "NewClientRemove">
+	<table>tblDepartment</table>
+	<relation></relation>
+	<classCode>tblDepartment.classCode</classCode>
+	<saveParentFlag>true</saveParentFlag>
+	<condition> tblDepartment.workFlowNodeName='finish' </condition>
+	<displayFields>
+	<field name="tblDepartment.DeptCode" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblDepartment.DeptFullName" display="@TABLENAME.ClientDepart" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblDepartment.classCode" parentName="@TABLENAME.ClientDepart" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+	<!--弹出其他表归属部门字段为DepartmentCode时客户移交表"原创建人"弹出框-->
+	<select name = "pop_OldClientRemove">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>tblEmployee.statusId!='-1' and tblEmployee.workFlowNodeName='finish'  and tblDepartment.workFlowNodeName='finish'</condition> 
+	<displayFields>
+	<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblEmployee.EmpFullName" asName="emp1.EmpFullName" display="@TABLENAME.OldCreateName" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblEmployee.EmpFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblDepartment.DeptFullName"  width="200" searchType="match" parentDisplay="false" keySearch="true"/>
+	<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblEmployee.id" parentName="@TABLENAME.OldCreateName" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+	<!--客户移交从表中选择客户弹出窗口-->
+	<select name = "remove_CRMCompanyAll" type="checkBox">
+	<table>ViewCRMCompanyAll,tblEmployee</table>
+	<relation>ViewCRMCompanyAll.createBy=tblEmployee.id</relation>
+	<condition>ViewCRMCompanyAll.workFlowNodeName='finish'</condition> 
+	<displayFields>
+		<field name="ViewCRMCompanyAll.CompanyNo" width="110" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="ViewCRMCompanyAll.CompanyName"  width="260" display="@TABLENAME.CompanyName" marker="true" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="ViewCRMCompanyAll.createTime"  width="120" marker="true" searchType="match" parentDisplay="true"  />
+	<field name="tblEmployee.EmpFullName" width="80" searchType="match" display="@TABLENAME.createName" parentDisplay="false" />
+    <field name="ViewCRMCompanyAll.CompanyCategory"  width="90" marker="true" searchType="equal" parentDisplay="false" />
+
+	</displayFields>
+	<saveFields>
+	<field name="ViewCRMCompanyAll.createBy" parentName="CrmClientchoose.createName"   hidden="false"/>
+	<field name="ViewCRMCompanyAll.CompanyName" parentName="CrmClientchoose.CompanyName"  relationKey="true"  hidden="false"/>	
+	<field name="ViewCRMCompanyAll.id" parentName="CrmClientchoose.CompanyId"    hidden="false"/>
+	</saveFields>
+</select>
+
+	<!--短信群发弹出窗口-->
+	<select name = "tblCRMSMSDet">
+	<table>tblCMAimClientDet,tblCMAimClient</table>
+	<relation>tblCMAimClientDet.f_ref=tblCMAimClient.id </relation>
+	<condition></condition> 
+	   <displayFields>
+	   <field name="tblCMAimClient.CompanyNo"  width="100" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblCMAimClient.CompanyName"  width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	   <field name="tblCMAimClientDet.UserName"  width="100" searchType="match" parentDisplay="true" />
+	<field name="tblCMAimClientDet.Mobile"   width="100"  searchType="match" parentDisplay="true" />
+		  </displayFields>
+	<saveFields>
+		  <field name="tblCMAimClientDet.id" parentName="tblCRMSMSDet.UserName" relationKey="true" hidden="true"/>
+		  <field name="tblCMAimClientDet.Mobile" parentName="tblCRMSMSDet.Mobile" hidden="false"/>
+	</saveFields>
+	   </select>
+	 
+	<!--邮件群发弹出窗口-->
+	<select name = "tblCRMMassMailDet">
+	<table>tblCMAimClientDet,tblCMAimClient</table>
+	<relation>tblCMAimClientDet.f_ref=tblCMAimClient.id </relation>
+	<condition></condition> 
+	   <displayFields>
+	  <field name="tblCMAimClient.CompanyNo"  width="100" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblCMAimClient.CompanyName"  width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	  <field name="tblCMAimClientDet.UserName"  width="100" searchType="match" parentDisplay="true" />
+	<field name="tblCMAimClientDet.ClientEmail"   width="100"  searchType="match" parentDisplay="true" />
+		 </displayFields>
+	<saveFields>
+		 <field name="tblCMAimClientDet.id" parentName="tblCRMMassMailDet.UserName" relationKey="true" hidden="true"/>
+		 <field name="tblCMAimClientDet.ClientEmail"  parentName="tblCRMMassMailDet.Email" hidden="false"/>
+	</saveFields>
+	 </select>
+	 
+<!--KPI考核对象弹出框-->
+<select name = "popu_ExamineeName">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>(tblEmployee.DepartmentCode=@ValueofDB:ExamineeDepart and tblEmployee.statusId!='-1' or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish'  and tblDepartment.workFlowNodeName='finish'</condition> 
+	<displayFields>
+	<field name="tblEmployee.EmpNumber" asName="tblE.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblEmployee.EmpFullName" asName="tblE2.EmpFullName" display="CrmKPIformulate.ExamineeName" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblDepartment.DeptFullName" asName="tblE3.DeptFullName" width="200" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+	<field name="tblEmployee.id" parentName="CrmKPIformulate.ExamineeName" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+<!--KPI考核(归属)部门弹出窗口-->	
+<select name = "popu_ExamineeDepart">
+	<table>tblDepartment</table>
+	<relation></relation>
+	<classCode>tblDepartment.classCode</classCode>
+	<saveParentFlag>true</saveParentFlag>
+	<condition>tblDepartment.statusid!='-1' and tblDepartment.workFlowNodeName='finish'</condition>
+	<displayFields>
+	<field name="tblDepartment.DeptCode" width="100" asName="tblD.DeptCode" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblDepartment.DeptFullName" asName="tblD2.DeptFullName" display="CrmKPIformulate.ExamineeDepart" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	<field name="tblDepartment.classCode" parentName="CrmKPIformulate.ExamineeDepart" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+	 
+	 
+	<!--往来同步从表中选择客户弹出窗口-->
+	<select name = "same_CrmCompanysame" type="checkBox">
+	<table>CRMClientInfo,tblEmployee,CRMClientInfoEmp</table>
+	<relation>on CRMClientInfo.createBy=tblEmployee.id on CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation>
+	<condition>((exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false')) and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition> 
+	<changeCond>(CRMClientInfo.id not in (select id from tblCompany) and CRMClientInfo.statusid!=-1)</changeCond>
+	<orderBy>CRMClientInfo.ClientNo,CRMClientInfo.ClientName</orderBy>
+	<displayFields>
+	<field name="CRMClientInfo.ClientNo" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblEmployee.EmpFullName" width="100" searchType="match"   parentDisplay="true" />		
+	<field name="CRMClientInfo.ClientName"  width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="CRMClientInfo.Status"  width="100" searchType="equal" defaultValue="4" parentDisplay="false" keySearch="false" />	
+	</displayFields>
+	<saveFields>
+	<field name="CRMClientInfo.id" parentName="CrmCompanysameDet.CompanyName" relationKey="true"  hidden="true"/>		
+	</saveFields>
+</select>
+
+
+
+	<!--进销存CRM同步选择往来单位-->
+	<select name = "same_CrmCompanysame2" type="checkBox">
+	<table>tblCompany,tblEmployee</table>
+	<classCode>tblCompany.classCode</classCode>
+	<relation>tblCompany.createBy=tblEmployee.id</relation>
+	<condition>ClientFlag in (2,3)  and tblCompany.workFlowNodeName='finish'</condition> 
+	<changeCond>tblCompany.id not in(select id from ViewCRMCompanyAll)</changeCond>
+	<orderBy>tblCompany.ComNumber,tblCompany.ComFullName</orderBy>
+	<displayFields>
+	<field name="tblCompany.ComNumber" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblCompany.ComFullName"  width="200" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblEmployee.EmpFullName" width="100" searchType="match" parentDisplay="true" />		
+	</displayFields>
+	<saveFields>
+	<field name="tblCompany.id" parentName="CrmCompanysame2Det.CompanyName" relationKey="true"  hidden="true"/>		
+	</saveFields>
+</select>
+	<!--省份城市-->	
+  <select name = "CRMHomeplace">
+	 <table>CRMHomeplace</table>
+	 <classCode>CRMHomeplace.classCode</classCode>
+	 <condition>CRMHomeplace.LanguageType='@Sess:Local'</condition> 
+	 <saveParentFlag>true</saveParentFlag>
+	 <displayFields>
+	 <field name="CRMHomeplace.Province" display="@TABLENAME.Province" width="50" searchType="match" parentDisplay="false" />
+		<field name="CRMHomeplace.City"  width="80" display="@TABLENAME.City" searchType="match" parentDisplay="true" />
+	 </displayFields>
+	 <saveFields>
+	  <field name="CRMHomeplace.Province" parentName="@TABLENAME.Province" relationKey="true" hidden="false"/>
+	 <field name="CRMHomeplace.City" parentName="@TABLENAME.City" hidden="false"/>
+	 </saveFields>
+		</select>
+
+<!--销售合同引用销售报价-->		
+<select name = "CRMsaleconcract_quote_CRMsalesQuot">
+	<table>CRMsalesQuot,ViewCRMCompanyAll</table>
+	<relation>CRMsalesQuot.f_brother=ViewCRMCompanyAll.id</relation>
+	<condition>CRMsalesQuot.createBy in (case '@Sess:UserId' when '1' then CRMsalesQuot.createBy else '@Sess:UserId' end) and CRMsalesQuot.workFlowNodeName='finish'</condition>
+	<hasChild>quote_CRMsalesQuotDt</hasChild>
+	<displayFields>
+		<field name="CRMsalesQuot.BillNO"  width="120" searchType="match"  parentDisplay="false"/>
+		<field name="ViewCRMCompanyAll.CompanyName" width="100" searchType="match"   parentDisplay="false" />
+		<field name="ViewCRMCompanyAll.CompanyNo" width="100" searchType="match"   parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+	  <field name="CRMsalesQuot.id" relationKey="true" parentName="CRMsaleconcract.CRMsaleFollowID" hidden="false"/>
+	</saveFields>
+</select>
+<select name = "quote_CRMsalesQuotDt">
+	<table>CRMsalesQuotDt,tblGoods</table>		
+	<relation>CRMsalesQuotDt.GoodsCode=tblGoods.classCode</relation>  
+	<condition></condition>
+	<displayFields>
+		<field name="tblGoods.GoodsFullName"  width="100" searchType="match"  parentDisplay="false"/>
+		<field name="CRMsalesQuotDt.Qty" width="100" searchType="no"   parentDisplay="false" />
+		<field name="CRMsalesQuotDt.Price" width="100" searchType="no"   parentDisplay="false" />
+		<field name="CRMsalesQuotDt.Amount"  width="100" searchType="no"   parentDisplay="false"/>
+		<field name="CRMsalesQuotDt.BuyAmount" width="100" searchType="no"   parentDisplay="false" />			
+	</displayFields>
+	<saveFields>
+	  <field name="CRMsalesQuotDt.id" relationKey="true" parentName="CRMsaleconcractDet.SourceID" hidden="false"/>		
+	</saveFields>
+</select>
+
+
+<!--销售合同引用销售跟单-->
+<select name = "CRMsaleconcract_quote_CRMsaleFollow">
+	<table>CRMsaleFollow,tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.id=CRMsaleFollow.EmployeeID and tblDepartment.classCode=CRMsaleFollow.DepartmentCode</relation>
+	<!--<hasChild>quote_CRMsaleconcractDet</hasChild>-->
+	<displayFields>
+		<field name="CRMsaleFollow.FollowNo"  width="100" searchType="match"  parentDisplay="false"/>
+		<field name="CRMsaleFollow.ClientName" width="100" searchType="match"   parentDisplay="false" />
+		<field name="tblDepartment.DeptFullName" width="100" searchType="match"  parentDisplay="false" />
+		<field name="tblEmployee.EmpFullName"  width="100" searchType="match"   parentDisplay="false"/>	
+	</displayFields>
+	<saveFields>
+	  <field name="CRMsaleFollow.id" relationKey="true" parentName="CRMsaleconcract.CRMsaleFollowID" hidden="true"/>
+	</saveFields>
+</select>
+<!--
+<select name = "quote_CRMsaleconcractDet">
+	<table>CRMsaleFollowDt,tblGoods</table>		
+	<relation>CRMsaleFollowDt.GoodsCode=tblGoods.classCode</relation>  
+	<condition></condition>
+	<displayFields>
+		<field name="tblGoods.GoodsFullName"  width="100" searchType="match"  parentDisplay="false"/>
+		<field name="CRMsaleFollowDt.Qty" width="100" searchType="no"   parentDisplay="false" />
+		<field name="CRMsaleFollowDt.Price" width="100" searchType="no"   parentDisplay="false" />
+		<field name="CRMsaleFollowDt.Amount"  width="100" searchType="no"   parentDisplay="false"/>
+		<field name="CRMsaleFollowDt.BuyAmount" width="100" searchType="no"   parentDisplay="false" />			
+	</displayFields>
+	<saveFields>
+	  <field name="CRMsaleFollowDt.id" relationKey="true" parentName="CRMsaleconcractDet.SourceID" hidden="false"/>		
+	</saveFields>
+</select>-->
+<!--服务接单引用进销存销售出库单-->
+<select name = "quote_tblSalesOutStock_CRMServiceRet">
+		<table>tblSalesOutStock,tblCompany,tblCompanyEmployeeDet</table>
+		<relation>tblSalesOutStock.CompanyCode=tblCompany.classCode and tblCompanyEmployeeDet.f_ref=tblCompany.id</relation>
+		<hasChild>tblSalesOutStockDet_CRMServiceDet</hasChild>
+		<condition></condition>
+		<displayFields>
+		 <field name="tblSalesOutStock.BillNo" width="120"  searchType="match" parentDisplay="true" />	
+		<field name="tblCompany.ComFullName" width="150" display="@TABLENAME.clientname" searchType="match" parentDisplay="true" />	
+		<field name="tblCompanyEmployeeDet.ContactMan" display="@TABLENAME.clientlinkman" width="60" searchType="match" parentDisplay="true" />
+		<field name="tblCompanyEmployeeDet.Mobile" display="@TABLENAME.mobile" width="130" searchType="match" parentDisplay="true" />
+		<field name="tblCompany.ComAddress" width="150" display="@TABLENAME.CompanyAddress" searchType="match" parentDisplay="true" />	
+		</displayFields>
+		<saveFields>
+		  <field name="tblSalesOutStock.id"  parentName="CRMServiceRet.RelationID" hidden="false"/>
+		</saveFields>
+</select>
+<!--服务接单从表引用销售出库单从表-->	
+<select name = "tblSalesOutStockDet_CRMServiceDet">
+	<table>tblSalesOutStockDet,tblGoods</table>		
+	<relation>tblSalesOutStockDet.GoodsCode=tblGoods.classCode</relation>  
+	<condition></condition>
+	<displayFields>
+	   <field name="tblGoods.GoodsNumber" width="110" searchType="match" parentDisplay="false" />
+		<field name="tblGoods.GoodsFullName" width="100" searchType="match" parentDisplay="false"/>
+		<field name="tblSalesOutStockDet.Qty" width="100" searchType="no" parentDisplay="false" />
+		<field name="tblSalesOutStockDet.Price" width="100" searchType="no" parentDisplay="false" />
+		<field name="tblSalesOutStockDet.Amount" width="100" searchType="no" parentDisplay="false"/>		
+	</displayFields>
+	<saveFields>
+	  <field name="tblSalesOutStockDet.id" relationKey="true" parentName="CRMServiceDet.RelationID" hidden="false"/>		
+	</saveFields>
+</select>
+
+<!-- 服务接单弹出客户窗口-->
+<select name = "popu_CRMServiceRet">
+	<table>tblCompany,tblCompanyTotal,tblCompanyEmployeeDet</table>
+	<!--<forwardModel>tblCompany</forwardModel>-->
+	<relation>tblCompanyTotal.CompanyCode=tblCompany.classcode and tblCompanyEmployeeDet.f_ref=tblCompany.id</relation>
+	<classCode>tblCompany.classCode</classCode>
+	<condition>(tblCompanyTotal.Period=(select Max(tblCompanyTotal.Period) from tblCompanyTotal where (tblCompanyTotal.CompanyCode=tblCompany.classcode)) and (tblCompany.ClientFlag=2 or tblCompany.ClientFlag=3)and tblCompany.statusId!='-1' and tblCompanyTotal.PeriodYear=@Sess:NowYear)  and tblCompany.workFlowNodeName='finish'</condition>
+	<displayFields>
+	<field name="tblCompany.ComNumber"  width="100" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblCompany.ComFullName" display="@TABLENAME.clientname" width="130" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblCompanyEmployeeDet.ContactMan" display="@TABLENAME.clientlinkman" width="80" searchType="match" parentDisplay="true" />
+	<field name="tblCompanyEmployeeDet.Mobile" display="@TABLENAME.mobile" width="90" searchType="match" parentDisplay="false" />
+	<field name="tblCompany.ComAddress" width="170" display="@TABLENAME.CompanyAddress" searchType="match" parentDisplay="true" />	
+	</displayFields>
+	<saveFields>
+	<field name="tblCompany.classCode" parentName="@TABLENAME.clientname" relationKey="true" hidden="true"/>
+	<field name="tblCompanyEmployeeDet.contactCode" parentName="@TABLENAME.clientlinkman"  hidden="true"/>
+	<field name="tblCompanyEmployeeDet.Mobile" parentName="@TABLENAME.mobile" hidden="true"/>
+	<field name="tblCompanyEmployeeDet.Telephone" parentName="@TABLENAME.clientlinkphone" hidden="true"/>
+	<field name="tblCompany.ComAddress" parentName="@TABLENAME.CompanyAddress" hidden="true"/>
+	</saveFields>
+</select>
+
+<!-- 服务接单弹出成交客户窗口-->
+<select name = "popu_tblCMCompleteClient">
+	<table>CRMClientInfoDet,CRMClientInfo</table>
+	<relation>CRMClientInfoDet.f_ref=CRMClientInfo.id</relation>
+	<condition>CRMClientInfo.id='@ValueofDB:ClientId'</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<orderBy>CRMClientInfoDet.UserName</orderBy>
+	<displayFields>
+		<field name="CRMClientInfoDet.UserName" display="@TABLENAME.clientlinkman" width="100" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfoDet.Gender" width="60" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfoDet.Mobile" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfoDet.Telephone" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Address" width="200" searchType="match" parentDisplay="false" />	
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfoDet.id" parentName="@TABLENAME.clientlinkman" relationKey="true" hidden="true" />
+		<field name="CRMClientInfoDet.Mobile" parentName="@TABLENAME.mobile" hidden="false"/>
+		<field name="CRMClientInfoDet.Telephone" parentName="@TABLENAME.clientlinkphone" hidden="false"/>
+		<field name="CRMClientInfo.Address" parentName="@TABLENAME.CompanyAddress" hidden="false"/>
+	</saveFields>
+</select>
+
+<!--
+<select name = "popu_CRMServiceRet">
+	<table>tblSalesOutStock,tblCompany</table>
+	<relation>tblSalesOutStock.CompanyCode=tblCompany.classCode</relation>
+	<condition></condition>
+	<displayFields>
+	 <field name="tblCompany.ComFullName"  width="120" display="@TABLENAME.clientname" searchType="match" parentDisplay="true" />	
+	<field name="tblCompany.ComContactor"  width="100" searchType="equal" parentDisplay="false" />
+	<field name="tblCompany.ComContactorTel"  width="100" searchType="match" parentDisplay="false" />
+	<field name="tblCompany.ComContactorMobile"  width="100" searchType="match" parentDisplay="false" />
+	<field name="tblCompany.ComAddress"  width="180" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+	  <field name="tblSalesOutStock.CompanyCode" relationKey="true" parentName="CRMServiceRet.clientname" hidden="true" />
+	   <field name="tblCompany.ComContactor" parentName="CRMServiceRet.clientlinkman" hidden="false" />
+		<field name="tblCompany.ComContactorTel" parentName="CRMServiceRet.clientlinkphone" hidden="false" />	
+		 <field name="tblCompany.ComContactorMobile"  parentName="CRMServiceRet.mobile" hidden="false" />
+		  <field name="tblCompany.ComAddress"  parentName="CRMServiceRet.CompanyAddress" hidden="false" />		
+	  </saveFields>
+</select>
+-->
+<!--服务接单引用销售出库单
+<select name = "quote_CRMServiceRet">
+		<table>tblSalesOutStock,tblCompany,tblEmployee</table>
+		<relation>tblSalesOutStock.CompanyCode=tblCompany.classCode and tblSalesOutStock.createBy=tblEmployee.id</relation>
+		<condition>tblSalesOutStock.createBy in (case '@Sess:UserId' when '1' then tblSalesOutStock.createBy else '@Sess:UserId' end)</condition>
+		<displayFields>
+			<field name="tblCompany.ComFullName" width="150" searchType="equal"  parentDisplay="false"  />
+			<field name="tblCompany.ComContactor"  width="100" searchType="equal" parentDisplay="false" />
+			<field name="tblCompany.ComContactorTel"  width="100" searchType="equal"   parentDisplay="false"/>
+			<field name="tblCompany.ComContactorMobile" width="100" searchType="equal"   parentDisplay="false" />
+			<field name="tblEmployee.EmpFullName"  width="60" searchType="match" parentDisplay="false" />	
+		</displayFields>
+		<saveFields>
+		  <field name="tblSalesOutStock.id"  parentName="CRMServiceRet.RelationID" hidden="false"/>
+		</saveFields>
+</select>-->
+
+<!--客户投诉、短信服务弹出客户-->
+<select name = "CRMcomplaints">
+		<table>tblCompany,tblCompanyEmployeeDet</table>
+		<relation>tblCompanyEmployeeDet.f_ref=tblCompany.id</relation>
+		<condition>(tblCompany.ClientFlag=2 or tblCompany.ClientFlag=3) and tblCompany.statusId!='-1' and tblCompany.workFlowNodeName='finish'</condition>
+		<displayFields>
+<field name="tblCompany.ComNumber"  width="150" searchType="match" parentDisplay="false" keySearch="true" />
+	<field name="tblCompany.ComFullName" display="@TABLENAME.clientname" width="150" searchType="match" parentDisplay="true" keySearch="true" />
+	<field name="tblCompanyEmployeeDet.ContactMan" display="@TABLENAME.clientlinkman" width="150" searchType="match" parentDisplay="true" />
+	<field name="tblCompanyEmployeeDet.Mobile" display="@TABLENAME.mobile" width="150" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+	<field name="tblCompany.classCode" parentName="@TABLENAME.clientname" relationKey="true" hidden="true"/>
+	<field name="tblCompanyEmployeeDet.contactCode" parentName="@TABLENAME.clientlinkman"  hidden="true"/>
+	<field name="tblCompanyEmployeeDet.Mobile" parentName="@TABLENAME.mobile" hidden="true"/>
+	</saveFields>
+</select>
+
+<select name = "SelectOnlyGoods_CRMcomplaints">
+	 <table>tblGoods,tblUnit</table>
+	 <!--<forwardModel>tblGoods</forwardModel>-->
+	 <relation>tblGoods.BaseUnit=tblUnit.id</relation>
+	 <classCode>tblGoods.classCode</classCode>
+	<condition>tblGoods.statusId!='-1' and tblGoods.workFlowNodeName='finish'</condition>
+	<displayFields>
+		<field name="tblGoods.BarCode"  width="100" searchType="match" parentDisplay="true" keySearch="true"  hiddenInput="true"/>
+		 <field name="tblGoods.GoodsNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" />
+		 <field name="tblGoods.GoodsFullName" display="@TABLENAME.GoodsCode" width="190" searchType="match" keySearch="true" parentDisplay="true" />
+		 <field name="tblGoods.GoodsSpec" width="80" searchType="match" keySearch="true" parentDisplay="false" />
+		 <field name="tblUnit.UnitName" asName="Unit.Unit" width="30" searchType="match" parentDisplay="false" />
+	</displayFields>
+ <saveFields>
+	 <field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true"/>
+ </saveFields>
+</select>
+
+<select name = "SelectClerkGoods">
+	 <table>tblGoods</table>
+	 <!--<forwardModel>tblGoods</forwardModel>-->
+	 <relation></relation>
+	 <classCode>tblGoods.classCode</classCode>
+	<condition>tblGoods.statusId!='-1' and tblGoods.workFlowNodeName='finish'</condition>
+	<displayFields>
+		<field name="tblGoods.BarCode"  width="100" searchType="match" parentDisplay="false" keySearch="true"  hiddenInput="true"/>
+		 <field name="tblGoods.GoodsNumber" width="100" searchType="match" parentDisplay="false" />
+		 <field name="tblGoods.GoodsFullName" display="@TABLENAME.GoodsCode" width="190" searchType="match" parentDisplay="true" />
+		 <field name="tblGoods.GoodsSpec" width="80" searchType="match" parentDisplay="false" />
+	</displayFields>
+ <saveFields>
+	 <field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true"/>
+ </saveFields>
+</select>
+
+<!--商务活动关联外出单弹出OA外出申请单的单号-->
+<select name = "OAOutLeaveBill">
+		<table>OAOutLeaveBill,tblEmployee</table>
+		<relation>OAOutLeaveBill.EmployeeCode=tblEmployee.id</relation>
+		<condition>OAOutLeaveBill.createBy in (case '@Sess:UserId' when '1' then OAOutLeaveBill.createBy else '@Sess:UserId' end)</condition>
+	<displayFields>
+<field name="OAOutLeaveBill.BillNo"  width="120" display="@TABLENAME.OutBill" searchType="match" parentDisplay="true" />
+<field name="tblEmployee.EmpFullName" asName="tblEmp.EmpFullName" width="80" searchType="match" parentDisplay="false" />
+<field name="OAOutLeaveBill.OutWhere"  width="180"  searchType="match" parentDisplay="false" />
+<field name="OAOutLeaveBill.OutTitle"  width="180"  searchType="match" parentDisplay="false" />
+</displayFields>
+	<saveFields>
+	<field name="OAOutLeaveBill.BillNo" parentName="@TABLENAME.OutBill" relationKey="true" hidden="false"/>
+	</saveFields>
+</select>
+
+<!--CRM客户同步选择往来单位目录 --><select name="SelectClientCatalogs" > 
+		<saveParentFlag>true</saveParentFlag>
+		<classCode>tblCompany.classCode</classCode>
+		<defineSQL>
+from tblCompany where 1=1  and (ClientFlag=2)   and tblCompany.statusId='0' and isCatalog=1
+		</defineSQL>
+		<displayFields>
+			<field name="tblCompany.ComNumber" parentDisplay="false" width="150" searchType="match" keySearch="true" />
+			<field name="tblCompany.ComFullName" display="@TABLENAME.Catalogs" parentDisplay="true" width="150" searchType="match" keySearch="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblCompany.classCode" parentName="@TABLENAME.Catalogs" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+<!-- 意向客户引用目标客户 -->
+<select name = "tblCMWillClient_quote_tblCMAimClient">
+	<table>tblCMAimClient,tblEmployee</table>
+	<relation>tblCMAimClient.createBy=tblemployee.id</relation>
+	<condition>
+	tblCMAimClient.createBy in (case '@Sess:UserId' when '1' then tblCMAimClient.createBy else '@Sess:UserId' end)
+	</condition>
+	<hasChild></hasChild>
+	<displayFields>
+        <field name="tblEmployee.EmpFullName"  width="60" searchType="match"  parentDisplay="false"/>
+		<field name="tblCMAimClient.ClientValue" width="80" searchType="no"   parentDisplay="false" />
+		<field name="tblCMAimClient.ClientLevel" width="60" searchType="match"  parentDisplay="false"  />
+		<field name="tblCMAimClient.Province" width="100" searchType="match"   parentDisplay="false" />
+		<field name="tblCMAimClient.CompanyName" width="180" searchType="match"   parentDisplay="false" />		
+	</displayFields>
+	<saveFields>
+	  <field name="tblCMAimClient.id" relationKey="true" parentName="tblCMWillClient.RefID" hidden="false"/>
+	</saveFields>
+</select>
+<!-- 成交客户引用意向客户 -->
+<select name = "tblCMCompleteClient_quote_tblCMWillClient">
+	<table>tblCMWillClient,tblEmployee</table>
+	<relation>tblCMWillClient.createBy=tblemployee.id</relation>
+	<condition>
+	tblCMWillClient.createBy in (case '@Sess:UserId' when '1' then tblCMWillClient.createBy else '@Sess:UserId' end)
+	</condition>
+	<hasChild></hasChild>
+	<displayFields>
+        <field name="tblEmployee.EmpFullName"  width="60" searchType="match"  parentDisplay="false"/>
+		<field name="tblCMWillClient.ClientValue" width="80" searchType="no"   parentDisplay="false" />
+		<field name="tblCMWillClient.ClientLevel" width="80" searchType="match"  parentDisplay="false"  />
+		<field name="tblCMWillClient.Province" width="100" searchType="match"   parentDisplay="false" />
+		<field name="tblCMWillClient.CompanyName" width="120" searchType="match"   parentDisplay="false" />		
+	</displayFields>
+	<saveFields>
+	  <field name="tblCMWillClient.id" relationKey="true" parentName="tblCMCompleteClient.RefID" hidden="false"/>
+	</saveFields>
+</select>
+
+<!--销售报价商品弹出框-->
+<select name = "CRMsalesQuotWithPriceStock" type="checkBox">
+		<table>tblGoods</table>
+		<forwardModel>tblGoods</forwardModel>
+		<relation></relation>
+		<defineSQL>select 	
+		tblGoods.classCode f1,
+		tblGoods.BaseUnit f2,
+		isnull(tblCustomerPriceDet.Price,tblGoods.ProSalesPrice) f3,
+		(case isCatalog when 1 then -99999999 else (select case isnull(sum(lastQty),0) when 0 then 0 else cast(isnull(sum(lastAmount),0)/isnull(sum(lastQty),0) as numeric(18,4)) end  from tblStocks a  where a.GoodsCode=tblGoods.classCode and a.stockCode='@ValueofDB:StockCode') end) f4,
+		tblGoodsUnit.SecUnit f5,
+		SecUnit.UnitName f6,
+		tblGoodsUnit.ConversionRate f7,
+		tblGoods.BarCode f8,
+		tblVarietalInfo.VarietalName f19,
+		tblGoods.GoodsNumber f9,
+		tblGoods.GoodsFullName f10,
+		tblGoods.GoodsSpec f11,
+		tblGoods.GoodsFullNamePYM f12,
+		tblUnit.UnitName f13,
+		(case isCatalog when 1 then -99999999 else (select isnull(sum(lastQty),0)  from tblStocks a  where a.GoodsCode=tblGoods.classCode and a.stockCode='@ValueofDB:StockCode') end) f14,
+		tblGoods.ProSalesPrice f15,
+		tblGoods.ProSalesPrice2 f16,
+		tblGoods.ProSalesPrice3 f17,
+		tblGoods.ProSalesPrice4 f18
+		from tblGoods 
+		left join tblUnit on tblGoods.BaseUnit=tblUnit.id
+		left join tblGoodsUnit with(index(IX_tblGoodsUnit_refdefault)) on tblGoodsUnit.f_ref=tblGoods.id and tblGoodsUnit.DefaultAssit=1
+		left join tblUnit SecUnit on SecUnit.id=tblGoodsUnit.SecUnit
+		left join tblDBEnumerationItem on  tblDBEnumerationItem.enumValue=tblGoods.Varietal and tblDBEnumerationItem.enumId=(select id from tblDBEnumeration where tblDBEnumeration.enumName='VarietalInfo')   
+		left join tblVarietalInfo on  tblVarietalInfo.id=tblDBEnumerationItem.id 
+		left join tblCustomerPriceDet on tblGoods.classcode = tblCustomerPriceDet.GoodsCode
+			and tblCustomerPriceDet.f_ref=(select top 1 id from tblCustomerPrice where companyCode='@ValueofDB:ClientId' order by price desc)</defineSQL>	
+		<condition></condition>
+		<changeCond>tblGoods.statusid!='-1'</changeCond>
+		<classCode>tblGoods.classCode</classCode>
+		<orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+		<displayFields>
+	    <field name="tblGoods.BarCode"  width="100" searchType="match" parentDisplay="true" keySearch="true"  hiddenInput="true"/>
+	    <field name="tblVarietalInfo.VarietalName" sysType="productbankcontrol" width="80" display="tblGoods.Varietal" searchType="match" keySearch="true" parentDisplay="true" />
+		<field name="tblGoods.GoodsNumber" width="80" searchType="match" keySearch="true" parentDisplay="true" />
+		<field name="tblGoods.GoodsFullName"  display="@TABLENAME.GoodsCode" width="150" searchType="match" keySearch="true" parentDisplay="true" />
+		<field name="tblGoods.GoodsSpec"  width="150" searchType="match"  keySearch="true"  parentDisplay="true" hiddenInput="true" />
+		<field name="tblGoods.GoodsFullNamePYM"  width="60"  hiddenInput="true" searchType="match" parentDisplay="true" />
+		<field name="tblUnit.UnitName" asName="tblUnit.UnitName" width="30"  searchType="match" parentDisplay="true" />
+		<field name="(case isCatalog when 1 then -99999999 else (select isnull(sum(lastQty),0)  from tblStocks a  where a.GoodsCode=tblGoods.classCode and a.stockCode='@ValueofDB:StockCode') end)" asName="tblStocks.lastQty" display="tblStocks.lastQty"  width="70" searchType="no" parentDisplay="false" />
+		<field name="tblGoods.ProSalesPrice" width="60" parentDisplay="false" />
+		<field name="tblGoods.ProSalesPrice2" width="60" parentDisplay="false" hiddenInput="true" />
+		<field name="tblGoods.ProSalesPrice3" width="60" parentDisplay="false" hiddenInput="true" />
+		<field name="tblGoods.ProSalesPrice4" width="60" parentDisplay="false" hiddenInput="true" />
+		<field name="isnull(tblCustomerPriceDet.Price,tblGoods.ProSalesPrice)"  asName="tblCustomerPriceDet.Price" display="tblCustomerPriceDet.Price" width="60" parentDisplay="false" />
+		<!--<field name="(case isCatalog when 1 then -99999999 else (select case isnull(sum(lastQty),0) when 0 then 0 else cast(isnull(sum(lastAmount),0)/isnull(sum(lastQty),0) as numeric(18,4)) end  from tblStocks a  where a.GoodsCode=tblGoods.classCode and a.stockCode='@ValueofDB:StockCode') end)" display="tblStocks.lastPrice" width="60" parentDisplay="false" />-->
+
+	</displayFields>
+	<saveFields>
+		<field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true"/>
+		<field name="tblGoods.BaseUnit" parentName="@TABLENAME.Unit" relationKey="false" hidden="true"/>
+		<field name="isnull(tblCustomerPriceDet.Price,tblGoods.ProSalesPrice)" display="tblCustomerPriceDet.Price" parentName="@TABLENAME.Price" relationKey="false" hidden="false" />
+		<field name="(case isCatalog when 1 then -99999999 else (select case isnull(sum(lastQty),0) when 0 then 0 else cast(isnull(sum(lastAmount),0)/isnull(sum(lastQty),0) as numeric(18,4)) end  from tblStocks a  where a.GoodsCode=tblGoods.classCode and a.stockCode='@ValueofDB:StockCode') end)" display="tblStocks.lastPrice" parentName="@TABLENAME.CurrentCost" relationKey="false" hidden="false" />
+		<field name="tblGoodsUnit.SecUnit" parentName="@TABLENAME.SecUnit" relationKey="false" hidden="false"/>
+		<field name="SecUnit.UnitName" display="tblGoodsUnit.SecUnit" parentName="@TABLENAME.tblSecUnit_UnitName" relationKey="false" hidden="false"/>
+		<field name="tblGoodsUnit.ConversionRate" parentName="@TABLENAME.ConversionRate"  relationKey="false" hidden="false"/>
+	 </saveFields>
+</select>
+	
+<!--销售报价弹出接收人弹出框-->
+<select name = "SelectQuoteMan">
+	<table>CRMClientInfoDet</table>
+	<relation></relation>
+	<condition>CRMClientInfoDet.f_ref='@ValueofDB:ClientId'</condition>
+	<classCode></classCode>
+	<displayFields>
+	<field name="CRMClientInfoDet.UserName"  width="80" searchType="match" keySearch="true" parentDisplay="true" />
+	<field name="CRMClientInfoDet.Role"  width="80" searchType="equal" keySearch="true" parentDisplay="true" />
+	</displayFields>
+	<saveFields>
+	<field name="CRMClientInfoDet.UserName" parentName="@TABLENAME.QuoteMan"  relationKey="true" hidden="false"/>
+	<field name="CRMClientInfoDet.Role" parentName="@TABLENAME.QuoteManjob" hidden="false"/>
+	</saveFields>
+</select>
+
+<!-- 目标客户-->
+<select name="ReportSelectCMAimClient">
+	<table>tblCMAimClient</table>
+	<relation></relation>
+	<classCode></classCode>
+	<condition>(tblCMAimClient.createBy in ('@Sess:UserId') or '@Sess:UserId'='1')</condition>
+	<displayFields>
+		<field name="tblCMAimClient.CompanyNo" width="150" searchType="match" parentDisplay="false" />
+		<field name="tblCMAimClient.CompanyName" width="150" searchType="match" parentDisplay="true" />
+	</displayFields>
+	<saveFields>
+	</saveFields>
+</select>
+
+	<!-- 意向客户 -->
+<select name="ReportSelectCMWillClient">
+	<table>tblCMWillClient</table>
+	<relation></relation>
+	<classCode></classCode>
+	<condition></condition>
+	<displayFields>
+		<field name="tblCMWillClient.CompanyNo" width="150" searchType="match" parentDisplay="false" />
+	<field name="tblCMWillClient.CompanyName" width="150" searchType="match" parentDisplay="true" />
+	</displayFields>
+	<saveFields>
+	</saveFields>
+</select>
+<!-- 成交客户 -->
+<select name="ReportSelectCMCompleteClient">
+	<table>tblCMCompleteClient</table>
+	<relation></relation>
+	<classCode></classCode>
+	<condition></condition>
+	<displayFields>
+		<field name="tblCMCompleteClient.CompanyNo" width="150" searchType="match" parentDisplay="false" />
+		<field name="tblCMCompleteClient.CompanyName" width="150" searchType="match" parentDisplay="true" />
+	</displayFields>
+	<saveFields>
+	</saveFields>
+</select>
+<!-- 放弃客户 -->
+<select name="ReportSelectCMAbandonClient">
+	<table>tblCMAbandonClient</table>
+	<relation></relation>
+	<classCode></classCode>
+	<condition></condition>
+	<displayFields>
+		<field name="tblCMAbandonClient.CompanyNo" width="150" searchType="match" parentDisplay="false" />
+		<field name="tblCMAbandonClient.CompanyName" width="150" searchType="match" parentDisplay="true" />
+	</displayFields>
+	<saveFields>
+	</saveFields>
+</select>
+<!--客户资料 -->
+<select name="ReportSelectCRMCompanyAll">
+	<table>ViewCRMCompanyAll</table>
+	<relation></relation>
+	<classCode></classCode>
+	<condition></condition>
+	<displayFields>
+	<field name="ViewCRMCompanyAll.CompanyCategory" width="150" searchType="equal" parentDisplay="false" />
+		<field name="ViewCRMCompanyAll.CompanyNo" width="150" searchType="match" parentDisplay="false" />
+		<field name="ViewCRMCompanyAll.CompanyName" width="150" searchType="match" parentDisplay="true" />
+	</displayFields>
+	<saveFields>
+	</saveFields>
+</select>
+<!--省份城市-->	
+  <select name = "Companyplace">
+	 <table>CRMHomeplace</table>
+	 <classCode>CRMHomeplace.classCode</classCode>
+	 <displayFields>
+	 <field name="CRMHomeplace.Province"  width="50" searchType="match" parentDisplay="true" />
+		<field name="CRMHomeplace.City"  width="80"  searchType="match" parentDisplay="true" />
+	 </displayFields>
+	 <saveFields>
+	 </saveFields>
+		</select>
+<!--省份城市-->	
+  <select name = "CompanyplaceCity">
+	 <table>CRMHomeplace</table>
+	 <classCode>CRMHomeplace.classCode</classCode>
+	 <displayFields>
+	 <field name="CRMHomeplace.Province"  width="50" searchType="match" parentDisplay="false" />
+		<field name="CRMHomeplace.City"  width="80"  searchType="match" parentDisplay="true" />
+	 </displayFields>
+	 <saveFields>
+	 </saveFields>
+		</select>
+		
+	<!--短信发送选择联系人-->
+	<select name = "SelectSMSEmployee" type="checkBox">
+		<table>tblEmployee,tblDepartment</table> 
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation> 
+		<condition>tblEmployee.openFlag=1</condition>
+		<displayFields>
+			 <field name="tblEmployee.EmpNumber" width="80" searchType="match" parentDisplay="false" keySearch="true" /> 
+			 <field name="tblEmployee.EmpFullName" display="@ValueofDB.EmployeeCode" width="100" searchType="match" parentDisplay="true" marker="true" keySearch="true" /> 
+			 <field name="tblDepartment.DeptFullName" width="100" searchType="match" parentDisplay="false" /> 
+			 <field name="tblEmployee.Mobile" width="120" searchType="match" parentDisplay="false" /> 
+		  </displayFields>
+		<saveFields>
+			  <field name="tblEmployee.id" parentName="@ValueofDB.EmployeeCode" relationKey="true" hidden="true" /> 
+		 </saveFields>
+	</select>
+	<!--CRM中短信提醒勿删-->
+	<select name = "selectCRMCompany" type="checkBox" >
+		<table>ViewCRMCompanyAll</table>
+		<relation></relation>   
+		<displayFields>
+		<field name="ViewCRMCompanyAll.CompanyCategory" width="80" searchType="equal" parentDisplay="false"/>
+		<field name="ViewCRMCompanyAll.CompanyName"   width="180" searchType="match" parentDisplay="true" />
+		<field name="ViewCRMCompanyAll.UserName"  width="100" searchType="match" parentDisplay="true" marker="true"/>
+		<field name="ViewCRMCompanyAll.Mobile"  width="140" searchType="match" parentDisplay="false"  />
+		</displayFields>
+		<saveFields>
+		<field name="ViewCRMCompanyAll.id" parentName="ViewCRMCompanyAll.id" relationKey="true" hidden="false"/>
+		</saveFields>
+	</select>
+	
+	<!--通用型选择部门弹出窗口-->	
+	<select name = "SelectDepartmentMes" type="checkBox">
+		<table>tblDepartment</table>
+		<relation></relation>
+		<classCode>tblDepartment.classCode</classCode>
+		<condition></condition>
+		<changeCond>(tblDepartment.statusid!='-1')</changeCond>
+		<saveParentFlag>true</saveParentFlag>
+		<displayFields>
+		<field name="tblDepartment.DeptCode" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" display="@TABLENAME.DepartmentCode" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblDepartment.classCode" parentName="@TABLENAME.DepartmentCode" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	<!--布匹皮革销售报价弹出框
+	<select name = "CRMsalesQuotWithPriceStockBPPG" type="checkBox" >
+		<table>ViewStockDet,tblGoods,tblUnit,ViewCustomerPrice</table>
+		<relation>on ViewStockDet.GoodsCode=tblGoods.classCode on tblUnit.id = tblGoods.BaseUnit on ViewStockDet.GoodsCode=ViewCustomerPrice.GoodsCode and ViewCustomerPrice.CompanyCode='@ValueofDB:CompanyCode' and ViewCustomerPrice.companycode=
+(case tblGoods.isCatalog when '1' then '' else (select top 1 companycode from ViewCustomerPrice order by price desc) end)</relation>
+		<classCode></classCode>
+		<condition>(ViewStockDet.StockCode='@ValueofDB:StockCode' and  ViewStockDet.itemNo=(select Max(itemNo) from tblStockDet a where a.GoodsCode=ViewStockDet.GoodsCode and a.StockCode=ViewStockDet.StockCode and a.Design=ViewStockDet.Design and a.ColorBit=ViewStockDet.ColorBit and a.color=ViewStockDet.color and a.BatchNo=ViewStockDet.BatchNo))</condition>
+		<changeCond></changeCond>
+		<displayFields>
+			<field name="ViewStockDet.GoodsFullName"  display="@TABLENAME.GoodsCode" width="100" searchType="match" parentDisplay="true" />
+		    <field name="tblGoods.GoodsNumber" width="100" searchType="match" parentDisplay="true" />
+		     <field name="tblGoods.GoodsSpec" width="100" searchType="match" parentDisplay="true" />
+		      <field name="tblGoods.Size_Prop" width="100" searchType="match" parentDisplay="true" />
+		       <field name="tblGoods.Spec_Prop" width="100" searchType="match" parentDisplay="true" />
+			<field name="tblUnit.UnitName" width="40" searchType="no" parentDisplay="true" />
+			<field name="ViewStockDet.colorDis" width="50" searchType="match" parentDisplay="false" />
+			<field name="ViewStockDet.BatchNo" width="50" searchType="match" parentDisplay="true" />
+			<field name="ViewStockDet.Design" width="50" searchType="match" parentDisplay="false" />
+			<field name="ViewStockDet.ColorBitDis" width="50" searchType="match" parentDisplay="false" />
+			<field name="ViewStockDet.TotalQty"  width="60" searchType="no" parentDisplay="false" />
+			<field name="ViewStockDet.LastPrice"  width="50" searchType="no" parentDisplay="true" />
+			<field name="ViewCustomerPrice.Price" width="60" parentDisplay="false" />
+			</displayFields>
+		<saveFields>
+			<field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true"/>
+			<field name="tblGoods.BaseUnit" parentName="@TABLENAME.Unit" relationKey="false" hidden="true"/>
+			<field name="ViewCustomerPrice.Price" parentName="@TABLENAME.Price" relationKey="false" hidden="false" />
+			<field name="ViewStockDet.LastPrice" parentName="@TABLENAME.CurrentCost" relationKey="false" hidden="false"/>
+		</saveFields>
+	</select>-->
+	<select name = "CRMsalesQuotWithPriceStockBPPG" type="checkBox" >
+		<table>tblGoods</table>
+		<forwardModel>tblGoods</forwardModel>
+		<relation></relation>
+		<defineSQL>select 	
+		tblGoods.classCode f1,
+		tblGoods.BaseUnit f2,
+		tblGoods.ProSalesPrice f3,
+		<!--(case isCatalog when 1 then -99999999 else (select case isnull(sum(lastQty),0) when 0 then 0 else cast(isnull(sum(lastAmount),0)/isnull(sum(lastQty),0) as numeric(18,4)) end  from tblStocks a  where a.GoodsCode=tblGoods.classCode and a.stockCode='@ValueofDB:StockCode') end) f4,-->
+		tblGoodsUnit.ConversionRate f5,
+		tblGoodsUnit.SecUnit f6,
+		SecUnit.UnitName f7,
+		tblGoods.GoodsNumber f8,
+		tblGoods.GoodsFullName f9,
+		tblGoods.GoodsSpec f10,
+		tblGoods.Size_Prop f11,
+		tblGoods.Spec_Prop f12,
+		tblGoods.GoodsFullNamePYM f13,
+		tblGoods.BarCode f14,
+		tblunit.UnitName f15,
+		(case isCatalog when 1 then -99999999 else (select isnull(sum(TotalQty),0)  from tblStocks a  where a.GoodsCode=tblGoods.classCode and a.stockCode='@ValueofDB:StockCode') end) f16
+	 from tblGoods 
+		left join tblUnit on tblGoods.BaseUnit=tblUnit.id
+		left join tblGoodsUnit with(index(IX_tblGoodsUnit_refdefault)) on tblGoodsUnit.f_ref=tblGoods.id and tblGoodsUnit.DefaultAssit=1
+		left join tblUnit SecUnit on SecUnit.id=tblGoodsUnit.SecUnit
+	</defineSQL>	
+		<classCode>tblGoods.classCode</classCode>
+		<condition>tblGoods.workFlowNodeName='finish'</condition>
+		<changeCond>tblGoods.statusid!='-1'</changeCond>
+		<orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+		<displayFields>
+			<field name="tblGoods.GoodsNumber"  width="80" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblGoods.GoodsFullName"  display="@TABLENAME.GoodsCode" width="150" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblGoods.GoodsSpec"  width="150" searchType="match" keySearch="true"  parentDisplay="true"/>
+			<field name="tblGoods.Size_Prop" width="100" parentDisplay="true" keySearch="true" />
+			<field name="tblGoods.Spec_Prop" width="100" parentDisplay="true" keySearch="true" />
+			<field name="tblGoods.GoodsFullNamePYM"  width="150" searchType="match" parentDisplay="true" hiddenInput="true" keySearch="true"/>
+			<field name="tblGoods.BarCode" width="100" parentDisplay="false" hiddenInput="true"  keySearch="true" />
+			<field name="tblUnit.UnitName" width="40"  searchType="match" parentDisplay="true" />
+			<field name="(case isCatalog when 1 then -99999999 else (select isnull(sum(TotalQty),0)  from tblStocks a  where a.GoodsCode=tblGoods.classCode and a.stockCode='@ValueofDB:StockCode') end)" asName="tblStocks.TotalQty" display="tblStocks.TotalQty" width="60" parentDisplay="false" />
+			<field name="tblGoods.ProSalesPrice" display="@TABLENAME.Price" width="60" parentDisplay="true"/>
+		</displayFields>
+		<saveFields>
+		  	<field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true"/>
+		 	<field name="tblGoods.BaseUnit" parentName="@TABLENAME.Unit" relationKey="false" hidden="false"/>
+		 	<field name="tblGoods.ProSalesPrice"  parentName="@TABLENAME.Price" relationKey="false" hidden="false" />
+			<!--<field name="(case isCatalog when 1 then -99999999 else (select case isnull(sum(lastQty),0) when 0 then 0 else cast(isnull(sum(lastAmount),0)/isnull(sum(lastQty),0) as numeric(18,4)) end  from tblStocks a  where a.GoodsCode=tblGoods.classCode and a.stockCode='@ValueofDB:StockCode') end)" parentName="@TABLENAME.CurrentCost" display="tblSalesOutStockDet.CurrentCost" relationKey="false" hidden="true"/>-->
+			<field name="tblGoodsUnit.ConversionRate" parentName="@TABLENAME.ConversionRate"  relationKey="false" hidden="false"/>
+			<field name="tblGoodsUnit.SecUnit" parentName="@TABLENAME.SecUnit" relationKey="false" hidden="false"/>
+		 	<field name="SecUnit.UnitName" display="tblGoodsUnit.SecUnit" parentName="@TABLENAME.tblSecUnit_UnitName" relationKey="false" hidden="false"/>
+		 </saveFields>
+		</select>
+			<!--销售合同对方代表弹出框-->
+<select name = "SelectconcractMan">
+	<table>ViewCRMCompanyAllUser</table>
+	<relation></relation>
+	<condition>ViewCRMCompanyAllUser.f_ref='@ValueofDB:f_brother'</condition>
+	<classCode></classCode>
+	<displayFields>
+	<field name="ViewCRMCompanyAllUser.UserName"  width="80" searchType="match" keySearch="true" parentDisplay="true" />
+	<field name="ViewCRMCompanyAllUser.Role"  width="80" searchType="equal" keySearch="true" parentDisplay="true" />
+	</displayFields>
+	<saveFields>
+	<field name="ViewCRMCompanyAllUser.UserName" parentName="@TABLENAME.OtherDeputy"  relationKey="true" hidden="false"/>
+	<field name="ViewCRMCompanyAllUser.Role" parentName="@TABLENAME.DeputyPosition" hidden="false"/>
+	</saveFields>
+</select>
+<!-- 选择区域 -->
+<select name="SelectDistrict">
+	<table>ViewDistrict</table>
+	<saveParentFlag>true</saveParentFlag><!--选择父类-->
+	<condition></condition>
+	<classCode>ViewDistrict.classCode</classCode>
+	<orderBy>ViewDistrict.classCode</orderBy>
+	<displayFields>
+		<field name="ViewDistrict.DistrictPYM" width="80" searchType="match" parentDisplay="false" hiddenInput="true" keySearch="true" />
+		<field name="ViewDistrict.Country" width="40" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="ViewDistrict.Province" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="ViewDistrict.City" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="ViewDistrict.Area" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="ViewDistrict.Street" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="ViewDistrict.Village" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+	</displayFields>
+	<saveFields>
+		<field name="ViewDistrict.classCode" parentName="@TABLENAME.District" relationKey="true" hidden="true" />
+	</saveFields>
+</select>
+
+<!-- 选择区域 客户资料 -->
+<select name="SelectDistrictForClient">
+	<table>ViewDistrict,CRMBusinessDistrictDet</table>
+	<saveParentFlag>true</saveParentFlag><!--选择父类-->
+	<relation>ViewDistrict.classCode=CRMBusinessDistrictDet.District</relation>
+	<condition>CRMBusinessDistrictDet.f_ref='@ValueofDB:BusinessDistrict'</condition>
+	<orderBy>ViewDistrict.classCode</orderBy>
+	<classCode>ViewDistrict.classCode</classCode>
+	<displayFields>
+		<field name="ViewDistrict.DistrictPYM" width="80" searchType="match" parentDisplay="false" hiddenInput="true" keySearch="true" />
+		<field name="ViewDistrict.Country" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="ViewDistrict.Province" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="ViewDistrict.City" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="ViewDistrict.Area" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="ViewDistrict.Street" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="ViewDistrict.Village" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+		<field name="ViewDistrict.DistrictFullName" parentName="@TABLENAME.District" relationKey="true" hidden="false" />
+		<field name="ViewDistrict.DistrictFullName" parentName="@TABLENAME.Address" hidden="false" />
+	</saveFields>
+</select>
+
+<!-- 选择业务区域范围 -->
+<select name="SelectCRMDistrict">
+	<table>ViewDistrict</table>
+	<saveParentFlag>true</saveParentFlag><!--选择父类-->
+	<condition></condition>
+	<classCode>ViewDistrict.classCode</classCode>
+	<orderBy>ViewDistrict.classCode</orderBy>
+	<displayFields>
+		<field name="ViewDistrict.DistrictPYM" width="80" searchType="match" parentDisplay="false" hiddenInput="true" keySearch="true" />
+		<field name="ViewDistrict.Country" width="40" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="ViewDistrict.Province" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="ViewDistrict.City" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="ViewDistrict.Area" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="ViewDistrict.Street" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="ViewDistrict.Village" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+	</displayFields>
+	<saveFields>
+		<field name="ViewDistrict.classCode" parentName="@TABLENAME.District" relationKey="true" hidden="true" />
+	</saveFields>
+</select>
+
+<!-- 业务区域 弹出框 -->
+<select name="SelectCRMBusinessDistrict">
+	<table>CRMBusinessDistrict</table>
+	<forwardModel>CRMBusinessDistrict</forwardModel>
+	<orderBy>CRMBusinessDistrict.BusinessDistrict</orderBy>
+	<displayFields>
+		<field name="CRMBusinessDistrict.BusinessDistrict" display="@TABLENAME.BusinessDistrict" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="CRMBusinessDistrict.Remark" width="150" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMBusinessDistrict.id" parentName="@TABLENAME.BusinessDistrict" relationKey="true" hidden="true" />
+	</saveFields>
+</select>
+
+<!-- 业务区域 弹出框 多选 -->
+<select name="MultiSelectBusinessDistrict" type="checkBox">
+	<table>CRMBusinessDistrict</table>
+	<orderBy>CRMBusinessDistrict.BusinessDistrict</orderBy>
+	<displayFields>
+		<field name="CRMBusinessDistrict.BusinessDistrict" display="@TABLENAME.BusinessDistrict" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="CRMBusinessDistrict.Remark" width="150" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMBusinessDistrict.id" parentName="@TABLENAME.BusinessDistrict" relationKey="true" hidden="true" />
+	</saveFields>
+</select>
+
+<!-- 选择区域 可多选 -->
+<select name="MultiSelectDistrict" type="checkBox">
+	<table>ViewDistrict</table>
+	<saveParentFlag>true</saveParentFlag><!--选择父类-->
+	<condition></condition>
+	<classCode>ViewDistrict.classCode</classCode>
+	<orderBy>ViewDistrict.classCode</orderBy>
+	<displayFields>
+		<field name="ViewDistrict.DistrictPYM" width="80" searchType="match" parentDisplay="false" hiddenInput="true" keySearch="true" />
+		<field name="ViewDistrict.Country" width="100" searchType="no" parentDisplay="true" keySearch="false" />
+		<field name="ViewDistrict.Province" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="ViewDistrict.City" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="ViewDistrict.Area" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="ViewDistrict.Street" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="ViewDistrict.Village" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+	</displayFields>
+	<saveFields>
+		<field name="ViewDistrict.classCode" parentName="@TABLENAME.District" relationKey="true" hidden="true" />
+	</saveFields>
+</select>
+
+<!-- 报表查询条件 选择区域 -->
+<select name="ReportSelectDistrict">
+	<table>CRMBusinessDistrict</table>
+	<saveParentFlag>true</saveParentFlag><!--选择父类-->
+	<orderBy>CRMBusinessDistrict.BusinessDistrict</orderBy>
+	<displayFields>
+		<field name="CRMBusinessDistrict.BusinessDistrict" display="@TABLENAME.BusinessDistrict" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="CRMBusinessDistrict.Remark" width="150" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+	</saveFields>
+</select>
+
+<!-- 选择拜访对象 -->
+<select name="SelectVisitPeople">
+	<table>CRMClientInfoDet</table>
+	<condition>CRMClientInfoDet.f_ref='@ValueofDB:ClientId'</condition>
+	<orderBy>CRMClientInfoDet.UserName</orderBy>
+	<displayFields>
+		<field name="CRMClientInfoDet.UserName" asName="CRMSaleFollowUp.VisitPeople" display="CRMSaleFollowUp.VisitPeople" width="80" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfoDet.Gender" width="60" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfoDet.Mobile" width="100" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfoDet.id" parentName="@TABLENAME.VisitPeople" relationKey="true" hidden="true" />
+	</saveFields>
+</select>
+
+<!--客户列表条件设置-->
+<select name = "SelectCustomerField">
+	<table>tblDBFieldInfo,tblDBTableInfo</table>
+	<relation>tblDBFieldInfo.tableId=tblDBTableInfo.id</relation>
+	<condition>(tblDBTableInfo.tableName='CRMClientInfo' and (tblDBFieldInfo.fieldName='createBy' or (tblDBFieldInfo.inputType!=3 and tblDBFieldInfo.inputType!=100 and tblDBFieldInfo.fieldName!='id')))</condition> 
+	<displayFields>
+		<field name="tblDBFieldInfo.languageId" display="@TABLENAME.field" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblDBFieldInfo.fieldName"  width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+		<field name="tblDBFieldInfo.fieldName" parentName="@TABLENAME.field" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+<!--联系人纪念日选择联系人-->
+<select name="SelectMeUser">
+	<table>CRMClientInfoDet</table>
+	<relation></relation>
+	<condition>(CRMClientInfoDet.f_ref='@ValueofDB:ClientId')</condition>
+	<classCode></classCode>
+	<displayFields>
+		<field name="CRMClientInfoDet.UserName" width="80" display="@TABLENAME.mainUser" searchType="match" keySearch="true" parentDisplay="true" />
+		<field name="CRMClientInfoDet.Role"  width="80" searchType="equal" keySearch="true" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfoDet.ContactNo" parentName="@TABLENAME.mainUser" relationKey="true" hidden="true"/>
+		<!--<field name="CRMClientInfoDet.ContactNo" parentName="@TABLENAME.ContactNo" relationKey="false" hidden="true"/>-->
+	</saveFields>
+</select>
+
+<!--联系人纪念日选择客户-->
+<select name = "SelectMeClient">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation> >  
+	<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" display="@TABLENAME.CompanyCode" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.OtherName" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Introduce" width="140" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Phone" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Fax" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Address" width="190" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.CompanyCode" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+<!--日工作计划 添加关联客户-->
+<select name = "SelectMeClient2" type="checkBox">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation> >  
+	<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+		<displayFields>
+		<field name="CRMClientInfo.ClientName" width="200" searchType="match" parentDisplay="true"/>
+		<field name="CRMClientInfo.OtherName"   width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Keywords"  width="100" searchType="match" parentDisplay="false"/>
+		<field name="CRMClientInfo.Introduce"  width="140" searchType="match" parentDisplay="false"  />
+		</displayFields>
+		<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.CompanyCode" relationKey="true" hidden="true"/>
+		</saveFields>
+</select>
+	<!--客户接待选择接待人-->
+<select name = "SelectDeskDepartment">
+		<table>tblEmployee,tblDepartment</table>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+		<condition>(tblEmployee.SCompanyID='@Sess:SCompanyID') and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+		<changeCond>(tblEmployee.statusid!='-1')</changeCond>
+		<displayFields>
+			<field name="tblEmployee.EmpNumber" asName="tblEmployee.EmpNumber1" width="70" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblEmployee.EmpFullName" asName="tblEmployee.EmpFullName1" popSelect="PoPupSelectsuoEmployee" display="@TABLENAME.DeskClerk" width="70" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblEmployee.EmpFullNamePYM" asName="tblEmployee.EmpFullNamePYM1" hiddenInput="true" width="70" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblEmployee.TitleID" asName="tblEmployee.TitleID1" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false" />
+			<field name="tblDepartment.DeptFullName" asName="tblDepartment.DeptFullName1" width="70" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false" keySearch="true"/>
+			<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblEmployee.id" parentName="@TABLENAME.DeskClerk" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	<!--客户接待评价选择接待单-->
+	<select name = "SelectClientReceive">
+		<table>tblDeskClerk,tblDepartment,tblEmployee,CRMClientInfo,CRMClientInfoEmp</table>
+		<relation>on tblDeskClerk.DepartmentCode=tblDepartment.classCode on tblDeskClerk.EmployeeID=tblEmployee.id on tblDeskClerk.CompanyCode=CRMClientInfo.id on  CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation>
+		<condition>tblDeskClerk.workFlowNodeName='finish' and CRMClientInfo.statusid!=-1 and (exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+		<displayFields>
+	<field name="tblDeskClerk.BillNo" display="@TABLENAME.DeskClerkNo" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblDepartment.DeptFullName"  display="@TABLENAME.DepartmentCode" width="70" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblEmployee.EmpFullName" display="@TABLENAME.EmployeeID" width="70" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="CRMClientInfo.ClientName" display="@TABLENAME.CompanyCode" width="70"  searchType="match" parentDisplay="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblDeskClerk.BillNo" parentName="@TABLENAME.DeskClerkNo" relationKey="true" hidden="false"/>
+			<field name="tblDeskClerk.id" parentName="@TABLENAME.DeskID" hidden="true"/>
+			<field name="tblDepartment.classCode" parentName="@TABLENAME.DepartmentCode" hidden="true"/>
+			<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" hidden="true"/>
+			<field name="CRMClientInfo.id" parentName="@TABLENAME.CompanyCode" hidden="true"/>
+			<field name="tblDeskClerk.DeskClerk" parentName="@TABLENAME.DeskClerk" hidden="true"/>
+		</saveFields>
+	</select>
+	
+<!-- 选择客户合同 -->
+<select name="SelectCRMContract">
+	<table>CRMSaleContract,CRMClientInfo</table>
+	<relation>CRMClientInfo.id=CRMSaleContract.ClientId</relation>
+	<condition>CRMSaleContract.workFlowNodeName!='draft' and CRMSaleContract.f_brother='@ValueofDB:ClientId' and CRMSaleContract.f_brother not in (select id from CRMClientInfo where statusId =-1)</condition>
+	<orderBy>CRMSaleContract.ContractNo</orderBy>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" asName="CRMClientInfo.ClientName2" width="180" searchType="match" parentDisplay="true" />
+		<field name="CRMSaleContract.ContractNo" width="150" searchType="match" parentDisplay="true" />
+		<field name="CRMSaleContract.SignUpDate" width="100" searchType="scope" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMSaleContract.ContractNo" parentName="@TABLENAME.ContractNo" relationKey="true" hidden="false" />
+		<field name="CRMSaleContract.id" parentName="@TABLENAME.RefBillID" relationKey="false" hidden="true" />
+	</saveFields>
+</select>
+
+<!--客户联系人弹出窗-->
+	<!--客户合同甲方签约人弹出窗-->
+	<select name="CRMSelectClientContactMan">
+		<table>CRMClientInfoDet,CRMClientInfo</table>
+		<!--<forwardModel>tblCompany</forwardModel>-->
+		<relation>tblCompanyEmployeeDet.f_ref=tblCompany.id</relation>
+		<relation>CRMClientInfoDet.f_ref=CRMClientInfo.id</relation>
+		<condition>CRMClientInfoDet.f_ref='@ValueofDB:ClientId'</condition>
+		<displayFields>
+			<field name="CRMClientInfoDet.UserName" display="@TABLENAME.DeputyPosition"  width="100" searchType="match" parentDisplay="true" />
+			<field name="CRMClientInfoDet.Role" width="80" searchType="match" parentDisplay="false" />
+			<field name="CRMClientInfoDet.Gender" width="60" searchType="match" parentDisplay="false" />
+			<field name="CRMClientInfoDet.Mobile" width="110" searchType="match" parentDisplay="false" />
+			<field name="CRMClientInfoDet.Telephone" width="110" searchType="match" parentDisplay="false" />
+			<field name="CRMClientInfoDet.QQ" width="100" searchType="match" parentDisplay="false" />
+			<field name="CRMClientInfoDet.ClientEmail" width="160" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+			<field name="CRMClientInfoDet.ContactNo" parentName="@TABLENAME.DeputyPosition" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+
+<!-- 选择回访单关联单据 -->
+<select name="SelectRevisitBill">
+	<table>ViewRevisit,CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>ViewRevisit.Clientid=CRMClientInfo.id and CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation>  
+	<condition>ViewRevisit.BillType='@ValueofDB:RefBillType' and ViewRevisit.Clientid='@ValueofDB:ClientId' and (exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<orderBy>ViewRevisit.BillDate</orderBy>
+	<displayFields>
+		<field name="ViewRevisit.BillDate" width="90" searchType="scope" parentDisplay="false" />
+		<field name="ViewRevisit.BillNo" display="@TABLENAME.RefBillID" width="120" searchType="match" parentDisplay="true" />
+		<field name="ViewRevisit.Department" width="80" searchType="match" parentDisplay="false" />
+		<field name="ViewRevisit.Employee" width="80" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="ViewRevisit.BillID" parentName="@TABLENAME.RefBillID" relationKey="true" hidden="true" />
+	</saveFields>
+</select>
+
+<!--维修记录引用合同 (使用视图)-->
+<select name="tblMaintainNote_quote_CRMSaleContract_FXD">
+	<table>CRMContractInfo</table>
+	<relation></relation>
+	<condition>CRMContractInfo.Status != 1 and CRMContractInfo.statusId != -1</condition>
+	<hasChild>tblMaintainNoteDet_quote_CRMSaleContractDet_FXD</hasChild>
+	<orderBy>CRMContractInfo.BillDate,CRMContractInfo.ContractNo</orderBy>
+	<displayFields>
+		<field name="CRMContractInfo.ClientName"  width="90" searchType="match" parentDisplay="false" />
+		<field name="CRMContractInfo.BillDate" width="90" searchType="scope" parentDisplay="false" />
+		<field name="CRMContractInfo.ContractNo" width="140" searchType="match"  parentDisplay="false"/>
+		<field name="CRMContractInfo.DeptFullName" width="80" searchType="match"  parentDisplay="false" />
+		<field name="CRMContractInfo.EmpFullName"  width="80" searchType="match"   parentDisplay="false"/>
+		<field name="CRMContractInfo.RepairTerm" hiddenInput="true" width="80" searchType="match" parentDisplay="false" />	
+		<field name="CRMContractInfo.DeliveryDate" hiddenInput="true" width="80" searchType="match" parentDisplay="false" />	
+		<field name="CRMContractInfo.DeputyPosition" hiddenInput="true" width="80" searchType="match"  parentDisplay="false" />						
+		<field name="CRMContractInfo.Address" hiddenInput="true" width="80" searchType="match"   parentDisplay="false" />		
+	</displayFields>
+	<saveFields>
+		<field name="CRMContractInfo.id" parentName="tblMaintainNote.RefBillID" relationKey="true" hidden="false"/>
+	</saveFields>
+</select>
+
+<!-- 维修记录明细引用合同明细(使用视图) -->
+<select name = "tblMaintainNoteDet_quote_CRMSaleContractDet_FXD">
+	<table>CRMContractInfoDet</table>		
+	<relation></relation>  
+	<condition></condition>
+	<displayFields>
+		<field name="CRMContractInfoDet.GoodsNumber"  width="80" searchType="match" parentDisplay="false" keySearch="true"/>
+		<field name="CRMContractInfoDet.GoodsFullName" width="150" searchType="match" parentDisplay="false" keySearch="true"/>
+		<field name="CRMContractInfoDet.GoodsSpec" width="150" searchType="match" parentDisplay="false" keySearch="true"/>
+		<field name="CRMContractInfoDet.MachineNo" hiddenInput="true" width="150" searchType="match" parentDisplay="false" keySearch="true"/>	
+		<field name="CRMContractInfoDet.MachineType" hiddenInput="true" width="150" searchType="match" parentDisplay="false" keySearch="true"/>						
+		<field name="CRMContractInfoDet.Qty" width="100" searchType="no" parentDisplay="false"/>
+	</displayFields>
+	<saveFields>
+		<field name="CRMContractInfoDet.id" relationKey="true" parentName="tblMaintainNoteDet.SourceID" hidden="false"/>		
+	</saveFields>
+</select>
+
+
+<!--维修记录引用合同 -->
+<select name="tblMaintainNote_quote_CRMSaleContract">
+	<table>CRMSaleContract,tblEmployee,tblDepartment,CRMClientInfo,CRMClientInfoEmp,CRMClientInfoDet</table>
+	<relation>on tblEmployee.id=CRMSaleContract.EmployeeID on tblDepartment.classCode=tblEmployee.DepartmentCode on CRMSaleContract.f_brother=CRMClientInfo.id on CRMClientInfo.id=CRMClientInfoEmp.f_ref on (CRMClientInfo.id=CRMClientInfoDet.f_ref and CRMClientInfoDet.id=(select top 1 a.id from CRMClientInfoDet a where a.f_ref=CRMClientInfo.id))</relation>
+	<condition>CRMSaleContract.workFlowNodeName='finish' and CRMSaleContract.statusid!=-1 and CRMSaleContract.f_brother='@ValueofDB:f_brother' and (exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1') and CRMClientInfo.statusId != -1</condition>
+	<hasChild>tblMaintainNoteDet_quote_CRMSaleContractDet</hasChild>
+	<orderBy>CRMSaleContract.BillDate,CRMSaleContract.ContractNo</orderBy>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" width="150" searchType="match" parentDisplay="false" />
+		<field name="CRMSaleContract.BillDate" width="60" searchType="scope" parentDisplay="false" />
+		<field name="CRMSaleContract.ContractNo" width="130" searchType="match"  parentDisplay="false"/>
+		<field name="tblDepartment.DeptFullName" width="80" searchType="match"  parentDisplay="false" />
+		<field name="tblEmployee.EmpFullName"  width="80" searchType="match"   parentDisplay="false"/>
+		<field name="CRMSaleContract.RepairTerm" hiddenInput="true" width="70" searchType="match" parentDisplay="false" />	
+		<field name="CRMSaleContract.DeliveryDate" hiddenInput="true" width="70" searchType="match" parentDisplay="false" />	
+		<field name="CRMClientInfoDet.UserName" hiddenInput="true" width="70" searchType="match"  parentDisplay="false" />						
+		<field name="CRMClientInfo.Address" hiddenInput="true" width="70" searchType="match"   parentDisplay="false" />		
+	</displayFields>
+	<saveFields>
+		<field name="CRMSaleContract.id" parentName="tblMaintainNote.RefBillID" relationKey="true" hidden="false"/>
+	</saveFields>
+</select>
+
+<!-- 维修记录明细引用合同明细 -->
+<select name = "tblMaintainNoteDet_quote_CRMSaleContractDet">
+	<table>CRMSaleContractDet,tblGoods</table>		
+	<relation>CRMSaleContractDet.GoodsCode=tblGoods.classCode</relation>  
+	<condition></condition>
+	<displayFields>
+		<field name="tblGoods.GoodsNumber"  width="80" searchType="match" parentDisplay="false" keySearch="true"/>
+		<field name="tblGoods.GoodsFullName" width="150" searchType="match" parentDisplay="false" keySearch="true"/>
+		<field name="tblGoods.GoodsSpec" width="150" searchType="match" parentDisplay="false" keySearch="true"/>
+		<field name="tblGoods.GoodsFullNamePYM" width="150" searchType="match" parentDisplay="false" keySearch="true"/>	
+		<field name="CRMSaleContractDet.MachineNo" hiddenInput="true" width="150" searchType="match" parentDisplay="false" keySearch="true"/>	
+		<field name="CRMSaleContractDet.MachineType" hiddenInput="true" width="150" searchType="match" parentDisplay="false" keySearch="true"/>						
+		<field name="CRMSaleContractDet.Qty" width="100" searchType="no" parentDisplay="false"/>
+	</displayFields>
+	<saveFields>
+		<field name="CRMSaleContractDet.id" relationKey="true" parentName="tblMaintainNoteDet.SourceID" hidden="false"/>		
+	</saveFields>
+</select>
+
+<!--定期检测引用合同 
+<select name="CRMPeriodicExamine_quote_CRMSaleContract">
+	<table>CRMSaleContract,tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.id=CRMSaleContract.EmployeeID and tblDepartment.classCode=tblEmployee.DepartmentCode</relation>
+	<condition>CRMSaleContract.workFlowNodeName!='draft' and CRMSaleContract.f_brother='@ValueofDB:f_brother'</condition>
+	<hasChild>CRMPeriodicExamineDet_quote_CRMSaleContractDet</hasChild>
+	<orderBy>CRMSaleContract.BillDate,CRMSaleContract.ContractNo</orderBy>
+	<displayFields>
+		<field name="CRMSaleContract.BillDate" width="70" searchType="scope" parentDisplay="false" />
+		<field name="CRMSaleContract.ContractNo"  width="100" searchType="match" parentDisplay="false"/>
+		<field name="tblDepartment.DeptFullName" width="80" searchType="match"  parentDisplay="false" />
+		<field name="tblEmployee.EmpFullName"  width="80" searchType="match"   parentDisplay="false"/>		
+	</displayFields>
+	<saveFields>
+		<field name="CRMSaleContract.id" parentName="CRMPeriodicExamine.RefBillID" relationKey="true" hidden="false"/>
+	</saveFields>
+</select>-->
+
+<!-- 定期检测明细引用合同明细 -->
+<select name = "CRMPeriodicExamineDet_quote_CRMSaleContractDet">
+	<table>CRMSaleContractDet,tblGoods</table>		
+	<relation>CRMSaleContractDet.GoodsCode=tblGoods.classCode</relation>  
+	<condition></condition>
+	<displayFields>
+		<field name="tblGoods.GoodsNumber"  width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblGoods.GoodsFullName"  width="150" searchType="match"  parentDisplay="false" keySearch="true" />
+		<field name="tblGoods.GoodsSpec" width="150" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblGoods.GoodsFullNamePYM"  width="150" hiddenInput="true" searchType="match"  parentDisplay="false" keySearch="true" />
+		<field name="CRMSaleContractDet.Qty" width="100" searchType="no"   parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMSaleContractDet.id" relationKey="true" parentName="CRMPeriodicExamineDet.SourceID" hidden="false"/>		
+	</saveFields>
+</select>
+
+<!-- 所有客户 -->
+<select name="ReportSelectClient">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation> >  
+	<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields> 
+		<field name="CRMClientInfo.ClientNo" width="150" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.ClientName" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.id" width="0" searchType="match" parentDisplay="true" />
+	</displayFields>
+	<saveFields>
+	</saveFields>
+</select>
+
+<!--职员名称和ID -->
+<select name="EmpleeNameAndId" type="checkBox">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>tblEmployee.id in (select employeeId from CrmClientInfoEmp where f_ref='@ValueofDB:ClientId') and tblEmployee.workFlowNodeName='finish'  and tblDepartment.workFlowNodeName='finish'</condition>
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="100"	searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" display="@TABLENAME.EmployeeCode" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.TitleID" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false"/>
+		<field name="tblDepartment.DeptFullName" width="120" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeCode" relationKey="true" hidden="true" />
+	</saveFields>
+</select>
+
+<!--职员名称和ID -->
+<select name="EmpleeNameAndId2">
+	<table>tblEmployee</table>
+	<relation></relation>
+	<condition>(tblEmployee.SCompanyID='@Sess:SCompanyID' and sysName!='') and tblEmployee.workFlowNodeName='finish'</condition>
+	<changeCond>(tblEmployee.statusid!='-1')</changeCond>
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="80" searchType="match" parentDisplay="false" />
+		<field name="tblEmployee.EmpFullName" width="100" searchType="match" parentDisplay="false"/>
+	</displayFields>
+	<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.id" hidden="true" />
+	</saveFields>
+</select>
+
+<!-- CRM 选择职员 任务分派 -->	
+<select name="SelectTaskAssigner">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>(tblEmployee.SCompanyID='@Sess:SCompanyID' and sysName!='') and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+	<changeCond>(tblEmployee.statusid!='-1')</changeCond>
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" display="@TABLENAME.userId" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullNamePYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.TitleID" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullName" width="120" searchType="match" parentDisplay="false" keySearch="true"/>
+		<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.userId" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+<!--选择任务分配的关联客户-->
+<select name="SelectTaskAssignClient">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation> >  
+	<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" display="@TABLENAME.Ref_id" width="200" searchType="match" parentDisplay="true"/>
+		<field name="CRMClientInfo.OtherName"   width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Keywords"  width="100" searchType="match" parentDisplay="false"/>
+		<field name="CRMClientInfo.Introduce"  width="140" searchType="match" parentDisplay="false"  />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.Ref_id" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+<!--业绩录入选择客户-->
+<select name = "SelectScoreClient">
+		<table>CRMClientInfo,CRMClientInfoEmp</table>
+		<relation>CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation>   
+		<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+		<changeCond>CRMClientInfo.statusId=0</changeCond>
+		<displayFields>
+		<field name="CRMClientInfo.ClientName" width="200" searchType="match" parentDisplay="true"/>
+		<field name="CRMClientInfo.Keywords"  width="100" searchType="match" parentDisplay="false"/>
+		<field name="CRMClientInfo.OtherName"   width="100" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.clientId" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	
+<!-- 服务接单 选择客户 -->
+<select name = "SelectCRMClient">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation> 
+	<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" width="200" searchType="match" parentDisplay="true"/>
+		<field name="CRMClientInfo.Keywords"  width="100" searchType="match" parentDisplay="false"/>
+		<field name="CRMClientInfo.OtherName"   width="100" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.ClientId" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+	
+<!-- 报表查询条件 客户弹出框 -->
+<select name="ReportSelectCRMClient">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation> 
+	<condition>CRMClientInfo.Status!=1 and ((exists (select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1'  or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1'))</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientNo"   width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.ClientName" width="200" searchType="match" parentDisplay="true"/>
+		<field name="CRMClientInfo.Keywords"  width="100" searchType="match" parentDisplay="false"/>
+	</displayFields>
+	<saveFields>
+	</saveFields>
+</select>
+
+<!-- 报表查询条件 客户弹出框 -->
+<select name="ReportSelectCRMClient_Repair">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation> 
+	<condition>CRMClientInfo.Status!=1</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientNo"  width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.ClientName" width="200" searchType="match" parentDisplay="true"/>
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false"/>
+	</displayFields>
+	<saveFields>
+	</saveFields>
+</select>
+
+<!-- 报表查询条件 客户弹出框 -->
+<select name="ReportSelectCRMClient_CJ">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation> 
+	<condition>((exists (select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1'  or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')) and CRMClientInfo.id in (select ClientId from tblMaintainNote)</condition>
+	<changeCond>CRMClientInfo.statusId=0 and CRMClientInfo.Status='4'</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientNo" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.ClientName" width="200" searchType="match" parentDisplay="true"/>
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false"/>
+	</displayFields>
+	<saveFields>
+	</saveFields>
+</select>
+
+<!--
+<select name="SelectCRMClient_Brother">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation>   
+	<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" display="@TABLENAME.ClientId" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Status" width="80" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.ClientId" relationKey="true" hidden="true"/>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.f_brother"/>
+	</saveFields>
+</select>
+-->
+
+<select name="SelectCRMClient_Complaints">
+	<table>CRMClientInfo</table>
+	<relation></relation> 
+	<condition></condition> 
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" display="@TABLENAME.ClientId" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Status" width="90" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Phone" width="110" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Fax" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Address" width="190" searchType="match" parentDisplay="false" />
+		<!--<field name="CRMClientInfo.BusinessDistrict" width="150" searchType="match" parentDisplay="false" />-->
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.ClientId" relationKey="true" hidden="true"/>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.f_brother"/>
+		<field name="CRMClientInfo.classCode" parentName="@TABLENAME.CompanyCode" relationKey="false" hidden="true"/>
+	</saveFields>
+</select>
+<select name="SelectCRMClient_Brother">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>on CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation> 
+	<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1</condition> 
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" display="@TABLENAME.ClientId" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Status" width="90" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Phone" width="110" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Fax" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Address" width="190" searchType="match" parentDisplay="false" />
+		<!--<field name="CRMClientInfo.BusinessDistrict" width="150" searchType="match" parentDisplay="false" />-->
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.ClientId" relationKey="true" hidden="true"/>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.f_brother"/>
+		<field name="CRMClientInfo.classCode" parentName="@TABLENAME.CompanyCode" relationKey="false" hidden="true"/>
+	</saveFields>
+</select>
+
+<!-- CRM报表客户查询 -->
+<select name="SelectCRMClient_Report" type="checkBox">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>on CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation> 
+	<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" display="@TABLENAME.ClientId" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Status" width="90" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Phone" width="110" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Fax" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Address" width="190" searchType="match" parentDisplay="false" />
+		<!--<field name="CRMClientInfo.BusinessDistrict" width="150" searchType="match" parentDisplay="false" />-->
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.ClientId" relationKey="true" hidden="true"/>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.f_brother"/>
+		<field name="CRMClientInfo.classCode" parentName="@TABLENAME.CompanyCode" relationKey="false" hidden="true"/>
+	</saveFields>
+</select>
+<select name="SelectCRMClient_Brother1">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>on CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation> 
+	<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" display="@TABLENAME.ClientId" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.District" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Status" width="90" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Phone" width="110" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Fax" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Address" width="190" searchType="match" parentDisplay="false" />
+		<!--<field name="CRMClientInfo.BusinessDistrict" width="150" searchType="match" parentDisplay="false" />-->
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.ClientId" relationKey="true" hidden="true"/>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.f_brother"/>
+	</saveFields>
+</select>
+<!--从表选择客户-->
+<select name="SelectCRMClientDet">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>on CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation> 
+	<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" display="@TABLENAME.CompanyCode" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Status" width="90" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Phone" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Fax" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Address" width="190" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.BusinessDistrict" width="150" hiddenInput="true" searchType="match" parentDisplay="true" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.CompanyCode" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+<select name="SelectCRMClient_Com">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>on CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation> 
+	<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" display="@TABLENAME.CompanyCode" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Status" width="90" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Phone" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Fax" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Address" width="190" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.CompanyCode" relationKey="true" hidden="true"/>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.f_brother"/>
+	</saveFields>
+</select>
+
+<!--销售跟单联系人弹出框-->
+<select name="SelectCRMClient_ClientlinkMan">
+	<table>CRMClientInfo,CRMClientInfoDet</table>
+	<relation>on CRMClientInfo.id=CRMClientInfoDet.f_ref</relation> 
+	<condition>(CRMClientInfoDet.f_ref='@ValueofDB:ClientId')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfoDet.UserName"  display="@TABLENAME.ClientlinkMan" width="80" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfoDet.Telephone" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfoDet.Mobile" width="80" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfoDet.id" parentName="@TABLENAME.ClientlinkMan" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+<!---
+<select name="SelectCRMClient_Brother">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<defineSQL>
+	select 
+	CRMClientInfo.id f1,
+	CRMClientInfo.id f2,
+	CRMClientInfo.ClientName f3,
+	CRMClientInfo.Keywords f4,
+	CRMClientInfo.Status f5,
+	CRMClientInfoDet.UserName f6,
+	CRMClientInfoDet.Telephone f7,
+	CRMClientInfoDet.Mobile f8,
+	CRMClientInfo.Fax f9,
+	CRMClientInfo.Address f10,
+	CRMClientInfo.BusinessDistrict f11
+	from CRMClientInfo
+	left join CRMClientInfoEmp on CRMClientInfo.id=CRMClientInfoEmp.f_ref
+	left join CRMClientInfoDet on CRMClientInfo.id=CRMClientInfoDet.f_ref and CRMClientInfoDet.mainUser='1'
+	</defineSQL>
+	<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" display="@TABLENAME.ClientId" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Status" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfoDet.UserName" width="80" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfoDet.Telephone" width="80" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfoDet.Mobile" width="80" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.Fax" width="80" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.Address" width="150" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.BusinessDistrict" width="150" hiddenInput="true" searchType="match" parentDisplay="true" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.ClientId" relationKey="true" hidden="true"/>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.f_brother"/>
+	</saveFields>
+</select>
+-->
+
+
+<select name="SelectCRMClientMaintainNote">
+	<table>CRMClientInfo,CRMClientInfoEmp,CRMClientInfoDet</table>
+	<relation>on CRMClientInfo.id=CRMClientInfoEmp.f_ref on CRMClientInfoDet.f_ref=CRMClientInfo.id and CRMClientInfoDet.mainUser=1</relation>   
+	<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" display="@TABLENAME.ClientId" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Status" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfoDet.UserName" width="80"  searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfoDet.Telephone" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Phone" width="80" hiddenInput="true" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Fax" width="80" searchType="match" parentDisplay="false" />		
+		<field name="CRMClientInfo.Address" width="190" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.ClientId" relationKey="true" hidden="true"/>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.f_brother" hidden="true"/>
+	</saveFields>
+</select>
+
+<select name="SelectCRMClientMaintainNote_Linkman">
+	<table>CRMClientInfo,CRMClientInfoDet</table>
+	<relation>on CRMClientInfo.id=CRMClientInfoDet.f_ref</relation> 
+	<condition>(CRMClientInfoDet.f_ref='@ValueofDB:ClientId')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfoDet.UserName"  display="tblMaintainNote.Linkman" width="80" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfoDet.Telephone" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfoDet.Mobile" width="80" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfoDet.ContactNo" parentName="tblMaintainNote.Linkman" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+<select name="SelectCRMClient_Brother_Note">
+	<table>CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation>   
+	<condition>CRMClientInfo.Status!=1</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" display="@TABLENAME.ClientId" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Phone" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Fax" width="80" searchType="match" parentDisplay="false" />		
+		<field name="CRMClientInfo.Address" width="190" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.ClientId" relationKey="true" hidden="true"/>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.f_brother"/>
+		<field name="CRMClientInfo.Phone" parentName="@TABLENAME.Telephone" relationKey="false" hidden="false"/>
+		<field name="CRMClientInfo.Address" parentName="@TABLENAME.Address" relationKey="false" hidden="false"/>		
+	</saveFields>
+</select>
+
+<select name="CRMClientInfoHandOver" type="radio">
+    <table>tblEmployee,tblDepartment</table> 
+    <relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation> 
+	<condition>tblEmployee.openFlag=1 and tblEmployee.id!='@Sess:UserId' and tblEmployee.statusId=0 and tblEmployee.workFlowNodeName='finish'  and tblDepartment.workFlowNodeName='finish'</condition>
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="80" searchType="match" parentDisplay="false" keySearch="true" /> 
+		<field name="tblEmployee.EmpFullName" width="100" searchType="match" parentDisplay="false"  keySearch="true" />
+		<field name="tblEmployee.EmpFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" /> 
+		<field name="tblDepartment.DeptFullName" width="100" searchType="match" parentDisplay="false" keySearch="true"/> 
+		<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.Mobile" width="120" searchType="match" parentDisplay="false" /> 
+	</displayFields>
+	<saveFields>
+		<field name="tblEmployee.id" parentName="@ValueofDB.EmployeeCode" relationKey="true" hidden="true" /> 
+		<field name="tblEmployee.DepartmentCode" parentName="@ValueofDB.DepartmentCode" relationKey="true" hidden="true" /> 
+		<field name="tblEmployee.EmpFullName" parentName="@ValueofDB.EmpFullName" relationKey="true" hidden="true"/> 
+	</saveFields>
+</select>
+
+<select name="SelectServiceEmployeeId">
+  <table>tblEmployee,tblDepartment</table> 
+  <relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation> 
+  <condition>tblEmployee.openFlag=1 and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition> 
+- <displayFields>
+	<field name="tblEmployee.EmpNumber" width="100"	searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" display="@TABLENAME.EmployeeCode" width="120" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.TitleID" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false"/>
+		<field name="tblDepartment.DeptFullName" width="120" searchType="match" parentDisplay="false" keySearch="true"/>
+		<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+  </displayFields>
+- <saveFields>
+  <field name="tblEmployee.id" parentName="@ValueofDB.EmployeeCode" relationKey="true" hidden="true" /> 
+  <field name="tblEmployee.EmpFullName" parentName="@ValueofDB.EmpFullName" relationKey="true" hidden="true" /> 
+  </saveFields>
+</select>
+<!--客户列表 选择创建人-->
+<select name="CRMClientSelectEmployee">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>(tblEmployee.SCompanyID='@Sess:SCompanyID' and tblEmployee.statusId!='-1' and tblEmployee.openFlag=1) and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+	<displayFields>
+			<field name="tblEmployee.EmpNumber" width="70" searchType="match" parentDisplay="false" keySearch="true"/>
+			<field name="tblEmployee.EmpFullName" width="70" searchType="match" parentDisplay="true" keySearch="true"/>
+			<field name="tblEmployee.EmpFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblEmployee.TitleID" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false"/>
+			<field name="tblDepartment.DeptFullName"  width="70" searchType="match" parentDisplay="false" keySearch="true"/>
+			<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	</saveFields>
+</select>
+<select name="CRMClientSelectDept">
+	<table>tblDepartment</table>
+	<relation></relation>
+	<classCode>tblDepartment.classCode</classCode>
+	<saveParentFlag>true</saveParentFlag>
+	<condition>tblDepartment.workFlowNodeName='finish'</condition>
+	<changeCond>(tblDepartment.statusid!='-1')</changeCond>
+	<displayFields>
+		<field name="tblDepartment.DeptCode" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+	</displayFields>
+	<saveFields>
+		<field name="tblDepartment.classCode" parentName="@TABLENAME.DepartmentCode" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+<!-- 客户移交 选择客户 -->
+<select name="SelectCRMClientForTransfer">
+	<table>CRMClientInfo</table>
+	<relation></relation>  
+	<condition></condition> 
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" width="200" searchType="match" parentDisplay="true"/>
+		<field name="CRMClientInfo.Keywords"  width="100" searchType="match" parentDisplay="false"/>
+		<field name="CRMClientInfo.OtherName"   width="100" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.ClientId" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+<!-- 选择 移交者 -->
+<select name="SelectTransferMan">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>tblEmployee.statusId!='-1' and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" display="@TABLENAME.TransferMan" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.TitleID" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullName"  width="120" searchType="match" keySearch="true" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.TransferMan" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+<!-- 选择 移交对象 -->
+<select name="SelectTransferTo">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>tblEmployee.statusId!='-1' and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" asName="SelectTransferTo.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" asName="SelectTransferTo.EmpFullName" display="@TABLENAME.TransferTo" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.TitleID" asName="SelectTransferTo.TitleID" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullName" asName="SelectTransferTo.DeptFullName" width="120" searchType="match" keySearch="true" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.TransferTo" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+<!-- 纪念日提醒 邮箱账户 弹出框 -->
+<select name="SelectMailAccForMemory">
+	<table>MailinfoSetting,tblEmployee</table>
+	<forwardModel></forwardModel>
+	<relation>MailinfoSetting.createBy=tblEmployee.id</relation>
+	<orderBy>MailinfoSetting.account</orderBy>
+	<condition></condition>
+	<displayFields>
+		<field name="MailinfoSetting.account" width="120" searchType="match" display="@TABLENAME.mailAccount" parentDisplay="true" />
+		<field name="MailinfoSetting.MailAddress" width="120" searchType="match" parentDisplay="true" />
+		<field name="tblEmployee.EmpFullName" asName="MailinfoSetting.createBy" width="120" searchType="match" parentDisplay="true" />
+	</displayFields>
+	<saveFields>
+		<field name="MailinfoSetting.id" parentName="@TABLENAME.mailAccount" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+<!-- 报表 业务区域 弹出框 -->
+<select name="ReportCRMBusinessDistrict">
+	<table>CRMBusinessDistrict</table>
+	<orderBy>CRMBusinessDistrict.BusinessDistrict</orderBy>
+	<displayFields>
+		<field name="CRMBusinessDistrict.BusinessDistrict" display="@TABLENAME.BusinessDistrict" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="CRMBusinessDistrict.Remark" width="150" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+	</saveFields>
+</select>
+
+<!-- 报表 弹出框 选择 经手人 -->
+<select name="ReportSelectCRMEmployee">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>(tblEmployee.SCompanyID='@Sess:SCompanyID' and tblEmployee.statusId!='-1' and tblEmployee.sysName!='') or tblEmployee.id='1'</condition>
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="70" searchType="match" parentDisplay="false" keySearch="true"/>
+		<field name="tblEmployee.EmpFullName" width="70" searchType="match" parentDisplay="true" keySearch="true"/>
+		<field name="tblEmployee.EmpFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.TitleID" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false" keySearch="true"/>
+		<field name="tblDepartment.DeptFullName"  width="70" searchType="match" parentDisplay="false" keySearch="true"/>
+		<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+	</saveFields>
+</select>
+
+<!-- CRM 选择职员 -->	
+<select name="SelectCRMEmployee">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>(tblEmployee.DepartmentCode='@ValueofDB:DepartmentCode' and tblEmployee.SCompanyID='@Sess:SCompanyID' and sysName!='')</condition>
+	<changeCond>(tblEmployee.statusid!='-1')</changeCond>
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" display="@TABLENAME.EmployeeID" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullNamePYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.TitleID" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullName" width="120" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" relationKey="true" hidden="true"/>
+		<field name="tblEmployee.DepartmentCode" parentName="@TABLENAME.DepartmentCode" />
+		<field name="tblDepartment.DeptFullName" parentName="tblDepartment.tblDepartment_DeptFullName" />
+	</saveFields>
+</select>
+	<select name="SelectSMSModel2">
+  	<table>tblSMSModel</table> 
+  	<condition>tblSMSModel.createBy='@Sess:UserId' and tblSMSModel.modelType=0 and tblSMSModel.statusId=0</condition>
+- 	<displayFields>
+  		<field name="tblSMSModel.ModelSubject" width="150" searchType="match" parentDisplay="true" /> 
+  		<field name="tblSMSModel.ModelContent" width="400" searchType="match" parentDisplay="true" /> 
+  	</displayFields>
+- 	<saveFields>
+  		<field name="tblSMSModel.ModelContent" parentName="tblSMSModel.ModelContent" hidden="true" /> 
+  	</saveFields>
+  </select>
+  
+  <select name="SelectSourceInfo">
+	<table>tblSourceInfo</table>
+	<relation></relation>
+	<classCode>tblSourceInfo.classCode</classCode>
+	<condition></condition>
+	<forwardModel>tblSourceInfo</forwardModel>
+	<changeCond>tblSourceInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="tblSourceInfo.SourceNo" width="100" searchType="match" parentDisplay="false" />
+		<field name="tblSourceInfo.SourceName" width="150" display="@TABLENAME.SourceInfo" searchType="match" parentDisplay="true" />
+	</displayFields>
+	<saveFields>
+		<field name="tblSourceInfo.classCode" parentName="@TABLENAME.SourceInfo" relationKey="true" hidden="true" /> 
+	</saveFields>
+</select>
+
+	<!--选择故障类别-->
+	<select name="SelectFaultType">
+	<table>CRMFaultType</table>
+	<relation></relation>
+	<classCode>CRMFaultType.classCode</classCode>
+	<condition></condition>
+	<changeCond>CRMFaultType.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMFaultType.Number" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMFaultType.FaultName" width="100" display="@TABLENAME.FaultCode" searchType="match" parentDisplay="true" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMFaultType.classCode" parentName="@TABLENAME.FaultCode" relationKey="true" hidden="true" /> 
+	</saveFields>
+</select>
+
+<!--客户接待人引用客户接待单-->
+<select name = "tblClerk_quote_tblDeskClerk">
+	<table>tblDeskClerk,CRMClientInfo,tblDepartment,tblEmployee</table>
+	<relation>on tblDeskClerk.CompanyCode=CRMClientInfo.id on tblDeskClerk.DepartmentCode=tblDepartment.classCode on tblDeskClerk.EmployeeID=tblEmployee.id</relation>
+	<condition>tblDeskClerk.workFlowNodeName='finish' and isnull(tblDeskClerk.DeskClerk,'')=''</condition>
+	<orderBy>tblDeskClerk.BillNo</orderBy>
+	<displayFields>
+		<field name="tblDeskClerk.BillNo"  width="120" searchType="match"  parentDisplay="false"/>
+		<field name="CRMClientInfo.ClientName" width="90" searchType="match" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullName" width="90" searchType="match" parentDisplay="false" />		
+		<field name="tblEmployee.EmpFullName" width="90" searchType="match" parentDisplay="false" />
+		<field name="tblDeskClerk.IntendComeTime" width="90" searchType="math"  parentDisplay="false"  />
+	</displayFields>
+	<saveFields>
+	  <field name="tblDeskClerk.id" relationKey="true" parentName="tblClerk.RelationID" hidden="true"/>		 
+	</saveFields>
+</select>
+
+<!--客户接待人引用客户接待单-->
+<select name = "SelectDeskClerkBill">
+	<table>tblDeskClerk,CRMClientInfo,tblDepartment,tblEmployee</table>
+	<relation>on tblDeskClerk.CompanyCode=CRMClientInfo.id on tblDeskClerk.DepartmentCode=tblDepartment.classCode on tblDeskClerk.EmployeeID=tblEmployee.id</relation>
+	<condition>tblDeskClerk.workFlowNodeName='finish'</condition>
+	<changeCond>isnull(tblDeskClerk.DeskClerk,'')=''</changeCond>
+	<orderBy>tblDeskClerk.BillNo</orderBy>
+	<displayFields>
+		<field name="tblDeskClerk.BillNo"  width="120" searchType="match"  parentDisplay="false"/>
+		<field name="CRMClientInfo.ClientName" width="120" searchType="match" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullName" width="90" searchType="match" parentDisplay="false" />		
+		<field name="tblEmployee.EmpFullName" width="90" searchType="match" parentDisplay="false" />
+		<field name="tblDeskClerk.IntendComeTime" width="110" searchType="math"  parentDisplay="false"  />
+	</displayFields>
+	<saveFields>
+		<field name="tblDeskClerk.id" parentName="@TABLENAME.RelationID" relationKey="false" hidden="true"/>	
+		<field name="tblDeskClerk.BillNo" parentName="@TABLENAME.RelationNo" relationKey="true" hidden="false"/>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.CompanyCode" relationKey="false" hidden="true"/>
+		<field name="tblDepartment.classCode" parentName="@TABLENAME.DepartmentCode" relationKey="false" hidden="true"/>
+		<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" relationKey="false" hidden="true"/>
+		<field name="tblDeskClerk.IntendComeTime" parentName="@TABLENAME.IntendComeTime" relationKey="false" hidden="false"/>		
+	</saveFields>
+</select>
+
+<!--维修管理选择客户弹出窗-->
+<select name = "SelectCRMRepairClient">
+	<table>CRMClientInfo</table>
+	<relation>CRMClientInfo.id</relation> >  
+	<condition>CRMClientInfo.Status!=1</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" display="@TABLENAME.CompanyCode" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.OtherName" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Introduce" width="140" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.CompanyCode" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+	<!--维修记录的维修人弹出窗-->
+	<select name = "SelectRepairMan">
+		<table>tblEmployee,tblDepartment</table>
+		<!--<forwardModel>tblEmployee</forwardModel>-->
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+		<condition>(tblEmployee.SCompanyID='@Sess:SCompanyID') and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+		<changeCond>tblEmployee.statusId!='-1'</changeCond>
+		<displayFields>
+		<field name="tblEmployee.EmpNumber" asName="RepairMan.Number" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" asName="RepairMan.Name" popSelect="PoPupSelectsuoEmployee" display="@TABLENAME.RepairMan" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullNamePYM" asName="RepairMan.PYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.TitleID" asName="RepairMan.TitleID" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullName" asName="RepairMan.Dept" width="120" popSelect="PoPupSelectDepartment" searchType="match" keySearch="true" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullNamePYM" asName="RepairMan.DeptPYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.RepairMan" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+
+  <!-- 选择回访单关联单据 -->
+<select name="SelectRevisitBill_FXD">
+	<table>ViewRevisit,CRMClientInfo,CRMClientInfoEmp,tblEmployee</table>
+	<relation>ViewRevisit.Clientid=CRMClientInfo.id and CRMClientInfo.id=CRMClientInfoEmp.f_ref and ViewRevisit.RepairMan=tblEmployee.id</relation>  
+	<condition>ViewRevisit.BillType='@ValueofDB:RefBillType' and ViewRevisit.Clientid='@ValueofDB:ClientId' and (exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<orderBy>ViewRevisit.BillDate</orderBy>
+	<displayFields>
+		<field name="ViewRevisit.BillDate" width="70" searchType="scope" parentDisplay="false" />
+		<field name="ViewRevisit.BillNo" display="@TABLENAME.RefBillID" width="100" searchType="match" parentDisplay="true" />
+		<field name="ViewRevisit.Department" width="80" searchType="match" parentDisplay="false" />
+		<field name="ViewRevisit.Employee" width="80" searchType="match" parentDisplay="false" />
+		<field name="tblEmployee.EmpFullName" asName="ViewRevisit.RepairMan" display="ViewRevisit.RepairMan" hiddenInput="true" width="80" searchType="match" parentDisplay="true" />
+		<field name="ViewRevisit.Linkman" hiddenInput="true" width="80" searchType="match" parentDisplay="false" />
+		<field name="ViewRevisit.ReportTime" hiddenInput="true" width="80" searchType="match" parentDisplay="true" />
+		<field name="ViewRevisit.StartTime" hiddenInput="true" width="80" searchType="match" parentDisplay="true" />
+		<field name="ViewRevisit.FinishTime" hiddenInput="true" width="80" searchType="match" parentDisplay="true" />
+		<field name="ViewRevisit.FaultDepict"  hiddenInput="true" width="120" searchType="match" parentDisplay="false" />
+		<field name="ViewRevisit.FaultAnalyse" hiddenInput="true" width="120" searchType="match" parentDisplay="false"/>
+		<field name="ViewRevisit.FaultDisposal" hiddenInput="true" width="120" searchType="match" parentDisplay="false"/>
+		<field name="ViewRevisit.InPeriod" hiddenInput="true" width="120" searchType="match" parentDisplay="true"/>
+	</displayFields>
+	<saveFields>
+		<field name="ViewRevisit.BillID" parentName="@TABLENAME.RefBillID" relationKey="true" hidden="true" />
+		<field name="ViewRevisit.FaultDepict" parentName="@TABLENAME.FaultDepict" relationKey="false" hidden="false" />
+		<field name="ViewRevisit.FaultAnalyse" parentName="@TABLENAME.FaultAnalyse" relationKey="false" hidden="false" />
+		<field name="ViewRevisit.FaultDisposal" parentName="@TABLENAME.FaultDisposal" relationKey="false" hidden="false" />
+		<field name="ViewRevisit.Linkman" parentName="@TABLENAME.Linkman" relationKey="false" hidden="false" />
+	</saveFields>
+</select>
+
+<!-- 客户回访单引用单据 -->
+<select name="CRMClientRevisit_quote_ViewRevisit">
+	<table>ViewRevisit,CRMClientInfo,CRMClientInfoEmp</table>
+	<relation>ViewRevisit.Clientid=CRMClientInfo.id and CRMClientInfo.id=CRMClientInfoEmp.f_ref</relation>  
+	<condition>ViewRevisit.BillType='@ValueofDB:RefBillType' and ViewRevisit.Clientid='@ValueofDB:ClientId' and (exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<orderBy>ViewRevisit.BillDate</orderBy>
+	<displayFields>
+		<field name="ViewRevisit.BillDate" width="90" searchType="scope" parentDisplay="false" />
+		<field name="ViewRevisit.BillNo" width="120" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.ClientNo" width="100" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.ClientName" width="100" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="true" />		
+		<field name="ViewRevisit.Department" width="80" searchType="match" parentDisplay="false" />
+		<field name="ViewRevisit.Employee" width="80" searchType="match" parentDisplay="false" />
+		<field name="ViewRevisit.RepairMan" hiddenInput="true" width="80" searchType="match" parentDisplay="true" />
+		<field name="ViewRevisit.ReportTime" hiddenInput="true" width="80" searchType="match" parentDisplay="true" />
+		<field name="ViewRevisit.StartTime" hiddenInput="true" width="80" searchType="match" parentDisplay="true" />
+		<field name="ViewRevisit.FinishTime" hiddenInput="true" width="80" searchType="match" parentDisplay="true" />
+		<field name="ViewRevisit.FaultDepict" hiddenInput="true" width="120" searchType="match" parentDisplay="true" />
+		<field name="ViewRevisit.FaultAnalyse" hiddenInput="true" width="120" searchType="match" parentDisplay="true"/>
+		<field name="ViewRevisit.FaultDisposal" hiddenInput="true" width="120" searchType="match" parentDisplay="true"/>
+		<field name="ViewRevisit.InPeriod" hiddenInput="true" width="120" searchType="match" parentDisplay="true"/>
+	</displayFields>
+	<saveFields>
+		<field name="ViewRevisit.BillID" relationKey="true" parentName="CRMClientRevisit.RefBillID" hidden="true"/>
+	</saveFields>
+</select>
+
+<!-- 选择回访单关联单据 -->
+<select name="SelectCheckItem" type="checkBox">
+	<table>CRMCheckItem</table>
+	<relation></relation>
+	<classCode>CRMCheckItem.classCode</classCode>
+	<condition></condition>
+	<changeCond>CRMCheckItem.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMCheckItem.ItemNo" width="70" searchType="match" parentDisplay="true" />
+		<field name="CRMCheckItem.ItemName" display="@TABLENAME.ItemCode" width="300" searchType="match" parentDisplay="true" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMCheckItem.classCode" parentName="@TABLENAME.ItemCode" relationKey="true" hidden="true" />
+	</saveFields>
+</select>
+
+<select name="SelectCRMClient_Brother_Revisit">
+	<table>CRMClientInfo,CRMClientInfoEmp,CRMSaleContract</table>
+	<relation>on CRMClientInfo.id=CRMClientInfoEmp.f_ref on CRMSaleContract.ClientId=CRMClientInfo.id and '@ValueofDB:RefBillType'='CRMSaleContract' and CRMSaleContract.id=(select min(a.id) from CRMSaleContract a group by a.ClientId)</relation>   
+	<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" display="@TABLENAME.ClientId" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Status" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Phone" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Fax" width="80" searchType="match" parentDisplay="false" />		
+		<field name="CRMClientInfo.Address" width="190" searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.ClientId" relationKey="true" hidden="true"/>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.f_brother"/>
+	</saveFields>
+</select>
+
+<!--飞新达客户合同弹出框-->
+<select name="SelectCRM_FXDContract">
+	<table>CRMClientInfo,CRMClientInfoEmp,CRMClientInfoDet</table>
+	<relation>on CRMClientInfo.id=CRMClientInfoEmp.f_ref on CRMClientInfoDet.f_ref=CRMClientInfo.id and CRMClientInfoDet.mainUser=1</relation>   
+	<condition>(exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')</condition>
+	<changeCond>CRMClientInfo.statusId=0</changeCond>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" display="@TABLENAME.ClientId" width="200" searchType="match" parentDisplay="true" />
+		<field name="CRMClientInfo.Keywords" width="100" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Status" width="80" searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfoDet.UserName" width="80"   searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfoDet.Telephone" width="80"  searchType="match" parentDisplay="false" />
+		<field name="CRMClientInfo.Address" width="190"  searchType="match" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.ClientId" relationKey="true" hidden="true"/>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.f_brother" hidden="true"/>
+		<field name="CRMClientInfoDet.UserName" parentName="@TABLENAME.Linkman" hidden="false"/>
+		<field name="CRMClientInfoDet.Telephone" parentName="@TABLENAME.Telephone" hidden="false"/>
+		<field name="CRMClientInfo.Address" parentName="@TABLENAME.Address" hidden="false"/>
+	</saveFields>
+</select>
+
+
+<select name="CRMPeriodicExamine_quote_CRMSaleContract">
+	<table>CRMSaleContract,tblEmployee,tblDepartment,CRMClientInfo</table>
+	<relation>tblEmployee.id=CRMSaleContract.EmployeeID and tblDepartment.classCode=tblEmployee.DepartmentCode and CRMClientInfo.id=CRMSaleContract.Clientid</relation>
+	<condition>CRMSaleContract.workFlowNodeName='finish' and CRMSaleContract.f_brother='@ValueofDB:f_brother'</condition>
+	<hasChild>CRMPeriodicExamineDet_quote_CRMSaleContractDet</hasChild>
+	<orderBy>CRMSaleContract.BillDate,CRMSaleContract.ContractNo</orderBy>
+	<displayFields>
+		<field name="CRMSaleContract.BillDate" width="90" searchType="scope" parentDisplay="false" />
+		<field name="CRMSaleContract.ContractNo"  width="100" searchType="match" parentDisplay="false"/>
+		<field name="CRMClientInfo.ClientName"  width="150" searchType="match" parentDisplay="false"/>
+		<field name="tblDepartment.DeptFullName" width="80" searchType="match"  parentDisplay="false" />
+		<field name="tblEmployee.EmpFullName"  width="80" searchType="match"   parentDisplay="false"/>		
+	</displayFields>
+	<saveFields>
+		<field name="CRMSaleContract.id" parentName="CRMPeriodicExamine.RefBillID" relationKey="true" hidden="false"/>
+	</saveFields>
+</select>
+
+<!--销售出库单据中调入币种类别及汇率(卖出币种)-->
+ <select name = "CRMCurrencyExchange">
+  <table>tblSetExchange,tblCurrency</table>
+  <relation>tblCurrency.id=tblSetExchange.CurrencyName</relation>
+  <condition>(tblSetExchange.Period=@Sess:NowPeriod)</condition>
+  <displayFields>
+   <field name="tblSetExchange.CurrencyName"  display="@TABLENAME.CurrencyTypeID" width="200" searchType="match" parentDisplay="true" />
+   <field name="tblSetExchange.RecordExchange"  display="@TABLENAME.CurrencyRate" width="200" searchType="match" parentDisplay="false" />
+   </displayFields>
+  <saveFields>
+    <field name="tblSetExchange.CurrencyID" parentName="@TABLENAME.CurrencyTypeID" relationKey="true" hidden="true"/>
+    <field name="tblSetExchange.RecordExchange" parentName="@TABLENAME.CurrencyRate" relationKey="false" />
+  </saveFields>
+ </select>
+
+<!-- 收款单选择客户合同 -->
+<select name="SelectCRMContract_Rec">
+	<table>CRMSaleContract,CRMClientInfo</table>
+	<relation>CRMSaleContract.ClientId=CRMClientInfo.id</relation>
+	<condition>CRMSaleContract.workFlowNodeName='finish' and CRMSaleContract.f_brother='@ValueofDB:CompanyCode' and CRMSaleContract.f_brother not in (select id from CRMClientInfo where statusId =-1)</condition>
+	<changeCond>CRMSaleContract.NoReceiveAmount &gt; 0</changeCond>
+	<orderBy>CRMSaleContract.SignUpDate desc,CRMSaleContract.ContractNo desc</orderBy>
+	<displayFields>
+		<field name="CRMSaleContract.SignUpDate" width="100" searchType="scope" parentDisplay="false" />
+		<field name="CRMClientInfo.ClientName" width="200" searchType="match" parentDisplay="false" />
+		<field name="CRMSaleContract.ContractNo" display="@TABLENAME.AccBillNO" width="150" searchType="match" parentDisplay="true" />
+		<field name="CRMSaleContract.TotalAmount" width="100" searchType="no" parentDisplay="true" />
+		<field name="CRMSaleContract.NoReceiveAmount" width="100" searchType="no" parentDisplay="false" />
+	</displayFields>
+	<saveFields>
+		<field name="CRMSaleContract.id" parentName="@TABLENAME.AccBillNO" relationKey="true" hidden="true" />
+	</saveFields>
+</select>
+
+		<select name = "CRMSaleReceiveAccInfo">
+		<table>tblAccTypeInfo</table>
+		<relation></relation>	
+		<classCode>tblAccTypeInfo.classCode</classCode>
+		<defParentCode>00001</defParentCode>
+		<changeCond>(tblAccTypeInfo.statusId!='-1'  and tblAccTypeInfo.AccNumber not in ('1122','1123','2202','2203'))</changeCond>
+		<orderBy>tblAccTypeInfo.AccNumber</orderBy>
+		<displayFields>
+			<field name="tblAccTypeInfo.AccNumber"  width="100" searchType="match"  parentDisplay="false" defaultValue="100" keySearch="true" />
+			<field name="tblAccTypeInfo.AccName"  display="@TABLENAME.AcceptBankID" width="150" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblAccTypeInfo.AccFullName" width="200" searchType="match" parentDisplay="false" />
+			<field name="tblAccTypeInfo.PyCode" width="50" searchType="match" parentDisplay="false" keySearch="true" hiddenInput="true" />
+		</displayFields>
+		<saveFields>
+		    <field name="tblAccTypeInfo.AccNumber" parentName="@TABLENAME.AcceptBankID" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+
+
+	<!-- CRM报表 弹出框 选择 商品 -->
+	<select name="ReportSelectGoodsCRM">
+		<table>tblGoods</table>
+		<relation></relation>
+		<classCode>tblGoods.classCode</classCode>
+		<condition>tblGoods.statusId!='-1' and tblGoods.workFlowNodeName='finish' </condition>
+		<orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+		<displayFields>
+			<field name="tblGoods.GoodsNumber" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblGoods.GoodsFullName"  asName="GoodsFullName"  width="150" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblGoods.GoodsSpec" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblGoods.GoodsFullNamePYM" width="65" searchType="match" parentDisplay="false" keySearch="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblGoods.GoodsFullName" parentName="GoodsFullName" relationKey="true" hidden="false" />
+		</saveFields>
+	</select>
+	 <!--销售跟单关联自定义1-->
+<select name = "SelectCRMAssDefine">
+         <table>CRMUserdefine1</table>
+         <relation></relation>
+         <classCode></classCode>
+        <condition></condition>
+        <displayFields>
+        	  <field name="CRMUserdefine1.Userdefine1" display="@TABLENAME.assDefine1" keySearch="true" width="150" searchType="match" parentDisplay="true" />
+          	<field name="CRMUserdefine1.Userdefine2"  width="150" searchType="match" parentDisplay="false"/>
+        </displayFields>
+     <saveFields>
+         <field name="CRMUserdefine1.Userdefine1" parentName="@TABLENAME.assDefine1" relationKey="true" hidden="false"/>
+     </saveFields>
+   </select>
+           <!--销售跟单关联自定义2-->
+<select name = "SelectCRMAssDefine2">
+         <table>CRMUserdefine2</table>
+         <relation></relation>
+         <classCode></classCode>
+        <condition></condition>
+        <displayFields>
+        	  <field name="CRMUserdefine2.Userdefine1" display="@TABLENAME.assDefine2" keySearch="true" width="150" searchType="match" parentDisplay="true" />
+          	<field name="CRMUserdefine2.Userdefine2"  width="150" searchType="match" parentDisplay="false"/>
+        </displayFields>
+     <saveFields>
+         <field name="CRMUserdefine2.Userdefine1" parentName="@TABLENAME.assDefine2" relationKey="true" hidden="false"/>
+     </saveFields>
+   </select>
+   
+	<!--销售收款单选择销售合同-->
+	<select name = "SelectCRMContractNo">
+		<table>CRMSaleContract,tblEmployee</table>
+		<relation>CRMSaleContract.EmployeeID=tblEmployee.id</relation>
+		<classCode></classCode>
+		<condition>CRMSaleContract.f_brother=(select id from tblCompany where classCode='@ValueofDB:CompanyCode')</condition>
+        <displayFields>
+			<field name="CRMSaleContract.SignUpDate" width="100" searchType="scope" parentDisplay="false"/>
+			<field name="CRMSaleContract.ContractNo" display="@TABLENAME.ContractNo" keySearch="true" width="120" searchType="match" parentDisplay="true" />
+          	<field name="CRMSaleContract.ContractType" width="100" searchType="equal" parentDisplay="false" inputType="1" inputValue="CRMContractType"/>
+			<field name="tblEmployee.EmpFullName" display="CRMSaleContract.EmployeeID" width="100" searchType="match" parentDisplay="false" keySearch="true"/>
+			<field name="CRMSaleContract.TotalAmount" width="80" searchType="no" parentDisplay="false"/>
+			<field name="CRMSaleContract.ReceiveAmount" width="80" searchType="no" parentDisplay="false"/>
+			<field name="CRMSaleContract.NoReceiveAmount" width="80" searchType="no" parentDisplay="false"/>
+        </displayFields>
+     <saveFields>
+			<field name="CRMSaleContract.id" parentName="@TABLENAME.ContractNo" relationKey="true" hidden="true"/>
+			<field name="CRMSaleContract.TotalAmount" parentName="@TABLENAME.ContractAmt" relationKey="false" hidden="false"/>
+     </saveFields>
+   </select>
+    <!--客户投述 选择处理人-->  
+   <select name = "CRMComplaintsSelectEmployee">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>tblEmployee.statusId!='-1' and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>  
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" asName="tblEmploy.EmpFullName" popSelect="PoPupSelectsuoEmployee" display="@TABLENAME.DealwithEmployeeID" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" width="200" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false" keySearch="true"/>
+	</displayFields>
+	<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.DealwithEmployeeID" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+<!--客户投述 选择回访人-->
+<select name = "CRMComplaintsSelectEmployee1">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>tblEmployee.statusId!='-1' and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>  
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" asName="tblEmployss.EmpFullName" popSelect="PoPupSelectsuoEmployee" display="@TABLENAME.TalkbackEmployeeID" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" width="200" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false" keySearch="true"/>
+	</displayFields>
+	<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.TalkbackEmployeeID" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+<!--呼叫分配 选择职员-->
+<select name = "SelectDistributionEmployee_Query">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>tblEmployee.statusId!='-1'  and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>  
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="200" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" asName="tblEmployss.EmpFullName" display="@TABLENAME.UserId" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" width="200" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false" keySearch="true"/>
+	</displayFields>
+	<saveFields>
+	</saveFields>
+</select>
+<select name = "SelectDistributionEmployee">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>tblEmployee.statusId!='-1'  and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>  
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" display="@TABLENAME.UserId" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" width="100" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false" keySearch="true"/>
+	</displayFields>
+	<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.UserId" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+<select name = "PoPupSelectCRMEmployee">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>tblEmployee.statusId!='-1' and tblEmployee.openflag=1  and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>  
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" display="@TABLENAME.UserId" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" width="100" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false" keySearch="true"/>
+	</displayFields>
+		<saveFields>
+		</saveFields>
+</select>
+<!--呼叫分配明细 选择客户-->
+<select name = "SelectCrmDistributionRelationCustomer" type="checkBox">
+        <table>CRMClientInfo</table>
+		<!--<forwardModel>tblCompany</forwardModel>-->
+		<relation></relation>
+			<defineSQL>
+			select 
+				CRMClientInfo.id f1,
+				CRMClientInfo.ClientName f2,
+				CRMClientInfo.Status f3,
+				CRMClientInfo.LastContractTime f4,
+				tblSourceInfo.SourceName f5,
+				CRMClientInfoDet.UserName f6,
+				CRMClientInfoDet.Telephone f7,
+				CRMClientInfoDet.Mobile f8,
+				tblEmployee.EmpFullName f9,
+				(DATEDIFF(day,substring(isnull(CRMClientInfo.LastContractTime,'1900-10-10'),1,10),'@MEM:sysShortDate')) f10,
+				CRMClientInfo.KeywordsPYM f11,
+				CRMClientInfo.Keywords f12
+				from CRMClientInfo left join CRMClientInfoDet on CRMClientInfoDet.f_ref=CRMClientInfo.id left join tblSourceInfo on CRMClientInfo.SourceInfo=tblSourceInfo.classCode left join CRMClientInfoEmp on (CRMClientInfoEmp.f_ref=CRMClientInfo.id and CRMClientInfoEmp.id=(select top 1 a.id from CRMClientInfoEmp a where a.f_ref=CRMClientInfo.id and a.EmployeeID in (select id from tblEmployee where 1=1 and tblEmployee.EmpFullName like '%@condition:tblEmployee.EmpFullName%'))) left join tblEmployee on tblEmployee.id=CRMClientInfoEmp.EmployeeID
+		</defineSQL>
+	<condition>1=1</condition>
+	<changeCond>(len(isnull(CRMClientInfoDet.Telephone,''))>0 or len(isnull(CRMClientInfoDet.Mobile,''))>0) and CRMClientInfo.id not in(select relationCustom from CRMCallDistributionDet where state=0 and f_ref in(select id from CRMCallDistribution where CallDate>='@MEM:sysShortDate'))</changeCond>
+	<orderBy>CRMClientInfo.ClientName</orderBy>
+	<displayFields>
+		<field name="CRMClientInfo.ClientName" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="CRMClientInfo.Status" width="80" searchType="equal" parentDisplay="false" keySearch="true"/>
+		<field name="CRMClientInfo.LastContractTime" width="160" searchType="no" parentDisplay="false" keySearch="false"/>	
+		<field name="tblSourceInfo.SourceName" display="CRMClientInfo.SourceInfo" width="160" popSelect="PoPupSelectSourceInfo" searchType="match" parentDisplay="false" keySearch="true"/>		
+		<field name="CRMClientInfoDet.UserName" width="160" searchType="no" parentDisplay="false" keySearch="true"/>
+		<field name="CRMClientInfoDet.Telephone" width="160" searchType="no" parentDisplay="false" keySearch="false"/>		
+		<field name="CRMClientInfoDet.Mobile" width="160" searchType="no" parentDisplay="false" keySearch="false"/>	
+		<field name="tblEmployee.EmpFullName" display="CRMClientInfoEmp.EmployeeID" popSelect="PoPupSelectCRMEmployee" width="80" searchType="match" parentDisplay="false" keySearch="true"/>		
+		<field name="(DATEDIFF(day,substring(isnull(CRMClientInfo.LastContractTime,'1900-10-10'),1,10),'@MEM:sysShortDate'))" asName="CRMClientInfo.Last" display="CRMClientInfo.noRelationDay" width="75" searchType="more" inputvalue="0" keySearch="true" parentDisplay="false"/>
+		<field name="CRMClientInfo.KeywordsPYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true"/>
+		<field name="CRMClientInfo.Keywords" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true"/>
+	</displayFields>
+	<saveFields>
+		<field name="CRMClientInfo.id" parentName="@TABLENAME.relationCustom" relationKey="true" hidden="true"/>
+	</saveFields>
+	</select>
+	 
+<!-- 信息来源弹出窗 -->
+	<select name="PoPupSelectSourceInfo">
+		<table>tblSourceInfo</table>
+		<!--<forwardModel>tblDepartment</forwardModel>-->
+		<relation></relation>
+		<classCode>tblSourceInfo.classCode</classCode>
+		<condition>tblSourceInfo.statusid!='-1'</condition>
+		<displayFields>
+			<field name="tblSourceInfo.classCode" display="tblSourceInfo.classCode" width="80" searchType="match" parentDisplay="false" />
+			<field name="tblSourceInfo.SourceName" width="160" searchType="match" parentDisplay="true" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+<!--目标客户选择业务员弹出窗口:表中同时存在部门字段的时候可以用-->	
+	<select name = "SelectEmployee_ObjectCustomer">
+		<table>tblEmployee,tblDepartment</table>
+		<forwardModel>tblEmployee</forwardModel>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+		<condition>(tblDepartment.DeptFullName='@ValueofDB:tblDepartment_DeptFullName' and tblEmployee.SCompanyID='@Sess:SCompanyID' and tblEmployee.statusId!='-1' and tblEmployee.id!='1') and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName"  display="@TABLENAME.EmployeeID" width="65" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullNamePYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.TitleID" width="65" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false"  keySearch="true"/>
+		<field name="tblDepartment.DeptFullName"  width="75" popSelect="PoPupSelectDepartment" searchType="match" keySearch="true" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullNamePYM" asName="ViewtblStocks.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" relationKey="true" hidden="true"/>
+		<field name="tblEmployee.DepartmentCode" parentName="@TABLENAME.DepartmentCode" />
+		<field name="tblDepartment.DeptFullName" parentName="tblDepartment.tblDepartment_DeptFullName" />
+		</saveFields>
+	</select>
+	<!-- CRM 选择职员 网络机器人 -->	
+	<select name="SelectRobotTask">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition>(tblEmployee.SCompanyID='@Sess:SCompanyID' and sysName!='') and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+	<changeCond>(tblEmployee.statusid!='-1')</changeCond>
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" display="@TABLENAME.userId" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullNamePYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.TitleID" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullName" width="120" searchType="match" parentDisplay="false" keySearch="true"/>
+		<field name="tblDepartment.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+	</displayFields>
+	<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.userId" relationKey="true" hidden="true"/>
+		<field name="tblEmployee.DepartmentCode" parentName="@TABLENAME.userId" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+
+<!-- 光荣榜明细选择用户 -->
+<select name = "SelectCRMfame" type="checkBox">
+        <table>tblEmployee</table>
+        <condition> tblEmployee.workFlowNodeName='finish' </condition>
+		<relation/> 
+		<displayFields>
+		<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" /> 
+		<field name="tblEmployee.EmpFullName" display="@TABLENAME.EmployeeID" width="200" searchType="match" parentDisplay="true" keySearch="true" /> 
+		</displayFields>
+		<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" relationKey="true" hidden="true"/>
+		</saveFields>
+</select>
+   
+<!-- 光荣榜祝贺选择光荣明细的代号和用户 -->
+<select name = "SelectCRMfameTopDet">
+        <table>tblfameTopDet,tblEmployee</table>
+        <relation>tblEmployee.id=tblfameTopDet.EmployeeID</relation>
+        <condition></condition>
+        <displayFields>
+        	  <field name="tblEmployee.EmpFullName" asName="tblEmployee.emp" keySearch="true" width="200" searchType="match" parentDisplay="true" /> 
+        	  <field name="tblfameTopDet.title" keySearch="true" width="200" searchType="match" parentDisplay="true" />
+        	  <!-- <field name="tblfameTopDet.id" keySearch="true" width="200" parentDisplay="false" hidden="true"/> -->
+        </displayFields>
+     <saveFields>
+         <field name="tblfameTopDet.id" parentName="tblfameTopWish.topId" relationKey="true" hidden="true"/>
+     </saveFields>
+</select>
+
+<select name = "PoPupSelectsuoEmployee">
+	<table>tblEmployee,tblDepartment</table>
+	<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+	<condition> tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>  
+	<displayFields>
+		<field name="tblEmployee.EmpNumber" width="75" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" asName="tblEmployss.EmpFullName" display="@TABLENAME.UserId" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" width="75" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false" keySearch="true"/>
+	</displayFields>
+	<saveFields>
+	</saveFields>
+</select>
+
+	<select name = "SelectOnlyGoodsVarietal" type="checkBox">
+		<table>tblGoods,tblUnit,tblStock</table>
+		<forwardModel>tblGoods</forwardModel>
+		<relation></relation>
+			<defineSQL>
+			select 
+        tblGoods.classCode f1 ,
+        tblUnit.id f2 ,
+        tblGoods.BarCode f3 ,
+        tblVarietalInfo.VarietalName f19,
+        tblGoods.GoodsNumber f4 ,
+        tblGoods.GoodsFullName f5 ,
+        tblGoods.GoodsFullNamePYM f6 ,
+        tblGoods.GoodsSpec f7 ,
+        tblGoods.Spec1 f8 ,
+        tblGoods.Spec2 f9 ,
+        tblGoods.Spec3 f10 ,
+        tblGoods.Validity f11 ,
+        tblUnit.UnitName f12  
+         from tblGoods 
+      left join tblUnit on tblGoods.BaseUnit=tblUnit.id  
+      left join tblStock on  tblGoods.StockCode = tblStock.classCode 
+      left join tblDBEnumerationItem on  tblDBEnumerationItem.enumValue=tblGoods.Varietal and tblDBEnumerationItem.enumId=(select id from tblDBEnumeration where tblDBEnumeration.enumName='VarietalInfo')   
+      left join tblVarietalInfo on  tblVarietalInfo.id=tblDBEnumerationItem.id 
+		</defineSQL>
+		 <classCode>tblGoods.classCode</classCode>
+		 <condition>tblGoods.workFlowNodeName='finish'</condition>
+		<changeCond>(tblGoods.statusid!='-1')</changeCond>
+		<orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+        <displayFields>
+						 <field name="tblGoods.BarCode"  width="100" searchType="match" parentDisplay="true" keySearch="true"  hiddenInput="true"/>
+						 <field name="tblVarietalInfo.VarietalName" width="120" sysType="productbankcontrol" searchType="match" keySearch="true" parentDisplay="true" />
+             <field name="tblGoods.GoodsNumber" width="120" searchType="match" keySearch="true" parentDisplay="true" />
+             <field name="tblGoods.GoodsFullName" display="@TABLENAME.GoodsCode" keySearch="true" width="150" searchType="match" parentDisplay="true" />
+	    			 <field name="tblGoods.GoodsFullNamePYM" hiddenInput="true" width="65" searchType="match" parentDisplay="true" keySearch="true" />
+       			 <field name="tblGoods.GoodsSpec" width="100" searchType="match" parentDisplay="true" keySearch="true"/>
+       			 <field name="tblGoods.Spec1"  width="100" searchType="match" keySearch="true" parentDisplay="true" hiddenInput="true" />
+			 			 <field name="tblGoods.Spec2"  width="100" searchType="match" keySearch="true" parentDisplay="true" hiddenInput="true" />
+			 			 <field name="tblGoods.Spec3"  width="100" searchType="match" keySearch="true" parentDisplay="true" hiddenInput="true" />
+             <field name="tblGoods.Validity" width="60" searchType="match" parentDisplay="true" keySearch="true"/>
+             <field name="tblUnit.UnitName" asName="Unit.Unit" width="50" searchType="match" parentDisplay="true" />
+        </displayFields>
+     <saveFields>
+            <field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true"/>
+            <field name="tblUnit.id" parentName="@TABLENAME.Unit" relationKey="false" hidden="false"/>
+     </saveFields>
+   </select>
+	<select name = "SelectEmployeeDet"  type="checkBox">
+		<table>tblEmployee,tblDepartment</table> 
+		<!-- <forwardModel>tblEmployee</forwardModel> --> 
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation> 
+		<condition>(tblEmployee.DepartmentCode='@ValueofDB:@TABLENAME_DepartmentCode' and tblEmployee.SCompanyID='@Sess:SCompanyID' and tblEmployee.statusId!='-1' and tblEmployee.openFlag=1 or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition> 
+		<displayFields>
+			<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" /> 
+			<field name="tblEmployee.EmpFullName" display="@TABLENAME.EmployeeID" width="120" searchType="match" parentDisplay="true" keySearch="true" /> 
+			<field name="tblEmployee.EmpFullNamePYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" /> 
+			<field name="tblEmployee.TitleID" width="100" searchType="match" parentDisplay="false" keySearch="true"/> 
+			<field name="tblDepartment.DeptFullName" width="120" popSelect="PoPupSelectDepartment" searchType="match" keySearch="true" parentDisplay="false" /> 
+			<field name="tblDepartment.DeptFullNamePYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" /> 
+		</displayFields>
+		<saveFields>
+			<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" relationKey="true" hidden="true" /> 
+			<field name="tblEmployee.DepartmentCode" parentName="@TABLENAME.DepartmentCode" /> 
+			<field name="tblDepartment.DeptFullName" parentName="@TABLENAME.tblDepartment_DeptFullName" /> 
+		</saveFields>
+	</select>
+	
+
+</popupSelect>

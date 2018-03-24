@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+<!--
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ *
+ * == BEGIN LICENSE ==
+ *
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ *
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ *
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ *
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ *
+ * == END LICENSE ==
+ *
+ * Text field dialog window.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta content="noindex, nofollow" name="robots" />
+	<script type="text/javascript" src="/js/jquery.js"></script>
+	<script src="common/fck_dialog_common.js" type="text/javascript"></script>
+	<script type="text/javascript">
+
+var dialog	= window.parent ;
+var oEditor = dialog.InnerDialogLoaded() ;
+
+// Gets the document DOM
+var oDOM = oEditor.FCK.EditorDocument ;
+
+var oActiveEl = dialog.Selection.GetSelectedElement() ;
+
+window.onload = function(){
+	// First of all, translate the dialog box texts
+	oEditor.FCKLanguageManager.TranslatePage(document) ;
+
+	if ( oActiveEl && oActiveEl.tagName == 'IMG' && GetAttribute( oActiveEl, 'imgtype')=='popup' ){
+		GetE('txtName').value	= GetAttribute( oActiveEl, 'title' ) ;
+		GetE('popupName').value	= GetAttribute( oActiveEl, 'value' ) ;
+		GetE('txtSize').value	= GetAttribute( oActiveEl, 'size' ) ;
+		if(GetAttribute( oActiveEl,'isnull')=="true"){
+			GetE('isNull').checked=true;
+		}else{
+			GetE('isNull').checked=false;
+		}
+		if(GetAttribute( oActiveEl, 'ismultiple') == "true"){
+			GetE('isMultiple').checked	= true;
+		}else{
+			GetE('isMultiple').checked	= false;
+		}
+	}else{
+		oActiveEl = null ;
+	}
+	
+	$("#oldVal").val(GetE('txtName').value);
+	dialog.SetOkButton( true ) ;
+	dialog.SetAutoSize( true ) ;
+	SelectField( 'txtName' ) ;
+}
+
+var popupType="";
+
+function Ok(){
+	if (GetE('txtName').value.Trim().length == 0 ){
+		alert( "控件名称不能为空！" ) ;
+		GetE('txtName').focus() ;
+		return false ;
+	}
+	
+	
+	//判断是否存在重复标签
+	if(!checkTitle(window.parent.Selection.GetSelectedElement() )){
+		return false;
+	}
+	
+	if(GetE('txtSize').value.Trim().length>0 && !isInt2( GetE('txtSize').value)){
+		alert( "控件宽度必须是正整数!" ) ;
+		GetE('txtSize').focus() ;
+		return false ;
+	}
+	
+	if(GetE('isMultiple').checked){
+		popupType="checkBox";
+	}else{
+		popupType="radio";
+	}
+	
+	if (GetE('popupName').value.Trim().length == 0 ){
+		alert( "弹出窗名字不能为空！" ) ;
+		GetE('popupName').focus() ;
+		return false ;
+	}
+	
+	
+	var popupName=GetE('popupName').value.Trim();
+	if(!isExistPopup(popupName)){
+		return false;
+	}
+	
+	oEditor.FCKUndo.SaveUndoStep() ;
+	oActiveEl = CreateNamedElement( oEditor, oActiveEl, 'IMG', {title:GetE('txtName').value} ) ;
+	SetAttribute( oActiveEl, 'value'    ,GetE('popupName').value) ;
+	SetAttribute( oActiveEl, 'size'    	, GetE('txtSize').value) ;
+	SetAttribute( oActiveEl, 'src'	, '/js/img/view.gif') ;
+	SetAttribute( oActiveEl, 'imgtype'	, 'popup') ;
+	if(GetE('isNull').checked){
+		SetAttribute( oActiveEl, 'isnull'	, 'true' ) ;
+	}else{
+		SetAttribute( oActiveEl, 'isnull'	, 'false') ;
+	}
+	if(GetE('isMultiple').checked){
+		SetAttribute( oActiveEl, 'ismultiple'	, 'true' ) ;
+	}else{
+		SetAttribute( oActiveEl, 'ismultiple'	, 'false' ) ;
+	}
+	return true ;
+}
+
+
+//判断物理表是否存在
+function isExistPopup(popupName){
+	var flag=true;
+	jQuery.ajax({
+		type: "POST",
+	    url: "/OAWorkFlowTableAction.do",
+		data: "operation=1&isExistPopup=true&popupName="+popupName+"",
+		async: false,
+	    success: function(msg){
+			if(msg=="false"){
+				alert("弹出框不存在，请重新输入!");
+				flag = false;
+			}else{
+				var popType=msg.split("|")[1];
+				if(popType.length==0){
+					popType="radio";
+				}
+				if(popType!=popupType){
+					alert("配置的弹出框与条件不符，请重新输入!");
+					flag = false;
+				}
+			}
+		}
+	});
+	return flag;
+}
+
+	</script>
+</head>
+<body style="overflow: hidden">
+<input type="hidden" value="" id="oldVal" name="oldVal"/>
+	<table width="100%" style="height: 100%">
+		<tr>
+			<td align="center">
+				<table cellspacing="0" cellpadding="0" border="0">
+					<tr>
+						<td>
+							<span fcklang="DlgTextName">Name</span><br />
+							<input id="txtName" type="text" size="30" />
+						</td>
+						<td>
+							<span fcklang="DlgTextCharWidth" >Character Width</span><br />
+							<input id="txtSize" style="margin-left:5px;" type="text" size="10" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<span fcklang="DlgTextPopupName">弹出窗名字</span><br />
+							<input id="popupName" type="text" size="30" />
+						</td>
+						<td>
+						</td>
+					</tr>
+					<TR>
+							<TD vAlign="bottom" colspan="2">
+								<span>必填</span><input id="isNull" type="checkbox" />
+								<span>多选</span><input id="isMultiple" type="checkbox" />
+							</TD>
+					</TR>
+				</table>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

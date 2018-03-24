@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="BankInfoUserTransAcc">
+     <table>tblAccTypeInfo,tblSetExchange</table>
+     <forwardModel>tblAccTypeInfo</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblAccTypeInfo.AccNumber f1,
+      tblSetExchange.CurrencyName f2,
+      isnull(tblSetExchange.RecordExchange,1) f3,
+      tblSetExchange.Currency f4,
+      tblAccTypeInfo.AccName f5,
+      tblAccTypeInfo.classCode f6
+  from tblAccTypeInfo
+  left join (select Currency,RecordExchange,CurrencyName from tblSetExchange where PeriodYear=SUBSTRING('@ValueofDB:BillDate',1,4) and Period=SUBSTRING('@ValueofDB:BillDate',6,2))tblSetExchange on tblAccTypeInfo.Currency=tblSetExchange.Currency 
+     </defineSQL>
+     <classCode>tblAccTypeInfo.classCode</classCode>
+     <defParentCode>00001</defParentCode>
+     <remark>回填账户和币种</remark>
+     <condition></condition>
+     <changeCond>tblAccTypeInfo.statusId!='-1' and tblAccTypeInfo.AccNumber not in ('1122','1123','2202','2203') and isnull(tblAccTypeInfo.isCalculate,'')!='1'</changeCond>
+     <orderBy>tblAccTypeInfo.AccNumber,tblAccTypeInfo.AccName</orderBy>
+     <displayFields>
+          <field name="tblAccTypeInfo.AccNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" defaultValue="100" orderBy="升" />
+          <field name="tblAccTypeInfo.AccName" width="150" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.PayBankID" orderBy="升" />
+          <field name="tblSetExchange.CurrencyName" width="50" searchType="match" parentDisplay="false" display="@TABLENAME.Currency" />
+          <field name="isnull(tblSetExchange.RecordExchange,1)" width="50" parentDisplay="false" asName="@TABLENAME.CurrencyRate" display="@TABLENAME.CurrencyRate" />
+     </displayFields>
+     <saveFields>
+          <field name="tblAccTypeInfo.AccNumber" parentName="@TABLENAME.PayBankID" relationKey="true" hidden="true" orderBy="升" />
+          <field name="tblSetExchange.CurrencyName" parentName="@TABLENAME.tblSetExchange_CurrencyName" display="@TABLENAME.Currency" relationKey="false" hidden="true" />
+          <field name="isnull(tblSetExchange.RecordExchange,1)" parentName="@TABLENAME.CurrencyRate" display="@TABLENAME.CurrencyRate" relationKey="false" hidden="true" />
+          <field name="tblSetExchange.Currency" parentName="@TABLENAME.Currency" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

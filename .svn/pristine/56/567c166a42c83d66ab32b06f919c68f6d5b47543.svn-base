@@ -1,0 +1,80 @@
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title></title>
+<link rel="stylesheet" href="/style/css/reg.css" type="text/css">
+<link rel="stylesheet" href="/style1/css/ListRange.css" type="text/css">
+<link type="text/css" href="/js/skins/ZCMS/asyncbox.css" rel="stylesheet" />
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/js/AsyncBox.v1.4.5.js"></script>
+<script language="javascript" src="/js/function.js"></script>
+<script language="javascript" src="/js/gen/validate.vjs_zh_CN.js?1398393402542"></script>
+<script language="javascript">
+
+</script>
+<style type="text/css">
+
+</style>
+</head>
+
+<body onLoad="showStatus();">
+
+<form  method="post" scope="request" name="form"  action="/RegisterAction.do" onSubmit="return beforSubmit(this);" enctype="multipart/form-data">
+<input type="hidden" name="evalpost" value="true">
+<input type="hidden" name="from" value="offline">
+<input type="hidden" name="regFlag" value="3">
+<input type="hidden" name="encryptionType" value="3">
+<input type="hidden" name="updateDog" value="">
+<input type="hidden" name="utype" value="">
+<input type="hidden" name="from" value="offline">
+<input type="hidden" name="org.apache.struts.taglib.html.TOKEN" value="">
+<input type="hidden" name="winCurIndex" value="7">
+<div id="listRange_id"  align="center">
+	<div class="upgrade_mtop" style="margin:10px 0 20px 0; border:1px solid #FFFFFF">
+	    <div id="contentleft" style="height:100%;margin:10px 0 40px 0; ">
+		    <div id="contentright" >
+		    <div id="contentMain" style="height:1px;"> 
+		    
+          <div style="padding:20px 0 0 20px;overflow:hidden;">
+            <div style="padding:0 0 0 25px;float:none;text-align:left;line-height:20px;font-size:16px;">
+            以TP-LINK无线路由器为例，教您如何设置路由器的端口映射
+            </div>
+          </div>
+          <div style="padding:20px 0 0 20px;overflow:hidden;">
+            <div style="padding:0 0 0 25px;float:none;text-align:left;line-height:20px;font-size:16px;">
+            1、打开路由器管理界面，输入用户名和密码
+            </div>            
+            <p>
+                <img src="routeSet1.jpg" width="750px"/>
+            </p>
+          </div>          
+          <div style="padding:20px 0 0 20px;overflow:hidden;">
+            <div style="padding:0 0 0 25px;float:none;text-align:left;line-height:20px;font-size:16px;">
+            2、点击菜单：转发规则-->虚拟服务器 。点击添加新条目
+            </div>            
+            <p>
+                <img src="routeSet2.jpg" width="750px"/>
+            </p>
+          </div> 
+          <div style="padding:20px 0 0 20px;overflow:hidden;">
+            <div style="padding:0 0 0 25px;float:none;text-align:left;line-height:20px;font-size:16px;">
+            3、添加IP和端口，并点击保存
+            </div>            
+            <p>
+                <img src="routeSet3.jpg" width="750px"/>
+            </p>
+          </div> 
+          
+          <div style="height:20px">&nbsp;</div>
+          
+        </div>
+	</div>
+</div>
+
+
+</div>
+</form> 
+</body>
+</html>
+

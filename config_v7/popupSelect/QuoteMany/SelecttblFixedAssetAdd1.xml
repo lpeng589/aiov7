@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelecttblFixedAssetAdd1">
+     <table>tblFixedAssetAdd</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblFixedAssetAdd.id f1,
+      tblFixedAssetAdd.originalWorth f2,
+      tblFixedAssetAdd.GoodsNumber f3,
+      tblFixedAssetAdd.GoodsName f4,
+      tblFixedAssetAdd.GoodsSpec f5
+  from tblFixedAssetAdd
+     </defineSQL>
+     <classCode></classCode>
+     <condition></condition>
+     <changeCond>(tblFixedAssetAdd.statusId!='-1' and tblFixedAssetAdd.id not in (select AssetsAddId from tblFixedAssetClean WHERE workFlowNodeName='finish') and (tblFixedAssetAdd.id in (select AssetsAddId from tblFixedAssetDepreciate where tblFixedAssetDepreciate.Period=@Sess:NowPeriod and tblFixedAssetDepreciate.PeriodYear=@Sess:NowYear and tblFixedAssetDepreciate.statusId=1) or len(isnull(tblFixedAssetAdd.referDeprecia,''))!=0))</changeCond>
+     <orderBy>tblFixedAssetAdd.GoodsNumber,tblFixedAssetAdd.GoodsName</orderBy>
+     <displayFields>
+          <field name="tblFixedAssetAdd.originalWorth" width="100" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblFixedAssetAdd.GoodsNumber" width="150" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"/>
+          <field name="tblFixedAssetAdd.GoodsName" width="150" searchType="match" keySearch="true" parentDisplay="true" display="tblFixedAssetDevalue.AssetsAddId" orderBy="升"/>
+          <field name="tblFixedAssetAdd.GoodsSpec" width="100" searchType="match" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblFixedAssetAdd.id" parentName="tblFixedAssetDevalue.AssetsAddId" relationKey="true" hidden="true" />
+          <field name="tblFixedAssetAdd.originalWorth" parentName="tblFixedAssetDevalue.originalWorth" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

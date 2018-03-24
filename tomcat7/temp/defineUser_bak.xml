@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+   <define name="Day_InvtExcept">
+	<exec condition="1=0">
+		 
+	</exec>
+  </define>
+  
+   <define name="Day_Invt">
+
+    <sql type="class">report.GenInvtTask.exec(conn)</sql>
+
+  </define>  
+ 
+   <define name="bd_posStatus备份">
+		<!-- 门店pos机异常提醒-->
+	<sql type="condition">
+	<condition>
+	    <select>
+			select COUNT(1) as count from posSYJ where lastActiveTime !='' and datediff(MINUTE,lastActiveTime,getdate())&gt;60
+	    </select>
+		<select>			
+			select top 1 '<a href="                       javascript:mdiwin(''/UserFunctionQueryAction.do?tableName=posSYJ'',''门店收银机异常提醒'')"> 您 '+CONVERT(varchar(20),GETDATE(),21)+' 收到收银机异常提醒('+@SqlReturn:count+' 台收银机异常)</a>' as  bt,'您 '+CONVERT(varchar(20),GETDATE(),21)+' 收到收银机异常提醒（'+@SqlReturn:count+' 台收银机异常），请登录电脑查看' as tixing from posSYJ where datediff(MINUTE,lastActiveTime,getdate())&gt;10						
+		</select>
+		<select>
+			declare @EmployeeID varchar(8000)  set @EmployeeID=''
+			select @EmployeeID=@EmployeeID+b.EmployeeID+';'  from tblTaskManage a,tblTaskManageDet b where a.id=b.f_ref and a.DefineName='bd_posStatus'
+			select @EmployeeID as Emp
+		</select>
+	</condition>
+	<exec condition="'@SqlReturn:Emp'!='' &amp;&amp; @SqlReturn:count&gt;=1">
+		 <sql type="class">com.menyi.aio.web.advice.AdviceMgt.add(@Sess:UserId ,@SqlReturn:tixing, @SqlReturn:bt ,@SqlReturn:Emp ,关联单据号,notApprove,conn) </sql>		 
+	</exec>
+	</sql>
+  </define>
+
+
+
+  <define name="bd_posStatus">
+    <!-- 门店pos机异常提醒-->
+    <sql type="condition">
+      <condition>
+        <select>
+          select COUNT(1) as count from posSYJ where lastActiveTime !='' and datediff(MINUTE,lastActiveTime,getdate())&gt;60
+        </select>
+        <select>
+          select top 1 '<a href="                       javascript:mdiwin(''/UserFunctionQueryAction.do?tableName=posSYJ&amp;status=0'',''门店收银机异常提醒'')"> 您 '+CONVERT(varchar(20),GETDATE(),21)+' 收到收银机异常提醒('+@SqlReturn:count+' 台收银机异常)</a>' as  bt,'您 '+CONVERT(varchar(20),GETDATE(),21)+' 收到收银机异常提醒（'+@SqlReturn:count+' 台收银机异常），请登录电脑查看' as tixing from posSYJ where datediff(MINUTE,lastActiveTime,getdate())&gt;10
+        </select>
+        <select>
+          declare @EmployeeID varchar(8000)  set @EmployeeID=''
+          select @EmployeeID=@EmployeeID+b.EmployeeID+';'  from tblTaskManage a,tblTaskManageDet b where a.id=b.f_ref and a.DefineName='bd_posStatus'
+          select @EmployeeID as Emp
+        </select>
+      </condition>
+      <exec condition="'@SqlReturn:Emp'!='' &amp;&amp; @SqlReturn:count&gt;=1">
+        <sql type="class">com.menyi.aio.web.advice.AdviceMgt.add(@Sess:UserId ,@SqlReturn:tixing, @SqlReturn:bt ,@SqlReturn:Emp ,关联单据号,notApprove,conn) </sql>
+      </exec>
+    </sql>
+  </define>
+  
+  
+  <define name="Goods_Add_Company">
+    <sql type="condition">
+      <condition>
+        <select>select b.ComFullName from tblGoodsCompanyDet a,tblcompany b where a.companyCode=b.classCode and a.f_ref=@ValueofDB:id group by a.companyCode,b.ComFullName having COUNT(b.ComFullName)&gt;1 </select>
+      </condition>
+      <exec condition="'@SqlReturn:ComFullName'!='null'">
+        <error>门店 @SqlReturn:ComFullName 重复</error>
+      </exec>
+    </sql>
+
+    <sql type="procedure">{call proc_Add_Company(@ValueofDB:id,add,tblGoods,retCode,retVal)}</sql>
+
+  </define>
+
+
+  <define name="Goods_Delete_Company">
+
+    <sql type="procedure">{call proc_Add_Company(@ValueofDB:id,delete,tblGoods,retCode,retVal)}</sql>
+
+  </define>
+
+  <define name="Company_Add_Goods">
+    <sql type="condition">
+      <condition>
+        <select>select b.GoodsFullname from tblcompanygoodsdet a,tblGoods b where a.GoodsCode=b.classCode and a.f_ref=@ValueofDB:id group by a.GoodsCode,b.GoodsFullname having COUNT(b.GoodsFullname)&gt;1</select>
+      </condition>
+      <exec condition="'@SqlReturn:GoodsFullname'!='null'">
+        <error>商品 @SqlReturn:GoodsFullname 重复</error>
+      </exec>
+    </sql>
+
+    <sql type="procedure">{call proc_Add_Company(@ValueofDB:id,add,tblCompany,retCode,retVal)}</sql>
+
+  </define>
+
+
+  <define name="Company_Del_Goods">
+
+    <sql type="procedure">{call proc_Add_Company(@ValueofDB:id,delete,tblCompany,retCode,retVal)}</sql>
+
+  </define>
+
+<define name="tblSalesOrder_up_before">
+  <sql type="procedure">{call porc_ZDYsalesorderUp(@ValueofDB:id,before,seqCode,seqVal)}</sql>
+</define>
+
+  <define name="ZDYSalesOrder_add">
+    <sql type="condition">
+      <condition>
+        <select>select GoodsNumber,GoodsFullName from tblSalesOrderDet a,tblGoods b where a.GoodsCode=b.classCode and f_ref=@ValueofDB:id group by GoodsCode,BatchNo,GoodsNumber,GoodsFullName having COUNT(1)&gt;1</select>
+      </condition>
+      <!--明细中不能存在相同批号的商品-->
+      <exec condition="'@SqlReturn:GoodsNumber'!='null'">
+        <error>明细中不能存在相同批号的商品 @SqlReturn:GoodsNumber @SqlReturn:GoodsFullName  </error>
+      </exec>
+     </sql>
+  </define>
+
+  <define name="ZDY_BuyInStock_Add">
+    <sql type="condition">
+      <condition>
+        <select>select b.GoodsNumber,GoodsFullName from tblBuyInStockDet a,tblGoods b where a.GoodsCode=b.classCode and a.f_ref=@ValueofDB:id  and LEN(ISNULL(b.pihao,''))&gt;0 and a.BatchNo=''</select>
+        <select>select b.GoodsNumber as GNum,GoodsFullName as GName from tblBuyInStockDet a,tblGoods b where a.GoodsCode=b.classCode and a.f_ref=@ValueofDB:id  and a.BatchNo!='' and BatchNo&gt;CONVERT(varchar(10),GETDATE(),21)</select>
+      </condition>
+      <exec condition="'@SqlReturn:GoodsNumber'!='null'">
+        <error> @SqlReturn:GoodsNumber @SqlReturn:GoodsFullName 必须输入批号！ </error>
+      </exec>
+      <exec condition="'@SqlReturn:GNum'!='null'">
+        <error> @SqlReturn:GNum @SqlReturn:GName 的批号日期不能大于今天！ </error>
+      </exec>
+    </sql>
+  </define>
+
+  <define name="ZDY_OtherIn_Add">
+    <sql type="condition">
+      <condition>
+        <select>select b.GoodsNumber,GoodsFullName from tblOtherInDet a,tblGoods b where a.GoodsCode=b.classCode and a.f_ref=@ValueofDB:id  and LEN(ISNULL(b.pihao,''))&gt;0 and a.BatchNo=''</select>
+        <select>select b.GoodsNumber as GNum,GoodsFullName as GName from tblOtherInDet a,tblGoods b where a.GoodsCode=b.classCode and a.f_ref=@ValueofDB:id  and a.BatchNo!='' and BatchNo&gt;CONVERT(varchar(10),GETDATE(),21)</select>
+      </condition>
+      <exec condition="'@SqlReturn:GoodsNumber'!='null'">
+        <error> @SqlReturn:GoodsNumber @SqlReturn:GoodsFullName 必须输入批号！ </error>
+      </exec>
+      <exec condition="'@SqlReturn:GNum'!='null'">
+        <error> @SqlReturn:GNum @SqlReturn:GName 的批号日期不能大于今天！ </error>
+      </exec>
+    </sql>
+  </define>
+
+  <define name="ZDY_SalesReturnStock_Add">
+    <sql type="condition">
+      <condition>
+        <select>select b.GoodsNumber,GoodsFullName from tblSalesReturnStockDet a,tblGoods b where a.GoodsCode=b.classCode and a.f_ref=@ValueofDB:id  and LEN(ISNULL(b.pihao,''))&gt;0 and a.BatchNo=''</select>
+        <select>select b.GoodsNumber as GNum,GoodsFullName as GName from tblSalesReturnStockDet a,tblGoods b where a.GoodsCode=b.classCode and a.f_ref=@ValueofDB:id  and a.BatchNo!='' and BatchNo&gt;CONVERT(varchar(10),GETDATE(),21)</select>
+      </condition>
+      <exec condition="'@SqlReturn:GoodsNumber'!='null'">
+        <error> @SqlReturn:GoodsNumber @SqlReturn:GoodsFullName 必须输入批号！ </error>
+      </exec>
+      <exec condition="'@SqlReturn:GNum'!='null'">
+        <error> @SqlReturn:GNum @SqlReturn:GName 的批号日期不能大于今天！ </error>
+      </exec>
+    </sql>
+  </define>
+
+  <define name="bd_Goodstixing">
+    <!--<sql type="procedure">{call proc_bd_Goodstixing(retCode,retVal)}</sql>-->
+
+
+
+    <sql type="condition">
+      <condition>
+        <select>
+          select CONVERT(varchar(10),GETDATE(),21) as BillDate
+        </select>
+        <select>
+          if(select COUNT(1) from tblGoods,tblStocks where tblGoods.classCode=tblStocks.GoodsCode and  tblGoods.bzq!='' and BatchNo!='' and lastQty!=0 and ((tblGoods.bzqtx*3/2)-DATEDIFF(DAY,BatchNo,CONVERT(varchar(10),GETDATE(),21)))&lt;tblGoods.bzqtx)&gt;0
+          begin
+          select '<a href="                         javascript:mdiwin(''/ReportDataAction.do?reportNumber=StockGoodstixing&amp;createTime='+CONVERT(varchar(10),GETDATE(),21)+''',''临期产品提醒'')"> 您 '+CONVERT(varchar(10),GETDATE(),21)+' 有 '+cast(COUNT(1) as varchar(5))+'条产品临期提醒</a>' as bt,'您 '+CONVERT(varchar(10),GETDATE(),21)+' 有 '+cast(COUNT(1) as varchar(5))+'条产品临期提醒，请登录电脑查看' as tixing
+          from tblGoods,tblStocks where tblGoods.classCode=tblStocks.GoodsCode and  tblGoods.bzq!='' and BatchNo!='' and lastQty!=0 and ((tblGoods.bzqtx*3/2)-DATEDIFF(DAY,BatchNo,CONVERT(varchar(10),GETDATE(),21)))&lt;tblGoods.bzqtx
+          end
+        </select>
+        <select>
+          declare @EmployeeID varchar(8000)  set @EmployeeID=''
+          select @EmployeeID=@EmployeeID+b.EmployeeID+';'  from tblTaskManage a,tblTaskManageDet b where a.id=b.f_ref and a.DefineName='bd_Goodstixing'
+          select 	@EmployeeID as Emp
+        </select>
+      </condition>
+      <exec condition="'@SqlReturn:Emp'!=''">
+        <sql type="class">com.menyi.aio.web.advice.AdviceMgt.add(@Sess:UserId ,@SqlReturn:tixing, @SqlReturn:bt ,@SqlReturn:Emp ,关联单据号,notApprove,conn) </sql>
+        <sql>
+          insert into StockGoodstixing(id,StockCode, GoodsCode, BatchNo, Qty, Price, Amt, lingqi, createBy,createTime)select
+          LEFT(REPLACE(NEWID(),'-',''),30),b.StockCode, b.GoodsCode,b.BatchNo, b.lastQty, b.lastPrice,b.lastAmount,((a.bzqtx*3/2)-DATEDIFF(DAY,BatchNo,CONVERT(varchar(10),GETDATE(),21))) as lingqi,1,convert(varchar(19),getdate(),21)as createTime
+          from  tblGoods a
+          join tblStocks b on a.classCode=b.GoodsCode
+          where a.bzq!='' and BatchNo!='' and b.lastQty!=0 and ((a.bzqtx*3/2)-DATEDIFF(DAY,BatchNo,CONVERT(varchar(10),GETDATE(),21)))&lt;a.bzqtx
+        </sql>
+      </exec>
+    </sql>
+  </define>
+
+  <define name="SalesOrder_NewGoods">
+	<exec condition="true">
+		<error>here</error>
+	</exec>
+    <sql type="procedure">{call proc_SalesOrder_NewGoods(retCode,retVal)}</sql>
+
+  </define>
+  
+<define name="tblSalesOrder_up">
+	<!-- <sql type="condition">判断当前信用额度是否足够，不足时，更新字段标识
+		<condition><select>select ISNULL(b.Credit,0)-ISNULL(c.ReceiveTotalRemain,0)-ISNULL(a.TotalTaxAmount,0) as Amt
+						
+						from tblSalesOrder a
+						join tblCompany b on a.CompanyCode=b.classCode 
+						left join tblCompanyTotal c on a.CompanyCode=c.CompanyCode
+						where a.id=@ValueofDB:id</select></condition>
+		<exec condition="@SqlReturn:Amt&lt;=0">
+			<sql>update tblSalesOrder set IsCredit='不足' where id=@ValueofDB:id</sql>
+		</exec>
+		<exec condition="@SqlReturn:Amt&gt;0">
+			<sql>update tblSalesOrder set IsCredit='足够' where id=@ValueofDB:id</sql>
+		</exec>				
+	</sql>-->
+	<sql type="condition"><!-- 判断当前信用额度不足时提示-->
+		<condition><select>select b.Account1,ISNULL(b.Credit,0)-ISNULL(c.ReceiveTotalRemain,0)-ISNULL(a.TotalTaxAmount,0) as Amt,
+						a.ddtype as ddtype
+						from tblSalesOrder a
+						join tblCompany b on a.CompanyCode=b.classCode 
+						left join tblCompanyTotal c on a.CompanyCode=c.CompanyCode
+						where a.id=@ValueofDB:id</select></condition>
+		<exec condition="@SqlReturn:Amt&lt;=0&amp;&amp;'@SqlReturn:Account1'=='加盟店'&amp;&amp;'@SqlReturn:ddtype'=='1'">
+			<confirm yesDefine="tblSalesOrder_add" noDefine="">当前门店信用额度不足，是否继续保存？</confirm>		
+		</exec>			
+	</sql>
+ 
+	
+	<sql type="procedure">{call porc_ZDYsalesorderUp(@ValueofDB:id,up,seqCode,seqVal)}</sql>
+	<!--更新备用备注-->
+	<sql>update tblSalesOrder set Bremark=Remark where id=@ValueofDB:id </sql>
+</define>
+ 
+<define name="SalesOrder_add">
+	<!-- <sql type="condition">判断当前信用额度是否足够，不足时，更新字段标识
+		<condition><select>select ISNULL(b.Credit,0) as Credit,ISNULL(b.Credit,0)-ISNULL(c.ReceiveTotalRemain,0)-ISNULL(a.TotalTaxAmount,0) as Amt
+						from tblSalesOrder a
+						join tblCompany b on a.CompanyCode=b.classCode 
+						left join tblCompanyTotal c on a.CompanyCode=c.CompanyCode
+						where a.id=@ValueofDB:id</select></condition>
+		<exec condition="@SqlReturn:Amt&lt;=0">
+			<sql>update tblSalesOrder set IsCredit='不足' where id=@ValueofDB:id</sql>
+		</exec>
+		<exec condition="@SqlReturn:Amt&gt;0">
+			<sql>update tblSalesOrder set IsCredit='足够' where id=@ValueofDB:id</sql>
+		</exec>				
+	</sql>-->
+	<sql type="condition"><!-- 判断当前信用额度不足时提示-->
+		<condition><select>select b.Account1,ISNULL(b.Credit,0)-ISNULL(c.ReceiveTotalRemain,0)-ISNULL(a.TotalTaxAmount,0) as Amt
+						from tblSalesOrder a
+						join tblCompany b on a.CompanyCode=b.classCode 
+						left join tblCompanyTotal c on a.CompanyCode=c.CompanyCode
+						where a.id=@ValueofDB:id</select></condition>
+		<exec condition="@SqlReturn:Amt&lt;=0&amp;&amp;'@SqlReturn:Account1'=='加盟店'&amp;&amp;'@SqlReturn:ddtype'=='1'">
+			<confirm yesDefine="tblSalesOrder_add" noDefine="">当前门店信用额度不足，是否继续保存？</confirm>		
+		</exec>			
+	</sql>
+	
+    <!--更新备用备注-->
+    <sql>update tblSalesOrder set Bremark=Remark where id=@ValueofDB:id </sql>
+    <!-- 可加订单量控制-->
+    <!-- <sql type="procedure">{call proc_CanOutStocksTemp(@ValueofDB:id,@ValueofDB:BillDate,retCode,retVal)}</sql>-->
+    
+     <!-- 按类和编号重新插入明细数据-->
+    <sql> 
+ 
+	select * into #OrderDetTemp from tblSalesOrderDet where f_ref=@ValueofDB:id
+
+	delete from  tblSalesOrderDet where f_ref=@ValueofDB:id
+
+	insert into tblSalesOrderDet(id, f_ref, GoodsCode, Remark, SendDate, EmployeeID, DepartmentCode, NotOutQty, OutQty, BackQty, UnitOutQty, UnitBackQty, InvoiceQty, StockCode, FinishStatus, SCompanyID, classCode, RowON, BatchNo, workFlowNodeName, workFlowNode, PresentSampleType, yearNO, Inch, Hue, CRMID, CRMpactDetID, RefSalseQuoteDetid, TrackNo, AccountingPrice, BackAmount, TotalReceiveAmt, NeedReceiveAmt, ProDate, Availably, NotPayQty, OutPayQty, ViewTotalQty, Qty, Price, Amount, UnitBaseQty, UnitQty, UnitPrice, Discount, DisPrice, DisBackAmt, DisAmount, TaxPrice, TaxAmount, CoTaxAmt, CurPrice, CurAmount, SecQty, BaseQty, SecUnit, UnitIntQty, CostPrice, CostAmount, InvoiceAmount, NoInvoiceAmount, InvoiceStatus, Status, RefCode, Flag, RefQty, sbwxID, CurNeedReceiveAmt, AllowMult)select a.id, f_ref, GoodsCode, a.Remark, SendDate, EmployeeID, DepartmentCode, NotOutQty, OutQty, BackQty, UnitOutQty, UnitBackQty, InvoiceQty, a.StockCode, FinishStatus, a.SCompanyID, a.classCode, a.RowON, BatchNo, a.workFlowNodeName, a.workFlowNode, PresentSampleType, yearNO, Inch, Hue, CRMID, CRMpactDetID, RefSalseQuoteDetid, TrackNo, a.AccountingPrice, BackAmount, TotalReceiveAmt, NeedReceiveAmt, ProDate, Availably, NotPayQty, OutPayQty, ViewTotalQty, Qty, Price, Amount, UnitBaseQty, UnitQty, UnitPrice, Discount, DisPrice, DisBackAmt, DisAmount, TaxPrice, TaxAmount, CoTaxAmt, CurPrice, CurAmount, SecQty, BaseQty, a.SecUnit, UnitIntQty, CostPrice, CostAmount, InvoiceAmount, NoInvoiceAmount, InvoiceStatus, Status, RefCode, Flag, RefQty, sbwxID, a.CurNeedReceiveAmt, a.AllowMult from  #OrderDetTemp a,tblGoods b where a.GoodsCode=b.classCode order by left(GoodsCode,5),GoodsNumber
+ 
+	drop table #OrderDetTemp
+
+	</sql>
+ 
+  </define>
+
+<define name="bd_htdate">
+		<!-- 门店合同到期提醒-->
+	<condition>
+		<select>
+			if (select COUNT(1) as count from tblhtdateMsg where createtime like CONVERT(varchar(100), GETDATE(), 23)+'%')&gt;0
+			begin
+				select '<a href="                         javascript:mdiwin(''/ReportDataAction.do?reportNumber=htDate'',''门店合同到期提醒'')"> 您 '+CONVERT(varchar(10),GETDATE(),21)+' 有 '+cast(COUNT(1) as varchar(5))+' 条合同到期提醒</a>' as  bt,'您 '+CONVERT(varchar(10),GETDATE(),21)+' 有 '+cast(COUNT(1) as varchar(5))+'条合同到期提醒，请登录电脑查看' as tixing from tblhtdateMsg where createtime like CONVERT(varchar(100), GETDATE(), 23)+'%'				
+			end
+		</select>
+		<select>
+			declare @EmployeeID varchar(8000)  set @EmployeeID=''
+			select @EmployeeID=@EmployeeID+b.EmployeeID+';'  from tblTaskManage a,tblTaskManageDet b where a.id=b.f_ref and a.DefineName='bd_htdate'
+			select @EmployeeID as Emp
+		</select>
+	</condition>
+	<exec condition="'@SqlReturn:Emp'!=''">
+		 <sql type="class">com.menyi.aio.web.advice.AdviceMgt.add(@Sess:UserId ,@SqlReturn:tixing, @SqlReturn:bt ,@SqlReturn:Emp ,关联单据号,notApprove,conn) </sql>
+	</exec>
+  </define>
+<!-- 品控复核-->
+  <define name="BuyIn_pkfh">
+    <sql type="condition">
+      <condition>
+        <select>select BillNo,pkfh,cgfh,workFlowNodeName from tblBuyInStock where id=@ValueofDB:id</select>
+      </condition>
+      <exec condition="'@SqlReturn:workFlowNodeName'!='finish'">
+        <error> @SqlReturn:BillNo 未审核完毕</error>
+      </exec>
+      <exec condition="'@SqlReturn:pkfh'=='-1'">
+        <error> @SqlReturn:BillNo 已品控复核</error>
+      </exec>
+      <exec condition="'@SqlReturn:pkfh'=='-2'">
+        <error> @SqlReturn:BillNo 已总经办特批</error>
+      </exec>
+      <exec condition="true">
+        <sql>update tblBuyInStock set pkfh='-1',pkfhr=(select '品控复核人：'+EmpFullName from tblemployee a where a.id=@Sess:UserId) where id=@ValueofDB:id</sql>
+      </exec>
+    </sql>
+  </define>
+  <!-- 品控特批复核-->
+  <define name="BuyIn_pkfh_tp">
+    <sql type="condition">
+      <condition>
+        <select>select BillNo,pkfh,cgfh,workFlowNodeName from tblBuyInStock where id=@ValueofDB:id</select>
+      </condition>
+      <exec condition="'@SqlReturn:workFlowNodeName'!='finish'">
+        <error> @SqlReturn:BillNo 未审核完毕</error>
+      </exec>
+      <exec condition="'@SqlReturn:pkfh'=='-1'">
+        <error> @SqlReturn:BillNo 已品控复核</error>
+      </exec>
+      <exec condition="'@SqlReturn:pkfh'=='-2'">
+        <error> @SqlReturn:BillNo 已总经办特批</error>
+      </exec>
+      <exec condition="true">
+        <sql>update tblBuyInStock set pkfh='-2',pkfhr=(select '品控特批人：'+EmpFullName from tblemployee a where a.id=@Sess:UserId) where id=@ValueofDB:id</sql>
+      </exec>
+    </sql>
+  </define> 
+  <!-- 品控反复核-->
+  <define name="BuyIn_pkfh_del">
+    <sql type="condition">
+      <condition>
+        <select>select BillNo,pkfh,cgfh,workFlowNodeName from tblBuyInStock where id=@ValueofDB:id</select>
+      </condition>
+     <exec condition="'@SqlReturn:workFlowNodeName'!='finish'">
+        <error> @SqlReturn:BillNo 未审核完毕</error>
+      </exec>
+    <exec condition="'@SqlReturn:cgfh'=='-1'">
+      <error> @SqlReturn:BillNo 已采购复核，不允许反复核</error>
+     </exec>
+      <exec condition="'@SqlReturn:pkfh'=='-2'">
+        <error> @SqlReturn:BillNo 已特批复核，不允许反复核</error>
+      </exec>
+      <exec condition="'@SqlReturn:pkfh'=='0'">
+        <error> @SqlReturn:BillNo 未进行品控复核或特批复核</error>
+      </exec>
+    <exec condition="true">
+      <sql>update tblBuyInStock set pkfh='0',pkfhr=(select '品控反复核人：'+EmpFullName from tblemployee a where a.id=@Sess:UserId) where id=@ValueofDB:id</sql>
+    </exec>
+    </sql>
+  </define>
+  <!-- 特批反复核-->
+  <define name="BuyIn_pkfh_tp_del">
+    <sql type="condition">
+      <condition>
+        <select>select BillNo,pkfh,cgfh,workFlowNodeName from tblBuyInStock where id=@ValueofDB:id</select>
+      </condition>
+      <exec condition="'@SqlReturn:workFlowNodeName'!='finish'">
+        <error> @SqlReturn:BillNo 未审核完毕</error>
+      </exec>
+      <exec condition="'@SqlReturn:cgfh'=='-1'">
+        <error> @SqlReturn:BillNo 已品控复核，不允许反复核</error>
+      </exec>
+      <exec condition="'@SqlReturn:pkfh'=='-1'">
+        <error> @SqlReturn:BillNo 已采购复核，不允许反复核</error>
+      </exec>
+      <exec condition="'@SqlReturn:pkfh'=='0'">
+        <error> @SqlReturn:BillNo 未进行品控复核或特批复核</error>
+      </exec>
+      <exec condition="true">
+        <sql>update tblBuyInStock set pkfh='0',pkfhr=(select '特批反复核人：'+EmpFullName from tblemployee a where a.id=@Sess:UserId) where id=@ValueofDB:id</sql>
+      </exec>
+    </sql>
+  </define>  <!-- 采购复核-->
+  <define name="BuyIn_cgfh">
+    <sql type="condition">
+      <condition>
+        <select>select BillNo,pkfh,cgfh,workFlowNodeName from tblBuyInStock where id=@ValueofDB:id</select>
+      </condition>
+      <exec condition="'@SqlReturn:workFlowNodeName'!='finish'">
+        <error> @SqlReturn:BillNo 未审核完毕</error>
+      </exec>
+    <exec condition="'@SqlReturn:pkfh'=='0'">
+      <error> @SqlReturn:BillNo 还未进行品控复核</error>
+    </exec>
+    <exec condition="'@SqlReturn:cgfh'=='-1'">
+      <error> @SqlReturn:BillNo 已采购复核</error>
+    </exec>
+    <exec condition="'@SqlReturn:cgfh'!='-1'">
+      <sql>update tblBuyInStock set cgfh='-1',cgfhr=(select '采购复核人：'+EmpFullName from tblemployee a where a.id=@Sess:UserId) where id=@ValueofDB:id</sql>
+    </exec>
+    </sql>
+  </define>
+  <!-- 采购反复核-->
+  <define name="BuyIn_cgfh_del">
+    <sql type="condition">
+      <condition>
+        <select>select BillNo,pkfh,cgfh,workFlowNodeName from tblBuyInStock where id=@ValueofDB:id</select>
+      </condition>
+      <exec condition="'@SqlReturn:workFlowNodeName'!='finish'">
+        <error> @SqlReturn:BillNo 未审核完毕</error>
+      </exec>
+      <exec condition="'@SqlReturn:cgfh'!='-1'">
+        <error> @SqlReturn:BillNo 未进行采购复核</error>
+      </exec>
+      <exec condition="'@SqlReturn:cgfh'=='-1'">
+        <sql>update tblBuyInStock set cgfh='0',cgfhr=(select '采购反复核人：'+EmpFullName from tblemployee a where a.id=@Sess:UserId) where id=@ValueofDB:id</sql>
+      </exec>
+    </sql>
+  </define>
+
+  <!-- 财务复核-->
+<define name="SalesOut_cwfh">
+  <sql type="condition">
+    <condition>
+      <select>select BillNo,cwfh,workFlowNodeName from tblsalesOutStock where id=@ValueofDB:id</select>
+    </condition>
+    <exec condition="'@SqlReturn:workFlowNodeName'!='finish'">
+      <error> @SqlReturn:BillNo 未审核完毕</error>
+    </exec>
+    <exec condition="'@SqlReturn:cwfh'=='-1'">
+      <error> @SqlReturn:BillNo 已进行财务复核</error>
+    </exec>
+    <exec condition="'@SqlReturn:cwfh'!='-1'">
+      <sql>update tblsalesOutStock set cwfh='-1',cwfhr=(select '财务复核人：'+EmpFullName from tblemployee a where a.id=@Sess:UserId) where id=@ValueofDB:id</sql>
+    </exec>
+  </sql>
+</define>
+<!-- 财务反复核-->
+  <define name="SalesOut_cwfh_del">
+    <sql type="condition">
+      <condition>
+        <select>select BillNo,cwfh,workFlowNodeName from tblsalesOutStock where id=@ValueofDB:id</select>
+      </condition>
+      <exec condition="'@SqlReturn:workFlowNodeName'!='finish'">
+        <error> @SqlReturn:BillNo 未审核完毕</error>
+      </exec>
+      <exec condition="'@SqlReturn:cwfh'!='-1'">
+        <error> @SqlReturn:BillNo 未进行财务复核</error>
+      </exec>
+      <exec condition="'@SqlReturn:cwfh'=='-1'">
+        <sql>update tblsalesOutStock set cwfh='0',cwfhr=(select '财务反复核人：'+EmpFullName from tblemployee a where a.id=@Sess:UserId) where id=@ValueofDB:id</sql>
+      </exec>
+    </sql>
+  </define>
+
+  <!-- 财务复核-->
+<define name="Allot_cwfh">
+  <sql type="condition">
+    <condition>
+      <select>select BillNo,cwfh,workFlowNodeName from tblAllot where id=@ValueofDB:id</select>
+    </condition>
+    <exec condition="'@SqlReturn:workFlowNodeName'!='finish'">
+      <error> @SqlReturn:BillNo 未审核完毕</error>
+    </exec>
+    <exec condition="'@SqlReturn:cwfh'=='-1'">
+      <error> @SqlReturn:BillNo 已进行财务复核</error>
+    </exec>
+    <exec condition="'@SqlReturn:cwfh'!='-1'">
+      <sql>update tblAllot set cwfh='-1',cwfhr=(select '财务复核人：'+EmpFullName from tblemployee a where a.id=@Sess:UserId) where id=@ValueofDB:id</sql>
+    </exec>
+  </sql>
+</define>
+<!-- 财务反复核-->
+  <define name="Allot_cwfh_del">
+    <sql type="condition">
+      <condition>
+        <select>select BillNo,cwfh,workFlowNodeName from tblAllot where id=@ValueofDB:id</select>
+      </condition>
+      <exec condition="'@SqlReturn:workFlowNodeName'!='finish'">
+        <error> @SqlReturn:BillNo 未审核完毕</error>
+      </exec>
+      <exec condition="'@SqlReturn:cwfh'!='-1'">
+        <error> @SqlReturn:BillNo 未进行财务复核</error>
+      </exec>
+      <exec condition="'@SqlReturn:cwfh'=='-1'">
+        <sql>update tblAllot set cwfh='0',cwfhr=(select '财务反复核人：'+EmpFullName from tblemployee a where a.id=@Sess:UserId) where id=@ValueofDB:id</sql>
+      </exec>
+    </sql>
+  </define>
+
+</defineSqls>

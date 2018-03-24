@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+<define name="tblProductTest_Add">
+ <sql type="condition">
+<condition>
+	<select>
+select id,TestQty from tblProductTest where id=@ValueofDB:tblProductTest_id 
+	</select>
+  </condition>
+ <exec condition="@SqlReturn:TestQty ==0">
+ <error>buyorder.Qty.error</error>
+  </exec>
+  </sql>	
+</define>
+
+<define name="tblProductInTest_Add">
+ <sql type="condition">
+<condition>
+	<select>
+select id,TestQty from tblProductInTest where id=@ValueofDB:tblProductInTest_id 
+	</select>
+  </condition>
+ <exec condition="@SqlReturn:TestQty ==0">
+ <error>buyorder.Qty.error</error>
+  </exec>
+  </sql>	
+</define>
+
+<!--删除或修改检验项目设置时判断是否被用到-->
+<define name="tblTestitem_delete">
+ <sql type="condition">
+<condition>
+	<select>
+select count(RelID) as ids  from tblProductTestDet where RelID=@ValueofDB:tblTestitem_id 
+	</select>
+		<select>
+select count(RelID) as ids2  from tblProductInTestDet where RelID=@ValueofDB:tblTestitem_id 
+	</select>
+  </condition>
+ <exec condition="@SqlReturn:ids&gt;0||@SqlReturn:ids2&gt;0">
+ <error>DelBill.KeepNextBill.error</error>
+  </exec>
+  </sql>	
+</define>
+</defineSqls>

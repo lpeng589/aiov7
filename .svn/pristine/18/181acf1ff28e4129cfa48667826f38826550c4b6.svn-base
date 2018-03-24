@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="Stock">
+     <table>tblStock</table>
+     <forwardModel>tblStock</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblStock.classCode f1,
+      tblStock.StockNumber f2,
+      tblStock.StockFullName f3,
+      tblStock.StockFullNamePYM f4
+	  from tblStock
+     </defineSQL>
+     <classCode>tblStock.classCode</classCode>
+     <remark>仓库,供单仓库时使用</remark>
+     <condition></condition>
+     <changeCond>tblStock.statusid!='-1' and tblStock.workFlowNodeName='finish'</changeCond>
+     <orderBy>tblStock.StockNumber,tblStock.StockFullName</orderBy>
+     <displayFields>
+          <field name="tblStock.StockNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblStock.StockFullName" width="75" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.StockCode" orderBy="升" />
+          <field name="tblStock.StockFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblStock.classCode" parentName="@TABLENAME.StockCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

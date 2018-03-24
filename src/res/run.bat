@@ -1,0 +1,1 @@
+java -cp .;resourceW resource.ResLogin

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectFortuneEmployeeDet" type="checkBox" belongTableName="tblEmployee">
+     <table>tblEmployee,tblDepartment</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblEmployee.id f1,
+      tblEmployee.DepartmentCode f2,
+      tblEmployee.EmpNumber f3,
+      tblEmployee.EmpFullName f4,
+      tblEmployee.EmpFullNamePYM f5,
+      tblEmployee.TitleID f6,
+      tblDepartment.DeptFullName f7,
+      tblDepartment.DeptFullNamePYM f8
+  from tblEmployee
+left join tblDepartment on tblEmployee.DepartmentCode=tblDepartment.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark></remark>
+     <condition>((tblEmployee.SCompanyID='@Sess:SCompanyID' and (tblEmployee.statusId!='-1' or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish') and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish')</condition>
+     <changeCond></changeCond>
+     <orderBy>tblEmployee.EmpNumber,tblEmployee.EmpFullName</orderBy>
+     <displayFields>
+          <field name="tblEmployee.EmpNumber" width="50" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblEmployee.EmpFullName" width="50" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.EmployeeID" orderBy="升" />
+          <field name="tblEmployee.EmpFullNamePYM" width="80" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+          <field name="tblEmployee.TitleID" width="100" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblDepartment.DeptFullName" width="75" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.DepartmentCode" />
+          <field name="tblDepartment.DeptFullNamePYM" width="80" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" relationKey="true" hidden="true" />
+          <field name="tblEmployee.DepartmentCode" parentName="@TABLENAME.DepartmentCode" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

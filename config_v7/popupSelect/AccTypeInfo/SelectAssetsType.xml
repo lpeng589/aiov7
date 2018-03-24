@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SelectAssetsType" > 
+		<orderBy>tblFixedAssetType.TypeName</orderBy>
+		<forwardModel>tblFixedAssetType</forwardModel>
+		<defineSQL>
+from tblFixedAssetType
+		</defineSQL>
+		<displayFields>
+			<field name="tblFixedAssetType.TypeName" display="@TABLENAME.AssetsType" parentDisplay="true" width="200" searchType="match" keySearch="true" />
+			<field name="tblFixedAssetType.Remark" parentDisplay="false" width="200" searchType="match" />
+		</displayFields>
+		<saveFields>
+			<field name="tblFixedAssetType.id" parentName="@TABLENAME.AssetsType" hidden="true" relationKey="true" width="0" />
+			<field name="tblFixedAssetType.AssetAcc" parentName="@TABLENAME.AssetAcc" compare="false" parentDisplay="true" keySearch="true" />
+		</saveFields>
+	</select>
+</popupSelect>

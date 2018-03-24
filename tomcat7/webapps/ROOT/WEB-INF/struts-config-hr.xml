@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN" "http://struts.apache.org/dtds/struts-config_1_2.dtd">
+<struts-config>
+	<!-- 注：每个Action必须写上相应的注释 否则后果自负-->
+	<form-beans>
+		<!-- 考情管理 -->
+		<form-bean name="reviewSearchForm" type="com.koron.hr.review.HRReviewSearchForm" />
+		<form-bean name="WorkRuleListReportForm" type="com.koron.hr.workRule.WorkRuleListReportForm" />
+		<form-bean name="DutyPeriodsForm" type="com.koron.hr.workRule.DutyPeriodsForm" />
+		<form-bean name="HRTextUploadForm" type="com.koron.hr.textUpload.HRTextUploadForm" />
+	</form-beans>
+	
+	<global-forwards>
+		
+		
+	</global-forwards>
+	
+	<action-mappings>
+		<!-- 考试管理 -->
+		<action path="/ExamAction"  name="BaseSearchForm" parameter="/ExamAction.do"
+			type="com.koron.hr.exam.ExamAction">
+			<forward name="main" path="/vm/hr/exam/exam.jsp" />
+			<forward name="takepart" path="/vm/hr/exam/takepartExam.jsp" />
+		</action>
+		<action path="/GradeAction" name="BaseSearchForm" parameter="/GradeAction.do"
+			type="com.koron.hr.grade.GradeAction" >
+			<forward name="detail" path="/vm/hr/grade/gradeDet.jsp" />
+			<forward name="query" path="/vm/hr/grade/grade.jsp" />
+		</action>
+		
+		<!-- 表现评估 -->
+		<action path="/HRReviewAction" name="reviewSearchForm" parameter="/HRReviewAction.do"
+			type="com.koron.hr.review.HRReviewAction" >
+			<forward name="reviewList" path="/vm/hr/review/reviewList.jsp" />
+		</action>
+		
+		<!-- 考勤管理 -->
+		<action path="/DutyPeriodsAction" name="DutyPeriodsForm"
+			type="com.koron.hr.workRule.DutyPeriodsAction"
+			parameter="/DutyPeriodsAction.do?type=$type">
+			<forward name="searchPeriods" path="/vm/checkOnWorkAttendance/periodsSearch.jsp" />
+			<forward name="searchSquad" path="/vm/checkOnWorkAttendance/squadSearch.jsp" />
+		</action>
+
+		<action path="/WorkRuleReportAction" name="WorkRuleListReportForm"
+			type="com.koron.hr.workRule.WorkRuleReportAction"
+			parameter="/WorkRuleReportAction.do?type=$type">
+			<forward name="workRuleListReport" path="/vm/checkOnWorkAttendance/workRuleListReport.jsp" />
+			<forward name="workRuleStatReport" path="/vm/checkOnWorkAttendance/workRuleStatReport.jsp" />
+		</action>
+		<action path="/InCardAnnal" name="uploadForm"
+			type="com.koron.hr.workRule.InCardAnnalAction"
+			parameter="/InCardAnnal.do">
+			<forward name="excelUpload" path="/vm/checkOnWorkAttendance/excelUpload.jsp" />
+			<forward name="err" path="/vm/checkOnWorkAttendance/err.jsp" />
+		</action>
+		<!-- 结束 -->
+		
+		<!-- 考情管理 -->
+		<action path="/TextUploadAction"  name="HRTextUploadForm" scope="session"
+			type="com.koron.hr.textUpload.HRTextUploadAction"
+			parameter="/TextUploadAction.do" >
+				<forward name="textUpload" path="/vm/hr/textUpload/textUpload.jsp" />
+				<forward name="importComplete" path="/vm/hr/textUpload/importTextUpdata.jsp" />
+		</action>
+		
+	</action-mappings>
+
+</struts-config>

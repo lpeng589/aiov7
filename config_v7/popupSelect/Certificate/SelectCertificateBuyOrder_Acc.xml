@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectCertificateBuyOrder_Acc" type="checkBox">
+     <table>tblBuyOrder,tblCompany,tblEmployee,tblDepartment</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      tblBuyOrder.id f1,
+      tblBuyOrder.BillDate f2,
+      tblBuyOrder.BillNo f3,
+      tblBuyOrder.InVoiceType f4,
+      tblCompany.ComFullName f5,
+      tblEmployee.EmpFullName f6,
+      tblDepartment.DeptFullName f7,
+      tblBuyOrder.TotalTaxAmount f8,
+      tblBuyOrder.CurTotalAmount f9,
+      tblBuyOrder.TotalPayAmt f10,
+      tblBuyOrder.CurTotalPayAmt f11
+  from tblBuyOrder 
+								left join tblCompany on tblBuyOrder.CompanyCode = tblCompany.classCode 
+								left join tblEmployee on tblEmployee.id= tblBuyOrder.employeeid
+								left join tblDepartment on tblDepartment.classcode=tblBuyOrder.departmentcode
+     </defineSQL>
+     <classCode></classCode>
+     <condition>tblBuyOrder.workFlowNodeName = 'finish' and LEN(CertificateNo)=0 and tblBuyOrder.statusId!=2 and AccountAmount&gt;0</condition>
+     <changeCond></changeCond>
+     <orderBy>tblBuyOrder.BillDate,tblBuyOrder.BillNo</orderBy>
+     <displayFields>
+          <field name="tblBuyOrder.BillDate" width="100" searchType="scope" keySearch="true" parentDisplay="false" />
+          <field name="tblBuyOrder.BillNo" width="120" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblBuyOrder.InVoiceType" width="80" searchType="match" parentDisplay="false" />
+          <field name="tblCompany.ComFullName" width="150" searchType="match" parentDisplay="false" display="tblBuyOrder.CompanyCode" />
+          <field name="tblEmployee.EmpFullName" width="85" searchType="match" parentDisplay="false" display="tblBuyOrder.EmployeeID" />
+          <field name="tblDepartment.DeptFullName" width="85" searchType="match" parentDisplay="false" display="tblBuyOrder.DepartmentCode" />
+          <field name="tblBuyOrder.TotalTaxAmount" width="100" parentDisplay="false" />
+          <field name="tblBuyOrder.CurTotalAmount" width="100" parentDisplay="false" />
+          <field name="tblBuyOrder.TotalPayAmt" width="110" parentDisplay="false" />
+          <field name="tblBuyOrder.CurTotalPayAmt" width="110" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblBuyOrder.id" parentName="@TABLENAME.id" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

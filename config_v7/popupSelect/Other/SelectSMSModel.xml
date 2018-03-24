@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name = "SelectSMSModel">
+        <table>tblSMSContent,tblSMSModel</table>
+        <relation>tblSMSModel on tblSMSContent.f_ref=tblSMSModel.id</relation>
+        <condition>(tblSMSModel.billTableName='@ValueofDB:BillTableName' and tblSMSModel.ExecuteAction='@ValueofDB:BillAction')</condition>
+		<displayFields>
+		<field name="tblSMSContent.SMSContent"  width="400" searchType="match" parentDisplay="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblSMSContent.SMSContent" parentName="tblSMSContent.SMSContent" hidden="true"/>
+		</saveFields>
+	</select>
+</popupSelect>

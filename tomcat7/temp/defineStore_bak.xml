@@ -1,0 +1,2184 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+<!--====================================================其他出库单==================================================================-->
+<define name="tblOtherOut_Add">
+	<sql type="condition"><!--回填内包装数,计算 桶/箱/余支-->
+		<condition>
+			<select>
+				select a.workFlowNode,SUM(isnull(b.inPackageNum,0)) inPackageQty 
+				from tblOtherOut a 
+				left join tblOtherOutDet b on b.f_ref = a.id
+				where a.id = @ValueofDB:id group by a.workFlowNode
+			</select>
+		
+		</condition>
+		
+		<exec condition=" @SqlReturn:workFlowNode == 0 ">
+		
+			<sql>
+				update tblOtherOutDet set inPackageNum = b.inPackageNum, bucketCount = b.bucketCount,boxCount = b.boxCount, yuCount = b.yuCount
+				from (
+				select a.BillNo,b.id,b.Qty,c.inPackageNum,
+				 cast((case when c.BaseUnit = '桶' then b.qty end) as numeric(18,2)) as bucketCount,
+				 cast((case when c.BaseUnit = '支' then  FLOOR(b.qty/c.inPackageNum) end) as numeric(18,2)) as boxCount,
+				 cast((case when c.BaseUnit = '支' then b.qty %c.inPackageNum end) as numeric(18,2)) as yuCount
+				from tblOtherOut a
+				left join tblOtherOutDet b on b.f_ref = a.id
+				left join tblGoods c on c.classCode = b.GoodsCode
+				where a.id = @ValueofDB:id ) b 
+				where b.id = tblOtherOutDet.id
+			</sql>     
+		</exec>
+	</sql>
+	<sql type="condition"><!--折扣不是0到100之间的数值时给出错误提示-->
+		<exec condition="@ValueofDB:tblOtherOut_Discount&lt;=0||@ValueofDB:tblOtherOut_Discount&gt;100">				
+			<error>common.Discount.error</error>        
+		</exec>
+	</sql>
+	<sql type="condition"><!--启用了序列号属性，并且所选择的商品启用了序列号但没有录入序列号给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsSeq from tblOtherOutDet a left join tblgoods c on c.classCode=a.GoodsCode where c.seqIsUsed=0 and len(isnull(a.seq,''))=0 and (select isUsed from tblGoodsAttribute where propName='Seq')=1 and a.f_ref=@ValueofDB:tblOtherOut_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsSeq' != 'null'">	
+			<error>enter.seq.error,@SqlReturn:GoodsSeq</error>
+	  </exec>
+	</sql>
+	<sql type="condition"><!--数量小于等于0的商品判断-->
+		<condition><select>select b.GoodsFullName as GoodsQ from tblOtherOutDet a,tblGoods b where a.f_ref=@ValueofDB:tblOtherOut_id and isnull(a.Qty,0)&lt;=0 and b.classCode=a.GoodsCode</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>common.qty.negative.error,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--折扣不是0到100之间的数值时给出错误提示-->
+		<condition><select>select 'disCountError' as disCountError from tblOtherOutDet a where a.f_ref=@ValueofDB:tblOtherOut_id and (Discount&lt;=0 or Discount&gt;100)</select></condition>
+		<exec condition="'@SqlReturn:disCountError' != 'null'">				
+			<error>common.Discount.error</error>        
+		</exec>
+	</sql>
+	<sql type="condition"><!--主表总金额与明细表不相等-->
+		<condition><select>select dbo.getDigits('tblOtherOut','BillAmt',sum(DisBackAmt)) as SumDetAmt, dbo.getDigits('tblOtherOut','BillAmt',@ValueofDB:tblOtherOut_BillAmt) as sumMainAmt from tblOtherOutDet where f_ref=@ValueofDB:tblOtherOut_id</select></condition>
+		<exec condition="@SqlReturn:SumDetAmt!=@SqlReturn:sumMainAmt">			
+			<error>common.mainDetilAmt.NotEqual.error,@SqlReturn:sumMainAmt,@SqlReturn:SumDetAmt</error>
+		</exec>
+	</sql>
+		
+	<sql type="condition">
+		<!--没有启用多仓库更新明细表上的仓库值-->	
+		<exec condition="'@MEM:ManyStockStore'=='false'">				  
+			<sql>update tblOtherOutDet set StockCode=@ValueofDB:tblOtherOut_StockCode where f_ref=@ValueofDB:tblOtherOut_id</sql>	
+		</exec>
+		<!--出库数量不能大于可用库存-->
+		<exec condition="false &amp;&amp; '@MEM:OutBillUseQtyCheck'=='true'">
+			<sql type="define">tblOtherOut_OutBillUseQty_validate</sql>
+		</exec>
+	</sql>
+	
+	<sql type="condition">	
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblOtherOut_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblOtherOutDet.GoodsCode,@StockCode=tblOtherOutDet.StockCode,@BillType=tblOtherOut,@InstoreQty=0,@OutstoreQty=tblOtherOutDet.Qty,@from=tblOtherOutDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新未审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblOtherOut_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+		<!--不启用审核流时，执行过账操作-->
+		<exec condition="'@MEM:tblOtherOut_IsStatart' == '0' &amp;&amp;@MEM:OpenInvoice==false">
+			<sql type="define">tblOtherOut_Add_One</sql>
+		</exec>
+	</sql>
+</define>
+<!--========出库数量不能大于可用库存============-->
+<define name="tblOtherOut_OutBillUseQty_validate"> 	
+	<sql type="condition">
+		<condition><select>select isnull(c.GoodsFullName,'') as GoodsFullName,isnull(tblStock.StockFullName,'') as StockFullName,cast(case c.isCatalog when 0 then isnull(b.LastQty+b.inQtyNotAudit+b.SInQtyNotAudit-b.outQtyNotAudit-b.BOutQtyNotAudit,0) else -99999999 end - a.Qty as numeric(18,4)) as Qty from (select GoodsCode,BatchNo,Hue,yearNO,Inch,Availably,ProDate,StockCode,SUM(Qty) as Qty from tblOtherOutDet where f_ref=@ValueofDB:tblOtherOut_id  group by GoodsCode,BatchNo,Hue,yearNO,Inch,Availably,ProDate,StockCode)a  left join tblStocks b on a.GoodsCode=b.GoodsCode and a.StockCode=b.StockCode and a.BatchNo=b.BatchNo and a.Hue=b.Hue and a.yearNO=b.yearNO and a.Inch=b.Inch and a.Availably=b.Availably and a.ProDate=b.ProDate left join tblStock on a.StockCode=tblStock.classCode left join tblGoods c on a.GoodsCode=c.classCode  where  a.Qty&gt;(case c.isCatalog when 0 then isnull(b.LastQty+b.inQtyNotAudit+b.SInQtyNotAudit-b.outQtyNotAudit-b.BOutQtyNotAudit,0) else -99999999 end)</select></condition>
+		<exec condition="'@SqlReturn:GoodsFullName' != 'null'">			
+			<error>common.VirtualStock.excess.error,@ValueofDB:tblOtherOut_BillNo,@SqlReturn:GoodsFullName,@SqlReturn:Qty,@SqlReturn:StockFullName</error>       
+		</exec>
+	</sql>
+</define>
+<!--=========其它出库单审核过账操作===========-->	
+<define name="tblOtherOut_Add_One"> 	
+	<!--根据出库明细更新库存明细表-->
+		<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblOtherOut_Period,@PeriodYear=@ValueofDB:tblOtherOut_PeriodYear,@PeriodMonth=@ValueofDB:tblOtherOut_PeriodMonth,@GoodsCode=tblOtherOutDet.GoodsCode,@StockCode=tblOtherOutDet.StockCode,@BillID=@ValueofDB:tblOtherOut_id,@BillType=tblOtherOut,@BillDate=@ValueofDB:tblOtherOut_BillDate,@BillNo=@ValueofDB:tblOtherOut_BillNo,@OutstoreQty=tblOtherOutDet.Qty,@OutstorePrice=tblOtherOutDet.Price,@OutstoreAmount=tblOtherOutDet.Amount,@createBy=@ValueofDB:tblOtherOut_createBy,@lastUpdateBy=@ValueofDB:tblOtherOut_lastUpdateBy,@createTime=@ValueofDB:tblOtherOut_finishTime,@lastUpdateTime=@ValueofDB:tblOtherOut_lastUpdateTime,@SCompanyID=@ValueofDB:tblOtherOut_SCompanyID,@SourceID=tblOtherOutDet.id,@CompanyCode=@ValueofDB:tblOtherOut_CompanyCode,@EmployeeID=@ValueofDB:tblOtherOut_EmployeeID,@DepartmentCode=@ValueofDB:tblOtherOut_DepartmentCode,@TrackNo=@ValueofDB:tblOtherOut_TrackNo,@MRemark=@ValueofDB:tblOtherOut_Remark,@DRemark=tblOtherOutDet.Remark,@from=tblOtherOutDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+	<!--出库单在修改后，用户可能删除某些序列号，使其入库，进行序列号判断-->
+	<sql type="condition">
+		<exec condition="'@Sess:BillOper'=='update'">
+			<sql type="define">validateSameSeq</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblOtherOut_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblOtherOutDet.GoodsCode,@StockCode=tblOtherOutDet.StockCode,@BillType=tblOtherOut,@InstoreQty=0,@OutstoreQty=-1*tblOtherOutDet.Qty,@from=tblOtherOutDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--如果启用审核流，删除已审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblOtherOut_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,delete,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	<!--进行负库存判断-->
+	<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+	
+</define>
+<!--=========其它出库单删除操作===========-->	
+<define name="tblOtherOut_Delete">
+	<sql type="condition">
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblOtherOut_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblOtherOutDet.GoodsCode,@StockCode=tblOtherOutDet.StockCode,@BillType=tblOtherOut,@InstoreQty=0,@OutstoreQty=-1*tblOtherOutDet.Qty,@from=tblOtherOutDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+					<!--删除和修改操作时，更新序列号出入明细-->
+		<exec condition="'@Sess:BillOper' =='delete'||'@Sess:BillOper' =='update'">
+			<sql>delete from tblSeqAuditing where BillID=@ValueofDB:id</sql>
+		</exec>
+		<!--根据情况调用另外一个define操作:不启用审核流时执行另外操作-->
+		<exec condition="'@MEM:tblOtherOut_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblOtherOut_Delete_One</sql>
+		</exec>
+	</sql>	
+</define>
+
+<define name="tblOtherOut_Delete_One">		
+	<sql type="condition">
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblOtherOut_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblOtherOutDet.GoodsCode,@StockCode=tblOtherOutDet.StockCode,@BillType=tblOtherOut,@InstoreQty=0,@OutstoreQty=tblOtherOutDet.Qty,@from=tblOtherOutDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--如果启用审核流，反审核时，时更新分序列号出入未审核完毕的序列号明细，-->
+		<exec condition="'@MEM:tblOtherOut_IsStatart'!= '0'&amp;&amp;'@Sess:BillOper'=='returnAuditing'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+	</sql>	
+	<!--删除出入库记录-->
+	<sql type="procedure">{call proc_delStockDet(@ValueofDB:tblOtherOut_id,tblOtherOut,2,retCode,retVal)}</sql>
+	<!--非修改状态下，判断序列号是否重复-->
+	<sql type="condition">		
+		<exec condition="'@Sess:BillOper'!='update'">
+			<sql type="define">validateSameSeq</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--====================================================以上代码：其他出库单===========================================================-->
+
+<!--==========================================================其他入库单===============================================================-->
+<define name="tblOtherIn_Add">
+	<sql type="condition"><!--折扣不是0到1之间的数值时给出错误提示-->
+		<exec condition="@ValueofDB:tblOtherIn_Discount&lt;=0||@ValueofDB:tblOtherIn_Discount&gt;100">				
+			<error>common.Discount.error</error>        
+		</exec>
+	</sql>
+	<sql type="condition"><!--启用了序列号属性，并且所选择的商品启用了序列号但没有录入序列号给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsSeq from tblOtherInDet a left join tblgoods c on c.classCode=a.GoodsCode where c.seqIsUsed=0 and len(isnull(a.seq,''))=0 and (select isUsed from tblGoodsAttribute where propName='Seq')=1 and a.f_ref=@ValueofDB:tblOtherIn_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsSeq' != 'null'">	
+			<error>enter.seq.error,@SqlReturn:GoodsSeq</error>
+	    </exec>
+	</sql>
+	<sql type="condition"><!--数量小于等于0的商品判断-->
+		<condition><select>select b.GoodsFullName as GoodsQ from tblOtherInDet a,tblGoods b where a.f_ref=@ValueofDB:tblOtherIn_id and isnull(a.Qty,0)&lt;=0 and b.classCode=a.GoodsCode</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>common.qty.negative.error,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--单价小于0，给出错误提示-->
+		<condition><select>select b.GoodsFullName as GoodsP from tblOtherInDet a,tblGoods b where a.f_ref=@ValueofDB:tblOtherIn_id and isnull(a.Price,0)&lt;0 and b.classCode=a.GoodsCode</select></condition>
+		<exec condition="'@SqlReturn:GoodsP' != 'null'">			
+			<error>common.priceNegative.error,@SqlReturn:GoodsP</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--折扣不是0到1之间的数值时给出错误提示-->
+		<condition><select>select 'disCountError' as disCountError from tblOtherInDet a where a.f_ref=@ValueofDB:tblOtherIn_id and (Discount&lt;=0 or Discount&gt;100)</select></condition>
+		<exec condition="'@SqlReturn:disCountError' != 'null'">				
+			<error>common.Discount.error</error>        
+		</exec>
+	</sql>
+	<sql type="condition"><!--主表合计金额与明细表总金额不相等-->
+		<condition><select>select dbo.getDigits('tblOtherOut','BillAmt',sum(DisBackAmt)) as SumDetAmt, dbo.getDigits('tblOtherOut','BillAmt',@ValueofDB:tblOtherIn_BillAmt) as sumMainAmt from tblOtherInDet where f_ref=@ValueofDB:tblOtherIn_id</select></condition>
+		<exec condition="@SqlReturn:SumDetAmt!=@SqlReturn:sumMainAmt">			
+			<error>tblOtherIn.mainDetilAmt.NotEqual.error,@SqlReturn:sumMainAmt,@SqlReturn:SumDetAmt</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--若入库类型为佳润费用 则需要指定客户-->
+		<exec condition="'@ValueofDB:CompanyCode'==''&amp;&amp;'@ValueofDB:SubCode'=='220201'">
+			<error>请选择客户!</error>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<!--没有启用多仓库更新明细表上的仓库值-->
+		<exec condition="'@MEM:ManyStockStore'=='false'">				  
+			<sql>update tblOtherInDet set StockCode=@ValueofDB:tblOtherIn_StockCode where f_ref=@ValueofDB:tblOtherIn_id</sql>	
+		</exec>
+		<!--如果启用了系统配置“保质期”，根据情况修改保质期限和生产日期的值-->
+		<exec condition="'@MEM:Availably'=='true'">		
+			<sql><!--商品设置了保质期，没有录入保质期限，根据生产日期更新保质期限-->
+			update tblOtherInDet set tblOtherInDet.Availably=a.Availably from(select  b.id as id,case when tblGoods.AvailablyType='Day' then convert(varchar(10),dateadd(Day,tblGoods.Validity,ProDate),21) when tblGoods.AvailablyType='Month' then convert(varchar(10),dateadd(Month,tblGoods.Validity,ProDate),21) when tblGoods.AvailablyType='Year' then convert(varchar(10),dateadd(Year,tblGoods.Validity,ProDate),21) else '' end as Availably from tblOtherIn a join tblOtherInDet b on b.f_ref=a.id join tblGoods on tblGoods.classCode=b.GoodsCode where a.id=@ValueofDB:tblOtherIn_id and len(Availably)=0 and len(ProDate)!=0 and tblGoods.Validity!=0)a where tblOtherInDet.id=a.id
+			</sql>
+			<sql><!--商品设置了保质期，没有录入生产日期，根据保质期限更新生产日期-->
+			update tblOtherInDet set tblOtherInDet.ProDate=a.ProDate from(select  b.id as id,case when tblGoods.AvailablyType='Day' then convert(varchar(10),dateadd(Day,(-1)*tblGoods.Validity,Availably),21) when tblGoods.AvailablyType='Month' then convert(varchar(10),dateadd(Month,(-1)*tblGoods.Validity,Availably),21) when tblGoods.AvailablyType='Year' then convert(varchar(10),dateadd(Year,(-1)*tblGoods.Validity,Availably),21) else '' end as ProDate from tblOtherIn a join tblOtherInDet b on b.f_ref=a.id join tblGoods on tblGoods.classCode=b.GoodsCode where a.id=@ValueofDB:tblOtherIn_id and len(ProDate)=0 and len(Availably)!=0 and tblGoods.Validity!=0)a where tblOtherInDet.id=a.id
+			 </sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblOtherIn_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblOtherInDet.GoodsCode,@StockCode=tblOtherInDet.StockCode,@BillType=tblOtherIn,@InstoreQty=tblOtherInDet.Qty,@OutstoreQty=0,@from=tblOtherInDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新未审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblOtherIn_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+		<exec condition="true">
+			<sql>update tblOtherIn set CertificateNo='' where id=@ValueofDB:tblOtherIn_id</sql>
+		</exec>
+		<!--不启用审核流时，执行过账操作-->
+		<exec condition="'@MEM:tblOtherIn_IsStatart' == '0' &amp;&amp;@MEM:OpenInvoice==false">
+			<sql type="define">tblOtherIn_Add_One</sql>
+		</exec>
+	</sql>	
+	<sql type="condition">
+		<condition>
+			<select> select count(0) hasAgent from tblOtherInDet join tblStock on tblOtherInDet.StockCode=tblStock.classCode where f_ref=@ValueofDB:id and tblStock.StockType='Agent' </select>
+			<select> select count(0) hasNoAgent from tblOtherInDet join tblStock on tblOtherInDet.StockCode=tblStock.classCode where f_ref=@ValueofDB:id and tblStock.StockType !='Agent' </select>
+		</condition>
+		<exec condition=" @SqlReturn:hasAgent &gt;0 &amp;&amp; @SqlReturn:hasNoAgent&gt;0 ">
+			<error>不可同时选择代管仓和非代管仓入库</error>
+		</exec>
+		<exec condition=" @SqlReturn:hasAgent &gt;0  ">
+			<sql>update tblOtherIn set inType=1 where id=@ValueofDB:id </sql>
+		</exec>
+		<exec condition=" @SqlReturn:hasNoAgent &gt;0  ">
+			<sql>update tblOtherIn set inType=0 where id=@ValueofDB:id </sql>
+		</exec>
+	</sql>
+</define>
+	
+<!--=========其它入库单过账操作=========-->
+<define name="tblOtherIn_Add_One"> 		
+	<sql type="condition"><!--当启用了系统配置“其他入库单零单价时自动获取价格” 时，更新为0的入库单价-->
+		<condition><select>select count(0) as zeroCount from tblOtherInDet where f_ref=@ValueofDB:tblOtherIn_id and isnull(Price,0)=0</select></condition>
+		<exec condition="@SqlReturn:zeroCount&gt;0 &amp;&amp; @MEM:OtherInGetLastCost==true">
+			<sql type="define">tblOtherIn_Add_SetPrice</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblOtherIn_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblOtherInDet.GoodsCode,@StockCode=tblOtherInDet.StockCode,@BillType=tblOtherIn,@InstoreQty=-1*tblOtherInDet.Qty,@OutstoreQty=0,@from=tblOtherInDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--如果启用审核流，删除已审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblOtherIn_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,delete,retCode,retVal)}</sql>
+		</exec>
+		
+	</sql>
+	<!--==============插入凭证记录===============-->
+	<sql type="condition">
+		<condition>
+			<select>SELECT SUM(DisBackAmt) AS DisBackAmt FROM tblOtherInDet WHERE f_ref = @ValueofDB:tblOtherIn_id</select>	
+		</condition>	
+		<!--如果启用“自动产生凭证”，则自动插入凭证-->
+		
+		<exec condition="'@MEM:autoGenerateAcc'=='true'&amp;&amp;@SqlReturn:DisBackAmt!=0">
+			 <sql type="certificate">tblOtherIn_Acc</sql>
+		</exec>
+	</sql>
+	<!--========插入出入库明细=========-->
+	<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblOtherIn_Period,@PeriodYear=@ValueofDB:tblOtherIn_PeriodYear,@PeriodMonth=@ValueofDB:tblOtherIn_PeriodMonth,@GoodsCode=tblOtherInDet.GoodsCode,@StockCode=tblOtherInDet.StockCode,@BillID=@ValueofDB:tblOtherIn_id,@BillType=tblOtherIn,@BillDate=@ValueofDB:tblOtherIn_BillDate,@BillNo=@ValueofDB:tblOtherIn_BillNo,@InstoreQty=tblOtherInDet.Qty,@InstorePrice=tblOtherInDet.DisPrice,@InstoreAmount=tblOtherInDet.DisBackAmt,@createBy=@ValueofDB:tblOtherIn_createBy,@lastUpdateBy=@ValueofDB:tblOtherIn_lastUpdateBy,@createTime=@ValueofDB:tblOtherIn_finishTime,@lastUpdateTime=@ValueofDB:tblOtherIn_lastUpdateTime,@SCompanyID=@ValueofDB:tblOtherIn_SCompanyID,@SourceID=tblOtherInDet.id,@CompanyCode=@ValueofDB:tblOtherIn_CompanyCode,@EmployeeID=@ValueofDB:tblOtherIn_EmployeeID,@DepartmentCode=@ValueofDB:tblOtherIn_DepartmentCode,@TrackNo=@ValueofDB:tblOtherIn_TrackNo,@MRemark=@ValueofDB:tblOtherIn_Remark,@DRemark=tblOtherInDet.Remark,@from=tblOtherInDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+	<!--验证序列号是否重复-->	
+	<sql type="define">validateSameSeq</sql>	
+	<!--如果是修改操作，判断负库存-->
+	<sql type="condition">
+
+		<exec condition="'@Sess:BillOper'=='update'">	
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--====更新为0的入库单价======-->
+<define name="tblOtherIn_Add_SetPrice">
+	<!--拿最近的入库价更新销售退货单的成本价-->
+	<sql>update tblOtherInDet set price=round(isnull((select sum(InstoreAmount)/sum(InstoreQty) from tblStockDet a where a.goodsCode=tblOtherInDet.goodsCode and a.stockCode=tblOtherInDet.stockCode and a.ProDate=tblOtherInDet.ProDate and a.Availably=tblOtherInDet.Availably and a.Hue=tblOtherInDet.Hue and a.yearNO=tblOtherInDet.yearNO and a.BatchNo=tblOtherInDet.BatchNo and a.Inch=tblOtherInDet.Inch and ((len(tblOtherInDet.seq)=0 and len(a.seq)=0) or (len(tblOtherInDet.seq)&gt;0 and len(a.seq)&gt;0 and charindex(a.seq+'~',tblOtherInDet.seq)&gt;0)) and id=isnull((select top 1 b.id from tblStockDet b where a.goodPropHash=b.goodPropHash and b.billDate&lt;=@ValueofDB:tblOtherIn_BillDate and instorePrice&gt;0 order by BillDate desc,createTime desc,ItemOrder desc),0)),0),@MEM:DigitsPrice) where f_ref=@ValueofDB:tblOtherIn_id and price&lt;=0</sql>
+	<!--更新没有成本价的商品 取预设进价-->
+	<sql>update tblOtherInDet set price=isnull(tblGoods.PreBuyPrice,0) from tblGoods where tblGoods.classCode=tblOtherInDet.GoodsCode and f_ref=@ValueofDB:tblOtherIn_id and price&lt;=0</sql>
+	<!--更新明细表金额-->
+	<sql>update tblOtherInDet set Amount=round(Price*Qty,@MEM:DigitsAmount),DisBackAmt=round(Price*Qty*Discount/100,@MEM:DigitsAmount),DisPrice=round(Price*Discount/100,@MEM:DigitsPrice) where f_ref=@ValueofDB:tblOtherIn_id</sql>
+	<!--更新明细表折让金额-->
+	<sql>update tblOtherInDet set DisAmount=Amount-DisBackAmt where f_ref=@ValueofDB:tblOtherIn_id</sql>
+	<!--更新主表总金额-->	
+	<sql>update tblOtherIn set BillAmt=(select sum(Amount) from tblOtherInDet where f_ref=@ValueofDB:tblOtherIn_id) where id=@ValueofDB:tblOtherIn_id</sql>
+	<!--更新辅助单位单价-->
+	<sql>update tblOtherInDet set UnitPrice=case when SecQty=0 then dbo.getDigits('tblOtherInDet','UnitPrice',Price*BaseQty/SecQty) else 0 end where f_ref=@ValueofDB:tblOtherIn_id and len(isnull(SecUnit,''))!=0</sql>
+</define>
+ <!--==========删除其他入库单=======-->   
+<define name="tblOtherIn_Delete">
+	<sql type="condition">
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblOtherIn_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblOtherInDet.GoodsCode,@StockCode=tblOtherInDet.StockCode,@BillType=tblOtherIn,@InstoreQty=-1*tblOtherInDet.Qty,@OutstoreQty=0,@from=tblOtherInDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--删除和修改操作时，更新序列号出入明细-->
+		<exec condition="'@Sess:BillOper' =='delete'||'@Sess:BillOper' =='update'">
+			<sql>delete from tblSeqAuditing where BillID=@ValueofDB:id</sql>
+		</exec>
+		
+		<!--根据情况调用另外一个define操作:不启用审核流时执行另外操作-->
+		<exec condition="'@MEM:tblOtherIn_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblOtherIn_Delete_One</sql>
+		</exec>
+	</sql>	
+</define>
+
+<define name="tblOtherIn_Delete_One">	
+	<sql type="condition"><!--判断是否存在对应其他出库单-->
+		<condition><select>select BillNO as OutNo from tblOtherOut where tblOtherInID=@ValueofDB:tblOtherIn_id</select></condition>
+		<exec condition="'@SqlReturn:OutNo'!='null'">	
+			<error>tblOtherIn.delete.existOtherOut.error,@SqlReturn:OutNo</error>                  
+		</exec>
+	</sql>
+	<sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblOtherIn_id and  workFlowNodeName='finish'</select></condition>
+		<exec condition="'@SqlReturn:OrderNo'!='null'">	
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>
+		</exec>
+	</sql>
+	
+	<sql type="condition">
+		<!--如果启用审核流，则反审核时更新分仓库存+未审核字段-->
+		<exec condition="'@MEM:tblOtherIn_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblOtherInDet.GoodsCode,@StockCode=tblOtherInDet.StockCode,@BillType=tblOtherIn,@InstoreQty=tblOtherInDet.Qty,@OutstoreQty=0,@from=tblOtherInDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<exec condition="true"><!--删除出入库明细-->
+	       <sql type="procedure">{call proc_delStockDet(@ValueofDB:tblOtherIn_id,tblOtherIn,1,retCode,retVal)}</sql>
+	    </exec>
+		<exec condition="'@Sess:BillOper'!='update'"><!--负库存判断-->	
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>	
+		</exec>
+		<exec condition=" '@MEM:autoGenerateAcc'=='true'"><!--启用“自动产生凭证”时，删除凭证审核流或者减少科目余额，删除凭证信息-->
+			<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblOtherIn_id,retCode,retVal)}</sql>
+		</exec>
+		<!--如果启用审核流，反审核时，时更新分序列号出入未审核完毕的序列号明细，-->
+		<exec condition="'@MEM:tblOtherIn_IsStatart'!= '0'&amp;&amp;'@Sess:BillOper'=='returnAuditing'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+</define>
+<!--=====================================================以上代码：其他入库单=============================================================-->
+
+<!--=========================================================报损单========================================================================-->
+<define name="tblCheck_Add">
+	<sql type="condition"><!--启用了序列号属性，并且所选择的商品启用了序列号但没有录入序列号给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsSeq from tblCheckDet a left join tblgoods c on c.classCode=a.GoodsCode where c.seqIsUsed=0 and len(isnull(a.seq,''))=0 and (select isUsed from tblGoodsAttribute where propName='Seq')=1 and a.f_ref=@ValueofDB:tblCheck_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsSeq' != 'null'">	
+			<error>CheckEnter.seq.error,@SqlReturn:GoodsSeq</error>
+	    </exec>
+        <!--如果启用了系统配置“保质期”，根据情况修改保质期限和生产日期的值-->
+        <exec condition="'@MEM:Availably'=='true'">     
+            <sql><!--商品设置了保质期，没有录入保质期限，根据生产日期更新保质期限-->
+               update tblCheckDet set Availably=a.Availably from(select  b.id as id,case when tblGoods.AvailablyType='Day' then convert(varchar(10),dateadd(Day,tblGoods.Validity,ProDate),21) when tblGoods.AvailablyType='Month' then convert(varchar(10),dateadd(Month,tblGoods.Validity,ProDate),21) when tblGoods.AvailablyType='Year' then convert(varchar(10),dateadd(Year,tblGoods.Validity,ProDate),21) else '' end as Availably from tblCheck  a join tblCheckDet b on b.f_ref=a.id join tblGoods on tblGoods.classCode=b.GoodsCode where a.id=@ValueofDB:tblCheck_id and len(Availably)=0 and len(ProDate)!=0 and tblGoods.Validity!=0)a where tblCheckDet.id=a.id</sql>
+            <sql><!--商品设置了保质期，没有录入生产日期，根据保质期限更新生产日期-->
+               update tblCheckDet set ProDate=a.ProDate from(select  b.id as id,case when tblGoods.AvailablyType='Day' then convert(varchar(10),dateadd(Day,(-1)*tblGoods.Validity,Availably),21) when tblGoods.AvailablyType='Month' then convert(varchar(10),dateadd(Month,(-1)*tblGoods.Validity,Availably),21) when tblGoods.AvailablyType='Year' then convert(varchar(10),dateadd(Year,(-1)*tblGoods.Validity,Availably),21) else '' end as ProDate from tblCheck a join tblCheckDet b on b.f_ref=a.id join tblGoods on tblGoods.classCode=b.GoodsCode where a.id=@ValueofDB:tblCheck_id and len(ProDate)=0 and len(Availably)!=0 and tblGoods.Validity!=0)a where tblCheckDet.id=a.id</sql>
+        </exec>
+	</sql>	
+	<sql type="condition"><!--盘点后数量小于0，给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsQ from tblCheckDet a left join tblGoods b on a.goodsCode=b.classCode where a.f_ref=@ValueofDB:tblCheck_id and OQty&lt;0</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">	
+			<error>tblCheck.OQtyNegative.error,@SqlReturn:GoodsQ</error>
+	    </exec>
+	</sql>
+	<sql type="condition">
+		<!--没有启用多仓库更新明细表上的仓库值-->	
+		<exec condition="'@MEM:ManyStockStore'=='false'">
+			<sql>update tblCheckDet set tblCheckDet.StockCode=@ValueofDB:tblCheck_StockCode where f_ref=@ValueofDB:tblCheck_id</sql>	
+		</exec>
+		<!--如果启用审核流，则新增保存时更新未审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblCheck_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+		<!--不启用审核流,直接过账-->
+		<exec condition="'@MEM:tblCheck_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblCheck_Add_One</sql>
+		</exec>
+	</sql>		
+</define>
+<!--=============新增报损单，审核过账操作===========-->
+<define name="tblCheck_Add_One">	
+	<sql type="condition"><!--更新非序列号商品账面数量为当前单据日期前最后结存-->
+		<condition><select>select isUsed from tblGoodsAttribute where propName='Seq'</select></condition>
+		<exec condition="'@MEM:GoodsCostingMethod'!='FIFO'">
+			<sql>update tblCheckDet set Qty=isnull((select sum(TotalQty) from tblStockDet a where a.goodsCode=tblCheckDet.goodsCode and a.stockCode=tblCheckDet.stockCode and a.BatchNo=tblCheckDet.BatchNo and a.Inch=tblCheckDet.Inch and a.Hue=tblCheckDet.Hue and a.yearNO=tblCheckDet.yearNO and a.ProDate=tblCheckDet.ProDate and a.Availably=tblCheckDet.Availably and a.SCompanyID=tblCheckDet.SCompanyID and id=(select top 1 id from tblStockDet b where b.goodPropHash=a.goodPropHash and (b.billDate&lt;@ValueofDB:tblCheck_BillDate or (b.billDate=@ValueofDB:tblCheck_BillDate and b.createTime&lt;=@ValueofDB:tblCheck_finishTime)) order by BillDate desc,createTime desc,ItemOrder desc)),0) where (select count(0) from tblGoods where @SqlReturn:isUsed=1 and classCode=tblCheckDet.GoodsCode and seqIsUsed=0)=0 and f_ref=@ValueofDB:tblCheck_id</sql>
+		</exec>
+		<exec condition="'@MEM:GoodsCostingMethod'=='FIFO'">
+			<sql>update tblCheckDet set Qty=isnull((select SUM(InstoreQty-OutstoreQty) from tblStockDet a where a.goodsCode=tblCheckDet.goodsCode and a.stockCode=tblCheckDet.stockCode and a.BatchNo=tblCheckDet.BatchNo and a.Inch=tblCheckDet.Inch and a.Hue=tblCheckDet.Hue and a.yearNO=tblCheckDet.yearNO and a.ProDate=tblCheckDet.ProDate and a.Availably=tblCheckDet.Availably and a.SCompanyID=tblCheckDet.SCompanyID and (a.billDate&lt;@ValueofDB:tblCheck_BillDate or (a.billDate=@ValueofDB:tblCheck_BillDate and a.createTime&lt;=@ValueofDB:tblCheck_finishTime))),0) where (select count(0) from tblGoods where @SqlReturn:isUsed=1 and classCode=tblCheckDet.GoodsCode and seqIsUsed=0)=0 and f_ref=@ValueofDB:tblCheck_id</sql>
+		</exec>
+		<exec condition="true">
+			<sql>update tblCheckDet set Amount=round(Qty*Price,@MEM:DigitsAmount),OCQty=OQty-Qty,OCAmt=OAmt-round(Qty*Price,@MEM:DigitsAmount) where f_ref=@ValueofDB:tblCheck_id</sql>
+		</exec>
+		<!--如果启用审核流，删除已审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblCheck_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,delete,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	
+	<!--<sql type="condition">盘点后数量大于等于账面数量，给出错误提示 
+		<condition><select>select GoodsNumber,GoodsFullName as GoodsQ,dbo.throwZero(Qty) as lastQty from tblCheckDet a left join tblGoods b on a.goodsCode=b.classCode where a.f_ref=@ValueofDB:tblCheck_id and OQty&gt;=Qty</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ'!= 'null'">	
+			<error>tblCheck.OQty.error,@SqlReturn:GoodsNumber,@SqlReturn:GoodsQ,@SqlReturn:lastQty</error>
+	    </exec>
+	</sql>-->	
+	<sql type="condition"><!--盘亏数据更新库存明细-->
+	<condition><select>SELECT id AS DetId FROM tblCheckDet WHERE f_ref = @ValueofDB:tblCheck_id AND OCQty &lt;0</select></condition>
+	<exec condition="&quot;@SqlReturn:DetId&quot;!=&quot;null&quot;&amp;&amp;&quot;@SqlReturn:DetId&quot;.length!=0">
+		<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblCheck_Period,@PeriodYear=@ValueofDB:tblCheck_PeriodYear,@PeriodMonth=@ValueofDB:tblCheck_PeriodMonth,@GoodsCode=tblCheckDet.GoodsCode,@StockCode=tblCheckDet.StockCode,@BillID=@ValueofDB:tblCheck_id,@BillType=tblCheck,@BillDate=@ValueofDB:tblCheck_BillDate,@BillNo=@ValueofDB:tblCheck_BillNo,@OutstoreQty=ABS(tblCheckDet.OCQty),@OutstorePrice=tblCheckDet.OCAmt/ABS(tblCheckDet.OCQty),@OutstoreAmount=ABS(tblCheckDet.OCAmt),@createBy=@ValueofDB:tblCheck_createBy,@lastUpdateBy=@ValueofDB:tblCheck_lastUpdateBy,@createTime=@ValueofDB:tblCheck_finishTime,@lastUpdateTime=@ValueofDB:tblCheck_lastUpdateTime,@SCompanyID=@ValueofDB:tblCheck_SCompanyID,@EmployeeID=@ValueofDB:tblCheck_EmployeeID,@DepartmentCode=@ValueofDB:tblCheck_DepartmentCode,@SourceID=tblCheckDet.id,@TrackNo=@ValueofDB:tblCheck_TrackNo,@MRemark=@ValueofDB:tblCheck_Remark,@DRemark=tblCheckDet.Remark,@from=tblCheckDet,@where=f_ref='@ValueofDB:id' and tblCheckDet.OCQty&lt;0,@retCode=retCode,@retVal=retVal)}</sql>
+		<!--负库存判断-->
+		<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--盘盈数据更新库存明细-->
+		<condition><select>SELECT id AS DetIdMore FROM tblCheckDet WHERE f_ref = @ValueofDB:tblCheck_id AND OCQty &gt;0</select></condition>
+	<exec condition="true">
+			<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblCheck_Period,@PeriodYear=@ValueofDB:tblCheck_PeriodYear,@PeriodMonth=@ValueofDB:tblCheck_PeriodMonth,@GoodsCode=tblCheckDet.GoodsCode,@StockCode=tblCheckDet.StockCode,@BillID=@ValueofDB:tblCheck_id,@BillType=tblCheck,@BillDate=@ValueofDB:tblCheck_BillDate,@BillNo=@ValueofDB:tblCheck_BillNo,@InstoreQty=tblCheckDet.OCQty,@InstorePrice=tblCheckDet.OCAmt/tblCheckDet.OCQty,@InstoreAmount=tblCheckDet.OCAmt,@createBy=@ValueofDB:tblCheck_createBy,@lastUpdateBy=@ValueofDB:tblCheck_lastUpdateBy,@createTime=@ValueofDB:tblCheck_finishTime,@lastUpdateTime=@ValueofDB:tblCheck_lastUpdateTime,@SCompanyID=@ValueofDB:tblCheck_SCompanyID,@SourceID=tblCheckDet.id,@EmployeeID=@ValueofDB:tblCheck_EmployeeID,@DepartmentCode=@ValueofDB:tblCheck_DepartmentCode,@TrackNo=@ValueofDB:tblCheck_TrackNo,@MRemark=@ValueofDB:tblCheck_Remark,@DRemark=tblCheckDet.Remark,@from=tblCheckDet,@where=f_ref='@ValueofDB:id' and tblCheckDet.OCQty&gt;0,@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--修改时，可能会将原来的数量改少，进行负库存判断-->
+		<exec condition="'@Sess:BillOper'=='update'">
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--出库单在修改后，用户可能删除某些序列号，使其入库，进行序列号判断-->
+		<exec condition="'@Sess:BillOper'=='update'">
+			<sql type="define">validateSameSeq</sql>
+		</exec>
+	</sql>
+</define>
+<!--===================删除报损单==============-->	
+<define name="tblCheck_Delete">						
+	<sql type="condition">
+		<!--删除和修改操作时，更新序列号出入明细-->
+	<exec condition="'@Sess:BillOper' =='delete'||'@Sess:BillOper' =='update'">
+		<sql>delete from tblSeqAuditing where BillID=@ValueofDB:id</sql>
+	</exec>	
+		
+		<!--根据情况调用另外一个define操作:不启用审核流时执行另外操作-->
+		<exec condition="'@MEM:tblCheck_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblCheck_Delete_One</sql>
+		</exec>	
+	</sql>	
+</define>
+<!--==========删除报损单，审核过账操作==============-->	
+<define name="tblCheck_Delete_One">	
+	<sql type="condition">
+		<condition>
+			<select>select a.BillNo as StockCheckNo,b.BillNo from tblStockCheck a join tblCheck b on a.LinkId=b.LinkId where b.id=@ValueofDB:tblCheck_id and len(isnull(a.LinkId,''))!=0</select>
+		</condition>
+		<!--如果是库存盘点单生成的不允许修改删除-->
+		<exec condition="'@SqlReturn:StockCheckNo' != 'null' &amp;&amp; '@SqlReturn:StockCheckNo'.length != 0">
+			<error>tblCheck.delete.error,@SqlReturn:BillNo,@SqlReturn:StockCheckNo</error>
+		</exec>	
+		<!--如果启用审核流，反审核时，时更新分序列号出入未审核完毕的序列号明细，-->
+		<exec condition="'@MEM:tblCheck_IsStatart'!= '0'&amp;&amp;'@Sess:BillOper'=='returnAuditing'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+		<!--删除出入库明细记录-->
+		<exec condition="true">			
+			<sql type="procedure">{call proc_delStockDet(@ValueofDB:tblCheck_id,tblCheck,2,retCode,retVal)}</sql>
+		</exec>
+		<!--检查是否出现负库存-->		
+		<exec condition="'@Sess:BillOper'!='update'">
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+		<!--删除的序列号如果已经在出入库明细表中存在，给出错误提示-->
+		<exec condition="'@Sess:BillOper'!='update'">
+			<sql type="define">validateSameSeq</sql>
+		</exec>
+	</sql>
+</define>
+<!--=======================================================以上代码：报损单===================================================================-->
+
+<!--============================================================报溢单===================================================================-->
+<define name="tblCheckMore_Add">
+	<sql type="condition"><!--启用了序列号属性，并且所选择的商品启用了序列号但没有录入序列号给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsSeq from tblCheckMoreDet a left join tblgoods c on c.classCode=a.GoodsCode where c.seqIsUsed=0 and len(isnull(a.seq,''))=0 and (select isUsed from tblGoodsAttribute where propName='Seq')=1 and a.f_ref=@ValueofDB:tblCheckMore_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsSeq' != 'null'">	
+			<error>enter.seq.error,@SqlReturn:GoodsSeq</error>
+	  </exec>
+	</sql>
+	<sql type="condition"><!--盘点后数量小于等于0给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsQ from tblCheckMoreDet a left join tblGoods b on a.GoodsCode=b.classCode where a.f_ref=@ValueofDB:tblCheckMore_id and a.OQty&lt;=0</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">	
+			<error>tblCheckMore.QtyNegative.error,@SqlReturn:GoodsQ</error>
+	  </exec>
+	</sql>
+	<sql type="condition"><!--盘点后单价为负数时给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsQ from tblCheckMoreDet a left join tblGoods b on a.GoodsCode=b.classCode where a.f_ref=@ValueofDB:tblCheckMore_id and a.OPrice&lt;0</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">	
+			<error>tblCheckMore.PriceNegative.error,@SqlReturn:GoodsQ</error>
+	   </exec>
+	</sql>
+	<sql type="condition">
+		<!--没有启用多仓库更新明细表上的仓库值-->	
+		<exec condition="'@MEM:ManyStockStore'=='false'">
+			<sql>update tblCheckMoreDet set StockCode=@ValueofDB:tblCheckMore_StockCode where f_ref=@ValueofDB:tblCheckMore_id</sql>	
+		</exec>
+		<!--不启用审核流,直接过账-->
+		<exec condition="'@MEM:tblCheckMore_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblCheckMore_Add_One</sql>
+		</exec>
+	</sql>		
+</define>
+<!--==========新增报溢单，审核过账操作==============-->	
+<define name="tblCheckMore_Add_One">	  
+	<sql type="condition"><!--更新非序列号商品账面数量为当前单据日期前最后结存-->
+		<condition><select>select isUsed from tblGoodsAttribute where propName='Seq'</select></condition>
+		<exec condition="'@MEM:GoodsCostingMethod'!='FIFO'">
+			<sql>update tblCheckMoreDet set Qty=isnull((select sum(TotalQty) from tblStockDet a where a.goodsCode=tblCheckMoreDet.goodsCode and a.stockCode=tblCheckMoreDet.stockCode and a.BatchNo=tblCheckMoreDet.BatchNo and a.Inch=tblCheckMoreDet.Inch and a.Hue=tblCheckMoreDet.Hue and a.yearNO=tblCheckMoreDet.yearNO and a.ProDate=tblCheckMoreDet.ProDate and a.Availably=tblCheckMoreDet.Availably and a.SCompanyID=tblCheckMoreDet.SCompanyID and id=(select top 1 id from tblStockDet b where b.goodPropHash=a.goodPropHash and (b.billDate&lt;@ValueofDB:tblCheckMore_BillDate or (b.billDate=@ValueofDB:tblCheckMore_BillDate and b.createTime&lt;=@ValueofDB:tblCheckMore_finishTime)) order by BillDate desc,createTime desc,ItemOrder desc)),0) where (select count(0) from tblGoods where @SqlReturn:isUsed=1 and classCode=tblCheckMoreDet.GoodsCode and seqIsUsed=0)=0 and f_ref=@ValueofDB:tblCheckMore_id</sql>
+		</exec>
+		<exec condition="'@MEM:GoodsCostingMethod'=='FIFO'">
+			<sql>update tblCheckMoreDet set Qty=isnull((select SUM(InstoreQty-OutstoreQty) from tblStockDet a where a.goodsCode=tblCheckMoreDet.goodsCode and a.stockCode=tblCheckMoreDet.stockCode and a.BatchNo=tblCheckMoreDet.BatchNo and a.Inch=tblCheckMoreDet.Inch and a.Hue=tblCheckMoreDet.Hue and a.yearNO=tblCheckMoreDet.yearNO and a.ProDate=tblCheckMoreDet.ProDate and a.Availably=tblCheckMoreDet.Availably and a.SCompanyID=tblCheckMoreDet.SCompanyID and (a.billDate&lt;@ValueofDB:tblCheckMore_BillDate or (a.billDate=@ValueofDB:tblCheckMore_BillDate and a.createTime&lt;=@ValueofDB:tblCheckMore_finishTime))),0) where (select count(0) from tblGoods where @SqlReturn:isUsed=1 and classCode=tblCheckMoreDet.GoodsCode and seqIsUsed=0)=0 and f_ref=@ValueofDB:tblCheckMore_id</sql>
+		</exec>
+		<exec condition="true">
+			<sql>update tblCheckMoreDet set Amount=round(Qty*Price,@MEM:DigitsAmount),OCQty=OQty-Qty,OCAmt=OAmt-round(Qty*Price,@MEM:DigitsAmount) where f_ref=@ValueofDB:tblCheck_id</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--盘点后数量小于等于账面数量，给出错误提示--> 
+		<condition><select>select GoodsNumber,GoodsFullName as GoodsQ,dbo.throwZero(Qty) as lastQty from tblCheckMoreDet a left join tblGoods b on a.goodsCode=b.classCode where a.f_ref=@ValueofDB:tblCheckMore_id and OQty&lt;=Qty</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ'!= 'null'">	
+			<error>tblCheckMore.OQty.error,@SqlReturn:GoodsNumber,@SqlReturn:GoodsQ,@SqlReturn:lastQty</error>
+	    </exec>
+	</sql>	
+	<sql type="condition">
+		<!--根据报溢单更新库存明细表-->
+		<exec condition="true">
+			<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblCheckMore_Period,@PeriodYear=@ValueofDB:tblCheckMore_PeriodYear,@PeriodMonth=@ValueofDB:tblCheckMore_PeriodMonth,@GoodsCode=tblCheckMoreDet.GoodsCode,@StockCode=tblCheckMoreDet.StockCode,@BillID=@ValueofDB:tblCheckMore_id,@BillType=tblCheckMore,@BillDate=@ValueofDB:tblCheckMore_BillDate,@BillNo=@ValueofDB:tblCheckMore_BillNo,@InstoreQty=tblCheckMoreDet.OCQty,@InstorePrice=tblCheckMoreDet.OCAmt/tblCheckMoreDet.OCQty,@InstoreAmount=tblCheckMoreDet.OCAmt,@createBy=@ValueofDB:tblCheckMore_createBy,@lastUpdateBy=@ValueofDB:tblCheckMore_lastUpdateBy,@createTime=@ValueofDB:tblCheckMore_finishTime,@lastUpdateTime=@ValueofDB:tblCheckMore_lastUpdateTime,@SCompanyID=@ValueofDB:tblCheckMore_SCompanyID,@SourceID=tblCheckMoreDet.id,@EmployeeID=@ValueofDB:tblCheckMore_EmployeeID,@DepartmentCode=@ValueofDB:tblCheckMore_DepartmentCode,@TrackNo=@ValueofDB:tblCheckMore_TrackNo,@MRemark=@ValueofDB:tblCheckMore_Remark,@DRemark=tblCheckMoreDet.Remark,@from=tblCheckMoreDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--修改时，可能会将原来的数量改少，进行负库存判断-->
+		<exec condition="'@Sess:BillOper'=='update'">
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+		<!--验证是否有相同的序列号-->
+		<exec condition="true">
+			<sql type="define">validateSameSeq</sql>
+		</exec>
+	</sql>
+</define>
+<!--==================删除报溢单=================-->	
+<define name="tblCheckMore_Delete">
+	<sql type="condition">
+		<!--根据情况调用另外一个define操作:不启用审核流时执行另外操作-->
+		<exec condition="'@MEM:tblCheckMore_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+		<sql type="define">tblCheckMore_Delete_One</sql>
+		</exec>
+	</sql>	
+</define>
+<!--==========删除报溢单，审核过账操作==============-->	
+<define name="tblCheckMore_Delete_One">			 
+	<sql type="condition">		
+		<condition>
+			<select>select BillNo as StockCheckNo from tblStockCheck where id=@ValueofDB:tblCheckMore_id</select>
+		</condition>
+		<!--如果是库存盘点单生成的不允许修改删除-->
+		<exec condition="'@SqlReturn:StockCheckNo' != 'null' &amp;&amp; '@SqlReturn:StockCheckNo'.length != 0">
+			<error>tblCheck.delete.error,@SqlReturn:StockCheckNo</error>
+		</exec>	
+		<!--删除出入库明细记录-->
+		<exec condition="true">
+			<sql type="procedure">{call proc_delStockDet(@ValueofDB:tblCheckMore_id,tblCheckMore,1,retCode,retVal)}</sql>
+		</exec>
+		<!--检查是否出现负库存-->	
+		<exec condition="'@Sess:BillOper'!='update'">
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+	</sql>
+ </define>
+<!--========================================================以上代码：报溢单================================================================-->
+
+<!--===================================================同价调拨单==========================================================-->
+<define name="tblAllot_Add">
+	<sql type="condition"><!--如果启用了“同价调拨单必须引用调拨申请单”的系统配置，如果没有引用给出错误提示-->
+		<condition><select>select count(0) NoQuote from tblAllotDet a left join tblAllotApplicationDet b on isnull(a.AppId,'')=b.f_ref and a.GoodsCode=b.GoodsCode and (a.BatchNo=b.BatchNo or b.BatchNo='') and (a.Inch=b.Inch or b.Inch='') and (a.Hue=b.Hue or b.Hue='') and (a.yearNo=b.yearNo or b.yearNo='') and (a.ProDate=b.ProDate or b.ProDate='') and (a.Availably=b.Availably or b.Availably='') where @MEM:AllotMustQuoteApp='true' and a.f_ref=@ValueofDB:tblAllot_id and b.id is null</select></condition>		
+		<exec condition="@SqlReturn:NoQuote&gt;0">
+			<error>AllotStock.quoteOrder.error</error>       
+		</exec>
+	</sql>
+	<sql type="condition"><!--判断同价调拨单的单据日期在引用调拨申请单前，给出错误提示-->
+		<condition><select>select a.BillNo,billDate as BuyInDate from tblAllotApplication a,tblAllotDet b where b.f_ref=@ValueofDB:tblAllot_id and b.AppId=a.id and a.BillDate&gt;@ValueofDB:tblAllot_BillDate</select></condition>
+		<exec condition="'@SqlReturn:BillNo'!='null'">			
+			<error>common.QuoteDate.error,@SqlReturn:BillNo,@SqlReturn:BuyInDate</error>       
+		</exec>
+	</sql>
+	<sql type="condition"><!--启用了序列号属性，并且所选择的商品启用了序列号但没有录入序列号给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsSeq from tblAllotDet a left join tblgoods c on c.classCode=a.GoodsCode where c.seqIsUsed=0 and len(isnull(a.seq,''))=0 and (select isUsed from tblGoodsAttribute where propName='Seq')=1 and a.f_ref=@ValueofDB:tblAllot_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsSeq' != 'null'">	
+			<error>enter.seq.error,@SqlReturn:GoodsSeq</error>
+	    </exec>
+	</sql>	
+	<sql type="condition"><!--明细表中的条码与商品表的条码复核不同给出提示--> 
+		<condition><select>select c.GoodsFullName as CheckGoods from tblAllotDet b join tblAllot a on a.id=b.f_ref left join tblGoods c on c.classCode=b.GoodsCode where @MEM:BarcodecheckedSameAllot='true' and c.BarCode!=b.CheckBarCode and a.id=@ValueofDB:tblAllot_id</select></condition>
+		<exec condition="'@SqlReturn:CheckGoods' != 'null'">					
+			<error>CheckBarCode.diffent.error,@SqlReturn:CheckGoods</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--提示录入大于0的数量-->
+		<condition><select>select b.GoodsFullName as GoodsQ,Qty from tblAllotDet a,tblGoods b where b.classCode=a.GoodsCode and f_ref=@ValueofDB:tblAllot_id and isnull(a.Qty,0)&lt;=0</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">				
+			<error>common.qty.negative.error,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--提示零售价不能为负数-->
+		<condition><select>select b.GoodsNumber,b.GoodsFullName as GoodsQ,Qty from tblAllotDet a,tblGoods b where b.classCode=a.GoodsCode and f_ref=@ValueofDB:tblAllot_id and isnull(a.RetailPrice,0)&lt;0</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">				
+			<error>common.RetailPrice.negative.error,@SqlReturn:GoodsNumber,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	
+	<sql type="condition">
+		<!--不启用多仓库时，更新明细表上的仓库值=主表仓库-->
+		<exec condition="'@MEM:ManyStockStore'=='false'">				
+			<sql>update tblAllotDet set StockCode=@ValueofDB:tblAllot_StockCode,InStockCode=@ValueofDB:tblAllot_InStockCode where f_ref=@ValueofDB:tblAllot_id</sql>
+		</exec>
+		<!--出库数量不能大于可用库存-->
+		<exec condition="'@MEM:OutBillUseQtyCheck'=='true'">
+			<sql type="define">tblAllot_OutBillUseQty_validate</sql>
+		</exec>
+	</sql>
+	
+	<sql type="condition">	
+		<!--如果有引用调拨申请单。回填申请单的相关字段-->
+		<exec condition="true">	
+			<sql type="procedure">{call proc_AllotUpdateAppQty(@ValueofDB:tblAllot_id,add,retCode,retVal)}</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblAllot_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotDet.GoodsCode,@StockCode=tblAllotDet.StockCode,@BillType=tblAllot,@InstoreQty=0,@OutstoreQty=tblAllotDet.Qty,@from=tblAllotDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotDet.GoodsCode,@StockCode=tblAllotDet.InStockCode,@BillType=tblAllot,@InstoreQty=tblAllotDet.Qty,@OutstoreQty=0,@from=tblAllotDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新未审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblAllot_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+		<!--不启用审核流时直接执行过账操作。启用审核流时，界面点击流程结束时调用此define-->
+		<exec condition="'@MEM:tblAllot_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblAllot_Add_One</sql>
+		</exec>
+	</sql>
+</define>
+<!--==========出库数量不能大于可用库存==========-->
+<define name="tblAllot_OutBillUseQty_validate">			
+	<sql type="condition">
+		<condition><select>select isnull(c.GoodsFullName,'') as GoodsFullName,isnull(tblStock.StockFullName,'') as StockFullName,cast(case c.isCatalog when 0 then isnull(b.LastQty+b.inQtyNotAudit+b.SInQtyNotAudit-b.outQtyNotAudit-b.BOutQtyNotAudit,0) else -99999999 end - a.Qty as numeric(18,4)) as Qty from (select GoodsCode,BatchNo,Hue,yearNO,Inch,Availably,ProDate,StockCode,SUM(Qty) as Qty from tblAllotDet where f_ref=@ValueofDB:tblAllot_id  group by GoodsCode,BatchNo,Hue,yearNO,Inch,Availably,ProDate,StockCode)a  left join tblStocks b on a.GoodsCode=b.GoodsCode and a.StockCode=b.StockCode and a.BatchNo=b.BatchNo and a.Hue=b.Hue and a.yearNO=b.yearNO and a.Inch=b.Inch and a.Availably=b.Availably and a.ProDate=b.ProDate left join tblStock on a.StockCode=tblStock.classCode left join tblGoods c on a.GoodsCode=c.classCode  where  a.Qty&gt;(case c.isCatalog when 0 then isnull(b.LastQty+b.inQtyNotAudit+b.SInQtyNotAudit-b.outQtyNotAudit-b.BOutQtyNotAudit,0) else -99999999 end)</select></condition>
+		<exec condition="'@SqlReturn:GoodsFullName' != 'null'">			
+			<error>common.VirtualStock.excess.error,@ValueofDB:tblAllot_BillNo,@SqlReturn:GoodsFullName,@SqlReturn:Qty,@SqlReturn:StockFullName</error>       
+		</exec>
+	</sql>	
+</define>
+<!--======新增过账操作=========-->	
+<define name="tblAllot_Add_One">		
+	<!--从调出仓库中，出明细中商品-->
+	<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblAllot_Period,@PeriodYear=@ValueofDB:tblAllot_PeriodYear,@PeriodMonth=@ValueofDB:tblAllot_PeriodMonth,@GoodsCode=tblAllotDet.GoodsCode,@StockCode=tblAllotDet.StockCode,@BillID=@ValueofDB:tblAllot_id,@BillType=tblAllot,@BillDate=@ValueofDB:tblAllot_BillDate,@BillNo=@ValueofDB:tblAllot_BillNo,@OutstoreQty=tblAllotDet.Qty,@OutstorePrice=tblAllotDet.Price,@OutstoreAmount=tblAllotDet.Amt,@createBy=@ValueofDB:tblAllot_createBy,@lastUpdateBy=@ValueofDB:tblAllot_lastUpdateBy,@createTime=@ValueofDB:tblAllot_finishTime,@lastUpdateTime=@ValueofDB:tblAllot_lastUpdateTime,@SCompanyID=@ValueofDB:tblAllot_SCompanyID,@SourceID=tblAllotDet.id,@EmployeeID=@ValueofDB:tblAllot_EmployeeID,@DepartmentCode=@ValueofDB:tblAllot_DepartmentCode,@TrackNo=@ValueofDB:tblAllot_TrackNo,@MRemark=@ValueofDB:tblAllot_Remark,@DRemark=tblAllotDet.Remark,@from=tblAllotDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>	
+	<!--将明细中所有商品入库到调入仓库-->
+	<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblAllot_Period,@PeriodYear=@ValueofDB:tblAllot_PeriodYear,@PeriodMonth=@ValueofDB:tblAllot_PeriodMonth,@GoodsCode=tblAllotDet.GoodsCode,@StockCode=tblAllotDet.InStockCode,@BillID=@ValueofDB:tblAllot_id,@BillType=tblAllot,@BillDate=@ValueofDB:tblAllot_BillDate,@BillNo=@ValueofDB:tblAllot_BillNo,@InstoreQty=tblAllotDet.Qty,@InstorePrice=tblAllotDet.Price,@InstoreAmount=tblAllotDet.Amt,@createBy=@ValueofDB:tblAllot_createBy,@lastUpdateBy=@ValueofDB:tblAllot_lastUpdateBy,@createTime=@ValueofDB:tblAllot_finishTime,@lastUpdateTime=@ValueofDB:tblAllot_lastUpdateTime,@SCompanyID=@ValueofDB:tblAllot_SCompanyID,@SourceID=tblAllotDet.id,@EmployeeID=@ValueofDB:tblAllot_EmployeeID,@DepartmentCode=@ValueofDB:tblAllot_DepartmentCode,@TrackNo=@ValueofDB:tblAllot_TrackNo,@MRemark=@ValueofDB:tblAllot_Remark,@DRemark=tblAllotDet.Remark,@from=tblAllotDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>	
+	<!--负库存判断-->
+	<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+    <!--回填配送单的分配数量及未分配数量-->	
+	<sql type="condition">
+		<exec condition="true">
+			<sql>update tblBuyApplicationDet set tblBuyApplicationDet.OutStockQty=tblBuyApplicationDet.OutStockQty+tblAllotDet.Qty,tblBuyApplicationDet.NotOutStockQty=tblBuyApplicationDet.Qty-tblAllotDet.Qty from tblAllotDet where tblAllotDet.f_ref=@ValueofDB:tblAllot_id and tblAllotDet.SourceID=tblBuyApplicationDet.id</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblAllot_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotDet.GoodsCode,@StockCode=tblAllotDet.StockCode,@BillType=tblAllot,@InstoreQty=0,@OutstoreQty=-1*tblAllotDet.Qty,@from=tblAllotDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotDet.GoodsCode,@StockCode=tblAllotDet.InStockCode,@BillType=tblAllot,@InstoreQty=-1*tblAllotDet.Qty,@OutstoreQty=0,@from=tblAllotDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新未审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblAllot_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,delete,retCode,retVal)}</sql>
+		</exec>
+		
+	</sql>
+		<!--回填配送单汇总单的配送数量及未配送数量-->
+	<sql type="procedure">{call proc_AllotUpBuyAppTotal(@ValueofDB:id,add,retCode,retVal)}</sql>
+</define>
+<!--=====同价调拨单删除操作===-->
+<define name="tblAllot_Delete">
+	<sql type="condition">
+		<!--如果有引用调拨申请单。回填申请单的相关字段-->
+		<exec condition="true">	
+			<sql type="procedure">{call proc_AllotUpdateAppQty(@ValueofDB:tblAllot_id,delete,retCode,retVal)}</sql>
+		</exec>	
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblAllot_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotDet.GoodsCode,@StockCode=tblAllotDet.StockCode,@BillType=tblAllot,@InstoreQty=0,@OutstoreQty=-1*tblAllotDet.Qty,@from=tblAllotDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotDet.GoodsCode,@StockCode=tblAllotDet.InStockCode,@BillType=tblAllot,@InstoreQty=-1*tblAllotDet.Qty,@OutstoreQty=0,@from=tblAllotDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--删除和修改操作时，更新序列号出入明细-->
+	<exec condition="'@Sess:BillOper' =='delete'||'@Sess:BillOper' =='update'">
+		<sql>delete from tblSeqAuditing where BillID=@ValueofDB:id</sql>
+	</exec>		
+		
+		<exec condition="'@MEM:tblAllot_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblAllot_Delete_One</sql>
+		</exec>
+	</sql>
+	<!--修改配送单明细的出库数量及未出库数量-->
+	<sql type="condition">
+		  <exec condition="true">	 		
+			<sql>update tblBuyApplicationDet set tblBuyApplicationDet.OutStockQty=0,tblBuyApplicationDet.NotOutStockQty=tblBuyApplicationDet.Qty from tblAllotDet where tblAllotDet.f_ref=@ValueofDB:tblAllot_id and tblAllotDet.SourceID=tblBuyApplicationDet.id</sql>       
+		  </exec>
+    </sql>
+ <!--回填配送单汇总单的配送数量及未配送数量-->
+	<sql type="procedure">{call proc_AllotUpBuyAppTotal(@ValueofDB:id,delete,retCode,retVal)}</sql>  
+</define>
+
+<!--====删除的过账操作======-->
+<define name="tblAllot_Delete_One">	
+	<!--删除库存记录-->
+	<sql type="procedure">{call proc_delStockDet(@ValueofDB:tblAllot_id,tblAllot,1,retCode,retVal)}</sql>
+	<sql type="condition">
+		<!--删除，反审核时判断负库存-->
+		<exec condition="'@Sess:BillOper' != 'update'">
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblAllot_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotDet.GoodsCode,@StockCode=tblAllotDet.StockCode,@BillType=tblAllot,@InstoreQty=0,@OutstoreQty=tblAllotDet.Qty,@from=tblAllotDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotDet.GoodsCode,@StockCode=tblAllotDet.InStockCode,@BillType=tblAllot,@InstoreQty=tblAllotDet.Qty,@OutstoreQty=0,@from=tblAllotDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--如果启用审核流，反审核时删除已审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblAllot_IsStatart'!= '0'&amp;&amp;'@Sess:BillOper'=='returnAuditing'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+		
+	</sql>
+</define>
+<!--======================================================以上代码：同价调拨单============================================================-->
+
+<!--=========================================================变价调拨单==========================================================-->  
+<define name="tblAllotChange_Add">
+	<sql type="condition"><!--商品成本计算方法为全月一次平均,不能执行此操作-->
+		<exec condition="'@MEM:GoodsCostingMethod' == 'MONTH'">
+			<error>tblAdjustPrice.GoodsCostingMethod.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--不启用多仓库时，主表调入仓库和调出仓库相同时给出错误提示--> 
+		<exec condition="'@MEM:ManyStockStore'=='false' &amp;&amp; '@ValueofDB:tblAllotChange_StockCode'=='@ValueofDB:tblAllotChange_InStockCode'">
+			<error>tblAllotChange.sameStock.error</error>
+	  </exec>
+	</sql>
+	<sql type="condition"><!--启用多仓库时，明细表调入仓库和调出仓库相同时给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsStock from tblAllotChangeDet a,tblGoods b where @MEM:ManyStockStore='true' and a.f_ref=@ValueofDB:tblAllotChange_id and a.goodsCode=b.classCode and a.StockCode=a.InStockCode</select></condition>
+		<exec condition="'@SqlReturn:GoodsStock'!='null'">	
+			<error>tblAllotChange.manyStock.error,@SqlReturn:GoodsStock</error>
+	  </exec>
+	</sql>
+	<sql type="condition"><!--启用了序列号属性，并且所选择的商品启用了序列号但没有录入序列号给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsSeq from tblAllotChangeDet a left join tblgoods c on c.classCode=a.GoodsCode where c.seqIsUsed=0 and len(isnull(a.seq,''))=0 and (select isUsed from tblGoodsAttribute where propName='Seq')=1 and a.f_ref=@ValueofDB:tblAllotChange_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsSeq' != 'null'">	
+			<error>enter.seq.error,@SqlReturn:GoodsSeq</error>
+	  </exec>
+	</sql>
+	<sql type="condition"><!--调出数量小于0或者等于0时，给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsQty from tblAllotChangeDet a,tblGoods b where a.f_ref=@ValueofDB:tblAllotChange_id and a.goodsCode=b.classCode and a.Qty&lt;=0</select></condition>
+		<exec condition="'@SqlReturn:GoodsQty' != 'null'">	
+			<error>tblAllotChange.Qty.error,@SqlReturn:GoodsQty</error>
+	  </exec>
+	</sql>	
+	<sql type="condition"><!--转入单价为负数时，给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsPrice from tblAllotChangeDet a,tblGoods b where a.f_ref=@ValueofDB:tblAllotChange_id and a.goodsCode=b.classCode and a.RePrice&lt;0</select></condition>
+		<exec condition="'@SqlReturn:GoodsPrice' != 'null'">	
+			<error>tblAllotChange.price.error,@SqlReturn:GoodsPrice</error>
+	  </exec>
+	</sql>
+	<sql type="condition"><!--主表的差异金额与明细表合计不等时，给出错误提示--> 
+		<condition><select>select sum(ReAmt) as SumReAmt from tblAllotChangeDet where f_ref=@ValueofDB:tblAllotChange_id</select></condition>
+		<exec condition="@SqlReturn:SumReAmt!=@ValueofDB:tblAllotChange_BillAmtChange">	
+			<error>tblAllotChange.reAmt.error</error>
+	  </exec>
+	</sql>
+	<sql type="condition"><!--提示零售价不能为负数-->
+		<condition><select>select b.GoodsNumber,b.GoodsFullName as GoodsQ,Qty from tblAllotChangeDet a,tblGoods b where b.classCode=a.GoodsCode and f_ref=@ValueofDB:tblAllotChange_id and isnull(a.RetailPrice,0)&lt;0</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">				
+			<error>common.RetailPrice.negative.error,@SqlReturn:GoodsNumber,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	
+	<sql type="condition">
+		<!--不启用多仓库更新明细表上的仓库值=主表仓库-->	
+		<exec condition="'@MEM:ManyStockStore'=='false'">			  
+			<sql>update tblAllotChangeDet set StockCode=@ValueofDB:tblAllotChange_StockCode,InStockCode=@ValueofDB:tblAllotChange_InStockCode where f_ref=@ValueofDB:tblAllotChange_id</sql>	
+		</exec>
+		<!--出库数量不能大于可用库存-->
+		<exec condition="'@MEM:OutBillUseQtyCheck'=='true'">
+			<sql type="define">tblAllotChange_OutBillUseQty_validate</sql>
+		</exec>
+	</sql>
+	
+	<sql type="condition">
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblAllotChange_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotChangeDet.GoodsCode,@StockCode=tblAllotChangeDet.StockCode,@BillType=tblAllotChange,@InstoreQty=0,@OutstoreQty=tblAllotChangeDet.Qty,@from=tblAllotChangeDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotChangeDet.GoodsCode,@StockCode=tblAllotChangeDet.InStockCode,@BillType=tblAllotChange,@InstoreQty=tblAllotChangeDet.Qty,@OutstoreQty=0,@from=tblAllotChangeDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		
+		<!--如果启用审核流，则新增保存时更新未审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblAllotChange_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+		<!--不启用审核流,执行过账操作-->
+		<exec condition="'@MEM:tblAllotChange_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblAllotChange_Add_One</sql>
+		</exec>		
+	</sql>	
+</define>
+<!--=======出库数量不能大于可用库存=======-->	
+<define name="tblAllotChange_OutBillUseQty_validate">
+	<sql type="condition">
+		<condition><select>select isnull(c.GoodsFullName,'') as GoodsFullName,isnull(tblStock.StockFullName,'') as StockFullName,cast(case c.isCatalog when 0 then isnull(b.LastQty+b.inQtyNotAudit+b.SInQtyNotAudit-b.outQtyNotAudit-b.BOutQtyNotAudit,0) else -99999999 end - a.Qty as numeric(18,4)) as Qty from (select GoodsCode,BatchNo,Hue,yearNO,Inch,Availably,ProDate,StockCode,SUM(Qty) as Qty from tblAllotChangeDet where f_ref=@ValueofDB:tblAllotChange_id  group by GoodsCode,BatchNo,Hue,yearNO,Inch,Availably,ProDate,StockCode)a  left join tblStocks b on a.GoodsCode=b.GoodsCode and a.StockCode=b.StockCode and a.BatchNo=b.BatchNo and a.Hue=b.Hue and a.yearNO=b.yearNO and a.Inch=b.Inch and a.Availably=b.Availably and a.ProDate=b.ProDate left join tblStock on a.StockCode=tblStock.classCode left join tblGoods c on a.GoodsCode=c.classCode  where  a.Qty&gt;(case c.isCatalog when 0 then isnull(b.LastQty+b.inQtyNotAudit+b.SInQtyNotAudit-b.outQtyNotAudit-b.BOutQtyNotAudit,0) else -99999999 end)</select></condition>
+		<exec condition="'@SqlReturn:GoodsFullName' != 'null'">			
+			<error>common.VirtualStock.excess.error,@ValueofDB:tblAllotChange_BillNo,@SqlReturn:GoodsFullName,@SqlReturn:Qty,@SqlReturn:StockFullName</error>       
+		</exec>
+	</sql>
+</define>
+<!--========变价调拨新增过账操作==========-->
+<define name="tblAllotChange_Add_One">
+	<sql type="condition">
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblAllotChange_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotChangeDet.GoodsCode,@StockCode=tblAllotChangeDet.StockCode,@BillType=tblAllotChange,@InstoreQty=0,@OutstoreQty=-1*tblAllotChangeDet.Qty,@from=tblAllotChangeDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotChangeDet.GoodsCode,@StockCode=tblAllotChangeDet.InStockCode,@BillType=tblAllotChange,@InstoreQty=-1*tblAllotChangeDet.Qty,@OutstoreQty=0,@from=tblAllotChangeDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+	</sql>	
+	<!--插入变价调拨单出库记录-->
+	<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblAllotChange_Period,@PeriodYear=@ValueofDB:tblAllotChange_PeriodYear,@PeriodMonth=@ValueofDB:tblAllotChange_PeriodMonth,@GoodsCode=tblAllotChangeDet.GoodsCode,@StockCode=tblAllotChangeDet.StockCode,@BillID=@ValueofDB:tblAllot_id,@BillType=tblAllotChange,@BillDate=@ValueofDB:tblAllotChange_BillDate,@BillNo=@ValueofDB:tblAllotChange_BillNo,@OutstoreQty=tblAllotChangeDet.Qty,@OutstorePrice=tblAllotChangeDet.Price,@OutstoreAmount=tblAllotChangeDet.Amt,@createBy=@ValueofDB:tblAllotChange_createBy,@lastUpdateBy=@ValueofDB:tblAllotChange_lastUpdateBy,@createTime=@ValueofDB:tblAllotChange_finishTime,@lastUpdateTime=@ValueofDB:tblAllotChange_lastUpdateTime,@SCompanyID=@ValueofDB:tblAllotChange_SCompanyID,@SourceID=tblAllotChangeDet.id,@EmployeeID=@ValueofDB:tblAllotChange_EmployeeID,@DepartmentCode=@ValueofDB:tblAllotChange_DepartmentCode,@TrackNo=@ValueofDB:tblAllotChange_TrackNo,@MRemark=@ValueofDB:tblAllotChange_Remark,@DRemark=tblAllotChangeDet.Remark,@from=tblAllotChangeDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+
+	<!--插入变价调拨单入库记录-->
+	<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblAllotChange_Period,@PeriodYear=@ValueofDB:tblAllotChange_PeriodYear,@PeriodMonth=@ValueofDB:tblAllotChange_PeriodMonth,@GoodsCode=tblAllotChangeDet.GoodsCode,@StockCode=tblAllotChangeDet.InStockCode,@BillID=@ValueofDB:tblAllotChange_id,@BillType=tblAllotChange,@BillDate=@ValueofDB:tblAllotChange_BillDate,@BillNo=@ValueofDB:tblAllotChange_BillNo,@InstoreQty=tblAllotChangeDet.Qty,@InstorePrice=tblAllotChangeDet.RePrice,@InstoreAmount=tblAllotChangeDet.OutAmt,@createBy=@ValueofDB:tblAllotChange_createBy,@lastUpdateBy=@ValueofDB:tblAllotChange_lastUpdateBy,@createTime=@ValueofDB:tblAllotChange_finishTime,@lastUpdateTime=@ValueofDB:tblAllotChange_lastUpdateTime,@SCompanyID=@ValueofDB:tblAllotChange_SCompanyID,@SourceID=tblAllotChangeDet.id,@EmployeeID=@ValueofDB:tblAllotChange_EmployeeID,@DepartmentCode=@ValueofDB:tblAllotChange_DepartmentCode,@TrackNo=@ValueofDB:tblAllotChange_TrackNo,@MRemark=@ValueofDB:tblAllotChange_Remark,@DRemark=tblAllotChangeDet.Remark,@from=tblAllotChangeDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+
+	<!--进行负库存判断-->
+	<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+	
+	<sql type="condition">
+	<!--如果启用审核流，删除已审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblAllotChange_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,delete,retCode,retVal)}</sql>
+		</exec>
+	</sql>	
+</define>
+
+<!--========变价调拨删除操作==========-->							   
+<define name="tblAllotChange_Delete">
+	<sql type="condition">
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblAllotChange_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotChangeDet.GoodsCode,@StockCode=tblAllotChangeDet.StockCode,@BillType=tblAllotChange,@InstoreQty=0,@OutstoreQty=-1*tblAllotChangeDet.Qty,@from=tblAllotChangeDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotChangeDet.GoodsCode,@StockCode=tblAllotChangeDet.InStockCode,@BillType=tblAllotChange,@InstoreQty=-1*tblAllotChangeDet.Qty,@OutstoreQty=0,@from=tblAllotChangeDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--删除和修改操作时，更新序列号出入明细-->
+	`<exec condition="'@Sess:BillOper' =='delete'||'@Sess:BillOper' =='update'">
+		`<sql>delete from tblSeqAuditing where BillID=@ValueofDB:id</sql>
+	`</exec>		
+		
+		<!--根据情况调用另外一个define操作:不启用审核流时执行另外操作-->
+		<exec condition="'@MEM:tblAllotChange_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblAllotChange_Delete_One</sql>
+		</exec>
+	</sql>	
+</define>
+
+<define name="tblAllotChange_Delete_One">	
+	<!--删除出入库明细-->
+	<sql type="procedure">{call proc_delStockDet(@ValueofDB:tblAllotChange_id,tblAllotChange,1,retCode,retVal)} </sql>
+	<!--删除，反审核时进行负库存判断-->
+	<sql type="condition">
+		<exec condition="'@Sess:BillOper' != 'update'">
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblAllotChange_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotChangeDet.GoodsCode,@StockCode=tblAllotChangeDet.StockCode,@BillType=tblAllotChange,@InstoreQty=0,@OutstoreQty=tblAllotChangeDet.Qty,@from=tblAllotChangeDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblAllotChangeDet.GoodsCode,@StockCode=tblAllotChangeDet.InStockCode,@BillType=tblAllotChange,@InstoreQty=tblAllotChangeDet.Qty,@OutstoreQty=0,@from=tblAllotChangeDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+	<!--如果启用审核流，反审核时，时更新分序列号出入未审核完毕的序列号明细，-->
+		<exec condition="'@MEM:tblAllotChange_IsStatart'!= '0'&amp;&amp;'@Sess:BillOper'=='returnAuditing'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+</sql>	
+</define>
+<!--================================================以上代码：变价调拨单==========================================================-->  
+
+<!--==================================================存货调价单==================================================================-->  
+<define name="tblAdjustPrice_add">
+	<sql type="condition"><!--商品成本计算方法为全月一次平均,不能执行此操作-->
+		<exec condition="'@MEM:GoodsCostingMethod' == 'MONTH'">
+			<error>tblAdjustPrice.GoodsCostingMethod.error</error>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<!--勾选了所有仓库的判断-->
+		<exec condition="'@ValueofDB:tblAdjustPrice_AllStock'=='Yes,'">
+			<sql type="define">tblAdjustPrice_add_IsAllStock</sql>
+		</exec>
+		<!--没有勾选所有仓库的判断-->
+		<exec condition="'@ValueofDB:tblAdjustPrice_AllStock'==''">
+			<sql type="define">tblAdjustPrice_add_NoAllStock</sql>
+		</exec>
+	</sql>	
+	<sql type="condition"><!--有多条相同商品，相同仓库，相同属性给出错误提示-->
+		<condition><select>select a.GoodsCode from tblAdjustPriceDet a where a.f_ref=@ValueofDB:tblAdjustPrice_id group by GoodsCode,StockCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably having COUNT(0)&gt;1</select></condition>
+		<exec condition="'@SqlReturn:GoodsCode'!='null'">
+			<error>明细表中不允许出现多条相同商品相同仓库相同属性的记录!</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--调后单价小于0，给出错误提示-->
+		<condition><select>select count(0) as NegativePrice from tblAdjustPriceDet where f_ref=@ValueofDB:tblAdjustPrice_id and NewPrice&lt;0</select></condition>
+		<exec condition="@SqlReturn:NegativePrice&gt;0">
+			<error>tblAdjustPrice.NegativePrice.error</error>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<!--执行过账操作-->
+		<exec condition="'@MEM:tblAdjustPrice_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblAdjustPrice_Add_One</sql>
+		</exec>
+	</sql>
+</define>
+<!--勾选了所有仓库的判断-->
+<define name="tblAdjustPrice_add_IsAllStock">
+	<sql type="condition">
+		<condition><select>select count(0) as ExistStock from tblAdjustPriceDet where f_ref=@ValueofDB:tblAdjustPrice_id and isnull(StockCode,'')!=''</select></condition>
+		<!--勾选了所有仓库，明细中存在选择仓库的记录，给出错误提示-->
+		<exec condition="@SqlReturn:ExistStock&gt;0">
+			<error>tblAdjustPriceDet.ExitsDetStock.selectStock</error>
+		</exec>
+	</sql>
+</define>
+<!--选择明细表仓库的判断-->
+<define name="tblAdjustPrice_add_NoAllStock">
+	<sql type="condition">
+		<condition><select>select count(0) as NoStock from tblAdjustPriceDet where f_ref=@ValueofDB:tblAdjustPrice_id and isnull(StockCode,'')=''</select></condition>
+		<!--没有勾选所有仓库，明细中存在没有选择仓库的记录，给出错误提示-->
+		<exec condition="@SqlReturn:NoStock&gt;0">
+			<error>iniGoods.msg.selectStock</error>
+		</exec>
+	</sql>
+</define>
+<define name="tblAdjustPrice_Add_One">	
+	<!--先将所有的存货调价明细出库，出库数量为当前日期结存数量，单价为结存单价-->
+	<sql type="procedure">{call proc_AdjustPriceInsertStockDet(@ValueofDB:tblAdjustPrice_id,retCode,retVal)}</sql>
+	<!--所选的商品没有库存时给出错误提示-->
+	<sql type="condition">
+		<condition><select>select count(0) as priceC from tblStockDet where billId=@ValueofDB:tblAdjustPrice_id</select></condition>
+		<exec condition="@SqlReturn:priceC==0">
+			<error>tblAdjustPrice.zeroQty.error,@SqlReturn:goodsFullName</error>
+		</exec>
+	</sql>
+	<!--根据出入库明细更新存货调价单的账面数量-->
+	<sql>update tblAdjustPriceDet set Qty=isnull((select sum(outstoreQty) from tblStockDet where tblStockDet.BillId=tblAdjustPriceDet.f_ref and tblStockDet.SourceID=tblAdjustPriceDet.id),0) where tblAdjustPriceDet.f_ref=@ValueofDB:tblAdjustPrice_id</sql>
+	<!--根据出入库明细更新存货调价单的账面金额-->
+	<sql>update tblAdjustPriceDet set Amt=isnull((select sum(outstoreAmount) from tblStockDet where tblStockDet.BillId=tblAdjustPriceDet.f_ref and tblStockDet.SourceID=tblAdjustPriceDet.id),0) where tblAdjustPriceDet.f_ref=@ValueofDB:tblAdjustPrice_id</sql>
+	<!--根据出入库明细更新存货调价单的调价后金额-->
+	<sql>update tblAdjustPriceDet set NewAmt=isnull((select sum(instoreAmount) from tblStockDet where tblStockDet.BillId=tblAdjustPriceDet.f_ref and tblStockDet.SourceID=tblAdjustPriceDet.id),0) where tblAdjustPriceDet.f_ref=@ValueofDB:tblAdjustPrice_id</sql>
+	<!--根据出入库明细更新存货调价单的账面单价，盈亏金额-->
+	<sql>update tblAdjustPriceDet set Price=case when Qty=0 then 0 else round(Amt/Qty,@MEM:DigitsPrice) end,AdjustAmt=NewAmt-Amt where tblAdjustPriceDet.f_ref=@ValueofDB:tblAdjustPrice_id</sql>
+</define>
+
+<!--==========删除存货调价单============-->
+<define name="tblAdjustPrice_Delete">
+	<sql type="condition">
+		<!--根据情况调用另外一个define操作:不启用审核流时执行过账操作-->
+		<exec condition="'@MEM:tblAdjustPrice_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblAdjustPrice_Delete_One</sql>
+		</exec>
+	</sql>	
+</define>
+
+<define name="tblAdjustPrice_Delete_One">	
+	<!--删除出入库明细中的入库记录-->
+	<sql type="procedure">{call proc_delStockDet(@ValueofDB:tblAdjustPrice_id,tblAdjustPrice,1,retCode,retVal)}</sql>
+</define>
+<!--========================================================以上代码：存货调价单===============================================================-->  
+
+
+
+   <!--===========商品成本表操作==========-->
+                          <define name="tblGoodsCost_Add">
+	<sql type="condition">
+		<condition>
+		  <select>select GoodsCode,GoodsFullName,GoodsSpec,StockCode,GoodsCost  from tblGoodsCost where id = @ValueofDB:tblGoodsCost_id </select>
+		  </condition>	  				  
+         <exec condition="@SqlReturn:GoodsCost &lt;= 0 || @SqlReturn:GoodsCost == null">
+         <error>InputPrice.Bill.error,@SqlReturn:GoodsCode</error>
+		 </exec>		
+	</sql>
+</define>
+
+<!--===================仓库盘点单=====================-->
+	<define name="tblStockCheckDet_GoodsSeqSet">
+		<sql type="condition">
+		<condition>
+			<select>select seqIsUsed as isUsed from tblGoods where classCode=@ValueofDB:tblStockCheckDet_GoodsCode</select>
+			</condition>
+		<exec condition="@SqlReturn:isUsed == 0">
+		<error>goodsseq.set.res</error>
+		</exec>
+		</sql>
+	</define>
+<!--================================================盘点录入单================================================-->
+<define name="tblStockCheck_Add">
+	<sql type="condition">
+		<exec condition="'@ValueofDB:CheckDate'&gt;'@ValueofDB:BillDate'">
+			<error>CheckDateLaterBillDate.Date.error</error>
+		</exec>
+        <!--如果启用了系统配置“保质期”，根据情况修改保质期限和生产日期的值-->
+        <exec condition="'@MEM:Availably'=='true'">     
+            <sql><!--商品设置了保质期，没有录入保质期限，根据生产日期更新保质期限-->
+               update tblStockCheckDet set Availably=a.Availably from(select  b.id as id,case when tblGoods.AvailablyType='Day' then convert(varchar(10),dateadd(Day,tblGoods.Validity,ProDate),21) when tblGoods.AvailablyType='Month' then convert(varchar(10),dateadd(Month,tblGoods.Validity,ProDate),21) when tblGoods.AvailablyType='Year' then convert(varchar(10),dateadd(Year,tblGoods.Validity,ProDate),21) else '' end as Availably from tblStockCheck  a join tblStockCheckDet b on b.f_ref=a.id join tblGoods on tblGoods.classCode=b.GoodsCode where a.id=@ValueofDB:tblStockCheck_id and len(Availably)=0 and len(ProDate)!=0 and tblGoods.Validity!=0)a where tblStockCheckDet.id=a.id</sql>
+            <sql><!--商品设置了保质期，没有录入生产日期，根据保质期限更新生产日期-->
+               update tblStockCheckDet set ProDate=a.ProDate from(select  b.id as id,case when tblGoods.AvailablyType='Day' then convert(varchar(10),dateadd(Day,(-1)*tblGoods.Validity,Availably),21) when tblGoods.AvailablyType='Month' then convert(varchar(10),dateadd(Month,(-1)*tblGoods.Validity,Availably),21) when tblGoods.AvailablyType='Year' then convert(varchar(10),dateadd(Year,(-1)*tblGoods.Validity,Availably),21) else '' end as ProDate from tblStockCheck a join tblStockCheckDet b on b.f_ref=a.id join tblGoods on tblGoods.classCode=b.GoodsCode where a.id=@ValueofDB:tblStockCheck_id and len(ProDate)=0 and len(Availably)!=0 and tblGoods.Validity!=0)a where tblStockCheckDet.id=a.id</sql>
+        </exec>
+	</sql>
+	<sql type="condition"><!--启用了序列号属性，并且所选择的商品启用了序列号但没有录入序列号给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsSeq from tblCheckDet a left join tblgoods c on c.classCode=a.GoodsCode where c.seqIsUsed=0 and len(isnull(a.seq,''))=0 and (select isUsed from tblGoodsAttribute where propName='Seq')=1 and a.f_ref=@ValueofDB:tblStockCheck_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsSeq' != 'null'">	
+			<error>enter.seq.error,@SqlReturn:GoodsSeq</error>
+	    </exec>
+	</sql>
+	<sql type="condition">
+		<exec condition="true">
+			<sql type="procedure">{call proc_StockCheckSeqValidate2(@ValueofDB:tblStockCheck_PrepareId,retCode,retVal)}</sql>
+		</exec>
+		<exec condition="'@ProcReturn:retVal'!=''">
+			<error>@ProcReturn:retVal</error>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition>
+			<select>SELECT b.GoodsFullName FROM tblStockCheckDet a JOIN tblGoods b ON a.GoodsCode = b.classCode WHERE a.f_ref = @ValueofDB:tblStockCheck_id AND a.Qty &lt;0</select>
+		</condition>
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;'@SqlReturn:GoodsFullName'.length!=0">
+			<error>StockCheck.qty.negative.error,@SqlReturn:GoodsFullName</error>
+		</exec>
+	</sql>
+	<sql type="condition">
+	  	<exec condition="true">
+			<!--对于导入的单据  回填单位 辅助单位相关数据-->
+			<sql>UPDATE tblStockCheckDet SET BaseQty = b.UnitD,SecQty =b.SecUnitD,SecUnit = b.SecUnit FROM tblGoods a LEFT JOIN tblGoodsUnit b ON a.id = b.f_ref AND b.DefaultAssit = 1 WHERE tblStockCheckDet.f_ref = @ValueofDB:tblStockCheck_id AND tblStockCheckDet.GoodsCode = a.classCode</sql>
+			<sql>UPDATE tblStockCheckDet SET UnitQty = dbo.getDigits('tblStockCheckDet','UnitQty',Qty*SecQty/BaseQty),UnitIntQty = FLOOR(Qty*SecQty/BaseQty),UnitBaseQty = dbo.getDigits('tblStockCheckDet','UnitBaseQty',Qty - FLOOR(Qty*SecQty/BaseQty)*BaseQty/SecQty) WHERE f_ref = @ValueofDB:tblStockCheck_id</sql>
+		</exec>
+	</sql>
+</define>
+ 
+<!--删除库存盘点单-->
+
+<!--不启用审核流执行操作-->
+<define name="tblStockCheck_Delete">	
+	<sql type="condition">
+		<condition>
+			<select>SELECT BillNo FROM tblStockCheck WHERE id =@ValueofDB:tblStockCheck_id AND statusId = '1'</select>
+		</condition>
+		<exec condition="'@SqlReturn:BillNo'!='null'&amp;&amp;'@SqlReturn:BillNo'.length!=0">
+			<error>StockCheck.isFinished.error,@SqlReturn:BillNo</error>
+		</exec>
+		<!--根据情况调用另外一个define操作:不启用审核流时执行另外操作-->
+		<exec condition="'@MEM:tblStockCheck_IsStatart' != '1'">
+		<sql type="define">tblStockCheck_Delete_One</sql>
+		</exec>
+		
+		<exec condition="true">
+		<sql>delete  tblStockCheckDet where f_ref=@ValueofDB:tblStockCheck_id</sql>
+		</exec>
+		</sql>
+	</define>
+			 
+	<define name="tblStockCheck_Delete_One"> 
+ </define>
+
+<!--===================================================组拆装单===============================================================-->
+<define name="tblGoodsAssemblySplit_Add">
+	<sql type="condition"><!--数量不允许为负数-->
+		<exec condition="@ValueofDB:MainQty&lt;0">
+			<error>AssemblyTemp.MainQty.negative.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--领用明细中，启用了序列号属性，并且所选择的商品启用了序列号但没有录入序列号给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsSeq from tblGoodsAssemblySplitDet a left join tblgoods c on c.classCode=a.GoodsCode where c.seqisUsed=0 and len(isnull(a.seq,''))=0 and (select isUsed from tblGoodsAttribute where propName='Seq')=1 and a.f_ref=@ValueofDB:tblAssemblyTemplate_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsSeq' != 'null'">	
+			<error>enter.seq.error,@SqlReturn:GoodsSeq</error>
+	    </exec>
+	</sql>
+	<sql type="condition"><!--入库明细中，启用了序列号属性，并且所选择的商品启用了序列号但没有录入序列号给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsSeq from tblGoodsAssemblySplitDetail a left join tblgoods c on c.classCode=a.GoodsCode where c.seqIsUsed=0 and len(isnull(a.seq,''))=0 and (select isUsed from tblGoodsAttribute where propName='Seq')=1 and a.f_ref=@ValueofDB:tblAssemblyTemplate_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsSeq' != 'null'">	
+			<error>enter.seq.error,@SqlReturn:GoodsSeq</error>
+	   </exec>
+	</sql>
+	<sql type="condition"><!--领用明细中，启用了序列号属性，并且所选择的商品启用了序列号但数量与实际序列号数量不等给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsSeq from tblGoodsAssemblySplitDet a left join tblgoods c on c.classCode=a.GoodsCode where c.seqIsUsed=0 and LEN(a.Seq)-len(REPLACE(a.Seq,'~',''))!=a.Qty and (select isUsed from tblGoodsAttribute where propName='Seq')=1 and a.f_ref=@ValueofDB:tblAssemblyTemplate_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsSeq' != 'null'">	
+			<error>common.seq.Qty.error,@SqlReturn:GoodsSeq</error>
+	    </exec>
+	</sql>
+	<sql type="condition"><!--入库明细中，启用了序列号属性，并且所选择的商品启用了序列号但数量与实际序列号数量不等给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsSeq from tblGoodsAssemblySplitDetail a left join tblgoods c on c.classCode=a.GoodsCode where c.seqIsUsed=0 and LEN(a.Seq)-len(REPLACE(a.Seq,'~',''))!=a.Qty and (select isUsed from tblGoodsAttribute where propName='Seq')=1 and a.f_ref=@ValueofDB:tblAssemblyTemplate_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsSeq' != 'null'">	
+			<error>common.seq.Qty.error,@SqlReturn:GoodsSeq</error>
+	   </exec>
+	</sql>
+	<sql type="condition"><!--领用明细数量小于等于0的商品判断-->
+		<condition><select>select b.GoodsFullName as GoodsQ from tblGoodsAssemblySplitDet a,tblGoods b where isnull(a.Qty,0)&lt;=0 and b.classCode=a.GoodsCode and a.f_ref=@ValueofDB:tblGoodsAssemblySplit_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>AssemblyTemp.qty.negative.error,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--领用明细单价小于0的商品判断-->
+		<condition><select>select b.GoodsFullName as GoodsQ from tblGoodsAssemblySplitDet a,tblGoods b where isnull(a.Price,0)&lt;0 and b.classCode=a.GoodsCode and a.f_ref=@ValueofDB:tblAssemblyTemplate_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>AssemblyTemp.price.negative.error,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--入库明细数量小于等于0的商品判断-->
+		<condition><select>select b.GoodsFullName as GoodsQ from tblGoodsAssemblySplitDetail a,tblGoods b where isnull(a.Qty,0)&lt;=0 and b.classCode=a.GoodsCode and a.f_ref=@ValueofDB:tblAssemblyTemplate_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>AssemblyTempIn.qty.negative.error,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--入库明细单价小于0的商品判断-->
+		<condition><select>select b.GoodsFullName as GoodsQ from tblGoodsAssemblySplitDetail a,tblGoods b where  a.f_ref=@ValueofDB:tblAssemblyTemplate_id and b.classCode=a.GoodsCode and isnull(a.Price,0)&lt;0 </select></condition>
+		<exec condition="'@SqlReturn:GoodsQ'!= 'null'">			
+			<error>AssemblyTempIn.price.negative.error,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--入库明细单价等于0的商品判断-->
+		<condition><select>select b.GoodsFullName as GoodsQ from tblGoodsAssemblySplitDetail a,tblGoods b where  a.f_ref=@ValueofDB:tblGoodsAssemblySplit_id and b.classCode=a.GoodsCode and @MEM:SplitGetLastCost='false' and isnull(a.Price,0)=0</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>InputChangePrice.Bill.error,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	<sql type="condition"> 
+		<!--如果启用了系统配置“保质期”，根据情况修改保质期限和生产日期的值-->
+		<exec condition="'@MEM:Availably'=='true'">		
+			<sql><!--商品设置了保质期，没有录入保质期限，根据生产日期更新保质期限-->
+			update tblGoodsAssemblySplitDetail set tblGoodsAssemblySplitDetail.Availably=a.Availably from(select  b.id as id,case when tblGoods.AvailablyType='Day' then convert(varchar(10),dateadd(Day,tblGoods.Validity,ProDate),21) when tblGoods.AvailablyType='Month' then convert(varchar(10),dateadd(Month,tblGoods.Validity,ProDate),21) when tblGoods.AvailablyType='Year' then convert(varchar(10),dateadd(Year,tblGoods.Validity,ProDate),21) else '' end as Availably from tblGoodsAssemblySplit a join tblGoodsAssemblySplitDetail b on b.f_ref=a.id join tblGoods on tblGoods.classCode=b.GoodsCode where a.id=@ValueofDB:tblGoodsAssemblySplit_id and len(Availably)=0 and len(ProDate)!=0 and tblGoods.Validity!=0)a where tblGoodsAssemblySplitDetail.id=a.id
+			</sql>
+			<sql><!--商品设置了保质期，没有录入生产日期，根据保质期限更新生产日期-->
+			update tblGoodsAssemblySplitDetail set tblGoodsAssemblySplitDetail.ProDate=a.ProDate from(select  b.id as id,case when tblGoods.AvailablyType='Day' then convert(varchar(10),dateadd(Day,(-1)*tblGoods.Validity,Availably),21) when tblGoods.AvailablyType='Month' then convert(varchar(10),dateadd(Month,(-1)*tblGoods.Validity,Availably),21) when tblGoods.AvailablyType='Year' then convert(varchar(10),dateadd(Year,(-1)*tblGoods.Validity,Availably),21) else '' end as ProDate from tblGoodsAssemblySplit a join tblGoodsAssemblySplitDetail b on b.f_ref=a.id join tblGoods on tblGoods.classCode=b.GoodsCode where a.id=@ValueofDB:tblGoodsAssemblySplit_id and len(ProDate)=0 and len(Availably)!=0 and tblGoods.Validity!=0)a where tblGoodsAssemblySplitDetail.id=a.id
+			 </sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblGoodsAssemblySplit_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblGoodsAssemblySplitDet.GoodsCode,@StockCode=tblGoodsAssemblySplitDet.StockCode,@BillType=tblGoodsAssemblySplit,@InstoreQty=0,@OutstoreQty=tblGoodsAssemblySplitDet.Qty,@from=tblGoodsAssemblySplitDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblGoodsAssemblySplitDetail.GoodsCode,@StockCode=tblGoodsAssemblySplitDetail.StockCode,@BillType=tblGoodsAssemblySplit,@InstoreQty=tblGoodsAssemblySplitDetail.Qty,@OutstoreQty=0,@from=tblGoodsAssemblySplitDetail,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--如果启用审核流，更新序列号审核库存表-->
+		<exec condition="'@MEM:tblGoodsAssemblySplit_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+		
+		<!--不启用审核流时，直接过账-->
+		<exec condition="'@MEM:tblGoodsAssemblySplit_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblGoodsAssemblySplit_Add_One</sql>
+		</exec>
+	</sql>	
+</define>
+<define name="tblGoodsAssemblySplit_Add_One">
+	<sql type="condition"><!--当启用了系统配置“组拆装单零单价时自动获取价格” 时，更新为0的入库单价-->
+		<condition><select>select count(0) as zeroCount from tblGoodsAssemblySplitDetail where f_ref=@ValueofDB:tblAssemblyTemplate_id and isnull(Price,0)=0</select></condition>
+		<exec condition="@SqlReturn:zeroCount&gt;0 &amp;&amp; @MEM:SplitGetLastCost==true">
+			<sql type="define">tblGoodsAssemblySplit_Add_SetPrice</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblGoodsAssemblySplit_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblGoodsAssemblySplitDet.GoodsCode,@StockCode=tblGoodsAssemblySplitDet.StockCode,@BillType=tblGoodsAssemblySplit,@InstoreQty=0,@OutstoreQty=-1*tblGoodsAssemblySplitDet.Qty,@from=tblGoodsAssemblySplitDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblGoodsAssemblySplitDetail.GoodsCode,@StockCode=tblGoodsAssemblySplitDetail.StockCode,@BillType=tblGoodsAssemblySplit,@InstoreQty=-1*tblGoodsAssemblySplitDetail.Qty,@OutstoreQty=0,@from=tblGoodsAssemblySplitDetail,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<!--如果启用审核流，删除已审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblGoodsAssemblySplit_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,delete,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	
+	<!--将领料数据插入到出入库明细-->
+	<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblGoodsAssemblySplit_Period,@PeriodYear=@ValueofDB:tblGoodsAssemblySplit_PeriodYear,@PeriodMonth=@ValueofDB:tblGoodsAssemblySplit_PeriodMonth,@GoodsCode=tblGoodsAssemblySplitDet.GoodsCode,@StockCode=tblGoodsAssemblySplitDet.StockCode,@BillID=@ValueofDB:tblGoodsAssemblySplit_id,@BillType=tblGoodsAssemblySplit,@BillDate=@ValueofDB:tblGoodsAssemblySplit_BillDate,@BillNo=@ValueofDB:tblGoodsAssemblySplit_BillNo,@OutstoreQty=tblGoodsAssemblySplitDet.Qty,@OutstorePrice=tblGoodsAssemblySplitDet.Price,@OutstoreAmount=tblGoodsAssemblySplitDet.Amount,@createBy=@ValueofDB:tblGoodsAssemblySplit_createBy,@lastUpdateBy=@ValueofDB:tblGoodsAssemblySplit_lastUpdateBy,@createTime=@ValueofDB:tblGoodsAssemblySplit_finishTime,@lastUpdateTime=@ValueofDB:tblGoodsAssemblySplit_lastUpdateTime,@SCompanyID=@Sess:SCompanyID,@SourceID=tblGoodsAssemblySplitDet.id,@EmployeeID=@ValueofDB:tblGoodsAssemblySplit_EmployeeID,@DepartmentCode=@ValueofDB:tblGoodsAssemblySplit_DepartmentCode,@MRemark=@ValueofDB:tblGoodsAssemblySplit_Remark,@DRemark=tblGoodsAssemblySplitDet.Remark,@from=tblGoodsAssemblySplitDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+	<!--将入库数据插入到出入库明细-->
+	<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblGoodsAssemblySplit_Period,@PeriodYear=@ValueofDB:tblGoodsAssemblySplit_PeriodYear,@PeriodMonth=@ValueofDB:tblGoodsAssemblySplit_PeriodMonth,@GoodsCode=tblGoodsAssemblySplitDetail.GoodsCode,@StockCode=tblGoodsAssemblySplitDetail.StockCode,@BillID=@ValueofDB:tblGoodsAssemblySplit_id,@BillType=tblGoodsAssemblySplit,@BillDate=@ValueofDB:tblGoodsAssemblySplit_BillDate,@BillNo=@ValueofDB:tblGoodsAssemblySplit_BillNo,@InstoreQty=tblGoodsAssemblySplitDetail.Qty,@InstorePrice=tblGoodsAssemblySplitDetail.Price,@InstoreAmount=tblGoodsAssemblySplitDetail.Amount,@createBy=@ValueofDB:tblGoodsAssemblySplit_createBy,@lastUpdateBy=@ValueofDB:tblGoodsAssemblySplit_lastUpdateBy,@createTime=@ValueofDB:tblGoodsAssemblySplit_finishTime,@lastUpdateTime=@ValueofDB:tblGoodsAssemblySplit_lastUpdateTime,@SCompanyID=@Sess:SCompanyID,@SourceID=tblGoodsAssemblySplitDetail.id,@EmployeeID=@ValueofDB:tblGoodsAssemblySplit_EmployeeID,@DepartmentCode=@ValueofDB:tblGoodsAssemblySplit_DepartmentCode,@MRemark=@ValueofDB:tblGoodsAssemblySplit_Remark,@DRemark=tblGoodsAssemblySplitDetail.Remark,@from=tblGoodsAssemblySplitDetail,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+	<!--验证是否有重复的序列号-->
+	<sql type="define">validateSameSeq</sql>
+	<!--验证是否有负库存-->
+	<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+</define>
+<!--====更新为0的入库单价======-->
+<define name="tblGoodsAssemblySplit_Add_SetPrice">
+	<!--拿最近的入库价更新组拆装单入库成本价-->
+	<sql>update tblGoodsAssemblySplitDetail set price=round(isnull((select sum(InstoreAmount)/sum(InstoreQty) from tblStockDet a where a.goodsCode=tblGoodsAssemblySplitDetail.goodsCode and a.stockCode=tblGoodsAssemblySplitDetail.stockCode and a.ProDate=tblGoodsAssemblySplitDetail.ProDate and a.Availably=tblGoodsAssemblySplitDetail.Availably and a.Hue=tblGoodsAssemblySplitDetail.Hue and a.yearNO=tblGoodsAssemblySplitDetail.yearNO and a.BatchNo=tblGoodsAssemblySplitDetail.BatchNo and a.Inch=tblGoodsAssemblySplitDetail.Inch and ((len(tblGoodsAssemblySplitDetail.seq)=0 and len(a.Seq)=0) or (len(tblGoodsAssemblySplitDetail.seq)&gt;0 and len(a.seq)&gt;0 and charindex(a.seq+'~',tblGoodsAssemblySplitDetail.seq)&gt;0)) and id=isnull((select top 1 b.id from tblStockDet b where a.goodPropHash=b.goodPropHash and b.billDate&lt;=@ValueofDB:tblGoodsAssemblySplit_BillDate and instorePrice&gt;0 order by BillDate desc,createTime desc,ItemOrder desc),0)),0),@MEM:DigitsPrice) where f_ref=@ValueofDB:tblGoodsAssemblySplit_id and price&lt;=0</sql>
+	<!--更新没有成本价的商品 取预设进价-->
+	<sql>update tblGoodsAssemblySplitDetail set price=isnull(tblGoods.PreBuyPrice,0) from tblGoods where tblGoods.classCode=tblGoodsAssemblySplitDetail.GoodsCode and f_ref=@ValueofDB:tblGoodsAssemblySplit_id and price&lt;=0</sql>
+	<!--更新明细表金额-->
+	<sql>update tblGoodsAssemblySplitDetail set Amount=round(Price*Qty,@MEM:DigitsAmount) where f_ref=@ValueofDB:tblOtherIn_id</sql>
+	<!--更新主表总金额-->	
+	<sql>update tblGoodsAssemblySplit set BillAmt=((select sum(Amount) from tblGoodsAssemblySplitDetail where f_ref=@ValueofDB:tblGoodsAssemblySplit_id)-(select sum(Amount) from tblGoodsAssemblySplitDet where f_ref=@ValueofDB:tblGoodsAssemblySplit_id)) where id=@ValueofDB:tblGoodsAssemblySplit_id</sql>
+	<!--更新辅助单位单价-->
+	<sql>update tblGoodsAssemblySplitDetail set UnitPrice=dbo.getDigits('tblGoodsAssemblySplitDetail','UnitPrice',Price*BaseQty/SecQty) where f_ref=@ValueofDB:tblGoodsAssemblySplit_id and len(isnull(SecUnit,''))!=0</sql>
+</define>
+
+<define name="tblGoodsAssemblySplit_Delete">
+	<sql type="condition">
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblGoodsAssemblySplit_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblGoodsAssemblySplitDet.GoodsCode,@StockCode=tblGoodsAssemblySplitDet.StockCode,@BillType=tblGoodsAssemblySplit,@InstoreQty=0,@OutstoreQty=-1*tblGoodsAssemblySplitDet.Qty,@from=tblGoodsAssemblySplitDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblGoodsAssemblySplitDetail.GoodsCode,@StockCode=tblGoodsAssemblySplitDetail.StockCode,@BillType=tblGoodsAssemblySplit,@InstoreQty=-1*tblGoodsAssemblySplitDetail.Qty,@OutstoreQty=0,@from=tblGoodsAssemblySplitDetail,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--删除和修改操作时，更新序列号出入明细-->
+		<exec condition="'@Sess:BillOper' =='delete'||'@Sess:BillOper' =='update'">
+			<sql>delete from tblSeqAuditing where BillID=@ValueofDB:id</sql>
+		</exec>	
+		
+		<!--根据情况调用另外一个define操作:不启用审核流时执行另外操作-->
+		<exec condition="'@MEM:tblGoodsAssemblySplit_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblGoodsAssemblySplit_Delete_One</sql>
+		</exec>		
+	</sql>	
+</define>
+
+<define name="tblGoodsAssemblySplit_Delete_One">
+	<!--删除出入库明细-->
+	<sql type="procedure">{call proc_delStockDet(@ValueofDB:tblGoodsAssemblySplit_id,tblGoodsAssemblySplit,1,retCode,retVal)}</sql>
+	<!--删除，反审核时判断序列号重复及负库存-->
+	<sql type="condition"> 
+		<exec condition="'@Sess:BillOper'!='update'">	
+			<sql type="define">validateSameSeq</sql>
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblGoodsAssemblySplit_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblGoodsAssemblySplitDet.GoodsCode,@StockCode=tblGoodsAssemblySplitDet.StockCode,@BillType=tblGoodsAssemblySplit,@InstoreQty=0,@OutstoreQty=tblGoodsAssemblySplitDet.Qty,@from=tblGoodsAssemblySplitDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblGoodsAssemblySplitDetail.GoodsCode,@StockCode=tblGoodsAssemblySplitDetail.StockCode,@BillType=tblGoodsAssemblySplit,@InstoreQty=tblGoodsAssemblySplitDetail.Qty,@OutstoreQty=0,@from=tblGoodsAssemblySplitDetail,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+<!--如果启用审核流，更新序列号审核库存表-->
+		<exec condition="'@MEM:tblGoodsAssemblySplit_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+</sql>
+</define>
+<!--======================================================以上代码：组拆装单==================================================-->
+<define name="tblGoodsAssemblySplitDetail_GoodsSeqSet">
+	<sql type="condition">
+		<condition><select>select seqisUsed as isUsed from tblGoods where classCode=@ValueofDB:tblGoodsAssemblySplitDetail_GoodsCode</select></condition>
+		<exec condition="@SqlReturn:isUsed == 0">
+			<error>goodsseq.set.res</error>
+		</exec>
+	</sql>
+</define>
+<define name="tblGoodsAssemblySplitDet_GoodsSeqSet">
+	<sql type="condition">
+		<condition><select>select seqIsUsed as isUsed from tblGoods where classCode=@ValueofDB:tblGoodsAssemblySplitDet_GoodsCode</select></condition>
+		<exec condition="@SqlReturn:isUsed == 0">
+			<error>goodsseq.set.res</error>
+		</exec>
+	</sql>
+</define>
+<!--===========================================================库存盘点表=====================================================-->
+<define name="tblCheckReady_Add"> 	
+	<sql type="condition"><!---盘点数量为负数，给出错误提示-->
+		<condition><select>select count(0) qtyC from tblCheckReadyDet where f_ref=@ValueofDB:tblCheckReady_id and CQty&lt;0</select></condition>
+		<exec condition="@SqlReturn:qtyC&gt;0">
+			<error>tblCheckReady.NegativeQty.error</error>
+		</exec>
+	</sql>	
+    <sql type="condition"><!--如果不启用多仓库，将主表的仓库更新到明细表的仓库-->		
+		<exec condition="'@MEM:ManyStockStore'=='false'">			  
+			<sql>update tblCheckReadyDet set StockCode=@ValueofDB:tblCheckReady_StockCode where f_ref=@ValueofDB:tblCheckReady_id</sql>	
+		</exec>
+	</sql>	
+</define>	
+
+<define name="tblCheckReady_Delete">		
+	<sql type="condition"><!--如果启用了审核流，进行删除时不用任何判断，所以在此进行判断-->
+		<exec condition="'@MEM:tblCheckReady_IsStatart' == '0'">
+			<sql type="define">tblCheckReady_Delete_One</sql>
+		</exec>
+	</sql>
+</define>
+			 
+<define name="tblCheckReady_Delete_One"> 	
+	<sql type="condition"><!---如果已经做了盘点处理，不能反审核，删除-->
+		<condition><select>select statusId from tblCheckReady where id=@ValueofDB:tblCheckReady_id</select></condition>
+		<exec condition="@SqlReturn:statusId==1">
+			<error>Disposal.Checked.error</error>
+		</exec>
+	</sql>
+</define>
+ 
+<!--=====拓展按钮：盘点处理=====-->
+<define name="StatCheckReady_Add">	
+	<sql type="condition"><!--没有审核完毕给出错误提示-->
+		<condition><select>select count(0) as checkC from tblCheckReady where id in (select fname from field(@ValueofDB:tblCheckReady_id)) and workFlowNodeName!='finish'</select></condition>		
+		<exec condition="@SqlReturn:checkC&gt;0">
+			<error>NoDisposal.Checked.error</error>
+		</exec>	
+	</sql>
+	<sql type="condition"><!--已经做过盘点处理给出错误提示-->
+		<condition><select>select count(0) as checkC from tblCheckReady where id in (select fname from field(@ValueofDB:tblCheckReady_id)) and statusId=1</select></condition>
+		<exec condition="@SqlReturn:checkC&gt;0">
+			<error>ReDisposal.Checked.error</error>
+		</exec>	
+	</sql>
+	<sql type="condition"><!--系统时间所在的期间已经月结，给出错误提示-->
+		<condition><select>select statusId as periodStatusId from tblAccPeriod where periodBegin&lt;=@MEM:sysShortDate and periodEnd&gt;=@MEM:sysShortDate</select></condition>
+		<exec condition="@SqlReturn:periodStatusId==2">
+			<error>tblCheckReady.settleMonth.error</error>
+		</exec>	
+	</sql>
+	<!--此存储过程根据所选商品，所选仓库的当前库存生产报损单，报溢单-->		
+	<sql type="procedure">{call proc_TempCheck(@Sess:Local,@ValueofDB:tblCheckReady_id,@Sess:UserId,@Sess:SCompanyID,@CODE:[tblCheck_BillNo],@CODE:[tblCheckMore_BillNo],retCode,retVal)}</sql>
+</define>
+ 
+<!--======拓展按钮：取消处理==========-->
+<define name="NoStatCheckReady_Del"> 	
+	<sql type="condition"><!--如果还是未处理状态，提示错误-->
+		<condition><select>select count(0) as checkC from tblCheckReady where id in (select fname from field(@ValueofDB:tblCheckReady_id)) and statusId=0</select></condition>
+		<exec condition="@SqlReturn:checkC&gt;0">
+			<error>tblCheckReady.noCheck.error</error>
+		</exec>
+	</sql>	
+	<sql type="condition"><!--检查由此盘点表生成的报损单，报溢单是否已经过账，如果过账提示错误-->		
+		<condition>
+			<select>select CheckNo from tblCheckReady where id=@ValueofDB:tblCheckReady_id</select>
+			<select>select BillNo from tblCheck where CheckNo in (select CheckNo from tblCheckReady where id in (select fname from field(@ValueofDB:tblCheckReady_id))) and workFlowNodeName!='draft' union all select BillNo from tblCheckMore where CheckNo in (select CheckNo from tblCheckReady where id in (select fname from field(@ValueofDB:tblCheckReady_id))) and workFlowNodeName!='draft'</select>
+		</condition>
+		<exec condition="'@SqlReturn:BillNo'!='null'">
+			<error>Disposal.CheckAuditing.error</error>
+		</exec>
+	</sql>	
+	<sql type="condition">
+		<condition>
+			<select>select isfillback from tblbillno where [key]='tblCheck_BillNo'</select>
+			<select>select BillNo from tblCheck where CheckNo in (select CheckNo from tblCheckReady where id in (select fname from field(@ValueofDB:tblCheckReady_id)))</select>
+		</condition>
+		<exec condition="'@SqlReturn:isfillback'=='1'">
+			<sql>update tblBillNoHistory set removed=1 where [key]='tblCheck_BillNo' and [formatedString]=@SqlReturn:BillNo</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition>
+			<select>select isfillback from tblbillno where [key]='tblCheckMore_BillNo'</select>
+			<select>select BillNo from tblCheckMore where CheckNo in (select CheckNo from tblCheckReady where id in (select fname from field(@ValueofDB:tblCheckReady_id)))</select>
+		</condition>
+		<exec condition="'@SqlReturn:isfillback'=='1'">
+			<sql>update tblBillNoHistory set removed=1 where [key]='tblCheckMore_BillNo' and [formatedString]=@SqlReturn:BillNo</sql>
+		</exec>
+	</sql>
+	<!--删除报损单及明细表-->
+	<sql>delete from tblCheckDet where f_ref in (select id from tblCheck where CheckNo in (select CheckNo from tblCheckReady where id in (select fname from field(@ValueofDB:tblCheckReady_id))))</sql>
+	<sql>delete from tblCheck where CheckNo in (select CheckNo from tblCheckReady where id in (select fname from field(@ValueofDB:tblCheckReady_id)))</sql>
+	<!--删除报溢单及明细表-->
+	<sql>delete from tblCheckMoreDet where f_ref in (select id from tblCheckMore where CheckNo in (select CheckNo from tblCheckReady where id in (select fname from field(@ValueofDB:tblCheckReady_id))))</sql>
+	<sql>delete from tblCheckMore where CheckNo in (select CheckNo from tblCheckReady where id in (select fname from field(@ValueofDB:tblCheckReady_id)))</sql>
+	<!--还原盘点表的状态-->
+	<sql>update tblCheckReady set statusId=0,CheckNo='' where id in (select fname from field(@ValueofDB:tblCheckReady_id))</sql>
+</define>
+<!--==================================================以上代码：库存盘点表============================================-->
+
+
+<!--==================================================序列号盘点单=======================================================-->
+<define name="tblseqCheck_Delete">
+	<sql type="condition"><!--已经盘点处理，不允许删除-->
+		<condition><select>select statusId from tblseqCheck where id=@ValueofDB:tblCheckReady_id</select></condition>
+		<exec condition="'@SqlReturn:statusId' == '1'">			
+			<error>tblseqCheck.Del.error</error>
+		</exec>
+	</sql>	
+</define>
+
+<!--=====拓展按钮：盘点处理=====-->
+<define name="CheckSeq">	
+	<sql type="condition"><!--没有审核完毕给出错误提示-->
+		<condition><select>select count(0) as checkC from tblseqCheck where id in (select fname from field(@ValueofDB:tblCheckReady_id)) and workFlowNodeName!='finish'</select></condition>		
+		<exec condition="@SqlReturn:checkC&gt;0">
+			<error>NoDisposal.Checked.error</error>
+		</exec>	
+	</sql>
+	<sql type="condition"><!--已经做过盘点处理给出错误提示-->
+		<condition><select>select count(0) as checkC from tblseqCheck where id in (select fname from field(@ValueofDB:tblCheckReady_id)) and statusId=1</select></condition>
+		<exec condition="@SqlReturn:checkC&gt;0">
+			<error>ReDisposal.Checked.error</error>
+		</exec>	
+	</sql>
+	<sql type="condition"><!--系统时间所在的期间已经月结，给出错误提示-->
+		<condition><select>select statusId as periodStatusId from tblAccPeriod where periodBegin&lt;=@MEM:sysShortDate and periodEnd&gt;=@MEM:sysShortDate</select></condition>
+		<exec condition="@SqlReturn:periodStatusId==2">
+			<error>tblCheckReady.settleMonth.error</error>
+		</exec>	
+	</sql>
+	<!--此存储过程根据所选商品，所选仓库的当前库存插入出入库明细-->		
+	<sql type="procedure">{call proc_TempCheckSeq(@Sess:Local,@ValueofDB:tblCheckReady_id,@Sess:UserId,@Sess:SCompanyID,retCode,retVal)}</sql>
+</define>
+ 
+<!--======拓展按钮：取消处理==========-->
+<define name="DelCheckSeq"> 	
+	<sql type="condition"><!--如果还是未处理状态，提示错误-->
+		<condition><select>select count(0) as checkC from tblseqCheck where id in (select fname from field(@ValueofDB:tblCheckReady_id)) and statusId=0</select></condition>
+		<exec condition="@SqlReturn:checkC&gt;0">
+			<error>tblCheckReady.noCheck.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--盘点时间所在的期间已经月结，给出错误提示-->
+		<condition><select>select count(0) settCount from tblAccPeriod a,tblseqCheck b where b.id in (select fname from field(@ValueofDB:tblCheckReady_id)) and a.periodBegin&lt;=b.CheckTime and a.periodEnd&gt;=b.CheckTime and a.statusId=2</select></condition>
+		<exec condition="@SqlReturn:settCount&gt;0">
+			<error>tblseqCheck.settleMonth.error</error>
+		</exec>	
+	</sql>
+	<!--删除此盘点号所对应的出入库明细记录，修改所选盘点号所对应单据的状态-->
+	<sql type="procedure">{call proc_DelCheckSeq(@Sess:Local,@ValueofDB:tblCheckReady_id,@Sess:UserId,@Sess:SCompanyID,retCode,retVal)}</sql>
+</define>
+<!--=====================================================以上代码：序列号盘点单========================================-->
+
+
+<!--=====================================================组拆装模块===================================================-->
+<define name="tblAssemblyTemplate_Add">
+	<sql type="condition"><!--数量不允许为负数-->
+		<exec condition="@ValueofDB:MainQty&lt;0">
+			<error>AssemblyTemp.MainQty.negative.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--领用明细数量小于等于0的商品判断-->
+		<condition><select>select b.GoodsFullName as GoodsQ from tblAssemblyTemplateDet a,tblGoods b where isnull(a.Qty,0)&lt;=0 and b.classCode=a.GoodsCode and a.f_ref=@ValueofDB:tblAssemblyTemplate_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>AssemblyTemp.qty.negative.error,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--领用明细单价小于0的商品判断-->
+		<condition><select>select b.GoodsFullName as GoodsQ from tblAssemblyTemplateDet a,tblGoods b where isnull(a.Price,0)&lt;0 and b.classCode=a.GoodsCode and a.f_ref=@ValueofDB:tblAssemblyTemplate_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>AssemblyTemp.price.negative.error,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--入库明细数量小于等于0的商品判断-->
+		<condition><select>select b.GoodsFullName as GoodsQ from tblAssemblyTemplateDetail a,tblGoods b where isnull(a.Qty,0)&lt;=0 and b.classCode=a.GoodsCode and a.f_ref=@ValueofDB:tblAssemblyTemplate_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>AssemblyTempIn.qty.negative.error,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--入库明细单价小于0的商品判断-->
+		<condition><select>select b.GoodsFullName as GoodsQ from tblAssemblyTemplateDetail a,tblGoods b where isnull(a.Price,0)&lt;0 and b.classCode=a.GoodsCode and a.f_ref=@ValueofDB:tblAssemblyTemplate_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>AssemblyTempIn.price.negative.error,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+</define>
+
+<define name="tblAssemblyTemplate_Delete">
+	<!--判断是否有单据引用此单据-->
+	<sql type="condition"><condition><select>select count(0) countG from tblGoodsAssemblySplit where RefBillID=@ValueofDB:tblAssemblyTemplate_id</select></condition>
+		<exec condition="@SqlReturn:countG &gt; 0 ">		 					
+			<error>billno.noallow.delete</error>	
+		</exec>	
+	</sql>
+</define>
+<!--组拆装模板启用-->
+<define name="OpenValue_AssemblyTemplate">
+	<sql type="condition">
+		<condition><select>select workFlowNodeName from tblAssemblyTemplate where id=@ValueofDB:id</select></condition>
+		<!--单据没有审核完毕，不可以执行此操作-->
+		<exec condition="'@SqlReturn:workFlowNodeName' != 'finish'">
+			<error>Common.NotApproveNoOper.error</error>       
+		</exec>
+		<exec condition="true">
+			<sql>update tblAssemblyTemplate set statusId=0 where id=@ValueofDB:tblAssemblyTemplate_id</sql>
+		</exec>
+  </sql>
+</define>
+
+<!--组拆装模板停用-->
+<define name="StopValue_AssemblyTemplate">
+	<sql type="condition">
+		<condition><select>select workFlowNodeName from tblAssemblyTemplate where id=@ValueofDB:id</select></condition>
+		<!--单据没有审核完毕，不可以执行此操作-->
+		<exec condition="'@SqlReturn:workFlowNodeName' != 'finish'">
+			<error>Common.NotApproveNoOper.error</error>       
+		</exec>
+		<exec condition="true">
+      <sql>update tblAssemblyTemplate set statusId=-1 where id=@ValueofDB:tblAssemblyTemplate_id</sql>
+		</exec>
+	</sql>
+</define>
+<!--=================================================以上代码：组拆装模块===================================================-->
+
+<!--====================================================配送单==================================================================-->
+<define name="tblSend_Add">
+	<sql type="condition"><!--启用了序列号属性，并且所选择的商品启用了序列号但没有录入序列号给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsSeq from tblSendDet a left join tblgoods c on c.classCode=a.GoodsCode where c.seqIsUsed=0 and len(isnull(a.seq,''))=0 and (select isUsed from tblGoodsAttribute where propName='Seq')=1 and a.f_ref=@ValueofDB:tblSend_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsSeq' != 'null'">	
+			<error>enter.seq.error,@SqlReturn:GoodsSeq</error>
+	    </exec>
+	</sql>
+	<sql type="condition"><!--数量小于等于0的商品判断-->
+		<condition><select>select b.GoodsFullName as GoodsQ from tblSendDet a,tblGoods b where a.f_ref=@ValueofDB:id and isnull(a.Qty,0)&lt;=0 and b.classCode=a.GoodsCode</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>common.qty.negative.error,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	
+	<sql type="condition"><!--主表总金额与明细表不相等-->
+		<condition><select>select dbo.getDigits('tblSend','BillAmt',sum(Amount)) as SumDetAmt, dbo.getDigits('tblSend','BillAmt',@ValueofDB:tblSend_BillAmt) as sumMainAmt from tblSendDet where f_ref=@ValueofDB:tblSend_id</select></condition>
+		<exec condition="@SqlReturn:SumDetAmt!=@SqlReturn:sumMainAmt">			
+			<error>common.mainDetilAmt.NotEqual.error,@SqlReturn:sumMainAmt,@SqlReturn:SumDetAmt</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--引用数量不能大于申请数量-->
+		<condition><select>select b.BillNo from tblSendDet a,tblBuyApplicationTotal b,tblBuyApplicationTotalDet c where a.SourceID=c.id and b.id=c.f_ref and c.planQty+c.ReturnQty&lt;a.Qty+c.AllotQty and a.f_ref=@ValueofDB:tblSend_id</select></condition>
+		<exec condition="'@SqlReturn:BillNo'!='null'">			
+			<error>配送数量不能超出申请汇总单 @SqlReturn:BillNo 的预购数量！</error>
+		</exec>
+	</sql>
+	
+	<sql type="condition"><!--主表单据日期小于引用单据日期-->
+		<condition><select>select BillNo,BillDate from tblBuyApplicationTotal where id in(select BuyAppTotalID from tblSendDet where f_ref=@ValueofDB:tblSend_id) and BillDate&gt;@ValueofDB:tblSend_BillDate</select></condition>	
+		<exec condition="'@SqlReturn:BillNo'!='null'">				
+			<error>Billquote.BillDate.error,@SqlReturn:BillNo,@SqlReturn:BillDate</error>
+		</exec>
+	</sql>	
+	<sql type="condition">
+		<!--没有启用多仓库更新明细表上的仓库值-->
+		<exec condition="'@MEM:ManyStockStore'=='false'">				  
+			<sql>update tblSendDet set StockCode=@ValueofDB:tblSend_StockCode where f_ref=@ValueofDB:tblSend_id</sql>	
+		</exec>
+		<!--出库数量不能大于可用库存-->
+		<exec condition="'@MEM:OutBillUseQtyCheck'=='true'">
+			<sql type="define">tblSend_OutBillUseQty_validate</sql>
+		</exec>
+	</sql>
+	<sql type="condition">	
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblSend_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSendDet.GoodsCode,@StockCode=tblSendDet.StockCode,@BillType=tblSend,@InstoreQty=0,@OutstoreQty=tblSendDet.Qty,@from=tblSendDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--如果启用审核流，更新序列号审核库存表-->
+		<exec condition="'@MEM:tblSend_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+		
+		<!--不启用审核流时，执行过账操作-->
+		<exec condition="'@MEM:tblSend_IsStatart' == '0' &amp;&amp;@MEM:OpenInvoice==false">
+			<sql type="define">tblSend_Add_One</sql>
+		</exec>
+	</sql>
+</define>
+<!--========出库数量不能大于可用库存=======-->
+<define name="tblSend_OutBillUseQty_validate"> 	
+	<sql type="condition">
+		<condition><select>select isnull(c.GoodsFullName,'') as GoodsFullName,isnull(tblStock.StockFullName,'') as StockFullName,cast(case c.isCatalog when 0 then isnull(b.LastQty+b.inQtyNotAudit+b.SInQtyNotAudit-b.outQtyNotAudit-b.BOutQtyNotAudit,0) else -99999999 end - a.Qty as numeric(18,4)) as Qty from (select GoodsCode,BatchNo,Hue,yearNO,Inch,Availably,ProDate,StockCode,SUM(Qty) as Qty from tblSendDet where f_ref=@ValueofDB:tblSend_id   group by GoodsCode,BatchNo,Hue,yearNO,Inch,Availably,ProDate,StockCode)a  left join tblStocks b on a.GoodsCode=b.GoodsCode and a.StockCode=b.StockCode and a.BatchNo=b.BatchNo and a.Hue=b.Hue and a.yearNO=b.yearNO and a.Inch=b.Inch and a.Availably=b.Availably and a.ProDate=b.ProDate left join tblStock on a.StockCode=tblStock.classCode left join tblGoods c on a.GoodsCode=c.classCode  where  a.Qty&gt;(case c.isCatalog when 0 then isnull(b.LastQty+b.inQtyNotAudit+b.SInQtyNotAudit-b.outQtyNotAudit-b.BOutQtyNotAudit,0) else -99999999 end)</select></condition>
+		<exec condition="'@SqlReturn:GoodsFullName' != 'null'">			
+			<error>common.VirtualStock.excess.error,@ValueofDB:tblSend_BillNo,@SqlReturn:GoodsFullName,@SqlReturn:Qty,@SqlReturn:StockFullName</error>       
+		</exec>
+	</sql>
+</define>
+<!--=========配送单审核过账操作===========-->	
+<define name="tblSend_Add_One"> 	
+	<!--根据配送单明细更新库存明细表-->
+		<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblSend_Period,@PeriodYear=@ValueofDB:tblSend_PeriodYear,@PeriodMonth=@ValueofDB:tblSend_PeriodMonth,@GoodsCode=tblSendDet.GoodsCode,@StockCode=tblSendDet.StockCode,@BillID=@ValueofDB:tblSend_id,@BillType=tblSend,@BillDate=@ValueofDB:tblSend_BillDate,@BillNo=@ValueofDB:tblSend_BillNo,@OutstoreQty=tblSendDet.Qty,@OutstorePrice=tblSendDet.Price,@OutstoreAmount=tblSendDet.Amount,@createBy=@ValueofDB:tblSend_createBy,@lastUpdateBy=@ValueofDB:tblSend_lastUpdateBy,@createTime=@ValueofDB:tblSend_finishTime,@lastUpdateTime=@ValueofDB:tblSend_lastUpdateTime,@SCompanyID=@ValueofDB:tblSend_SCompanyID,@SourceID=tblSendDet.id,@CompanyCode=@ValueofDB:tblSend_CompanyCode,@EmployeeID=@ValueofDB:tblSend_EmployeeID,@DepartmentCode=@ValueofDB:tblSend_DepartmentCode,@TrackNo=@ValueofDB:tblSend_TrackNo,@MRemark=@ValueofDB:tblSend_Remark,@DRemark=tblSendDet.Remark,@from=tblSendDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+	<!--修改后，用户可能删除某些序列号，使其入库，进行序列号判断-->
+	<sql type="condition">
+		<exec condition="'@Sess:BillOper'=='update'">
+			<sql type="define">validateSameSeq</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblSend_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSendDet.GoodsCode,@StockCode=tblSendDet.StockCode,@BillType=tblSend,@InstoreQty=0,@OutstoreQty=-1*tblSendDet.Qty,@from=tblSendDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<!--如果启用审核流，删除已审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblSend_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,delete,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	
+		<!--更新明细表未验收数量-->
+	<sql type="condition">
+		<exec condition="true">				  
+			<sql>update tblSendDet set NotCheckQty=Qty,CheckQty=0 where f_ref=@ValueofDB:tblSend_id</sql>	
+		</exec>
+	</sql>
+	<!--进行负库存判断-->
+	<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+	<!--回填采购申请汇总明细的未分配数和分配数-->
+	<sql type="procedure">{call proc_SendUpBuyAppTotal(@ValueofDB:id,add,retCode,retVal)}</sql>
+</define>
+<!--=========配送单删除操作===========-->	
+<define name="tblSend_Delete">
+	<sql type="condition">
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblSend_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSendDet.GoodsCode,@StockCode=tblSendDet.StockCode,@BillType=tblSend,@InstoreQty=0,@OutstoreQty=-1*tblSendDet.Qty,@from=tblSendDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--删除和修改操作时，更新序列号出入明细-->
+		<exec condition="'@Sess:BillOper' =='delete'||'@Sess:BillOper' =='update'">
+			<sql>delete from tblSeqAuditing where BillID=@ValueofDB:id</sql>
+		</exec>	
+		
+		<!--根据情况调用另外一个define操作:不启用审核流时执行另外操作-->
+		<exec condition="'@MEM:tblSend_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblSend_Delete_One</sql>
+		</exec>
+	</sql>	
+</define>
+
+<define name="tblSend_Delete_One">		
+		<!--回填采购申请汇总明细的未分配数和分配数-->
+	<sql type="procedure">{call proc_SendUpBuyAppTotal(@ValueofDB:id,delete,retCode,retVal)}</sql>
+	<!--删除出入库记录-->
+	<sql type="procedure">{call proc_delStockDet(@ValueofDB:tblSend_id,tblSend,2,retCode,retVal)}</sql>
+	<!--非修改状态下，判断序列号是否重复-->
+			<!--更新明细表未验收数量-->
+	<sql type="condition">
+		<exec condition="true">				  
+			<sql>update tblSendDet set NotCheckQty=NotCheckQty-Qty where f_ref=@ValueofDB:tblSend_id</sql>	
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblSend_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSendDet.GoodsCode,@StockCode=tblSendDet.StockCode,@BillType=tblSend,@InstoreQty=0,@OutstoreQty=tblSendDet.Qty,@from=tblSendDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+<!--如果启用审核流，更新序列号审核库存表-->
+		<exec condition="'@MEM:tblSend_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+</sql>	
+	
+	<sql type="condition">		
+		<exec condition="'@Sess:BillOper'!='update'">
+			<sql type="define">validateSameSeq</sql>
+		</exec>
+	</sql>
+		<!--状态不是未完成状态，不允许任何操作-->
+		<sql type="condition">
+		<condition><select>select statusId from tblSend where id=@ValueofDB:id</select></condition>		
+		<exec condition="@SqlReturn:statusId!=0">	 		
+			<error>common.noNormallyStatus.oper.error</error>                  
+		</exec>
+	</sql>
+	<!--配送单被引用时不能删除-->
+		<sql type="condition">
+		<condition><select>select BillNO from tblSendcheck a join tblSendcheckDet b on a.id=b.f_ref where b.SendNo=@ValueofDB:id</select></condition>
+		<exec condition="'@SqlReturn:BillNO'!='null'">	
+			<error>Sendcheck.Bill.error,@SqlReturn:BillNO</error>
+		</exec>
+	</sql>
+</define>
+
+<!--配送单终止按钮-->
+<define name="SendStatus_stop">
+	<sql type="condition">
+		<condition><select>select statusId,workFlowNodeName from tblSend where id=@ValueofDB:tblSend_id</select></condition>
+		<!--单据没有审核完毕，不可以执行此操作-->
+		<exec condition="'@SqlReturn:workFlowNodeName' != 'finish'">
+			<error>Common.NotApproveNoOper.error</error>                  
+		</exec>
+		<!--单据状态是终止状态，不允许执行此操作-->
+		<exec condition="@SqlReturn:statusId==2">
+			<error>common.cannotStop.error</error>                  
+		</exec>
+		<!--修改主表的状态，和明细表的未下订单数量-->
+		<exec condition="true">
+			<sql>update tblSend set statusId=2 where id=@ValueofDB:tblSend_id</sql>
+			<sql>update tblSendDet set FinishStatus=2 where f_ref=@ValueofDB:tblSend_id</sql>
+		</exec>
+   </sql>
+</define>
+
+<!--配送单完成按钮-->
+<define name="SendStatus_Finish">
+   <sql type="condition">
+		<condition><select>select statusId,workFlowNodeName from tblSend where id=@ValueofDB:tblSend_id</select></condition>
+		<!--单据没有审核完毕，不可以执行此操作-->
+		<exec condition="'@SqlReturn:workFlowNodeName' != 'finish'">
+			<error>Common.NotApproveNoOper.error</error>                  
+		</exec>
+		<!--单据状态不是未完成状态，不允许执行此操作-->
+		<exec condition="@SqlReturn:statusId!=0">
+			<error>common.cannotFinish.error</error>                  
+		</exec>
+		<!--修改主表的状态，和明细表的未下订单数量-->
+		<exec condition="true">
+			<sql>update tblSend set statusId=1 where id=@ValueofDB:tblSend_id</sql>
+			<sql>update tblSendDet set FinishStatus=1 where f_ref=@ValueofDB:tblSend_id</sql>
+		</exec>
+   </sql>
+</define>
+
+<!--配送单激活按钮-->
+<define name="SendStatus_Reverse">
+	<sql type="condition">
+		<condition><select>select statusId,workFlowNodeName from tblSend where id=@ValueofDB:tblSend_id</select></condition>
+		<!--单据没有审核完毕，不可以执行此操作-->
+		<exec condition="'@SqlReturn:workFlowNodeName' != 'finish'">
+			<error>Common.NotApproveNoOper.error</error>                  
+		</exec>
+		<!--单据状态是未完成状态，不允许执行此操作-->
+		<exec condition="@SqlReturn:statusId==0">
+			<error>common.cannotActive.error</error>                  
+		</exec>
+		<!--修改主表的状态，和明细表的未下订单数量-->
+		<exec condition="true">
+			<sql>update tblSend set statusId=0 where id=@ValueofDB:tblSend_id</sql>
+			<sql>update tblSendDet set FinishStatus=0 where f_ref=@ValueofDB:tblSend_id</sql>
+		</exec>
+	</sql>
+</define>	
+<!--===========================================================以上代码：配送单===============================================================-->
+
+<!--====================================================配送验收单==================================================================-->
+<define name="tblSendcheck_Add">
+	<sql type="condition"><!--启用了序列号属性，并且所选择的商品启用了序列号但没有录入序列号给出错误提示--> 
+		<condition><select>select GoodsFullName as GoodsSeq from tblSendcheckDet a left join tblgoods c on c.classCode=a.GoodsCode where c.seqisUsed=0 and len(isnull(a.seq,''))=0 and (select isUsed from tblGoodsAttribute where propName='Seq')=1 and a.f_ref=@ValueofDB:tblSendcheck_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsSeq' != 'null'">	
+			<error>enter.seq.error,@SqlReturn:GoodsSeq</error>
+	    </exec>
+	</sql>
+	<sql type="condition"><!--数量小于等于0的商品判断-->
+		<condition><select>select b.GoodsFullName as GoodsQ from tblSendcheckDet a,tblGoods b where a.f_ref=@ValueofDB:tblSendcheck_id and isnull(a.Qty,0)&lt;=0 and b.classCode=a.GoodsCode</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>common.qty.negative.error,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--验收数量大于配送数量-->
+		<condition>
+		<select>
+			SELECT b.GoodsFullName AS GoodsQ
+			FROM   tblSendcheckDet a
+			left join tblGoods b ON b.classCode=a.GoodsCode
+			LEFT JOIN tblSendDet c ON c.id=a.SourceID
+			WHERE  a.f_ref = @ValueofDB:tblSendcheck_id AND ISNULL(a.Qty ,0)&gt;ISNULL(c.Qty,0)
+		</select>
+		</condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>common.qty.morethansent.error,@SqlReturn:GoodsQ</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--主表单据日期小于引用单据日期-->
+		<condition><select>select BillNo,BillDate from tblSend where id in(select SendNo from tblSendcheckDet where f_ref=@ValueofDB:id) and BillDate&gt;@ValueofDB:tblSendcheckDet_BillDate</select></condition>	
+		<exec condition="'@SqlReturn:BillNo'!='null'">				
+			<error>Billquote.BillDate.error,@SqlReturn:BillNo,@SqlReturn:BillDate</error>
+		</exec>
+	</sql>	
+	<sql type="condition"><!--单价小于0，给出错误提示-->
+		<condition><select>select b.GoodsFullName as GoodsP from tblSendcheckDet a,tblGoods b where a.f_ref=@ValueofDB:tblSendcheck_id and isnull(a.Price,0)&lt;0 and b.classCode=a.GoodsCode</select></condition>
+		<exec condition="'@SqlReturn:GoodsP' != 'null'">			
+			<error>common.priceNegative.error,@SqlReturn:GoodsP</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--主表合计金额与明细表总金额不相等-->
+		<condition><select>select dbo.getDigits('tblOtherOut','BillAmt',sum(Amount)) as SumDetAmt, dbo.getDigits('tblOtherOut','BillAmt',@ValueofDB:tblSendcheck_BillAmt) as sumMainAmt from tblSendcheckDet where f_ref=@ValueofDB:tblSendcheck_id</select></condition>
+		<exec condition="@SqlReturn:SumDetAmt!=@SqlReturn:sumMainAmt">			
+			<error>common.mainDetilAmt.NotEqual.error,@SqlReturn:sumMainAmt,@SqlReturn:SumDetAmt</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--主表部门与引用过来的单据部门不符-->
+		<condition><select>select COUNT(*) as Department from tblSendDet where id in(select SourceID from tblSendcheckDet where f_ref=@ValueofDB:tblSendcheck_id) and DepartmentCode!=@ValueofDB:tblSendcheck_DepartmentCode</select></condition>
+		<exec condition="@SqlReturn:Department&gt;0">			
+			<error>Sendcheck.Department.error</error>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<!--没有启用多仓库更新明细表上的仓库值-->
+		<exec condition="'@MEM:ManyStockStore'=='false'">				  
+			<sql>update tblSendcheckDet set StockCode=@ValueofDB:tblSendcheck_StockCode where f_ref=@ValueofDB:tblSendcheck_id</sql>	
+		</exec>
+		<!--如果启用了系统配置“保质期”，根据情况修改保质期限和生产日期的值-->
+		<exec condition="'@MEM:Availably'=='true'">		
+			<sql><!--商品设置了保质期，没有录入保质期限，根据生产日期更新保质期限-->
+			update tblSendcheckDet set tblSendcheckDet.Availably=a.Availably from(select  b.id as id,case when tblGoods.AvailablyType='Day' then convert(varchar(10),dateadd(Day,tblGoods.Validity,ProDate),21) when tblGoods.AvailablyType='Month' then convert(varchar(10),dateadd(Month,tblGoods.Validity,ProDate),21) when tblGoods.AvailablyType='Year' then convert(varchar(10),dateadd(Year,tblGoods.Validity,ProDate),21) else '' end as Availably from tblSendcheck a join tblSendcheckDet b on b.f_ref=a.id join tblGoods on tblGoods.classCode=b.GoodsCode where a.id=@ValueofDB:tblSendcheck_id and len(Availably)=0 and len(ProDate)!=0 and tblGoods.Validity!=0)a where tblSendcheckDet.id=a.id
+			</sql>
+			<sql><!--商品设置了保质期，没有录入生产日期，根据保质期限更新生产日期-->
+			update tblSendcheckDet set tblSendcheckDet.ProDate=a.ProDate from(select  b.id as id,case when tblGoods.AvailablyType='Day' then convert(varchar(10),dateadd(Day,(-1)*tblGoods.Validity,Availably),21) when tblGoods.AvailablyType='Month' then convert(varchar(10),dateadd(Month,(-1)*tblGoods.Validity,Availably),21) when tblGoods.AvailablyType='Year' then convert(varchar(10),dateadd(Year,(-1)*tblGoods.Validity,Availably),21) else '' end as ProDate from tblSendcheck a join tblSendcheckDet b on b.f_ref=a.id join tblGoods on tblGoods.classCode=b.GoodsCode where a.id=@ValueofDB:tblSendcheck_id and len(ProDate)=0 and len(Availably)!=0 and tblGoods.Validity!=0)a where tblSendcheckDet.id=a.id
+			 </sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblSendcheck_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSendcheckDet.GoodsCode,@StockCode=tblSendcheckDet.StockCode,@BillType=tblSendcheck,@InstoreQty=tblSendcheckDet.Qty,@OutstoreQty=0,@from=tblSendcheckDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--不启用审核流时，执行过账操作-->
+		<exec condition="'@MEM:tblSendcheck_IsStatart' == '0' &amp;&amp;@MEM:OpenInvoice==false">
+			<sql type="define">tblSendcheck_Add_One</sql>
+		</exec>
+	</sql>	
+</define>
+	
+<!--=========其它入库单过账操作=========-->
+<define name="tblSendcheck_Add_One">
+	<!--更新配送单明细未验收数量--> 	
+	<sql type="procedure">{call proc_SendcheckUpdateSend(@ValueofDB:tblSendcheck_id,add,retCode,retVal)}</sql>
+	<!--更新未退货数量为当前数量--> 	
+	<sql>update tblSendcheckDet set NotReturnQty=Qty where f_ref=@ValueofDB:tblSendcheck_id</sql>
+		
+	<sql type="condition"><!--当启用了系统配置“其他入库单零单价时自动获取价格” 时，更新为0的入库单价-->
+		<condition><select>select count(0) as zeroCount from tblSendcheckDet where f_ref=@ValueofDB:tblSendcheck_id and isnull(Price,0)=0</select></condition>
+		<exec condition="@SqlReturn:zeroCount&gt;0 &amp;&amp; @MEM:OtherInGetLastCost==true">
+			<sql type="define">tblSendcheck_Add_SetPrice</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblSendcheck_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSendcheckDet.GoodsCode,@StockCode=tblSendcheckDet.StockCode,@BillType=tblSendcheck,@InstoreQty=-1*tblSendcheckDet.Qty,@OutstoreQty=0,@from=tblSendcheckDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+	</sql>
+	<!--========插入出入库明细=========-->
+	<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblSendcheck_Period,@PeriodYear=@ValueofDB:tblSendcheck_PeriodYear,@PeriodMonth=@ValueofDB:tblSendcheck_PeriodMonth,@GoodsCode=tblSendcheckDet.GoodsCode,@StockCode=tblSendcheckDet.StockCode,@BillID=@ValueofDB:tblSendcheck_id,@BillType=tblSendcheck,@BillDate=@ValueofDB:tblSendcheck_BillDate,@BillNo=@ValueofDB:tblSendcheck_BillNo,@InstoreQty=tblSendcheckDet.Qty,@InstorePrice=tblSendcheckDet.Price,@InstoreAmount=tblSendcheckDet.Amount,@createBy=@ValueofDB:tblSendcheck_createBy,@lastUpdateBy=@ValueofDB:tblSendcheck_lastUpdateBy,@createTime=@ValueofDB:tblSendcheck_finishTime,@lastUpdateTime=@ValueofDB:tblSendcheck_lastUpdateTime,@SCompanyID=@ValueofDB:tblSendcheck_SCompanyID,@SourceID=tblSendcheckDet.id,@CompanyCode=@ValueofDB:tblSendcheck_CompanyCode,@EmployeeID=@ValueofDB:tblSendcheck_EmployeeID,@DepartmentCode=@ValueofDB:tblSendcheck_DepartmentCode,@TrackNo=@ValueofDB:tblSendcheck_TrackNo,@MRemark=@ValueofDB:tblSendcheck_Remark,@DRemark=tblSendcheckDet.Remark,@from=tblSendcheckDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+	<!--验证序列号是否重复-->
+	<sql type="define">validateSameSeq</sql>
+	<!--如果是修改操作，判断负库存-->
+	<sql type="condition">
+		<exec condition="'@Sess:BillOper'=='update'">	
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--====更新为0的入库单价======-->
+<define name="tblSendcheck_Add_SetPrice">
+	<!--拿最近的入库价更新销售退货单的成本价-->
+	<sql>update tblSendcheckDet set price=round(isnull((select sum(InstoreAmount)/sum(InstoreQty) from tblStockDet a where a.goodsCode=tblSendcheckDet.goodsCode and a.stockCode=tblSendcheckDet.stockCode and a.ProDate=tblSendcheckDet.ProDate and a.Availably=tblSendcheckDet.Availably and a.Hue=tblSendcheckDet.Hue and a.yearNO=tblSendcheckDet.yearNO and a.BatchNo=tblSendcheckDet.BatchNo and a.Inch=tblSendcheckDet.Inch and ((len(tblSendcheckDet.seq)=0 and len(a.seq)=0) or (len(tblSendcheckDet.seq)&gt;0 and len(a.seq)&gt;0 and charindex(a.seq+'~',tblSendcheckDet.seq)&gt;0)) and id=isnull((select top 1 b.id from tblStockDet b where a.goodPropHash=b.goodPropHash and b.billDate&lt;=@ValueofDB:tblSendcheck_BillDate and instorePrice&gt;0 order by BillDate desc,createTime desc,ItemOrder desc),0)),0),@MEM:DigitsPrice) where f_ref=@ValueofDB:tblSendcheck_id and price&lt;=0</sql>
+	<!--更新没有成本价的商品 取预设进价-->
+	<sql>update tblSendcheckDet set price=isnull(tblGoods.PreBuyPrice,0) from tblGoods where tblGoods.classCode=tblSendcheckDet.GoodsCode and f_ref=@ValueofDB:tblSendcheck_id and price&lt;=0</sql>
+	<!--更新明细表金额-->
+	<sql>update tblSendcheckDet set Amt=round(Price*Qty,@MEM:DigitsAmount),DisAmount=round(Price*Qty*Discount,@MEM:DigitsAmount),DisPrice=round(Price*Discount,@MEM:DigitsPrice) where f_ref=@ValueofDB:tblSendcheck_id</sql>
+	<!--更新主表总金额-->	
+	<sql>update tblSendcheck set BillAmt=(select sum(Amt) from tblSendcheckDet where f_ref=@ValueofDB:tblSendcheck_id) where id=@ValueofDB:tblSendcheck_id</sql>
+	<!--更新辅助单位单价-->
+	<sql>update tblSendcheckDet set UnitPrice=dbo.getDigits('tblSendcheckDet','UnitPrice',(case when charindex('/',ConversionRate)&gt;0 then Price/cast(substring(ConversionRate,charindex('/',ConversionRate)+1,len(ConversionRate)-charindex('/',ConversionRate)+1) as numeric(18,4)) else Price*cast(ConversionRate as numeric(18,4)) end)) where f_ref=@ValueofDB:tblSendcheck_id and len(isnull(SecUnit,''))!=0</sql>
+</define>
+ <!--==========删除其他入库单=======-->   
+<define name="tblSendcheck_Delete">
+	<sql type="condition">
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblSendcheck_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSendcheckDet.GoodsCode,@StockCode=tblSendcheckDet.StockCode,@BillType=tblSendcheck,@InstoreQty=-1*tblSendcheckDet.Qty,@OutstoreQty=0,@from=tblSendcheckDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<!--根据情况调用另外一个define操作:不启用审核流时执行另外操作-->
+		<exec condition="'@MEM:tblSendcheck_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblSendcheck_Delete_One</sql>
+		</exec>
+	</sql>	
+</define>
+
+<define name="tblSendcheck_Delete_One">	
+	<sql type="condition"><!--若是配送退货引用则不能删除-->
+		<condition><select> select a.BillNo from tblSendReturn a,tblSendReturnDet b where a.id=b.f_ref and b.SendcheckID=@ValueofDB:tblSendcheck_id</select></condition>		
+		<exec condition="'@SqlReturn:BillNo' != 'null'">	
+			<error>该单据已被配送退货单 @SqlReturn:BillNo 所引用，不能修改删除！</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblSendcheck_id and  workFlowNodeName='finish'</select></condition>
+		<exec condition="'@SqlReturn:OrderNo'!='null'">	
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>
+		</exec>
+	</sql>
+		<!--更新配送单明细未验收数量--> 	
+	<sql type="procedure">{call proc_SendcheckUpdateSend(@ValueofDB:tblSendcheck_id,delete,retCode,retVal)}</sql>
+	<sql type="condition">
+		<exec condition="true"><!--删除出入库明细-->
+	       <sql type="procedure">{call proc_delStockDet(@ValueofDB:tblSendcheck_id,tblSendcheck,1,retCode,retVal)}</sql>
+	    </exec>
+		<exec condition="'@Sess:BillOper'!='update'"><!--负库存判断-->	
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblSendcheck_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSendcheckDet.GoodsCode,@StockCode=tblSendcheckDet.StockCode,@BillType=tblSendcheck,@InstoreQty=tblSendcheckDet.Qty,@OutstoreQty=0,@from=tblSendcheckDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+	</sql>
+</define>
+<!--===========================================================以上代码：验收配送单=========================================================-->
+
+
+<!--========================================================配送退货单=======================================================-->
+<define name="tblSendReturn_Add">
+	<sql type="condition"><!--退货数量小于0控制-->
+		<condition><select>select GoodsNumber,GoodsFullName from tblSendReturnDet,tblGoods where tblSendReturnDet.GoodsCode=tblGoods.classCode and tblSendReturnDet.Qty&lt;=0 and tblSendReturnDet.f_ref=@ValueofDB:tblSendReturn_id</select></condition>		
+			<exec condition="'@SqlReturn:GoodsNumber'!='null'">
+				<error>编号 @SqlReturn:GoodsNumber 的商品 @SqlReturn:GoodsFullName 退货数量必须大于0！</error>
+			</exec>
+	</sql>
+	<sql type="condition"><!--退货单价小于0控制-->
+		<condition><select>select GoodsNumber,GoodsFullName from tblSendReturnDet,tblGoods where tblSendReturnDet.GoodsCode=tblGoods.classCode and tblSendReturnDet.Price&lt;0 and tblSendReturnDet.f_ref=@ValueofDB:tblSendReturn_id</select></condition>		
+			<exec condition="'@SqlReturn:GoodsNumber'!='null'">
+				<error>编号 @SqlReturn:GoodsNumber 的商品 @SqlReturn:GoodsFullName 退货单价不能小于0！</error>
+			</exec>
+	</sql>
+	<sql type="condition"><!--单据金额与明细金额不等-->
+		<condition><select>select SUM(Amount) as Amount from tblSendReturnDet where tblSendReturnDet.f_ref=@ValueofDB:tblSendReturn_id  group by f_ref</select></condition>		
+			<exec condition="@SqlReturn:Amount!=@ValueofDB:BillAmt">
+				<error>主表合计金额与明细表总金额不等！</error>
+			</exec>
+	</sql>
+	<sql type="condition"><!--所引用明细与单据不符-->
+		<condition><select>select tblSendcheck.BillNo,tblGoods.GoodsFullName from tblSendcheck,tblSendReturnDet,tblGoods where SourceID not in(select id from tblSendcheckDet where f_ref=tblSendReturnDet.SendcheckID) and tblSendcheck.id=tblSendReturnDet.SendcheckID and tblSendReturnDet.GoodsCode=tblGoods.classCode and tblSendReturnDet.f_ref=@ValueofDB:tblSendReturn_id</select></condition>		
+			<exec condition="'@SqlReturn:BillNo'!='null'">
+				<error>明细商品 @SqlReturn:GoodsFullName 与配送验收单 @SqlReturn:BillNo 不符，请重新选择保存！</error>
+			</exec>
+	</sql>
+	<sql type="condition"><!--单据日期不能小于所引用单据日期-->
+		<condition><select>select c.BillNo from tblSendReturn a,tblSendReturnDet b,tblSendcheck c where a.id=b.f_ref and c.id=b.SendcheckID and a.BillDate&lt;c.BillDate and a.id=@ValueofDB:tblSendReturn_id</select></condition>		
+			<exec condition="'@SqlReturn:BillNo'!='null'">
+				<error>单据日期小于配送验收单 @SqlReturn:BillNo 的单据日期！</error>
+			</exec>
+	</sql>		
+	<sql type="condition"><!--单据部门与所引用的单据部门不符-->
+		<condition><select>select c.BillNo from tblSendReturn a,tblSendReturnDet b,tblSendcheck c where a.id=b.f_ref and c.id=b.SendcheckID and a.DepartmentCode!=c.DepartmentCode and a.id=@ValueofDB:tblSendReturn_id</select></condition>		
+			<exec condition="'@SqlReturn:BillNo'!='null'">
+				<error>单据部门与配送验收单 @SqlReturn:BillNo 的部门不符！</error>
+			</exec>
+	</sql>				
+		<sql type="condition"><!--退货数量大于验收数量控制-->
+		<condition><select>select tblSendcheck.BillNo,GoodsFullName from tblSendcheck,tblSendcheckDet,tblSendReturnDet,tblGoods where tblSendcheck.id=tblSendReturnDet.SendcheckID and tblSendcheckDet.id=tblSendReturnDet.SourceID and tblSendReturnDet.GoodsCode=tblGoods.classCode and tblSendReturnDet.Qty&gt;tblSendcheckDet.Qty and tblSendReturnDet.f_ref=@ValueofDB:tblSendReturn_id</select></condition>		
+			<exec condition="'@SqlReturn:BillNo'!='null'">
+				<error>商品 @SqlReturn:GoodsFullName 退货数量大于验收单 @SqlReturn:BillNo 的验收数量，不允许保存！</error>
+			</exec>
+	</sql>	
+	<sql type="condition">
+		<!--没有启用多仓库更新明细表上的仓库值-->
+		<exec condition="'@MEM:ManyStockStore'=='false'">				  
+			<sql>update tblSendReturnDet set StockCode=@ValueofDB:tblSendReturn_StockCode,InStockCode=@ValueofDB:tblSendReturn_InStockCode where f_ref=@ValueofDB:tblSendReturn_id</sql>	
+		</exec>
+	</sql>		
+	<sql type="condition"><!--单据退出仓库与所引用的单据仓库不符-->
+<condition><select>select d.BillNo from tblSendReturn a,tblSendReturnDet b,tblSendcheckDet c,tblSendcheck d where a.id=b.f_ref and d.id=b.SendcheckID and d.id=c.f_ref and b.StockCode!=c.StockCode and c.id=b.SourceID and a.id=@ValueofDB:tblSendReturn_id</select></condition>		
+			<exec condition="'@SqlReturn:BillNo'!='null'">
+				<error>单据退出仓库与配送验收单 @SqlReturn:BillNo 的仓库不符！</error>
+			</exec>
+	</sql>	
+	<sql type="condition">
+		<!--不启用审核流时，执行过账操作-->
+		<exec condition="'@MEM:tblSendReturn_IsStatart' == '0'">
+			<sql type="define">tblSendReturn_Add_One</sql>
+		</exec>
+	</sql>		
+</define>
+
+<define name="tblSendReturn_Add_One">		
+
+<!--根据配送退货单明细更新库存明细表-->
+		<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblSendReturn_Period,@PeriodYear=@ValueofDB:tblSendReturn_PeriodYear,@PeriodMonth=@ValueofDB:tblSendReturn_PeriodMonth,@GoodsCode=tblSendReturnDet.GoodsCode,@StockCode=tblSendReturnDet.StockCode,@BillID=@ValueofDB:tblSendReturn_id,@BillType=tblSendReturn,@BillDate=@ValueofDB:tblSendReturn_BillDate,@BillNo=@ValueofDB:tblSendReturn_BillNo,@OutstoreQty=tblSendReturnDet.Qty,@OutstorePrice=tblSendReturnDet.Price,@OutstoreAmount=tblSendReturnDet.Amount,@createBy=@ValueofDB:tblSendReturn_createBy,@lastUpdateBy=@ValueofDB:tblSendReturn_lastUpdateBy,@createTime=@ValueofDB:tblSendReturn_finishTime,@lastUpdateTime=@ValueofDB:tblSendReturn_lastUpdateTime,@SCompanyID=@ValueofDB:tblSendReturn_SCompanyID,@SourceID=tblSendReturnDet.id,@CompanyCode=@ValueofDB:tblSendReturn_CompanyCode,@EmployeeID=@ValueofDB:tblSendReturn_EmployeeID,@DepartmentCode=@ValueofDB:tblSendReturn_DepartmentCode,@TrackNo=@ValueofDB:tblSendReturn_TrackNo,@MRemark=@ValueofDB:tblSendReturn_Remark,@DRemark=tblSendReturnDet.Remark,@from=tblSendReturnDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+	<!--修改后，用户可能删除某些序列号，使其入库，进行序列号判断-->
+	<sql type="condition">
+		<exec condition="'@Sess:BillOper'=='update'">
+			<sql type="define">validateSameSeq</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblSendReturn_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSendReturnDet.GoodsCode,@StockCode=tblSendReturnDet.StockCode,@BillType=tblSendReturn,@InstoreQty=0,@OutstoreQty=-1*tblSendReturnDet.Qty,@from=tblSendReturnDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<!--如果启用审核流，删除已审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblSendReturn_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,delete,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+<!--进行负库存判断-->
+	<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+	
+	<sql type="condition"><!--当启用了系统配置“其他入库单零单价时自动获取价格” 时，更新为0的入库单价-->
+		<condition><select>select count(0) as zeroCount from tblSendcheckDet where f_ref=@ValueofDB:tblSendcheck_id and isnull(Price,0)=0</select></condition>
+		<exec condition="@SqlReturn:zeroCount&gt;0 &amp;&amp; @MEM:OtherInGetLastCost==true">
+			<sql type="define">tblSendcheck_Add_SetPrice</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblSendcheck_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSendReturnDet.GoodsCode,@StockCode=tblSendReturnDet.InStockCode,@BillType=tblSendReturn,@InstoreQty=-1*tblSendReturnDet.Qty,@OutstoreQty=0,@from=tblSendReturnDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+	</sql>
+	<!--更新配送验收单和申请汇总单-->
+	<sql type="procedure">{call proc_SendReturnUpCheck(@ValueofDB:id,add,retCode,retVal)}</sql>	
+	
+	<!--========插入出入库明细=========-->
+	<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblSendReturn_Period,@PeriodYear=@ValueofDB:tblSendReturn_PeriodYear,@PeriodMonth=@ValueofDB:tblSendReturn_PeriodMonth,@GoodsCode=tblSendReturnDet.GoodsCode,@StockCode=tblSendReturnDet.InStockCode,@BillID=@ValueofDB:tblSendReturn_id,@BillType=tblSendReturn,@BillDate=@ValueofDB:tblSendReturn_BillDate,@BillNo=@ValueofDB:tblSendReturn_BillNo,@InstoreQty=tblSendReturnDet.Qty,@InstorePrice=tblSendReturnDet.Price,@InstoreAmount=tblSendReturnDet.Amount,@createBy=@ValueofDB:tblSendReturn_createBy,@lastUpdateBy=@ValueofDB:tblSendReturn_lastUpdateBy,@createTime=@ValueofDB:tblSendReturn_finishTime,@lastUpdateTime=@ValueofDB:tblSendReturn_lastUpdateTime,@SCompanyID=@ValueofDB:tblSendReturn_SCompanyID,@SourceID=tblSendReturnDet.id,@CompanyCode=@ValueofDB:tblSendReturn_CompanyCode,@EmployeeID=@ValueofDB:tblSendReturn_EmployeeID,@DepartmentCode=@ValueofDB:tblSendReturn_DepartmentCode,@TrackNo=@ValueofDB:tblSendReturn_TrackNo,@MRemark=@ValueofDB:tblSendReturn_Remark,@DRemark=tblSendReturnDet.Remark,@from=tblSendReturnDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>	
+	<!--验证序列号是否重复-->
+	<sql type="define">validateSameSeq</sql>
+	<!--如果是修改操作，判断负库存-->
+	<sql type="condition">
+		<exec condition="'@Sess:BillOper'=='update'">	
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+	</sql>
+
+</define>
+
+<!--====更新为0的入库单价======-->
+<define name="tblSendReturn_Add_SetPrice">
+	<!--拿最近的入库价更新销售退货单的成本价-->
+	<sql>update tblSendReturnDet set price=round(isnull((select sum(InstoreAmount)/sum(InstoreQty) from tblStockDet a where a.goodsCode=tblSendReturnDet.goodsCode and a.stockCode=tblSendReturnDet.stockCode and a.ProDate=tblSendReturnDet.ProDate and a.Availably=tblSendReturnDet.Availably and a.Hue=tblSendReturnDet.Hue and a.yearNO=tblSendReturnDet.yearNO and a.BatchNo=tblSendReturnDet.BatchNo and a.Inch=tblSendReturnDet.Inch and ((len(tblSendReturnDet.seq)=0 and len(a.seq)=0) or (len(tblSendReturnDet.seq)&gt;0 and len(a.seq)&gt;0 and charindex(a.seq+'~',tblSendReturnDet.seq)&gt;0)) and id=isnull((select top 1 b.id from tblStockDet b where a.goodPropHash=b.goodPropHash and b.billDate&lt;=@ValueofDB:tblSendReturn_BillDate and instorePrice&gt;0 order by BillDate desc,createTime desc,ItemOrder desc),0)),0),@MEM:DigitsPrice) where f_ref=@ValueofDB:tblSendReturn_id and price&lt;=0</sql>
+	<!--更新没有成本价的商品 取预设进价-->
+	<sql>update tblSendReturnDet set price=isnull(tblGoods.PreBuyPrice,0) from tblGoods where tblGoods.classCode=tblSendReturnDet.GoodsCode and f_ref=@ValueofDB:tblSendReturn_id and price&lt;=0</sql>
+	<!--更新明细表金额-->
+	<sql>update tblSendReturnDet set Amt=round(Price*Qty,@MEM:DigitsAmount),Amount=round(Price*Qty,@MEM:DigitsAmount),Price=round(Price,@MEM:DigitsPrice) where f_ref=@ValueofDB:tblSendReturn_id</sql>
+	<!--更新主表总金额-->	
+	<sql>update tblSendReturn set BillAmt=(select sum(Amt) from tblSendReturnDet where f_ref=@ValueofDB:tblSendReturn_id) where id=@ValueofDB:tblSendReturn_id</sql>
+	<!--更新辅助单位单价-->
+	<sql>update tblSendReturnDet set UnitPrice=dbo.getDigits('tblSendReturnDet','UnitPrice',(case when charindex('/',ConversionRate)&gt;0 then Price/cast(substring(ConversionRate,charindex('/',ConversionRate)+1,len(ConversionRate)-charindex('/',ConversionRate)+1) as numeric(18,4)) else Price*cast(ConversionRate as numeric(18,4)) end)) where f_ref=@ValueofDB:tblSendReturn_id and len(isnull(SecUnit,''))!=0</sql>
+</define>
+
+
+
+<define name="tblSendReturn_Delete">	
+	
+	
+	<sql type="condition">
+		<!--不启用审核流时，执行过账操作-->
+		<exec condition="'@MEM:tblSendReturn_IsStatart' == '0'">
+			<sql type="define">tblSendReturn_Delete_One</sql>
+		</exec>
+	</sql>		
+</define>
+
+<define name="tblSendReturn_Delete_One">		
+
+	<!--删除出入库记录-->
+	<sql type="procedure">{call proc_delStockDet(@ValueofDB:tblSendReturn_id,tblSendReturn,2,retCode,retVal)}</sql>
+	<!--非修改状态下，判断序列号是否重复-->
+	<sql type="condition">
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblSendReturn_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSendReturnDet.GoodsCode,@StockCode=tblSendReturnDet.StockCode,@BillType=tblSendReturn,@InstoreQty=0,@OutstoreQty=tblSendReturnDet.Qty,@from=tblSendReturnDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+<!--如果启用审核流，更新序列号审核库存表-->
+		<exec condition="'@MEM:tblSendReturn_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+	</sql>	
+	<sql type="condition">		
+		<exec condition="'@Sess:BillOper'!='update'">
+			<sql type="define">validateSameSeq</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblSendReturn_id and  workFlowNodeName='finish'</select></condition>
+		<exec condition="'@SqlReturn:OrderNo'!='null'">	
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<exec condition="true"><!--删除出入库明细-->
+	       <sql type="procedure">{call proc_delStockDet(@ValueofDB:tblSendReturn_id,tblSendReturn,1,retCode,retVal)}</sql>
+	    </exec>
+		<exec condition="'@Sess:BillOper'!='update'"><!--负库存判断-->	
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblSendReturn_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSendReturnDet.GoodsCode,@StockCode=tblSendReturnDet.InStockCode,@BillType=tblSendReturn,@InstoreQty=tblSendReturnDet.Qty,@OutstoreQty=0,@from=tblSendReturnDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+	</sql>
+	<!--更新配送验收单和采购申请汇总-->
+	<sql type="procedure">{call proc_SendReturnUpCheck(@ValueofDB:id,delete,retCode,retVal)}</sql>
+
+</define>
+<!--========================================================以上代码：配送退货单=======================================================-->
+
+
+
+
+<!--=============================================================调拨申请单============================================================-->
+<define name="tblAllotApplication_Add">	
+	<sql type="condition"><!--数量小于等于0时，给出错误提示-->
+		<condition><select>select b.GoodsFullName as GoodsQ,Qty from tblAllotApplicationDet a,tblGoods b where a.f_ref=@ValueofDB:tblAllotApplication_id and b.classCode=a.GoodsCode and isnull(a.Qty,0)&lt;=0</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">						
+			<error>common.qty.negative.error,@SqlReturn:GoodsQ</error>       
+		</exec>	
+	</sql>
+	<sql>update tblAllotApplicationDet set AllotQty=0,NotAllotQty=Qty,FinishStatus=0 where f_ref=@ValueofDB:tblAllotApplication_id</sql>
+	<sql>update tblAllotApplication set statusId=0 where id=@ValueofDB:tblAllotApplication_id</sql>
+	<sql type="condition">
+		<condition>
+			<select>SELECT setting FROM tblSysDeploy WHERE sysCode='ManyStockStore' and id='StoreInstockbill'</select>
+		</condition>
+		<exec condition="'@SqlReturn:setting'=='false'"> 
+		<!-- 使用单仓库,需要将主表的调出仓库与调入仓库值更新的从表中-->					
+			<sql>
+			    update tblAllotApplicationDet set StockCode=@ValueofDB:tblAllotApplication_StockCode,InStockCode=@ValueofDB:tblAllotApplication_InStockCode where f_ref=@ValueofDB:tblAllotApplication_id
+			</sql>      
+		</exec>	
+	</sql>
+</define>
+
+<define name="tblAllotApplication_Delete">	
+	<!--若申请单状态不是未完成,不允许执行数据更新操作 -->
+	<sql type="condition">
+		<condition><select>select statusId from tblAllotApplication where id=@ValueofDB:tblAllotApplication_id</select></condition>
+		<exec condition="@SqlReturn:statusId!=0">
+			<error>common.noNormallyStatus.oper.error</error>       
+		</exec>
+	</sql>
+	<!--被同价调拨单引用，不允许修改 -->
+	<sql type="condition">
+		<condition><select>select BillNo as SalBillNo from tblAllot a where a.AppId=@ValueofDB:tblAllotApplication_id</select></condition>
+		<exec condition="'@SqlReturn:SalBillNo' != 'null'">	 					
+			<error>tblAllotApplication.delete.quoted,@SqlReturn:SalBillNo</error>       
+		</exec>
+	</sql>
+</define>
+
+<!--=========调拨申请单拓展按钮======-->
+<!--调拨申请单终止按钮-->
+<define name="AllotAppStatus_stop">
+	<sql type="condition">
+		<condition><select>select statusId,workFlowNodeName from tblAllotApplication where id=@ValueofDB:tblAllotApplication_id</select></condition>
+		<!--单据没有审核完毕，不可以执行此操作-->
+		<exec condition="'@SqlReturn:workFlowNodeName' != 'finish'">
+			<error>Common.NotApproveNoOper.error</error>       
+		</exec>
+		<!--单据状态是终止状态，不允许执行此操作-->
+		<exec condition="@SqlReturn:statusId==2">
+			<error>common.cannotStop.error</error>       
+		</exec>
+		<!--修改主表的状态，和明细表的未下订单数量-->
+		<exec condition="true">
+			<sql>update tblAllotApplication set statusId=2 where id=@ValueofDB:tblAllotApplication_id</sql>
+			<sql>update tblAllotApplicationDet set NotAllotQty=0,FinishStatus=2 where f_ref=@ValueofDB:tblAllotApplication_id</sql>
+		</exec>
+   </sql>
+</define>
+<!--调拨申请单完成按钮-->
+<define name="AllotAppStatus_finish">
+   <sql type="condition">
+		<condition><select>select statusId,workFlowNodeName from tblAllotApplication where id=@ValueofDB:tblAllotApplication_id</select></condition>
+		<!--单据没有审核完毕，不可以执行此操作-->
+		<exec condition="'@SqlReturn:workFlowNodeName' != 'finish'">
+			<error>Common.NotApproveNoOper.error</error>       
+		</exec>
+		<!--单据状态不是未完成状态，不允许执行此操作-->
+		<exec condition="@SqlReturn:statusId!=0">
+			<error>common.cannotFinish.error</error>       
+		</exec>
+		<!--修改主表的状态，和明细表的未下订单数量-->
+		<exec condition="true">
+			<sql>update tblAllotApplication set statusId=1 where id=@ValueofDB:tblAllotApplication_id</sql>
+			<sql>update tblAllotApplicationDet set NotAllotQty=0,FinishStatus=1 where f_ref=@ValueofDB:tblAllotApplication_id</sql>
+		</exec>
+   </sql>
+</define>
+<!--调拨申请单激活按钮-->
+<define name="AllotAppStatusStop_reverse">
+	<sql type="condition">
+		<condition><select>select statusId,workFlowNodeName from tblAllotApplication where id=@ValueofDB:tblAllotApplication_id</select></condition>
+		<!--单据没有审核完毕，不可以执行此操作-->
+		<exec condition="'@SqlReturn:workFlowNodeName' != 'finish'">
+			<error>Common.NotApproveNoOper.error</error>       
+		</exec>
+		<!--单据状态是未完成状态，不允许执行此操作-->
+		<exec condition="@SqlReturn:statusId==0">
+			<error>common.cannotActive.error</error>       
+		</exec>
+		<!--修改主表的状态，和明细表的未下订单数量-->
+		<exec condition="true">
+			<sql>update tblAllotApplication set statusId=0 where id=@ValueofDB:tblSalesOrder_id</sql>
+			<sql>update tblAllotApplicationDet set NotAllotQty=case when isnull(Qty,0)-isnull(AllotQty,0)&lt;0 then 0 else isnull(Qty,0)-isnull(AllotQty,0) end,FinishStatus=0 where f_ref=@ValueofDB:tblAllotApplication_id</sql>
+		</exec>
+	</sql>
+</define>
+<!--========================================================以上代码：调拨申请单=======================================================-->
+
+
+
+
+</defineSqls>

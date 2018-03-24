@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportyearNO" type="checkBox" version="2" >
+     <table>tblStockDet</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>
+     	from (select distinct languageId as yearNO from tblGoodsOfProp ,tblGoodsOfPropDet where tblGoodsOfProp.id=tblGoodsOfPropDet.f_ref and moduleType='yearNo') as tblStockDet
+     </defineSQL>
+     <classCode></classCode>
+     <condition></condition>
+     <changeCond></changeCond>
+     <orderBy>yearNO</orderBy>
+     <displayFields>
+          <field name="tblStockDet.yearNo" display="tblStockDet.yearNO" width="120" searchType="match" parentDisplay="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblStockDet.yearNO" parentName="yearNO" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

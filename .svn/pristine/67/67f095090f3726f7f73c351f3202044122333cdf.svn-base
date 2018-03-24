@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="ClientSaleReceive" > 
+		<classCode classSysType="Customer">ViewCompanyTotal.classCode</classCode>
+		<orderBy>ViewCompanyTotal.ComNumber,ViewCompanyTotal.ComFullName</orderBy>
+		<forwardModel>tblCompany&amp;moduleType=2&amp;ClientFlag=2</forwardModel>
+		<defineSQL>
+from ViewCompanyTotal noRight
+  left join tblCompany on tblCompany.classCode=ViewCompanyTotal.CompanyCode
+      where 1=1  and (('DeputyRec'!='@ValueofDB:AcceptTypeID' and (ViewCompanyTotal.ClientFlag=2 or ViewCompanyTotal.ClientFlag=3)) or ('DeputyRec'='@ValueofDB:AcceptTypeID' and ViewCompanyTotal.ClientFlag=4))
+		</defineSQL>
+		<changeCond>ViewCompanyTotal.statusId!='-1'</changeCond>
+		<displayFields>
+			<field name="ViewCompanyTotal.ComNumber" parentDisplay="false" width="100" searchType="match" keySearch="true" />
+			<field name="ViewCompanyTotal.ComFullName" display="@TABLENAME.CompanyCode" parentDisplay="true" width="200" searchType="match" keySearch="true" />
+			<field name="ViewCompanyTotal.ComFullNamePYM" parentDisplay="false" width="100" searchType="match" keySearch="true" hiddenInput="true" />
+			<field name="ViewCompanyTotal.ComContactor" parentDisplay="false" width="100" searchType="match" hiddenInput="true" />
+			<field name="ViewCompanyTotal.ComContactorTel" parentDisplay="false" width="100" searchType="match" hiddenInput="true" />
+			<field name="ViewCompanyTotal.ComContactorMobile" parentDisplay="false" width="100" searchType="match" hiddenInput="true" />
+			<field name="ViewCompanyTotal.ComAddress" parentDisplay="false" width="100" searchType="match" hiddenInput="true" />
+			<field name="ViewCompanyTotal.PreReceiveTotalRemain" parentDisplay="false" width="100" hiddenInput="true" />
+			<field name="ViewCompanyTotal.ReceiveTotalRemain" parentDisplay="false" width="100" hiddenInput="true" />
+			<field name="case when len(ViewCompanyTotal.EmployeeID)&gt;0 then ViewCompanyTotal.EmpFullName else '@Sess:UserName' end" asName="tblCompany.EmployeeID" display="tblCompany.EmployeeID" parentDisplay="false" width="80" />
+			<field name="case when len(ViewCompanyTotal.DepartmentCode)&gt;0 then ViewCompanyTotal.DeptFullName else '@Sess:DepartmentName' end" asName="tblCompany.DepartmentCode" display="tblCompany.DepartmentCode" parentDisplay="false" width="80" />
+		</displayFields>
+		<saveFields>
+			<field name="ViewCompanyTotal.CompanyCode" parentName="@TABLENAME.CompanyCode" hidden="true" relationKey="true" width="0" />
+			<field name="case when len(ViewCompanyTotal.EmployeeID)&gt;0 then ViewCompanyTotal.EmployeeID else '@Sess:UserId' end" parentName="@TABLENAME.EmployeeID" display="tblCompany.EmployeeID" width="0" />
+			<field name="case when len(ViewCompanyTotal.DepartmentCode)&gt;0 then ViewCompanyTotal.DepartmentCode else '@Sess:DepartmentCode' end" parentName="@TABLENAME.DepartmentCode" display="tblCompany.DepartmentCode" width="0" />
+			<field name="case when len(ViewCompanyTotal.EmployeeID)&gt;0 then ViewCompanyTotal.EmpFullName else '@Sess:UserName' end" parentName="@TABLENAME.tblEmployee_EmpFullName" display="tblCompany.EmployeeID" width="0" />
+			<field name="case when len(ViewCompanyTotal.DepartmentCode)&gt;0 then ViewCompanyTotal.DeptFullName else '@Sess:DepartmentName' end" parentName="@TABLENAME.tblDepartment_DeptFullName" display="tblCompany.DepartmentCode" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

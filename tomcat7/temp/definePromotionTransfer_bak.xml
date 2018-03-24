@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+	<define name="tblPromotionTransfer_Add">
+		<sql type="condition">
+			<condition>
+				<select>select id as rid from HFComboRecord where CompanyCode = @ValueofDB:CompanyCode and ActiveId = @ValueofDB:ComboId</select>
+			</condition>
+			
+			<exec condition="'@SqlReturn:rid'=='null'">
+				<error>
+					未找到相应活动
+				</error>
+			</exec>
+			
+			<exec condition="'@SqlReturn:rid'!='null'">
+				<sql>insert into HFComboRecordDet(f_ref,refBillId,BillName,inAmt,outAmt,remark) values(@SqlReturn:rid,@ValueofDB:id,'促销转帐单',@ValueofDB:Amount,0,'订单'+@ValueofDB:BillNo)</sql>
+				<sql type="procedure">{call proc_reCalHFComboRecord(@SqlReturn:rid,retCode,retVal)}</sql>
+			</exec>
+		</sql>
+	</define>
+	
+	
+	<define name="tblPromotionTransfer_Update">
+		<sql type="condition">
+			<condition>
+				<select>select CompanyCode as originCompanyCode,ComboId from tblPromotionTransfer where id = @ValueofDB:id</select>
+				<select>select id as rid from HFComboRecord where CompanyCode = @SqlReturn:originCompanyCode and ActiveId = @SqlReturn:ComboId</select>
+				<select>select (case when outAmt is null then 0 else outAmt end) outAmt  from  HFComboRecordDet where f_ref = @SqlReturn:rid and refBillId = @ValueofDB:id</select>
+			</condition>
+	
+			<exec condition="'@SqlReturn:rid'!='null'">
+				
+						<sql>delete from  HFComboRecordDet where f_ref = @SqlReturn:rid and refBillId = @ValueofDB:id</sql>
+						<sql type="procedure">{call proc_reCalHFComboRecord(@SqlReturn:rid,retCode,retVal)}</sql>
+					
+				
+			</exec>
+		</sql>
+	</define>
+	
+	<define name="tblPromotionTransfer_Delete">
+		<sql type="condition">
+			
+			<condition>
+				<select>select id as rid,UseAmt from HFComboRecord where CompanyCode = @ValueofDB:CompanyCode and ActiveId = @ValueofDB:ComboId</select>
+				<select>select outAmt from  HFComboRecordDet where f_ref = @SqlReturn:rid and refBillId = @ValueofDB:id</select>
+			</condition>
+			
+			<exec condition="'@SqlReturn:rid'!='null' &amp;&amp; @SqlReturn:UseAmt &gt; 0">	
+						<error>请先删除相关销售订单！</error>						
+			</exec>
+			<exec condition="true">
+				<sql>delete from  HFComboRecordDet where f_ref = @SqlReturn:rid and refBillId = @ValueofDB:id</sql>
+				<sql type="procedure">{call proc_reCalHFComboRecord(@SqlReturn:rid,retCode,retVal)}</sql>
+			</exec>
+		</sql>
+	</define>
+</defineSqls>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<!--申请汇总单明细中申请单号弹出框-->
+	<select name="SelectBuyApplication"  type="checkBox" > 
+		<orderBy>tblBuyApplication.BillDate,tblBuyApplication.BillNo,tblGoods.GoodsNumber</orderBy>
+		<topPopup>SelectBuyApplicationFirst</topPopup>
+		<defineSQL>
+from tblBuyApplicationDet 
+		  left join tblBuyApplication on tblBuyApplicationDet.f_ref=tblBuyApplication.id
+		  left join tblGoods on tblBuyApplicationDet.GoodsCode=tblGoods.classCode
+		  left join tblEmployee on tblEmployee.id=tblBuyApplicationDet.EmployeeID
+		  left join tblDepartment on tblDepartment.classcode=tblBuyApplication.DepartmentCode
+	      where 1=1  and (tblBuyApplication.workFlowNodeName = 'finish' and tblBuyApplication.BillDate&lt;='@ValueofDB:BillDate' and tblBuyApplicationDet.GoodsCode='@ValueofDB:tblBuyApplicationTotalDet_GoodsCode')  and tblBuyApplication.id='@TOPID'
+		</defineSQL>
+		<changeCond></changeCond>
+		<displayFields>
+			<field name="tblDepartment.DeptFullName" asName="Department.DeptFullName" display="tblBuyApplicationTotalDet.DepartmentCode" parentDisplay="true" width="80" searchType="equal" keySearch="true" />
+			<field name="tblBuyApplication.BillDate" parentDisplay="false" width="100" searchType="scope" keySearch="true" />
+			<field name="tblBuyApplication.BillNo" display="tblBuyApplicationTotalDet.BuyApplyID" parentDisplay="true" width="120" searchType="match" keySearch="true" />
+			<field name="tblGoods.[tblGoods]" parentDisplay="true" width="120" />
+			<field name="tblBuyApplicationDet.BatchNo" parentDisplay="true" width="120" searchType="match" />
+			<field name="tblBuyApplicationDet.Inch" parentDisplay="true" width="70" />
+			<field name="tblBuyApplicationDet.Hue" asName="tblBuyApplicationTotalDet.Hue123" display="tblBuyApplicationTotalDet.Hue" parentDisplay="false" width="70" searchType="match" />
+			<field name="tblBuyApplicationDet.yearNO" asName="tblBuyApplicationTotalDet.yearNO123" display="tblBuyApplicationTotalDet.yearNO" parentDisplay="false" width="70" searchType="match" />
+			<field name="tblEmployee.EmpFullName" display="tblBuyApplicationTotalDet.EmployeeID" parentDisplay="true" width="80" searchType="match" />
+			<field name="tblBuyApplicationDet.NoOrderQty" display="tblBuyApplicationTotalDet.Qty" parentDisplay="true" width="70" />
+		</displayFields>
+		<saveFields>
+			<field name="tblBuyApplication.id" parentName="@TABLENAME.BuyApplyID" hidden="true" relationKey="true" width="0" />
+			<field name="tblBuyApplicationDet.id" parentName="@TABLENAME.SourceID" hidden="true" width="0" />
+			<field name="tblBuyApplicationDet.GoodsCode" parentName="@TABLENAME.GoodsCode" hidden="true" width="0" />
+			<field name="tblBuyApplication.DepartmentCode" parentName="@TABLENAME.DepartmentCode" hidden="true" width="0" />
+			<field name="tblBuyApplicationDet.EmployeeID" parentName="@TABLENAME.EmployeeID" width="0" />
+			<field name="tblBuyApplicationDet.BatchNo" parentName="@TABLENAME.BatchNo" width="0" />
+			<field name="tblBuyApplicationDet.Inch" parentName="@TABLENAME.Inch" width="0" />
+			<field name="tblBuyApplicationDet.Hue" parentName="@TABLENAME.Hue" width="0" />
+			<field name="tblBuyApplicationDet.yearNO" parentName="@TABLENAME.yearNO" width="0" />
+			<field name="tblBuyApplicationDet.ProDate" parentName="@TABLENAME.ProDate" width="0" />
+			<field name="tblBuyApplicationDet.Availably" parentName="@TABLENAME.Availably" width="0" />
+			<field name="tblBuyApplicationDet.SecUnit" parentName="@TABLENAME.SecUnit" width="0" />
+			<field name="tblBuyApplicationDet.SecQty" parentName="@TABLENAME.SecQty" width="0" />
+			<field name="tblBuyApplicationDet.BaseQty" parentName="@TABLENAME.BaseQty" width="0" />
+			<field name="tblBuyApplicationDet.NoOrderQty" asName="tblBuyApplicationTotalDet.Qty" parentName="@TABLENAME.Qty" display="tblBuyApplicationTotalDet.Qty" width="0" />
+			<field name="tblBuyApplicationDet.NoOrderQty" parentName="@TABLENAME.planQty" display="tblBuyApplicationTotalDet.Qty" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

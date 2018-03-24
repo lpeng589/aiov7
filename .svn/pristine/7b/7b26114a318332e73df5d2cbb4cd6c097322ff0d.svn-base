@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ViewStoreDetail">
+     <table>ViewVirtualStock,tblStock,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      ViewVirtualStock.BatchNo f1,
+      ViewVirtualStock.Inch f2,
+      ViewVirtualStock.Hue f3,
+      ViewVirtualStock.yearNO f4,
+      ViewVirtualStock.ProDate f5,
+      ViewVirtualStock.Availably f6,
+      ViewVirtualStock.UseQty f7,
+      ViewVirtualStock.lastQty f8,
+      tblStock.StockFullName f9,
+      ViewVirtualStock.lastPrice f10,
+      ViewVirtualStock.lastAmount f11
+  from ViewVirtualStock
+	left join tblStock on ViewVirtualStock.StockCode=tblStock.classCode
+	left join tblGoods on ViewVirtualStock.GoodsCode=tblGoods.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <condition>ViewVirtualStock.GoodsCode='@ValueofDB:@TABLENAME_GoodsCode' and ViewVirtualStock.StockCode='@ValueofDB:StockCode' and (ViewVirtualStock.UseQty!=0 or ViewVirtualStock.lastQty!=0)</condition>
+     <changeCond></changeCond>
+     <orderBy>tblStock.StockFullName</orderBy>
+     <displayFields>
+          <field name="tblStock.StockFullName" width="120" searchType="match" parentDisplay="false" />
+          <field name="ViewVirtualStock.BatchNo" width="120" searchType="match" parentDisplay="false" />
+          <field name="ViewVirtualStock.Inch" width="70" searchType="match" parentDisplay="false" />
+          <field name="ViewVirtualStock.Hue" width="70" searchType="match" parentDisplay="false" />
+          <field name="ViewVirtualStock.yearNO" width="70" searchType="match" parentDisplay="false" />
+          <field name="ViewVirtualStock.ProDate" width="100" searchType="match" parentDisplay="false" />
+          <field name="ViewVirtualStock.Availably" width="100" searchType="match" parentDisplay="false" />
+          <field name="ViewVirtualStock.UseQty" width="80" parentDisplay="false" />
+          <field name="ViewVirtualStock.lastQty" width="80" parentDisplay="true" />
+          <field name="ViewVirtualStock.lastPrice" width="80" parentDisplay="false" display="ViewStoreDetail.lastPrice" />
+          <field name="ViewVirtualStock.lastAmount" width="80" parentDisplay="false" display="ViewStoreDetail.TotalAmt" />
+     </displayFields>
+     <saveFields>
+          <field name="ViewVirtualStock.BatchNo" parentName="@TABLENAME.BatchNo" relationKey="false" hidden="true" />
+          <field name="ViewVirtualStock.Inch" parentName="@TABLENAME.Inch" relationKey="false" hidden="true" />
+          <field name="ViewVirtualStock.Hue" parentName="@TABLENAME.Hue" relationKey="false" hidden="true" />
+          <field name="ViewVirtualStock.yearNO" parentName="@TABLENAME.yearNO" relationKey="false" hidden="true" />
+          <field name="ViewVirtualStock.ProDate" parentName="@TABLENAME.ProDate" relationKey="false" hidden="true" />
+          <field name="ViewVirtualStock.Availably" parentName="@TABLENAME.Availably" relationKey="false" hidden="true" />
+          <field name="ViewVirtualStock.UseQty" parentName="ViewVirtualStock.UseQty" relationKey="false" hidden="true" />
+          <field name="ViewVirtualStock.lastQty" parentName="@TABLENAME.ViewTotalQty" relationKey="true" hidden="false" />
+     </saveFields>
+</select>
+</popupSelect>

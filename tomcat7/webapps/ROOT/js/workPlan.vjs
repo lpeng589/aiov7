@@ -1,0 +1,103 @@
+function openLink(keyId,linkaddress){
+	
+	if(linkaddress.indexOf("keyId=") >-1){
+		
+		if(linkaddress.indexOf("&",linkaddress.indexOf("keyId=")) > 0){
+			linkaddress = linkaddress.substring(0,linkaddress.indexOf("keyId="))+linkaddress.substring(linkaddress.indexOf("&",linkaddress.indexOf("keyId="))+1);
+		}else{
+			linkaddress = linkaddress.substring(0,linkaddress.indexOf("keyId=") -1);
+		}
+	}
+	if(linkaddress.indexOf("?") > 0 ){
+		linkaddress +="&keyId="+keyId;
+	}else{
+		linkaddress +="?keyId="+keyId;
+	}
+	window.open(linkaddress,"","top=0,left=0,width="+screen.width+",height="+screen.height);
+}
+
+
+
+function openPop(loginId,planId,urlstr,displayName,id,isEmployee,linkaddress,obj,planType){
+	varLoginId = loginId;
+	varPlanId = planId;
+	varId = id;
+	varIsEmployee = isEmployee;
+	varLinkaddress = linkaddress;
+	varObj = obj;
+	varPlanType = planType;
+	varDisplayName = displayName;
+	vardName=encodeURI(displayName) ;
+	var urlstr = urlstr + "&popupWin=Popdiv&MOID=$MOID&MOOP=add&LinkType=@URL:&tableDisplay="+vardName ;
+	asyncbox.open({id:'Popdiv',title:displayName,url:urlstr,width:750,height:470});
+	
+}
+
+function exePopdiv(str){
+	if(typeof(str)!="undefined"){
+		var mutli=str.split("#|#"); 
+		hid="";
+		dis="";
+		var len=mutli.length;		
+		if(len>0){
+			var isexist="";
+			jQuery("#"+varObj+">li").each(function(){					
+				isexist +=jQuery(this).find('input[name=assoicate]').val().split(":")[1]+";";				
+			})								
+			for(j=0;j<len;j++){ 
+				fs=mutli[j].split("#;#");
+				dis=fs[1];
+				hid=fs[0];
+				msgStr = '';							
+				if(isexist.indexOf(hid+"#;#")==-1){
+					if(varIsEmployee=="1" && varLoginId!=hid){
+						msgStr = '<a href="javascript:top.msgCommunicate(\''+hid+'\',\''+dis+'\')"><img src="/style/images/plan/pp_01.gif" /></a>';
+					}
+					linkStr = '' ;
+					if(varLinkaddress!=""){
+						linkStr = 'onclick="openLink(\''+hid+'\',\''+varLinkaddress+'\')"' ;
+					}
+					hidStr = '<input type="hidden" name="assoicate" value="'+varId+':'+hid+':'+dis+':'+varIsEmployee+':'+varDisplayName+'"/>';
+					
+					//sdis = dis.substr(0,15);
+					sdis = dis;
+					jQuery("#"+varObj).append('<li id="'+varPlanId+'_'+varId+'_'+hid+'"><a  href="javascript:delAssoicate(\''+varPlanId+'\',\''+varId+'\',\''+hid+'\')"><img src="/style/images/plan/del_01.gif" /></a><span title="'+sdis+'" '+linkStr+'>'+sdis+'</span>'+msgStr+hidStr+'</li>');				
+					if("event" != varPlanType){
+						showOrHide(varId) ;
+					}
+					if(varPlanId != ""){
+						jQuery.get("/OAWorkPlanAction.do?operation=1&opType=addAssItem&planId="+varPlanId+"&assId="+varId+"&keyId="+hid+"&keyName="+encodeURI(dis)+"&isemployee="+varIsEmployee+"&assName="+vardName+"&planType="+varPlanType,function(data){
+							//alert(data);
+						});
+					}
+				}				
+			}
+		}
+	}
+}
+
+function delAssoicate(planId,assid,keyId,noAjax){
+	if(noAjax != "true"){
+		jQuery.get("/OAWorkPlanAction.do?operation=1&opType=delAssItem&planId="+planId+"&assId="+assid+"&keyId="+keyId,function(data){
+			//alert(data);
+		});
+	}
+	jQuery("#"+planId+'_'+assid+'_'+keyId).remove();
+}
+
+function opencalWindow(url){
+	window.open(url,"_blank","top=0,left=0,width="+screen.width+",height="+screen.height);
+}
+ 
+function msgComm(empId,empName){
+	if(typeof(top.msgCommunicate) != "undefined"){
+		top.msgCommunicate(empId,empName);
+	}else if(typeof(window.opener.top.msgCommunicate) != "undefined"){ 
+		window.opener.top.msgCommunicate(empId,empName);
+	}else if(typeof(window.opener.window.opener.top.msgCommunicate) != "undefined"){ 
+		window.opener.window.opener.top.msgCommunicate(empId,empName);
+	}else if(typeof(window.opener.window.opener.window.opener.top.msgCommunicate) != "undefined"){ 
+		window.opener.window.opener.window.opener.top.msgCommunicate(empId,empName);
+	}
+	
+} 

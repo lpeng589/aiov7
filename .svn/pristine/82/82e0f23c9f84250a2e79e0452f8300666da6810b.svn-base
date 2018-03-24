@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<!--
+displayFields 中的字段全都是会显示在弹出页面的字段
+   parentDisplay为true表示该字段需在主表界面显示，但不一定会保存在主表，由saveFields决定，
+   如果在主表显示，并配有display则主表显示字段对应的标签名取display的字段名，
+   searchType no:不作为查询条件，equal：等于，match：模糊查询,scope：区间查询
+saveFields 中的字段全都是必须在主表保存的字段
+   其中必须有且仅有一个relationKey="true"的字段。该字段表示的是关联字段，关联查询通过这个字段建立
+   关联关系，该关联字段在主表是否显示由hidden属性决定，如果为true表示隐藏，界面不显示，通过隐藏变
+   量传递值。
+   其它非关联字段，在主表必须存在，且可录入。
+
+-->
+	<select name = "selectDBFieldName">
+		<table>tblDBFieldInfo,tblDBTableInfo</table>
+		<relation>tblDBFieldInfo.tableId=tblDBTableInfo.id</relation>
+		<condition>tblDBFieldInfo.inputType!=3 and tblDBFieldInfo.inputType!=100 and
+				tblDBFieldInfo.fieldName!='f_brother' and tblDBFieldInfo.fieldName!='id' and tblDBTableInfo.tableName='@ValueofDB:tableName'</condition>
+		<displayFields>
+			<field name="tblDBFieldInfo.fieldName"  width="200" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblDBFieldInfo.languageId" width="200" searchType="match" parentDisplay="false" keySearch="true" />			
+		</displayFields>
+		<saveFields>
+		  <field name="tblDBFieldInfo.fieldName" parentName="tblDBFieldInfo.fieldName" relationKey="true" hidden="true"/>			
+		  <field name="tblDBFieldInfo.fieldType" parentName="tblDBFieldInfo.fieldType" hidden="true"/>
+		</saveFields>
+	</select>
+<!-- 公司通知单-->
+<!--弹出窗口选择职员-->	
+	<select name = "OAEmployeeInfoNote">
+		<table>tblEmployee</table>
+		<condition>tblEmployee.workFlowNodeName='finish'</condition>
+		<relation></relation>
+		<displayFields>
+			<field name="tblEmployee.EmpNumber"  width="200" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblEmployee.EmpFullName"  display="tblBuyOutStock.EmployeeCode" width="200" searchType="match" parentDisplay="true" keySearch="true" />			
+		</displayFields>
+		<saveFields>
+		  <field name="tblEmployee.id" parentName="tblBuyOutStock.EmployeeCode" relationKey="true" hidden="true"/>			
+		</saveFields>
+	</select>
+	<!-- 常用资料单及客户通讯录-->
+<!--弹出窗口选择职员-->	
+	   	<select name = "OAEmployeeInfoDOC">
+		<table>tblEmployee</table>
+		<condition>tblEmployee.workFlowNodeName='finish'</condition>
+		<relation></relation>
+		<displayFields>
+			<field name="tblEmployee.EmpNumber"  width="200" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblEmployee.EmpFullName"  display="tblAllot.EmployeeCode" width="200" searchType="match" parentDisplay="true" keySearch="true" />			
+		</displayFields>
+		<saveFields>
+		  <field name="tblEmployee.id" parentName="tblAllot.EmployeeCode" relationKey="true" hidden="true"/>			
+		</saveFields>
+	</select>
+<!--弹出窗口选择公司-->	
+<select name = "OACompanyClient">
+		<table>tblCompany</table>
+		<condition>tblCompany.workFlowNodeName='finish'</condition>
+		<relation></relation>
+		<displayFields>
+			<field name="tblCompany.classCode"  width="200" canSearch="true" parentDisplay="false" />
+			<field name="tblCompany.ComFullName"  display="OAClientDocument.Company" width="200" canSearch="true" parentDisplay="true" keySearch="true" />
+			<field name="tblCompany.TotalReceive" width="200" canSearch="false" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+		  <field name="tblCompany.classCode" parentName="OAClientDocument.Company" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>	
+
+
+<!-- 弹出窗口选择办公用品 -->
+ <select name = "OAGoods">
+		<table>OAOfficeGoods</table>
+		<relation></relation>
+		<displayFields>
+			<field name="OAOfficeGoods.GoodsName"  width="200" searchType="match" parentDisplay="false" />
+			<field name="OAOfficeGoods.GoodsUnit"  width="200" searchType="match" parentDisplay="false" />
+			<field name="OAOfficeGoods.GoodsNumber"  width="200" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+			  <field name="OAOfficeGoods.id" parentName="OAClientDocument.Company" relationKey="true" hidden="true"/>
+			  <field name="OAOfficeGoods.GoodsName" parentName="OAClientDocument.Company" relationKey="true" hidden="true"/>			
+		</saveFields>
+	</select>
+
+
+<!-- bbs弹出窗口选择用户角色 -->
+ <select name = "OABBsRole">
+		<table>OABBSRole</table>
+		<relation></relation>
+		<displayFields>
+			<field name="OABBSRole.rolename"  width="200" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+			  <field name="OABBSRole.id" parentName="OAClientDocument.Company" relationKey="true" hidden="true"/>
+			  <field name="OABBSRole.rolename" parentName="OAClientDocument.Company" relationKey="true" hidden="true"/>			
+		</saveFields>
+	</select>
+
+<!-- bbs弹出窗口选择用户 -->
+ <select name = "OABBsSelUser">
+		<table>OABBSUser,OABBSRole</table>
+		<relation>
+			OABBSUser.roleID=OABBsRole.id
+		</relation>
+        <condition>
+		(OABBsRole.rolename like '%版主' and OABBSUser.status &lt;&gt; '1' and OABBSUser.userID &lt;&gt; '1')
+		</condition>	
+		<displayFields>
+			<field name="OABBSUser.nickname"  width="200" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+			  <field name="OABBSUser.id" parentName="OAClientDocument.Company" relationKey="true" hidden="true"/>
+			  <field name="OABBSUser.nickname" parentName="OAClientDocument.Company" relationKey="true" 
+hidden="true"/>			
+		</saveFields>
+	</select>
+		
+	
+	<select name="SelectcolorNum">
+		<table>ViewGoodsPropColor</table>
+		<relation></relation>
+		<condition>Goodscode='@ValueofDB:GoodsCode'</condition>
+		<orderBy>ViewGoodsPropColor.PropEName</orderBy>
+		<displayFields>	
+			<field name="ViewGoodsPropColor.GoodsNumber" width="80" searchType="match" parentDisplay="false" />		    	  
+			<field name="ViewGoodsPropColor.GoodsName" width="150" searchType="match" parentDisplay="false" />	  
+			<field name="ViewGoodsPropColor.enumValue" width="80" searchType="equal" parentDisplay="true"/>
+			<field name="ViewGoodsPropColor.PropEName"  width="70"  searchType="match" parentDisplay="true"/>
+		</displayFields>
+		<saveFields>
+		 <field name="ViewGoodsPropColor.enumValue" parentName="@TABLENAME.color" relationKey="true" hidden="false"/>
+		 <field name="ViewGoodsPropColor.PropEName" parentName="@TABLENAME.colorName" relationKey="false" hidden="false"/>
+		 </saveFields>
+	</select>
+	
+	<select name="SelectersDesign">
+		<table>tblGoodsOfPropDet</table>
+		<condition>(tblGoodsOfPropDet.PropID='Design')</condition>
+		<orderBy>tblGoodsOfPropDet.PropItemName</orderBy>
+		<displayFields>
+			<field name="tblGoodsOfPropDet.PropItemID" display="@TABLENAME.PropItemID" width="70" searchType="match" parentDisplay="true"/>
+			<field name="tblGoodsOfPropDet.PropItemName" display="@TABLENAME.PropItemName" width="70" searchType="match" parentDisplay="true"/>
+		</displayFields>
+		<saveFields>
+			<field name="tblGoodsOfPropDet.PropItemName" parentName="@TABLENAME.Design" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	<select name="SelectersUser1">
+		<table>tblGoodsOfPropDet</table>
+		<condition>(tblGoodsOfPropDet.PropID='User1')</condition>
+		<orderBy>tblGoodsOfPropDet.PropItemName</orderBy>
+		<displayFields>
+			<field name="tblGoodsOfPropDet.PropItemID" display="@TABLENAME.PropItemID" width="70" searchType="match" parentDisplay="true"/>
+			<field name="tblGoodsOfPropDet.PropItemName" display="@TABLENAME.User1" width="70" searchType="match" parentDisplay="true"/>
+		</displayFields>
+		<saveFields>
+			<field name="tblGoodsOfPropDet.PropItemName" parentName="@TABLENAME.User1" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	<select name="SelectersUser2">
+		<table>tblGoodsOfPropDet</table>
+		<condition>(tblGoodsOfPropDet.PropID='User2')</condition>
+		<orderBy>tblGoodsOfPropDet.PropItemName</orderBy>
+		<displayFields>
+			<field name="tblGoodsOfPropDet.PropItemID" display="@TABLENAME.PropItemID" width="70" searchType="match" parentDisplay="true"/>
+			<field name="tblGoodsOfPropDet.PropItemName" display="@TABLENAME.User2" width="70" searchType="match" parentDisplay="true"/>
+		</displayFields>
+		<saveFields>
+			<field name="tblGoodsOfPropDet.PropItemName" parentName="@TABLENAME.User2" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	<select name="LabelSelectGoods">
+		<table>tblGoods,tblUnit</table>
+		<relation>tblGoods.BaseUnit=tblUnit.id</relation>
+		<classCode>tblGoods.classCode</classCode>
+		<condition>tblGoods.statusId!='-1' and tblGoods.workFlowNodeName='finish'</condition>
+		<orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+		<displayFields>		
+			<field name="tblGoods.GoodsNumber" width="100" searchType="match" parentDisplay="false"  keySearch="true"/>		
+			<field name="tblGoods.GoodsFullNamePYM" width="100" searchType="match" parentDisplay="false"  keySearch="true"  hiddenInput="true" />
+			<field name="tblGoods.GoodsFullName" width="150" searchType="match" parentDisplay="true" keySearch="true"/>
+			<field name="tblGoods.Size_Prop" width="80" searchType="match" parentDisplay="false"  keySearch="true" hiddenInput="true" />
+			<field name="tblGoods.Spec_Prop" width="100" searchType="match" parentDisplay="false" keySearch="true" hiddenInput="true" />
+			<field name="tblUnit.UnitName" width="50" searchType="match" parentDisplay="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblGoods.classCode" parentName="@TABLENAME.propId" relationKey="true"  hidden="true" />
+		</saveFields>
+	</select>
+</popupSelect>

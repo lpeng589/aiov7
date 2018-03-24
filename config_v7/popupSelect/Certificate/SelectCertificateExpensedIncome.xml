@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name = "SelectCertificateExpensedIncome" type="checkBox">
+     <table>tblExpensed</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+        tblExpensed.id f1,
+        tblExpensed.BillDate f2,     
+        tblExpensed.BillNo f3,     
+        tblExpensed.ComFullName f4,     
+        tblExpensed.AccName f5,     
+        tblExpensed.BillAmt f6,     
+        tblExpensed.FcBillAmt f7,        
+        tblExpensed.EmpFullName f8,     
+        tblExpensed.Remark as f9   
+  from (
+    --其他付款单
+    select tblExpensed.id as Id,
+    tblExpensed.BillDate as BillDate,     
+    tblExpensed.BillNo as BillNo,     
+    tblCompany.ComFullName as ComFullName,     
+    tblLanguage.zh_CN as AccName,     
+    tblExpensed.BillAmt as BillAmt,     
+    tblExpensed.FcBillAmt as FcBillAmt, 
+    tblExpensed.Period as Period, 
+    tblEmployee.EmpFullName as EmpFullName,  
+    tblEmployee.Remark as Remark,  
+    'tblExpensed' as BillType,
+    tblExpensed.CertificateNo as CertificateNo,
+    tblExpensed.EmployeeID,
+    tblExpensed.CreateBy,
+    tblExpensed.DepartmentCode   
+    from tblExpensed   
+    left join tblAccTypeInfo on tblAccTypeInfo.AccNumber=tblExpensed.SubCode  
+    left join tblLanguage on tblLanguage.id=tblAccTypeInfo.AccName
+    left join tblEmployee on tblEmployee.id=tblExpensed.createBy  
+    left join tblcompany on tblcompany.classCode=tblExpensed.CompanyCode 
+    where 1=1 
+    and isNull(tblExpensed.workFlowNodeName,'')!='draft' 
+    and isNull(tblExpensed.workFlowNodeName,'')!='print'                                       
+    UNION ALL
+    --其他收款单
+    select tblIncome.id as Id,
+    tblIncome.BillDate as BillDate,     
+    tblIncome.BillNo as BillNo,     
+    tblCompany.ComFullName as ComFullName,     
+    tblLanguage.zh_CN as AccName,      
+    tblIncome.BillAmt as BillAmt,     
+    tblIncome.FcBillAmt as FcBillAmt,       
+    tblIncome.Period as Period,     
+    tblEmployee.EmpFullName as EmpFullName,     
+    tblIncome.Remark as Remark,
+    'tblIncome' as BillType,
+    tblIncome.CertificateNo as CertificateNo,
+    tblIncome.EmployeeID,
+    tblIncome.CreateBy,
+    tblIncome.DepartmentCode       
+    from tblIncome   
+    left join tblAccTypeInfo on tblAccTypeInfo.AccNumber=tblIncome.SubCode  
+    left join tblLanguage on tblLanguage.id=tblAccTypeInfo.AccName
+    left join tblEmployee on tblEmployee.id=tblIncome.createBy  
+    left join tblcompany on tblcompany.classCode=tblIncome.CompanyCode 
+    where 1=1 
+    and isNull(tblIncome.workFlowNodeName,'')!='draft' 
+    and isNull(tblIncome.workFlowNodeName,'')!='print'           
+  ) tblExpensed
+  
+     </defineSQL>
+     <condition>tblExpensed.BillType='@TABLENAME' and len(isnull(tblExpensed.CertificateNo,''))=0</condition>
+     <changeCond>     </changeCond>
+     <orderBy>tblExpensed.BillDate,tblExpensed.BillNo</orderBy>
+     <displayFields>
+          <field name="tblExpensed.BillDate" width="80" searchType="scope" parentDisplay="false" />
+          <field name="tblExpensed.BillNo" width="120" searchType="match" parentDisplay="false" />
+          <field name="tblExpensed.ComFullName" display="tblCompany.ComFullName" width="150" searchType="match" parentDisplay="false" />
+          <field name="tblExpensed.AccName" display="tblExpensed.SubCode" width="150" searchType="match" parentDisplay="false" />
+          <field name="tblExpensed.BillAmt" width="100" parentDisplay="false" />
+          <field name="tblExpensed.FcBillAmt" width="100" parentDisplay="false" />     
+          <field name="tblExpensed.EmpFullName" display="tblExpenseDet.EmployeeID" width="65" parentDisplay="false" />
+          <field name="tblExpensed.Remark" width="100" parentDisplay="false" /> 
+     </displayFields>
+     <saveFields>
+          <field name="tblExpensed.id" parentName="@TABLENAME.id" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

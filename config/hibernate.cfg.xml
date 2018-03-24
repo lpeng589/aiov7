@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<!DOCTYPE hibernate-configuration PUBLIC
+   "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+   "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">  
+<hibernate-configuration>
+<session-factory>
+
+<!--
+<property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+<property name="hibernate.connection.password">sql2005</property>
+<property name="hibernate.connection.url">jdbc:sqlserver://192.168.2.1:5303;SelectMethod=Cursor;DatabaseName=aio_pro</property>
+<property name="hibernate.connection.username">sa</property>
+<property name="hibernate.connection.useUnicode">true</property>
+<property name="hibernate.connection.characterEncoding">UTF-8</property>
+
+
+<property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+<property name="hibernate.c3p0.max_size">20</property>
+<property name="hibernate.c3p0.min_size">5</property> 
+<property name="hibernate.c3p0.timeout">120</property> 
+<property name="hibernate.c3p0.max_statements">100</property> 
+<property name="hibernate.c3p0.idle_test_period">120</property> 
+<property name="hibernate.c3p0.acquire_increment">2</property>
+
+-->
+<property name="connection.datasource">java:comp/env/jdbc/sqlserver</property>
+
+<property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
+<property name="show_sql">false</property>
+<property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
+<property name="hibernate.transaction.auto_close_session">false</property>
+<property name="hibernate.hbm2ddl.auto">false</property>
+<property name="show_sql">false</property>
+<!--mapping resource="aio.hbm.xml"/-->
+<mapping class="com.menyi.aio.bean.GoodsPropInfoBean"/>
+<mapping class="com.menyi.aio.bean.GoodsPropEnumItemBean"/>
+<mapping class="com.menyi.aio.web.customize.DBTableInfoBean"/>
+<mapping class="com.menyi.aio.web.customize.DBFieldInfoBean"/> 
+<mapping class="com.menyi.aio.bean.EnumerateBean"/>
+<mapping class="com.menyi.aio.bean.EnumerateItemBean"/>
+<mapping class="com.menyi.aio.bean.UnitBean"/>
+<mapping class="com.menyi.aio.bean.AccTypeBean"/>
+<mapping class="com.menyi.aio.bean.GoodsAccPropBean"/>
+<mapping class="com.menyi.aio.bean.CurrencyBean"/>
+<mapping class="com.menyi.aio.bean.CompanyBean" />
+<mapping class="com.menyi.aio.bean.GoodsBean" />
+<mapping class="com.menyi.aio.bean.StockBean" />
+<mapping class="com.menyi.aio.bean.StockDetBean" />
+<mapping class="com.menyi.aio.bean.EmployeeBean" />
+<mapping class="com.menyi.aio.bean.RoleBean" />
+<mapping class="com.menyi.aio.bean.RoleModuleBean" />
+<mapping class="com.menyi.aio.bean.ModuleBean" />
+<mapping class="com.menyi.aio.bean.ModuleOperationBean" />
+<mapping class="com.menyi.aio.bean.UserModuleBean" />
+<mapping class="com.menyi.aio.bean.ScopeBean"/>
+<mapping class="com.menyi.aio.bean.DiscontrolBean"/>
+<mapping class="com.menyi.aio.bean.TableMappedBean"/>
+<mapping class="com.menyi.aio.bean.SystemSettingBean"/>
+<mapping class="com.menyi.aio.bean.SysAlertBean"/>
+<mapping class="com.menyi.aio.bean.SysAlertDetBean"/>
+<mapping class="com.menyi.aio.bean.ModuleFlowBean"/>
+<mapping class="com.menyi.aio.bean.ModuleFlowDetBean"/>
+<mapping class="com.menyi.aio.bean.ReportsBean"/>
+<mapping class="com.menyi.aio.bean.ReportsDetBean"/>
+<mapping class="com.menyi.aio.bean.AccBalanceBean"/>
+<mapping class="com.menyi.aio.bean.AccPeriodBean"/>
+<mapping class="com.menyi.aio.bean.RoleScopeBean"/>
+<mapping class="com.menyi.aio.bean.SunCompanyBean"/>
+<mapping class="com.menyi.aio.bean.SetExchangeBean"/>
+<mapping class="com.menyi.aio.bean.BillFlowBean"/>
+<mapping class="com.menyi.aio.bean.OutInStockBean"/>
+<mapping class="com.menyi.aio.bean.AdviceBean"/>
+<mapping class="com.menyi.aio.bean.AlertBean"/>
+<mapping class="com.menyi.aio.bean.SpGoods"/>
+<mapping class="com.menyi.aio.bean.AIOShopBean"/>
+<mapping class="com.menyi.aio.bean.GoodsAttributeBean"/>
+<mapping class="com.menyi.aio.bean.BomBean"/>
+<mapping class="com.menyi.aio.bean.LabelBean"/>
+<mapping class="com.menyi.aio.bean.LoginLogBean"/>
+<mapping class="com.menyi.aio.bean.FieldScopeSetBean"/>
+<mapping class="com.menyi.aio.bean.TblBillNoBean"/>
+<mapping class="com.menyi.aio.bean.TblBillNoHistoryBean"/>
+<mapping class="com.menyi.aio.bean.AccMainSettingBean"/>
+<mapping class="com.menyi.aio.bean.AccMainBean"/>
+<mapping class="com.menyi.aio.bean.AccDetailBean"/>
+<mapping class="com.menyi.aio.bean.StockGoodsModuleBean"/>
+
+<mapping class="com.koron.oa.bean.OADayWorkPlanBean"/>
+<mapping class="com.koron.oa.bean.OAPlanAssociateBean"/>
+<mapping class="com.koron.oa.bean.OAPlanAssItemBean"/>
+<mapping class="com.koron.oa.bean.OAPlanCommonBean"/>
+<mapping class="com.koron.oa.bean.OAJobBean"/>
+<mapping class="com.koron.oa.bean.OAMyLogBean"/>
+<mapping class="com.koron.oa.bean.OABBSForumBean"/>
+<mapping class="com.koron.oa.bean.OABBSTopicBean"/>
+<mapping class="com.koron.oa.bean.OABBSUserBean"/>
+<mapping class="com.koron.oa.bean.OABBSReplayForumBean"/>
+<mapping class="com.koron.oa.bean.OABBSVoteBean"/>
+<mapping class="com.koron.oa.bean.OABBSVoteAnswerBean"/>
+<mapping class="com.koron.oa.bean.OABBSVoteUserBean"/>
+<mapping class="com.koron.oa.bean.OAjobRestoreBean"/>
+<mapping class="com.koron.oa.bean.OAJobAuditingBean"/>
+<mapping class="com.koron.oa.bean.OAMailGroupBean"/>
+<mapping class="com.koron.oa.bean.OAMailInfoBean"/>
+<mapping class="com.koron.oa.bean.EmailFilter"/>
+<mapping class="com.koron.oa.bean.OANewsInfoReplyBean"/>
+<mapping class="com.koron.oa.bean.AlbumBean"/>
+<mapping class="com.koron.oa.bean.PhotoInfoBean"/>
+<mapping class="com.koron.oa.bean.DirectorySetting"/>
+<mapping class="com.koron.oa.bean.OANewsBean"/>
+<mapping class="com.koron.oa.bean.OAAdviceBean"/>
+<mapping class="com.koron.oa.bean.OAOrdainBean"/>
+<mapping class="com.koron.oa.bean.OAOrdainGroupBean"/>
+<mapping class="com.koron.oa.bean.OAMyCalendarBean"/>
+<mapping class="com.koron.oa.bean.OAKnowFileBean"/>
+<mapping class="com.koron.oa.bean.OAKnowFolderBean"/>
+<mapping class="com.koron.oa.bean.OAWorkPopedomeBean"/>
+<mapping class="com.koron.oa.bean.MailinfoSettingBean"/>
+<mapping class="com.koron.oa.bean.MailLabelBean"/>
+<mapping class="com.koron.oa.bean.MessageBean"/>
+<mapping class="com.koron.oa.bean.MessageBean2"/>
+<mapping class="com.koron.oa.bean.OAWorkConsignBean"/>
+<mapping class="com.koron.oa.bean.OAWorkConsignLogBean"/>
+<mapping class="com.koron.oa.bean.FlowNodeBean"/>
+<mapping class="com.koron.oa.bean.FieldBean"/>
+<mapping class="com.koron.oa.bean.ApproveBean"/>
+<mapping class="com.koron.oa.bean.ConditionsBean"/>
+<mapping class="com.koron.oa.bean.ConditionBean"/>
+<mapping class="com.koron.oa.bean.OAWorkFlowTemplate"/>
+
+<mapping class="com.koron.oa.office.meeting.OAMeetingBean" />
+<mapping class="com.koron.oa.office.meeting.OANoteBean" />
+<mapping class="com.koron.oa.office.meeting.OABoardroomBean" />
+<mapping class="com.koron.oa.office.meeting.OASigninBean" />
+
+<mapping class="com.koron.oa.office.goods.backed.OABackedGoodsBean"/>
+<mapping class="com.koron.oa.office.goods.backed.OABackedGoodsDetBean"/>
+<mapping class="com.koron.oa.office.goods.applyUse.OAApplyGoodsBean"/>
+<mapping class="com.koron.oa.office.goods.applyUse.OAApplyGoodsDetBean"/>
+
+<mapping class="com.koron.oa.office.car.carInfo.OACarInfoBean"/>
+<mapping class="com.koron.oa.office.car.carInfo.OACarCheckBean"/>
+<mapping class="com.koron.oa.office.car.carOut.OACarOperateBean"/>
+<mapping class="com.koron.oa.bean.OAItemsBean"/>
+<mapping class="com.koron.oa.bean.OATaskBean"/>
+<mapping class="com.koron.oa.toDo.OAToDoBean"/>
+<mapping class="com.koron.oa.OACalendar.OACalendarBean"/>
+<mapping class="com.koron.oa.bean.OAWorkLogBean"/>
+<mapping class="com.koron.oa.bean.OAWorkLogDetBean"/>
+<mapping class="com.koron.oa.bean.OAWorkLogFollowBean"/>
+<mapping class="com.koron.oa.oaCollection.OACollectionBean"/>
+<mapping class="com.koron.oa.bean.OAWorkLogTemplateBean"/>
+
+<mapping class="com.koron.crm.bean.ClientModuleBean"/>
+<mapping class="com.koron.crm.bean.ClientModuleViewBean"/>
+<mapping class="com.koron.crm.bean.CareforBean"/>
+<mapping class="com.koron.crm.bean.CareforDelBean"/>
+<mapping class="com.koron.crm.bean.CareforActionBean"/>
+<mapping class="com.koron.crm.bean.CareforActionDelBean"/>
+<mapping class="com.koron.crm.bean.CrmClientInfoBean"/>
+<mapping class="com.koron.crm.bean.CrmClientInfoBeanDet"/>
+<mapping class="com.koron.crm.bean.WorkTradeBean"/>
+<mapping class="com.koron.crm.bean.WorkProfessionBean"/>
+<mapping class="com.koron.crm.bean.ClientInfoRecordBean"/>
+<mapping class="com.koron.crm.bean.CRMLabelBean"/>
+<mapping class="com.koron.crm.bean.CRMTransferRecordBean"/>
+<mapping class="com.koron.crm.bean.CRMBrotherCommentBean"/>
+<mapping class="com.koron.crm.bean.CRMShareClientBean"/>
+<mapping class="com.koron.crm.bean.BrotherFieldDisplayBean"/>
+<mapping class="com.koron.crm.bean.BrotherFieldScopeBean"/>
+<mapping class="com.koron.crm.bean.BrotherPublicScopeBean"/>
+<mapping class="com.koron.crm.bean.CRMTaskAssignBean"/>
+
+<mapping class="com.koron.hr.bean.HRCardRecordPositionBean"/>
+<mapping class="com.koron.crm.qa.CRMQABean"/>
+
+<mapping class="com.koron.crm.printSet.CRMPrintSetBean"/>
+</session-factory>
+</hibernate-configuration>

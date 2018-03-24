@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+<!--==========================================================销售收款单ERP=============================================================-->
+<define name="tblSaleReceive_Add">
+<!--是首批款添加15送1活动--> 
+	<sql type="condition">
+	
+		<exec condition=" true ">
+			<sql>
+				
+				insert into HFComboActive (workFlowNode,workFlowNodeName,createBy,id,startDate,endDate,invalDate,name,CompanyCode,District,remark,status,mode,FirstAmount)
+				select -1,'finish','1',@ValueofDB:id,BillDate,BillDate,BillDate,'首批款15送1',CompanyCode,TblCompany.District,'首批款15送1',0,1,ExeBalAmt 
+					from tblSaleReceive 
+					left join tblCompany on tblSaleReceive.CompanyCode = TblCompany.classCode 
+					where tblSaleReceive.id = @ValueofDB:id
+
+			</sql>
+			<sql>
+				insert into HFComboActiveDet (f_ref,startAmt,endAmt,ComboId,Advertisement,parts)
+				select @ValueofDB:id,1000,ExeBalAmt,'49e14316_1704100955369700811',3,3 from tblSaleReceive where id = @ValueofDB:id
+			</sql>
+			<sql>
+				insert into HFCompanyActiveDet (f_ref,CompanyCode,Remark)
+				select @ValueofDB:id,CompanyCode,'首批款15送' from tblSaleReceive where id = @ValueofDB:id
+			</sql>
+		</exec>
+	</sql>
+	
+<!--生成银企直联子账户余额--> 
+	<sql type="condition">
+			<condition>
+		
+				<select>select substring(REPLACE(newId(),'-',''),0,30) as newId</select>
+				<select>Select CONVERT(varchar(100), GETDATE(), 20) as lastUpTime</select>
+				<select>select COUNT(*) as num from tblSubAccountBalance where subAccountNo = @ValueofDB:subAccount  and companyCode = @ValueofDB:CompanyCode</select>
+
+			</condition>
+			
+			<!--子账户不存在在子账户中增加子账户--> 	
+			<exec condition="@SqlReturn:num == 0">
+				<sql>insert into tblSubAccountBalance (id,createBy,subAccountNo,companyCode,balance,AccountNo,lastUpdateTime) 
+					values(@SqlReturn:newId,@Sess:UserId,@ValueofDB:subAccount,@ValueofDB:CompanyCode,@ValueofDB:ExeBalAmt,@ValueofDB:AccountNo,@SqlReturn:lastUpTime)
+				</sql>		
+			</exec>
+			<!--子账户存在增加子账户余额--> 	
+			<exec condition="@SqlReturn:num == 1">
+				<sql>
+					update tblSubAccountBalance set balance = balance + @ValueofDB:ExeBalAmt where subAccountNo = @ValueofDB:subAccount and AccountNo = @ValueofDB:AccountNo
+				</sql>		
+			</exec>
+		</sql>
+		
+	<sql type="condition">
+		<!--往来结算合计小于等于0，给出错误提示--> 	
+		<exec condition="@ValueofDB:tblSaleReceive_ExeBalAmt&lt;=0">
+			<error>tblPay.settleAmt.lessZero.error</error> 
+		</exec>
+		<!--多账户的判断提示--> 	
+		<exec condition="true">
+			<sql type="define">tblReceiveManyAccount_Add_Validate</sql>
+		</exec>		
+	</sql>	
+	<sql type="condition"><!--如果选择了代收款没有选择物流公司，或者选择了物流公司没有选择代收款，给出错误提示-->
+		<condition><select>select count(0) as freCount from tblFreightCom where id=@ValueofDB:tblSaleReceive_CompanyCode</select></condition>
+		<exec condition="('@ValueofDB:tblSaleReceive_AcceptTypeID'=='DeputyRec'&amp;&amp;@SqlReturn:freCount==0)||('@ValueofDB:tblSaleReceive_AcceptTypeID'!='DeputyRec'&amp;&amp;@SqlReturn:freCount&gt;0)">
+			<error>tblSaleReceive.selectDeputy.error</error> 
+		</exec>
+	</sql>
+	<!--关联单据重复给出提示-->
+	<sql type="condition">
+		<condition>
+			<select>select RefBillNo from tblSaleReceiveDet where f_REf=@ValueofDB:tblSaleReceive_id group by RefBillNo,RefbillID having COUNT(RefbillID)&gt;1</select>
+		</condition>
+		<exec condition="'@SqlReturn:RefBillNo'!='null'">
+			<error>关联了重复的单据 @SqlReturn:RefBillNo</error> 
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition><select>select count(0) as detCount from tblSaleReceiveDet where f_ref=@ValueofDB:tblSaleReceive_id</select></condition>
+		<!--当收款类型为 “其他收款”， 但没有选择关联单据给出错误提示-->
+		<exec condition="'@ValueofDB:tblSaleReceive_AcceptTypeID'=='OtherReceive'&amp;&amp;@SqlReturn:detCount==0">
+			<error>tblPay.NoSelectBill.error</error> 
+		</exec>		
+		<exec condition="@SqlReturn:detCount&gt;0">
+			<!--当明细表录入数据时，判断收款类型，与收款单据是否匹配-->
+			<sql type="define">tblReceive_Add_BillType_validate</sql>
+			<!--关于结算金额的验证-->
+			<sql type="define">tblReceive_Add_ExeBalAmt_validate</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--当收款类型为 “代收款”时，必须关联单据编号-->
+		<condition><select> select count(0) as detCount from tblSaleReceiveDet where f_ref=@ValueofDB:tblSaleReceive_id</select></condition>
+		<exec condition="'@SqlReturn:detCount'=='0'&amp;&amp;'@ValueofDB:tblSaleReceive_AcceptTypeID'=='DeputyRec'">
+			<error>tblPay.NoSelectBill.error</error> 
+		</exec>		
+	</sql>	
+	<!--外币控制暂不做处理-->
+	<sql type="condition">
+		<condition>
+			<select>select AccNumber,AccName,IsForCur,Currency as CURD from tblAccTypeInfo where AccNumber=@ValueofDB:tblSaleReceive_AcceptBankID and  SCompanyID=@ValueofDB:tblSaleReceive_SCompanyID</select>
+			<select>select id baseCurrency from tblCurrency where IsBaseCurrency=1</select>
+			<!--多账户付款查询所选的付款帐户对应的科目代码、科目名、是否核算外币、核算的币种信息-->
+			<select>select Account as AnyAccount from tblReceiveAccountDet left join tblAccTypeinfo on tblAccTypeinfo.Accnumber=tblReceiveAccountDet.Account where f_ref=@ValueofDB:id and ( (len(@ValueofDB:Currency) &gt; 0 and ((@ValueofDB:Currency !=@SqlReturn:baseCurrency and tblAccTypeInfo.Currency!=@ValueofDB:Currency ) or ( @ValueofDB:Currency =@SqlReturn:baseCurrency and  tblAccTypeInfo.Currency!='' and tblAccTypeInfo.Currency!=@SqlReturn:baseCurrency  ) )) or (len(@ValueofDB:Currency)=0 and len(tblAccTypeInfo.Currency)!=0))</select>
+		</condition>
+		<!--币种为空，付款帐户不为空时，选择的付款多帐户存在核算外币时提示-->
+		<exec condition="'@SqlReturn:AnyAccount' != 'null' ">
+			<!--选择的帐号不是该外币对应的帐号-->
+			<error>tblAccTypeInfo.SelectCurType.error</error> 
+		</exec>
+		<!--如果是本位币帐户，不用录入汇率-->	
+		<exec condition=" ('@ValueofDB:tblSaleReceive_Currency'.length == 0 &amp;&amp; @ValueofDB:tblSaleReceive_CurrencyRate &gt; 0 &amp;&amp; @ValueofDB:tblSaleReceive_CurrencyRate!=1)">		
+			<error>CurrencyRate.putErrors.error</error> 
+		</exec>
+		<exec condition="true">
+			<sql>update tblTransferSale1 set CertificateNo='' where id=@ValueofDB:tblBuyOrder_id</sql>
+		</exec>
+		<!--不启用审核流时直接执行过账操作-->
+		<exec condition="'@MEM:tblSaleReceive_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblSaleReceive_Add_One</sql>
+		</exec>
+	</sql>
+</define>
+<!--====多账户收款判断=====-->
+<define name="tblReceiveManyAccount_Add_Validate">	
+	<sql type="condition"><!--没有选择收款账户，给出错误提示-->
+		<condition><select>select count(0) AccountC from tblReceiveAccountDet where f_ref=@ValueofDB:tblSaleReceive_id</select></condition>
+		<exec condition="@SqlReturn:AccountC==0">
+			<error>sales.ReceiveAccCode.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--选择收款账户，没有输入收款金额，给出错误提示-->
+		<condition><select>select count(0) zeroAmt from tblReceiveAccountDet where f_ref=@ValueofDB:tblSaleReceive_id and len(Account)&gt;0 and Amount=0</select></condition>
+		<exec condition="@SqlReturn:zeroAmt&gt;0">
+			<error>common.AccountAmt.input.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--收款账户不能有重复-->
+		<condition><select>select 'sameAcc' as sameAcc from tblReceiveAccountDet where f_ref=@ValueofDB:tblSaleReceive_id group by Account having count(Account)&gt;1</select></condition>
+		<exec condition="'@SqlReturn:sameAcc'=='sameAcc'">
+			<error>sales.ReceiveAccCode.same.error</error> 
+		</exec>
+	</sql>
+</define>
+<!--==============判断收款类型，与收款单据是否匹配=============-->
+<!-- 自定义：应收款类型增加零售单-->
+<define name="tblReceive_Add_BillType_validate">
+	<sql type="condition">
+		<condition><select>select count(0) as detCount from tblSaleReceiveDet where f_ref=@ValueofDB:tblSaleReceive_id and
+		((@ValueofDB:tblSaleReceive_AcceptTypeID='Receive' and ReceiveBillType not in ('tblSalesOutStock','PDSampleReq','PDSalesCutPay','tblSalesReturnStock')) or 
+		(@ValueofDB:tblSaleReceive_AcceptTypeID='PreReceive' and ReceiveBillType!='tblSalesOrder') or
+		(@ValueofDB:tblSaleReceive_AcceptTypeID='RetrunReceive' and ReceiveBillType!='tblSaleReceive') or
+		(@ValueofDB:tblSaleReceive_AcceptTypeID='ReturnPay' and ReceiveBillType!='tblSalesReturnStock') or
+		(@ValueofDB:tblSaleReceive_AcceptTypeID='OtherReceive' and ReceiveBillType!='tblIncome'))</select>
+		</condition>
+		<!--选择“应收款”，关联单据可不选，如果选择后不是销售出库单给出提示-->
+		<exec condition="'@ValueofDB:tblSaleReceive_AcceptTypeID'=='Receive'&amp;&amp;@SqlReturn:detCount&gt;0">
+			<error>tblReceive.Receive.selectBill.error</error> 
+		</exec>
+		<!--选择“预收款”，关联单据可不选，如果选择后不是销售订单给出提示-->
+		<exec condition="'@ValueofDB:tblSaleReceive_AcceptTypeID'=='PreReceive'&amp;&amp;@SqlReturn:detCount&gt;0">
+			<error>tblReceive.PreReceive.selectBill.error</error> 
+		</exec>
+		<!--选择“收款退款”，如果不是选择收款单给出提示-->
+		<exec condition="'@ValueofDB:tblSaleReceive_AcceptTypeID'=='RetrunReceive'&amp;&amp;@SqlReturn:detCount&gt;0">
+			<error>tblReceive.RetrunReceive.selectBill.error</error> 
+		</exec>
+		<!--选择“退货付款”，关联单据如果不是选择退货单给出提示-->
+		<exec condition="'@ValueofDB:tblSaleReceive_AcceptTypeID'=='ReturnPay'&amp;&amp;@SqlReturn:detCount&gt;0">
+			<error>tblReceive.ReturnPay.selectBill.error</error> 
+		</exec>
+		<!--选择“其他收款”，关联单据如果不是选择其他收款单给出提示-->
+		<exec condition="'@ValueofDB:tblSaleReceive_AcceptTypeID'=='OtherReceive'&amp;&amp;@SqlReturn:detCount&gt;0">
+			<error>tblReceive.OtherReceive.selectBill.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--收款退款时不能选择本单-->
+		<condition><select>select RefbillID from tblSaleReceiveDet where f_REf=@ValueofDB:tblSaleReceive_id and RefbillID=@ValueofDB:tblSaleReceive_id</select></condition>
+		<exec condition="'@SqlReturn:RefbillID'!='null'">
+			<error>tblSaleReceiveDet.NoSelectBill.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--判断所选择单据的单据日期是否有大于收款日期的，给出提示-->
+		<condition><select>select RefBillNo,RefBillDate from tblSaleReceiveDet where f_ref=@ValueofDB:tblSaleReceive_id and RefBillDate&gt;@ValueofDB:tblSaleReceive_BillDate</select></condition>
+		<exec condition="'@SqlReturn:RefBillNo'!='null'">
+			<error>tblSaleReceive.Date.error,@SqlReturn:RefBillNo,@SqlReturn:RefBillDate</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--主表的供应商与明细表中关联单据的供应商不同时给出提示-->
+		<condition><select>select RefBillNo from tblSaleReceiveDet where f_ref=@ValueofDB:tblSaleReceive_id and CompanyCode!=@ValueofDB:tblSaleReceive_CompanyCode</select></condition>
+		<exec condition="'@SqlReturn:RefBillNo'!='null'">
+			<error>tblSaleReceive.difCom.error,@SqlReturn:RefBillNo</error> 
+		</exec>
+	</sql>
+</define>
+	
+<!--==============判断明细表输入的本次结算金额是否合理=============-->
+<define name="tblReceive_Add_ExeBalAmt_validate">
+	
+	<sql type="condition"><!--本次结算大于待结算时给出提示-->
+		<condition><select>select RefBillNo,ExeBalFcAmt,CurWexeBalAmt from tblSaleReceiveDet where f_ref=@ValueofDB:tblSaleReceive_id and abs(isnull(ExeBalFcAmt,0))&gt;abs(isnull(CurWexeBalAmt,0))</select></condition>
+		<exec condition="'@SqlReturn:RefBillNo'!='null'">
+			 <error>tblPayDet.PaymentMore.error,@SqlReturn:RefBillNo</error> 
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition><select>select 'exist' as existsBill,dbo.throwZero(sum(ExeBalFcAmt)) as sumExeFcAmt,sum(curWexeBalAmt) as cursumWexeAmt,(case when @ValueofDB:tblSaleReceive_BillFcAmt&gt;=sum(CurWexeBalAmt) then dbo.getDigits('tblSaleReceive','BillFcAmt',sum(CurWexeBalAmt)-sum(ExeBalFcAmt)) else dbo.getDigits('tblSaleReceive','BillFcAmt',@ValueofDB:tblSaleReceive_BillFcAmt-sum(ExeBalFcAmt)) end) as keepAmt from tblSaleReceiveDet where f_ref=@ValueofDB:tblSaleReceive_id</select></condition>
+		<!--当收款类型为其他收款，但本次结算金额与往来结算合计不相等时给出提示-->
+		<exec condition="('@ValueofDB:tblSaleReceive_AcceptTypeID'=='OtherReceive'||'@ValueofDB:tblSaleReceive_AcceptTypeID'=='DeputyRec')&amp;&amp;@SqlReturn:sumExeFcAmt!=@ValueofDB:tblSaleReceive_BillFcAmt">
+			<error>tblSaleReceive.add.AccAmt.ExistError12</error> 
+		</exec>
+		<!--往来结算合计小于本次结算时给出提示-->
+		<exec condition="@ValueofDB:tblSaleReceive_BillFcAmt != @SqlReturn:sumExeFcAmt">
+			&lt;！--error&gt;PayBalance.PaymentLess.error,@SqlReturn:sumExeFcAmt&lt;/error--> 
+			<error>收款金额合计必须等于本次结算合计</error>
+		</exec>
+		<!--往来结算合计大于本次结算，本次结算金额小于待结算金额时给出提示-->
+		<!--exec condition="@ValueofDB:tblSaleReceive_BillFcAmt&gt;@SqlReturn:sumExeFcAmt&amp;&amp;@SqlReturn:sumExeFcAmt&lt;@SqlReturn:cursumWexeAmt">
+			<error>PayBalance.PaymentMid.error,@SqlReturn:keepAmt</error> 
+		&lt;/exec -->
+	</sql>
+</define>
+
+<define name="tblSaleReceive_Add_One">
+<sql type="condition">
+	<condition>
+		<!--查询往来单位的名称，便于在后续使用-->
+		<select>select b.ComFullName as AccCom from tblSaleReceive a left join tblCompany b on a.CompanyCode=b.classCode where a.id=@ValueofDB:tblPay_id</select>
+	</condition>
+	<!--插入往来明细 贷：应收款-->
+	<exec condition="'@ValueofDB:tblSaleReceive_AcceptTypeID'=='Receive'||'@ValueofDB:tblSaleReceive_AcceptTypeID'=='OtherReceive'">
+		<sql type="procedure">{call proc_insertComIni(@ValueofDB:tblSaleReceive_id,@ValueofDB:tblSaleReceive_CompanyCode,2,@ValueofDB:tblSaleReceive_BillDate,ReceiveTotalLend=@ValueofDB:tblSaleReceive_ExeBalAmt@SPFieldLink:ReceiveTotalDebit=0@SPFieldLink:RelationDocID=@ValueofDB:tblSaleReceive_id@SPFieldLink:PeriodYear=@ValueofDB:tblSaleReceive_PeriodYear@SPFieldLink:BillType=tblSaleReceive@SPFieldLink:PeriodMonth=@ValueofDB:tblSaleReceive_PeriodMonth@SPFieldLink:Period=@ValueofDB:tblSaleReceive_Period@SPFieldLink:createBy=@ValueofDB:tblSaleReceive_createBy@SPFieldLink:createTime=@ValueofDB:tblSaleReceive_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblSaleReceive_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblSaleReceive_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblSaleReceive_SCompanyID@SPFieldLink:Currency=@ValueofDB:tblSaleReceive_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblSaleReceive_CurrencyRate@SPFieldLink:FcRecTotalDebit=0@SPFieldLink:FcRecTotalCredit=@ValueofDB:tblSaleReceive_BillFcAmt@SPFieldLink:BillNo=@ValueofDB:tblSaleReceive_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblSaleReceive_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblSaleReceive_DepartmentCode@SPFieldLink:Remark=@ValueofDB:tblSaleReceive_Remark,retCode,retVal)}</sql>
+	</exec>
+	<!--收款类型为代收款，根据单据明细插入往来明细 贷：应收款-->
+	<exec condition="'@ValueofDB:tblSaleReceive_AcceptTypeID'=='DeputyRec'">
+		<sql type="procedure">{call proc_iterateExeProc(select substring(replace(newid()@RepComma:'-'@RepComma:'')@RepComma:1@RepComma:30) as id@SPFieldLink:b.CompanyCode as CompanyCode@SPFieldLink:sum(a.ExeBalAmt) as ExeBalAmt@SPFieldLink:sum(a.ExeBalFcAmt) as ExeBalFcAmt from tblSaleReceiveDet a@SPFieldLink:tblSalesOutStock b where a.f_ref='@ValueofDB:tblSaleReceive_id' and a.RefbillID=b.id group by b.CompanyCode,proc_insertComIni,@id@ParamLink:@CompanyCode@ParamLink:2@ParamLink:'@ValueofDB:tblSaleReceive_BillDate'@ParamLink:'ReceiveTotalLend='+@ExeBalAmt+'@SPFieldLink:ReceiveTotalDebit=0@SPFieldLink:RelationDocID=@ValueofDB:tblSaleReceive_id@SPFieldLink:PeriodYear=@ValueofDB:tblSaleReceive_PeriodYear@SPFieldLink:BillType=tblSaleReceive@SPFieldLink:PeriodMonth=@ValueofDB:tblSaleReceive_PeriodMonth@SPFieldLink:Period=@ValueofDB:tblSaleReceive_Period@SPFieldLink:createBy=@ValueofDB:tblSaleReceive_createBy@SPFieldLink:createTime=@ValueofDB:tblSaleReceive_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblSaleReceive_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblSaleReceive_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblSaleReceive_SCompanyID@SPFieldLink:Currency=@ValueofDB:tblSaleReceive_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblSaleReceive_CurrencyRate@SPFieldLink:FcRecTotalDebit=0@SPFieldLink:FcRecTotalCredit='+@ExeBalFcAmt+'@SPFieldLink:BillNo=@ValueofDB:tblSaleReceive_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblSaleReceive_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblSaleReceive_DepartmentCode@SPFieldLink:Remark=@ValueofDB:tblSaleReceive_Remark',retCode,retVal)}
+		</sql>
+	</exec>
+	<!--插入往来明细 贷：应收款(负)-->
+	<exec condition="'@ValueofDB:tblSaleReceive_AcceptTypeID'=='ReturnPay'||'@ValueofDB:tblSaleReceive_AcceptTypeID'=='RetrunReceive'">
+		<sql type="procedure">{call proc_insertComIni(@ValueofDB:tblSaleReceive_id,@ValueofDB:tblSaleReceive_CompanyCode,2,@ValueofDB:tblSaleReceive_BillDate,ReceiveTotalLend=-1*@ValueofDB:tblSaleReceive_ExeBalAmt@ParamNum:@SPFieldLink:ReceiveTotalDebit=0@SPFieldLink:RelationDocID=@ValueofDB:tblSaleReceive_id@SPFieldLink:PeriodYear=@ValueofDB:tblSaleReceive_PeriodYear@SPFieldLink:BillType=tblSaleReceive@SPFieldLink:PeriodMonth=@ValueofDB:tblSaleReceive_PeriodMonth@SPFieldLink:Period=@ValueofDB:tblSaleReceive_Period@SPFieldLink:createBy=@ValueofDB:tblSaleReceive_createBy@SPFieldLink:createTime=@ValueofDB:tblSaleReceive_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblSaleReceive_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblSaleReceive_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblSaleReceive_SCompanyID@SPFieldLink:Currency=@ValueofDB:tblSaleReceive_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblSaleReceive_CurrencyRate@SPFieldLink:FcRecTotalDebit=0@SPFieldLink:FcRecTotalCredit=-1*@ValueofDB:tblSaleReceive_BillFcAmt@ParamNum:@SPFieldLink:BillNo=@ValueofDB:tblSaleReceive_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblSaleReceive_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblSaleReceive_DepartmentCode@SPFieldLink:Remark=@ValueofDB:tblSaleReceive_Remark,retCode,retVal)}</sql>
+	</exec>
+	<!--未启用预收预付记应收应付,插入往来明细 贷：预收款-->
+	<exec condition="'@MEM:prerecvpaymarktoneedrecvpay'=='false' &amp;&amp; '@ValueofDB:tblSaleReceive_AcceptTypeID'=='PreReceive'">	
+		<sql type="procedure">{call proc_insertComIni(@ValueofDB:tblSaleReceive_id,@ValueofDB:tblSaleReceive_CompanyCode,4,@ValueofDB:tblSaleReceive_BillDate,PreReceiveTotalLend=@ValueofDB:tblSaleReceive_ExeBalAmt@ParamNum:@SPFieldLink:PreReceiveTotalDebit=0@SPFieldLink:RelationDocID=@ValueofDB:tblSaleReceive_id@SPFieldLink:PeriodYear=@ValueofDB:tblSaleReceive_PeriodYear@SPFieldLink:BillType=tblSaleReceive@SPFieldLink:PeriodMonth=@ValueofDB:tblSaleReceive_PeriodMonth@SPFieldLink:Period=@ValueofDB:tblSaleReceive_Period@SPFieldLink:createBy=@ValueofDB:tblSaleReceive_createBy@SPFieldLink:createTime=@ValueofDB:tblSaleReceive_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblSaleReceive_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblSaleReceive_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblSaleReceive_SCompanyID@SPFieldLink:Currency=@ValueofDB:tblSaleReceive_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblSaleReceive_CurrencyRate@SPFieldLink:FcPreRecTotalDebit=0@SPFieldLink:FcPreRecTotalCredit=@ValueofDB:tblSaleReceive_BillFcAmt@ParamNum:@SPFieldLink:BillNo=@ValueofDB:tblSaleReceive_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblSaleReceive_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblSaleReceive_DepartmentCode@SPFieldLink:Remark=@ValueofDB:tblSaleReceive_Remark,retCode,retVal)}</sql>
+	</exec>
+	<!--已启用预收预付记应收应付,插入往来明细 贷：应收款-->
+	<exec condition="'@MEM:prerecvpaymarktoneedrecvpay'=='true' &amp;&amp; '@ValueofDB:tblSaleReceive_AcceptTypeID'=='PreReceive'">	
+		<sql type="procedure">{call proc_insertComIni(@ValueofDB:tblSaleReceive_id,@ValueofDB:tblSaleReceive_CompanyCode,2,@ValueofDB:tblSaleReceive_BillDate,ReceiveTotalLend=@ValueofDB:tblSaleReceive_ExeBalAmt@ParamNum:@SPFieldLink:ReceiveTotalDebit=0@SPFieldLink:RelationDocID=@ValueofDB:tblSaleReceive_id@SPFieldLink:PeriodYear=@ValueofDB:tblSaleReceive_PeriodYear@SPFieldLink:BillType=tblSaleReceive@SPFieldLink:PeriodMonth=@ValueofDB:tblSaleReceive_PeriodMonth@SPFieldLink:Period=@ValueofDB:tblSaleReceive_Period@SPFieldLink:createBy=@ValueofDB:tblSaleReceive_createBy@SPFieldLink:createTime=@ValueofDB:tblSaleReceive_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblSaleReceive_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblSaleReceive_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblSaleReceive_SCompanyID@SPFieldLink:Currency=@ValueofDB:tblSaleReceive_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblSaleReceive_CurrencyRate@SPFieldLink:FcRecTotalDebit=0@SPFieldLink:FcRecTotalCredit=@ValueofDB:tblSaleReceive_BillFcAmt@ParamNum:@SPFieldLink:BillNo=@ValueofDB:tblSaleReceive_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblSaleReceive_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblSaleReceive_DepartmentCode@SPFieldLink:Remark=@ValueofDB:tblSaleReceive_Remark,retCode,retVal)}</sql>
+	</exec>
+	<!--不启用品牌管理时，回填单据的累积付款，累积收款-->
+	<exec condition="'@MEM:productbankcontrol'!='true'">
+		<sql type="procedure">{call proc_SalesReceiveAmortPD(@ValueofDB:tblSaleReceive_id,add,retCode,retVal)}</sql>
+	</exec>
+	<!--收款类型：代收款，明细表选择的销售出库的已代收金额+本次代收金额-->
+	<exec condition="'@ValueofDB:tblSaleReceive_AcceptTypeID'=='DeputyRec'">
+		<sql>update tblSalesOutStock set hashDeputyReceAmt=hashDeputyReceAmt+a.ExeBalAmt from tblSaleReceiveDet a where a.f_ref=@ValueofDB:tblSaleReceive_id and tblSalesOutStock.id=a.RefbillID</sql>
+	</exec>
+	<exec condition=" true "><!-- 查询并设置优惠活动 -->
+		<sql type="procedure">{call HFSaleReceiveCombo(@ValueofDB:id,add,@ValueofDB:BillNo,@ValueofDB:BillDate,@ValueofDB:CompanyCode,retCode,retVal) }</sql>
+	</exec>
+	<!--如果启用“自动产生凭证”，则自动插入凭证-->
+	<exec condition="'@MEM:autoGenerateAcc'=='true'"><sql type="certificate">tblSaleReceive</sql></exec>	
+</sql>
+
+
+<!--更新门头费等-->
+	<sql type="condition">
+		<condition>
+			<select> 
+				select tblContract.Id as billId, tblSaleReceive.ExeBalAmt*(100 - isnull(tblContract.Freight,0))/100.00 *tblContract.Advertisement/100.00  Advertisement,
+					  tblSaleReceive.ExeBalAmt*(100 -isnull(tblContract.Freight,0))/100  *tblContract.Parts/100.00  Parts,
+					  tblSaleReceive.ExeBalAmt  * (100 -isnull(tblContract.Freight,0))/100 *tblContract.PaymentProportion/100.00 PaymentProportion  
+				from tblSaleReceive 
+				inner join tblcompany on tblSaleReceive.companycode = tblcompany.classcode
+				inner join tblContract on 
+						tblcompany.id=tblContract.CompanyCode and 
+						tblSaleReceive.BillDate&gt;=tblContract.BillDate1 and tblSaleReceive.BillDate&lt;=tblcontract.BillDate2
+				where tblSaleReceive.id =@ValueofDB:id   
+			</select>
+		</condition>
+		<exec condition="'@SqlReturn:billId'!='null' &amp;&amp; '@SqlReturn:billId'!='' &amp;&amp; @SqlReturn:Advertisement&gt;0 ">
+			<sql type="procedure">{call proc_DoorFeeDetails(@a_createBy=@ValueofDB:tblSaleReceive_createBy,
+												   @a_lastUpdateBy=@ValueofDB:tblSaleReceive_lastUpdateBy ,
+												   @a_createTime=@ValueofDB:tblSaleReceive_createTime,
+												   @a_lastUpdateTime=@ValueofDB:tblSaleReceive_lastUpdateTime,
+												   @a_Companycode=@ValueofDB:tblSaleReceive_CompanyCode,
+												   @a_ItemType=Advertisement,
+												   @a_InMoney=@SqlReturn:Advertisement,
+												   @a_outMoney=0,
+												   @a_billId=@ValueofDB:id,
+												   @a_billType=tblSaleReceive,
+												   @a_billNo=@ValueofDB:tblSaleReceive_BillNo,
+												   @a_billDate=@ValueofDB:tblSaleReceive_BillDate,
+												   @a_opt=add,@retCode=retCode,@retVal=retVal)}
+			</sql>
+		</exec>
+		
+		<exec condition="'@SqlReturn:billId'!='null' &amp;&amp; '@SqlReturn:billId'!='' &amp;&amp; @SqlReturn:Advertisement&gt;0 ">
+			<sql type="procedure">{call proc_DoorFeeDetails(@a_createBy=@ValueofDB:tblSaleReceive_createBy,
+												   @a_lastUpdateBy=@ValueofDB:tblSaleReceive_lastUpdateBy ,
+												   @a_createTime=@ValueofDB:tblSaleReceive_createTime,
+												   @a_lastUpdateTime=@ValueofDB:tblSaleReceive_lastUpdateTime,
+												   @a_Companycode=@ValueofDB:tblSaleReceive_CompanyCode,
+												   @a_ItemType=Parts,
+												   @a_InMoney=@SqlReturn:Parts,
+												   @a_outMoney=0,
+												   @a_billId=@ValueofDB:id,
+												   @a_billType=tblSaleReceive,
+												   @a_billNo=@ValueofDB:tblSaleReceive_BillNo,
+												   @a_billDate=@ValueofDB:tblSaleReceive_BillDate,
+												   @a_opt=add,@retCode=retCode,@retVal=retVal)}
+			</sql>
+		</exec>
+		
+		
+		<exec condition="'@SqlReturn:billId'!='null' &amp;&amp; '@SqlReturn:billId'!='' &amp;&amp; @SqlReturn:Advertisement&gt;0 ">
+			<sql type="procedure">{call proc_DoorFeeDetails(@a_createBy=@ValueofDB:tblSaleReceive_createBy,
+												   @a_lastUpdateBy=@ValueofDB:tblSaleReceive_lastUpdateBy ,
+												   @a_createTime=@ValueofDB:tblSaleReceive_createTime,
+												   @a_lastUpdateTime=@ValueofDB:tblSaleReceive_lastUpdateTime,
+												   @a_Companycode=@ValueofDB:tblSaleReceive_CompanyCode,
+												   @a_ItemType=PaymentProportion,
+												   @a_InMoney=@SqlReturn:PaymentProportion,
+												   @a_outMoney=0,
+												   @a_billId=@ValueofDB:id,
+												   @a_billType=tblSaleReceive,
+												   @a_billNo=@ValueofDB:tblSaleReceive_BillNo,
+												   @a_billDate=@ValueofDB:tblSaleReceive_BillDate,
+												   @a_opt=add,@retCode=retCode,@retVal=retVal)}
+			</sql>
+		</exec>
+		
+		
+	</sql>
+	
+
+	<!-- 更新分销往来，删除分销付款单
+	<sql type="condition">
+		<exec condition="'@Sess:BillOper'=='update'">
+			<sql type="procedure">{call proc_fxPay_Ini(@ValueofDB:id,delete,retCode,retVal)}</sql>
+			<sql>delete from aiofx.dbo.fxPayDet where f_ref=@ValueofDB:id</sql>
+			<sql>delete from aiofx.dbo.fxPay where id=@ValueofDB:id</sql>	
+		</exec>
+	</sql>	-->
+
+	<!--自定义：推送分销付款单-->
+	<sql type="condition"> 	
+		<exec condition="'@Sess:BillOper'=='add' &amp;&amp; false">  
+			<sql type="class">com.menyi.web.util.AIOConnect.add(127.0.0.1:8001,koron,1,fxPay,,,conn, select a.id， BillNo， CONVERT(varchar(10)，GETDATE()，21) as BillDate， '' as DepartmentCode，'' as EmployeeID，ExeBalAmt as TotalAmount，''as PayBank，''as PayBankID，''as RecBank，''as RecBankID，a.Remark，1 as createBy，1 as lastUpdateBy，a.finishTime as createTime，a.statusId，a.SCompanyID，a.finishTime，(case AcceptTypeID when 'PreReceive' then 'PrePay' when 'Receive' then 'Pay' end) as PaytypeID， fxAgentID， PeriodYear， PeriodMonth， Period，a.id as ERPSaleReID from tblSaleReceive a join TblCompany b on a.CompanyCode=b.classCode where a.id='@ValueofDB:id',fxPayDet:select left(replace(newid()，'-'，'')，30) as id， f_ref，ExeBalAmt as NeedPayAmt，b.fxBuyOrderID from tblSaleReceiveDet a join tblSalesOutStock b on a.RefbillID=b.id where a.f_ref='@ValueofDB:id')</sql>
+			<!--<sql type="class">com.menyi.web.util.AIOConnect.deliverToNext(127.0.0.1:8001,koron,1,@ValueofDB:id,fxPay)</sql>-->
+		</exec>
+		<exec condition="'@Sess:BillOper'=='update' &amp;&amp; false">  
+			<sql type="class">com.menyi.web.util.AIOConnect.update(127.0.0.1:8001,koron,1,fxPay,,conn, select a.id， BillNo， CONVERT(varchar(10)，GETDATE()，21) as BillDate， '' as DepartmentCode，'' as EmployeeID，ExeBalAmt as TotalAmount，''as PayBank，''as PayBankID，''as RecBank，''as RecBankID，a.Remark，1 as createBy，1 as lastUpdateBy，a.finishTime as createTime，a.statusId，a.SCompanyID，a.finishTime，(case AcceptTypeID when 'PreReceive' then 'PrePay' when 'Receive' then 'Pay' end) as PaytypeID， fxAgentID， PeriodYear， PeriodMonth， Period，a.id as ERPSaleReID from tblSaleReceive a join TblCompany b on a.CompanyCode=b.classCode where a.id='@ValueofDB:id',fxPayDet:select left(replace(newid()，'-'，'')，30) as id， f_ref，ExeBalAmt as NeedPayAmt，b.fxBuyOrderID from tblSaleReceiveDet a join tblSalesOutStock b on a.RefbillID=b.id where a.f_ref='@ValueofDB:id')</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+	<exec condition="true">
+		<sql type="define">tblSaleReceive_genCashier</sql>
+	</exec>
+	</sql>
+</define>
+
+
+&lt;--===========生成出纳账明细===========-->
+<define name="tblSaleReceive_genCashier">
+	<!--生成出纳明细-->
+	<sql type="condition">
+		<condition>
+			<!--<select>select isnull(Max(No),0)+1 as maxNo from tblCashierAccount where BillDate=@ValueofDB:BillDate</select>-->	
+			<select>select isnull(Max(No),0)+1 as maxNo from tblCashierAccount where PeriodYear=DATEPART(YEAR,@ValueofDB:BillDate) and PeriodMonth = DATEPART(MONTH,@ValueofDB:BillDate)</select>	
+		</condition>					
+		<exec condition="true">
+			<sql>
+				declare @ret int,@row int ,@rows int,@detID varchar(50),@accCode varchar(50),@amt numeric(14,2),@refAcc varchar(50)
+				set @ret = @SqlReturn:maxNo			
+				declare @tab table(
+					num int identity(1,1),
+					detID varchar(50),
+					accCode varchar(50),
+					amt numeric(14,2)
+				)				
+				set @row = 1 
+				--查找对应的客户科目
+				if(@ValueofDB:AcceptTypeID = 'PreReceive')
+				begin
+					select @refAcc = AccNumber from tblAccTypeInfo where ClientCode = @ValueofDB:CompanyCode and AccNumber like '2203%' 
+				end else if(@ValueofDB:AcceptTypeID = 'Receive' or @ValueofDB:AcceptTypeID = 'RetrunReceive' or @ValueofDB:AcceptTypeID = 'ReturnPay')
+				begin
+					select @refAcc = AccNumber from tblAccTypeInfo where ClientCode = @ValueofDB:CompanyCode and AccNumber like '1122%' 
+				end 
+				insert into @tab(detID,accCode,amt) select id,Account,Amount from tblReceiveAccountDet where f_ref = @ValueofDB:id
+				set @rows = @@ROWCOUNT
+				while(@row&lt;=@rows)
+				begin
+					select @detID=detID,@accCode=accCode from @tab where num = @row
+										
+					insert into tblCashierAccount(id,BillDate,No,CredType,CredNo,PeriodYear,PeriodMonth,AccCode,RefAcc,DebitAmount,LendAmount,EmployeeID,RecordComment,Currency,BillID,BillType,createBy,createTime)
+					select ('S' + CONVERT(nvarchar(13),REPLACE(CONVERT(decimal(18,8),GETDATE()),'.','')) + RIGHT(NEWID(),12)) as id,
+					@ValueofDB:BillDate as BillDate,(@SqlReturn:maxNo+@row) as No,'记' as CredType,0 as CredNo,DATEPART(YEAR,@ValueofDB:BillDate) as pYear,DATEPART(Month,@ValueofDB:BillDate) as pMonth,
+					@accCode as AccCode,@refAcc as RefAcc,(case @ValueofDB:AcceptTypeID when 'PreReceive' then Amount when 'Receive' then Amount when 'RetrunReceive' then -Amount when 'ReturnPay' then -Amount end) as Debit,0.0 as lend,
+					@ValueofDB:EmployeeID as EmployeeID,@ValueofDB:Abstract as RecordComment,'RMB' as Currency,@ValueofDB:id as billID,'tblSaleReceive' as BillType,@ValueofDB:createBy,@ValueofDB:createTime from tblReceiveAccountDet where id = @detID
+					set @row = @row + 1
+				end							
+			</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--==========删除销售收款单==========-->  
+<define name="tblSaleReceive_Del">
+	<sql type="condition"><!--不启用审核流,直接过账-->
+		<exec condition="'@MEM:tblSaleReceive_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblSaleReceive_Del_One</sql>
+		</exec>
+	</sql>	
+</define>
+<define name="tblSaleReceive_Del_One">
+	<sql type="condition"><!--自动生成的单据不允许修改-->
+		<condition>
+		    <select>select AutoBillMarker,RefbillNo from tblSaleReceive a,tblSaleReceiveDet b where a.id=@ValueofDB:tblSaleReceive_id and a.id=b.f_ref</select>
+	    </condition>		
+		<exec condition="@SqlReturn:AutoBillMarker==1">
+			<error>DeleteBill.DelFalse.Error,@SqlReturn:RefbillNo</error> 
+		</exec>
+	</sql>	
+	<sql type="condition"><!--存在对应的收款退款时，给出提示-->
+		<condition><select>select a.BillNo as ReturnPayNo from tblSaleReceive a,tblSaleReceiveDet b where a.id=b.f_ref and b.RefbillID=@ValueofDB:tblSaleReceive_id and a.workFlowNodeName!='print'</select></condition>
+		<exec condition="'@SqlReturn:ReturnPayNo'!='null'">
+			<error>ReceiveDel.receiveNo.error,@SqlReturn:ReturnPayNo</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblSaleReceive_id and  workFlowNodeName='finish'</select></condition>
+		<exec condition="'@SqlReturn:OrderNo'!='null'">	
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error> 
+		</exec>
+	</sql>
+	<!--删除本单据的多条往来记录（1应付 2应收 3预付 4预收-->
+	<sql type="procedure">{call proc_iterateExeProc(select id as IniId from tblCompanyIni where relationDocID='@ValueofDB:tblSaleReceive_id',proc_deleteComIni,@IniId@ParamLink:2,retCode,retVal)}</sql>
+	<sql type="condition"><!--启用“自动产生凭证”时，删除凭证审核流或者减少科目余额，删除凭证信息-->
+		<exec condition=" '@MEM:autoGenerateAcc'=='true'">
+			<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblSaleReceive_id,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition>
+			<select>select AcceptTypeID from tblSaleReceive WHERE id=@ValueofDB:tblSaleReceive_id</select>			
+		</condition>
+		
+		<!--<exec condition=" '@MEM:tblSaleReceive_IsStatart' != '0' ">--><!-- 查询并设置优惠活动 -->
+		<exec condition=" true ">
+			<sql type="procedure">{call HFSaleReceiveCombo(@ValueofDB:id,delete,@ValueofDB:BillNo,@ValueofDB:BillDate,@ValueofDB:CompanyCode,retCode,retVal) }</sql>
+		</exec>
+		<!--不启用品牌管理时，回填单据的累积付款，累积收款-->
+		<exec condition="'@MEM:productbankcontrol'!='true'">
+			<sql type="procedure">{call proc_SalesReceiveAmortPD(@ValueofDB:tblSaleReceive_id,delete,retCode,retVal)}</sql>  
+		</exec>
+		
+		<!--收款类型：代收款，明细表选择的销售出库的已代收金额+本次代收金额-->
+		<exec condition="'@SqlReturn:AcceptTypeID'=='DeputyRec'">
+			<sql>update tblSalesOutStock set hashDeputyReceAmt=hashDeputyReceAmt-a.ExeBalAmt from tblSaleReceiveDet a where a.f_ref=@ValueofDB:tblSaleReceive_id and tblSalesOutStock.id=a.RefbillID</sql>
+		</exec>
+	</sql>
+
+	
+	<!-- 删除门头费-->
+	<sql type="condition">
+		<exec condition="true">
+			<sql type="procedure">{call proc_DoorFeeDetails(@a_billId=@ValueofDB:id,@a_billType=tblSaleReceive,@a_opt=del,@retCode=retCode,@retVal=retVal)}
+			</sql>
+		</exec>
+	</sql>
+
+	<!-- 更新分销往来，删除分销付款单-->
+	<sql type="condition">
+		<exec condition="'@Sess:BillOper'=='delete'">
+			<sql type="procedure">{call proc_fxPay_Ini(@ValueofDB:id,delete,retCode,retVal)}</sql>
+			<sql>delete from aiofx.dbo.fxPayDet where f_ref=@ValueofDB:id</sql>
+			<sql>delete from aiofx.dbo.fxPay where id=@ValueofDB:id</sql>	
+		</exec>
+	</sql>	
+	
+		<!--是否生成出纳明细-->
+	<sql type="condition">
+		<condition>
+			<select>select id as CashierID from tblCashierAccount where BillType = 'tblSaleReceive' and BillID = @ValueofDB:id and (workFlowNodeName = 'finish' or Posted = 'finish') </select>
+		</condition>
+		<exec condition="'@SqlReturn:CashierID'!='null' &amp;&amp; '@SqlReturn:CashierID'!=''">
+			<error>已生成出纳明细账，不允许此操作</error>
+		</exec>
+		<exec condition="true">
+			<sql>delete from tblCashierAccount where BillType = 'tblSaleReceive' and BillID = @ValueofDB:id</sql>
+		</exec>
+	</sql>
+ 
+		
+ 
+</define>
+<!--===================================================以上代码：销售收款单==========================================================-->
+
+</defineSqls>

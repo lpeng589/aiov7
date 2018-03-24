@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="SaleReceiveManyAccInfo"  type="checkBox" > 
+		<classCode>tblAccTypeInfo.classCode</classCode>
+		<defParentCode>00001</defParentCode>
+		<orderBy>tblAccTypeInfo.AccNumber</orderBy>
+		<defineSQL>
+from tblAccTypeInfo
+      where 1=1  and (tblAccTypeInfo.isCalculate !=1 OR tblAccTypeInfo.isCalculate IS NULL)
+		</defineSQL>
+		<changeCond>tblAccTypeInfo.statusId!='-1'  and tblAccTypeInfo.AccNumber not in ('1122','1123','2202','2203')</changeCond>
+		<displayFields>
+			<field name="tblAccTypeInfo.AccNumber" parentDisplay="false" width="100" searchType="match" defaultValue="100" keySearch="true" />
+			<field name="tblAccTypeInfo.AccName" display="@TABLENAME.Account" parentDisplay="true" width="150" searchType="match" keySearch="true" />
+			<field name="tblAccTypeInfo.AccFullName" parentDisplay="false" width="200" searchType="match" />
+			<field name="tblAccTypeInfo.PyCode" parentDisplay="false" width="50" searchType="match" keySearch="true" hiddenInput="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblAccTypeInfo.AccNumber" parentName="@TABLENAME.Account" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

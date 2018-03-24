@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="SelectCRMClientLoc"  desc="外勤选择客户弹出窗" > 
+		<orderBy>CRMClientInfo.Distance</orderBy>
+		<defineSQL>
+from (
+ select *,isnull(ACOS(SIN((@ValueofDB:AddressLat * 3.1415) / 180 ) *SIN((AddressLat * 3.1415) / 180 ) +COS((@ValueofDB:AddressLat * 3.1415) / 180 ) * COS((AddressLat * 3.1415) / 180 ) *COS((@ValueofDB:AddressLng* 3.1415) / 180 - (AddressLng * 3.1415) / 180 ) ) * 6380,5500000) as Distance
+ from CRMClientInfo 
+) as CRMClientInfo  left join CRMClientInfoEmp on CRMClientInfo.id=CRMClientInfoEmp.f_ref where 1=1  and (exists(select * from tblEmpDistrict a left join tblEmpDistrictDet b on b.f_ref=a.id where a.EmployeeID='@Sess:UserId' and b.BusinessDistrict=CRMClientInfo.BusinessDistrict) or '@Sess:UserId'='1' or '@MEM:ManageDistrict'='false') and CRMClientInfo.Status!=1 and (CRMClientInfoEmp.EmployeeID='@Sess:UserId' or '@Sess:UserId'='1')
+		</defineSQL>
+		<changeCond>CRMClientInfo.statusId=0</changeCond>
+		<displayFields>
+			<field name="CRMClientInfo.ClientName" parentDisplay="true" width="200" searchType="match" />
+			<field name="CRMClientInfo.Address" parentDisplay="false" width="200" />
+			<field name="CRMClientInfo.AddressLat" parentDisplay="false" width="100" />
+			<field name="CRMClientInfo.AddressLng" parentDisplay="false" width="100" />
+			<field name="CRMClientInfo.Distance" parentDisplay="true" width="100" />
+		</displayFields>
+		<saveFields>
+			<field name="CRMClientInfo.id" parentName="@TABLENAME.ClientId" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

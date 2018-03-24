@@ -1,0 +1,518 @@
+[INFO ] 2017-12-06 22:10:44,106 Line:205 系统开始启动，最大内存：1792;目前总内存：255;目前空闲内存：164
+ [INFO ] 2017-12-06 22:10:44,309 Line:283 ===========Tomcat Port=8888
+ [DEBUG] 2017-12-06 22:10:47,396 Line:3843 --------Init Hibernate Successful---------------
+ [DEBUG] 2017-12-06 22:10:47,989 Line:1203 ------Init SystemSetting record:212
+ [INFO ] 2017-12-06 22:10:48,005 Line:2660 ---------------------------------first read dog =======-----------
+ [DEBUG] 2017-12-06 22:10:48,291 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canJxc=1 
+ [DEBUG] 2017-12-06 22:10:48,338 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canOa=1 
+ [DEBUG] 2017-12-06 22:10:48,338 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canCrm=1 
+ [DEBUG] 2017-12-06 22:10:48,338 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canHr=1 
+ [DEBUG] 2017-12-06 22:10:48,369 Line:594 select AccPeriod,AccMonth,AccYear,scompanyId,statusId,isBegin from tblAccPeriod where statusId=1 or isBegin=1
+ [DEBUG] 2017-12-06 22:10:48,379 Line:626 ------Init initAccPeriod record:1
+ [DEBUG] 2017-12-06 22:10:50,875 Line:1061 ------Init Enumeration record:542
+ [DEBUG] 2017-12-06 22:10:50,894 Line:1091 ------Init WorkProfession record:6
+ [DEBUG] 2017-12-06 22:10:50,925 Line:1121 ------Init District record:3984
+ [DEBUG] 2017-12-06 22:10:50,941 Line:1152 ------Init deptMap record:21
+ [DEBUG] 2017-12-06 22:10:52,175 Line:1832 ------Init ModuleList record:
+ [DEBUG] 2017-12-06 22:10:52,175 Line:2855 --------Init ModuleList Successful---------------
+ [DEBUG] 2017-12-06 22:10:53,254 Line:297  select * from tblDBTableInfo order by TableName 
+ [DEBUG] 2017-12-06 22:10:53,388 Line:370 select * from tblDBFieldInfo order by tableId,listOrder
+ [DEBUG] 2017-12-06 22:10:55,162 Line:538 ------Init TableInfo record:892
+ [DEBUG] 2017-12-06 22:10:55,222 Line:651  select cataName,disName,module,tableName,nameField,codeField from tblScopeCataData order by orderby 
+ [DEBUG] 2017-12-06 22:10:55,238 Line:682 ------Init TableInfo record:4
+ [DEBUG] 2017-12-06 22:10:55,269 Line:775 ------Init initModuleField record:4
+ [DEBUG] 2017-12-06 22:10:55,566 Line:702  select tableName,sentence from tblPopDisSentence where statusId=0 order by tableName 
+ [DEBUG] 2017-12-06 22:10:55,566 Line:721 ------Init TableInfo record:24
+ [DEBUG] 2017-12-06 22:10:55,629 Line:891 ------Init PropInfo record:7
+ [ERROR] 2017-12-06 22:11:01,965 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.InitMenData.initDog(InitMenData.java:2946)
+	at com.menyi.web.util.InitMenData.initSystem(InitMenData.java:3850)
+	at com.menyi.web.util.BaseFilter.init(BaseFilter.java:215)
+	at org.apache.catalina.core.ApplicationFilterConfig.initFilter(ApplicationFilterConfig.java:279)
+	at org.apache.catalina.core.ApplicationFilterConfig.getFilter(ApplicationFilterConfig.java:260)
+	at org.apache.catalina.core.ApplicationFilterConfig.<init>(ApplicationFilterConfig.java:105)
+	at org.apache.catalina.core.StandardContext.filterStart(StandardContext.java:4854)
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:5542)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:150)
+	at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:901)
+	at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:877)
+	at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:649)
+	at org.apache.catalina.startup.HostConfig.deployDescriptor(HostConfig.java:672)
+	at org.apache.catalina.startup.HostConfig$DeployDescriptor.run(HostConfig.java:1859)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+[ERROR] 2017-12-06 22:11:03,371 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [DEBUG] 2017-12-06 22:11:03,407 Line:2947 --------Init Config File ---------------
+ [ERROR] 2017-12-06 22:11:04,117 Line:48 java.io.FileNotFoundException: D:\Project\HFtomcat\tomcat7\bin\..\..\fileServer_v7\wokeflow\25183d52_1706281731170782890.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-06 22:11:04,477 Line:48 java.io.FileNotFoundException: D:\Project\HFtomcat\tomcat7\bin\..\..\fileServer_v7\wokeflow\726c06ce_1603150934567560417.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-06 22:11:04,545 Line:48 java.io.FileNotFoundException: D:\Project\HFtomcat\tomcat7\bin\..\..\fileServer_v7\wokeflow\916dc5e8_1512091148254894807.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-06 22:11:04,545 Line:48 java.io.FileNotFoundException: D:\Project\HFtomcat\tomcat7\bin\..\..\fileServer_v7\wokeflow\9d47f247_1706091716571082648.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-06 22:11:04,701 Line:48 java.io.FileNotFoundException: D:\Project\HFtomcat\tomcat7\bin\..\..\fileServer_v7\wokeflow\c30fac90_1604291410068132941.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-06 22:11:05,373 Line:48 java.io.FileNotFoundException: D:\Project\HFtomcat\tomcat7\bin\..\..\fileServer_v7\wokeflow\fd21c05c_1606131813438340088.xml (系统找不到指定的文件。)
+ [ERROR] 2017-12-06 22:11:05,373 Line:48 java.io.FileNotFoundException: D:\Project\HFtomcat\tomcat7\bin\..\..\fileServer_v7\wokeflow\ffd4bcdd_1701241708235230006.xml (系统找不到指定的文件。)
+ [DEBUG] 2017-12-06 22:11:05,389 Line:1873 ------Init RefreshTime 
+ [DEBUG] 2017-12-06 22:11:05,436 Line:2994 --------Init SMS Start ---------------
+ [INFO ] 2017-12-06 22:11:05,916 Line:3011 -------System init Secussful Set Normal status--------------
+ [DEBUG] 2017-12-06 22:11:05,916 Line:3855 --------Init Dog Successful---------------
+ [ERROR] 2017-12-06 22:11:07,229 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [INFO ] 2017-12-06 22:11:07,511 Line:89 SAFE 数据库第一个备份任务启动，时间2017-12-06 00:00:00
+ [INFO ] 2017-12-06 22:11:07,511 Line:144 SAFE 备份任务开始执行，时间2017-12-06 22:11:07
+ [INFO ] 2017-12-06 22:11:07,511 Line:137 SAFE 碎片任务启动，时间2017-12-10 00:00:00
+ [DEBUG] 2017-12-06 22:11:07,511 Line:549 ReportDataMgt.getReportData SQL=select      tblSalesOrder.BillDate as startDate,     tblSalesOrder.BillDate as endDate,     tblSalesOrder.BillNo as BillNo,     tblSalesOrder.BillDate as BillDate,     tblProject.ProjectName as ProjectName,     tblGoods.classCode as GoodsCode,     tblCompany.ComNumber as ComNumber,     tblCompany.ComFullName as ComFullName,     tblDepartment.DeptFullName as DeptFullName,     tblEmployee.EmpFullName as EmpFullName,     tblEmployee2.EmpFullName as createBy,     tblGoods.GoodsNumber as GoodsNumber,     tblGoods.GoodsFullName as GoodsFullName,     tblGoods.GoodsSpec as GoodsSpec,     tblGoods.BaseUnit as BaseUnit,     tblGoods.BarCode as BarCode,     tblSalesOrderDet.BatchNo as BatchNo,     tblSalesOrderDet.Inch as Inch,     tblSalesOrderDet.Hue as Hue,     tblSalesOrderDet.yearNO as yearNO,     tblSalesOrderDet.ProDate as ProDate,     tblSalesOrderDet.Availably as Availably,     tblSalesOrderDet.SendDate as SendDate,     tblSalesOrderDet.Qty as Qty,     tblSalesOrderDet.Price as Price,     tblSalesOrderDet.Amount as Amount,     (select Top 1 lastPrice from tblStocks a where a.GoodsCode=tblSalesOrderDet.GoodsCode and tblSalesOrderDet.PresentSampleType!=0) as lastPrice,     tblSalesOrderDet.Qty*(select Top 1 lastPrice from tblStocks a where a.GoodsCode=tblSalesOrderDet.GoodsCode and tblSalesOrderDet.PresentSampleType!=0) as lastAmount,     tblSalesOrderDet.SalesGoodsType as SalesGoodsType,     tblSalesOrderDet.SecUnit as SecName,     tblSalesOrderDet.UnitIntQty as SecUnitQty,     tblSalesOrderDet.UnitBaseQty as SecBaseQty,     tblSalesOrderDet.UnitQty as UnitQty,     tblSalesOrderDet.UnitPrice as UnitPrice,     tblSalesOrderDet.Discount as Discount,     tblSalesOrderDet.DisPrice as DisPrice,     tblSalesOrderDet.DisBackAmt as DisBackAmt,     tblSalesOrderDet.DisAmount as DisAmount,     tblSalesOrder.Tax as Tax,     tblSalesOrderDet.TaxPrice as TaxPrice,     tblSalesOrderDet.TaxAmount as TaxAmount,     tblSalesOrderDet.CoTaxAmt as CoTaxAmt,     tblCurrency.CurrencyName as CurrencyName,     tblSalesOrder.CurrencyRate as CurrencyRate,     tblSalesOrderDet.CurPrice as CurPrice,     tblSalesOrderDet.CurAmount as CurAmount,     tblSalesOrderDet.AccountingPrice as AccountingPrice,     tblSalesOrder.hasBuyOrder as hasBuyOrder,     tblSalesOrderDet.MRPQty as MRPQty,     tblSalesOrderDet.WorkOrderQty as WorkOrderQty,     (select sum(isnull(k.InQty,0)) from tblBuyOrderDet k where k.SourceID=tblSalesOrderDet.id) as inQty,     tblSalesOrderDet.OutQty as OutQty,     case when tblSalesOrderDet.NotOutQty <=0 or tblSalesOrder.statusId!=0 then 0 else tblSalesOrderDet.NotOutQty end as NotOutQty,     tblSalesOrderDet.BackQty as BackQty,     tblSalesOrder.id as id,     tblSalesOrderDet.SCompanyID as SCompanyID,     tblSalesOrderDet.FinishStatus as FinishStatus,     tblSalesOrderDet.PresentSampleType as PresentSampleType,     tblSalesOrder.Remark as Remark,     tblSalesOrderDet.Remark as ReRemark,     case when (tblSalesOrderDet.Qty-tblSalesOrderDet.OutQty) <0 then (-1)*(tblSalesOrderDet.Qty-tblSalesOrderDet.OutQty) else 0 end as OverOutQty,     viewcompanytotal.ComFullName as ComFullName1,     tblSalesOrderDet.taxPrice-tblGoods.PreBuyPrice as profitPrice,     tblSalesOrderDet.Qty*(tblSalesOrderDet.taxPrice-tblGoods.PreBuyPrice) as profitAmt,     tblGoods.classCode+'#;#0#;##;#' as hideCode,     tblSalesOrder.workFlowNodeName as workFlowNodeName,     tblSalesOrder.OldGiftId as OldGiftId from tblSalesOrderDet    left join tblGoods on tblGoods.ClassCode=tblSalesOrderDet.GoodsCode   left join viewcompanytotal on tblGoods.CompanyCode=viewcompanytotal.classCode   left join tblSalesOrder on tblSalesOrderDet.f_ref=tblSalesOrder.id   left join tblStock on tblStock.classCode=tblSalesOrderDet.StockCode   left join tblCurrency on tblCurrency.id=tblSalesOrder.Currency   left join tblEmployee on tblEmployee.id = tblSalesOrder.EmployeeID   left join tblEmployee as tblEmployee2 on tblEmployee2.id = tblSalesOrder.createBy   left join tblCompany on tblCompany.classCode = tblSalesOrder.CompanyCode   left join tblDepartment on tblDepartment.classCode = tblSalesOrder.DepartmentCode left join tblProject on tblSalesOrder.ProjectCode=tblProject.id  where 1=1        and (tblSalesOrder.BillDate >= '2017-12-01')                                                                                                                                                                 and (tblSalesOrder.workFlowNodeName ='finish')         
+ [DEBUG] 2017-12-06 22:11:07,870 Line:690 通过SQL读原始数据：328
+ [DEBUG] 2017-12-06 22:11:07,870 Line:1392 整理数据：0
+ [DEBUG] 2017-12-06 22:11:07,979 Line:549 ReportDataMgt.getReportData SQL=select      tblBuyOrder.BillDate as BillDate,     tblBuyOrder.BillNo as BillNo,     tblProject.ProjectName as ProjectName,     tblGoods.classCode as GoodsCode,     tblCompany.ComNumber as ComNumber,     tblCompany.ComFullName as ComFullName,     tblBuyOrder.TradeType as TradeType,     tblBuyOrder.InvoiceType as InvoiceType,     tblDepartment.DeptFullName as DeptFullName,     tblEmployee.EmpFullName as EmpFullName,     tblEmployee.EmpNumber as EmpNumber,     tblStock.StockFullName as StockFullName,     tblGoods.GoodsNumber as GoodsNumber,     tblGoods.GoodsFullName as GoodsFullName,     tblGoods.GoodsSpec as GoodsSpec,     tblGoods.BaseUnit as BaseUnit,     tblGoods.BarCode as BarCode,     tblBuyOrderDet.BatchNo as BatchNo,     tblBuyOrderDet.Inch as Inch,     tblBuyOrderDet.Hue as Hue,     tblBuyOrderDet.yearNO as yearNO,     tblBuyOrderDet.ProDate as ProDate,     tblBuyOrderDet.Availably as Availably,     tblBuyOrderDet.ArriveDate as ArriveDate,     tblBuyOrderDet.Qty as Qty,     tblBuyOrderDet.Price as Price,     tblBuyOrderDet.Amount as Amount,     tblBuyOrderDet.SecUnit as SecName,     tblBuyOrderDet.UnitIntQty as UnitIntQty,     tblBuyOrderDet.UnitBaseQty as UnitBaseQty,     tblBuyOrderDet.UnitQty as UnitQty,     tblBuyOrderDet.UnitPrice as UnitPrice,     tblCurrency.CurrencyName as CurrencyName,     tblBuyOrder.CurrencyRate as CurrencyRate,     tblBuyOrderDet.CurPrice as CurPrice,     tblBuyOrderDet.CurAmount as CurAmount,     tblBuyOrderDet.Discount as Discount,     tblBuyOrderDet.DisPrice as DisPrice,     tblBuyOrderDet.DisBackAmt as DisBackAmt,     tblBuyOrderDet.DisAmount as DisAmount,     tblBuyOrder.Tax as Tax,     tblBuyOrderDet.TaxPrice as TaxPrice,     tblBuyOrderDet.TaxAmount as TaxAmount,     tblBuyOrderDet.CoTaxAmt as CoTaxAmt,     tblBuyOrderDet.InQty as InQty,     tblBuyOrderDet.BackQty as BackQty,     case when isnull(tblBuyOrderDet.NotInQty,0)<=0 or tblBuyOrder.statusId!=0 then 0 else isnull(tblBuyOrderDet.NotInQty,0) end as NotInQty,     tblBuyOrder.id as id,     tblBuyOrderDet.PresentSampleType as PresentSampleType,     tblBuyOrderDet.FinishStatus as FinishStatus,     tblBuyOrder.Remark as Remark,     tblBuyOrderDet.Remark as DetRemark,     tblGoods.Validity as Validity,     case when isnull(tblBuyOrderDet.NotInQty,0)<0 then (-1)*isnull(tblBuyOrderDet.NotInQty,0) else 0 end as OverInQty,     tblGoods.classCode as GoodsCodeA,     tblBuyOrder.CompanyCode as CompanyCodeA,     tblGoods.classCode+'#;#0#;##;#' as hideCode,     tblBuyOrderDet.BuyAskPriceID as BuyAskPriceID,     tblBuyOrderDet.BuyAppTotalID as BuyAppTotalID,     tblBuyOrder.workFlowNodeName as workFlowNodeName,     tblBuyApplication.BillNo as AppNo from tblBuyOrder left join tblBuyOrderDet on tblBuyOrderDet.f_ref=tblBuyOrder.id left join tblCompany on tblCompany.classCode=tblBuyOrder.CompanyCode left join tblDepartment on tblDepartment.classCode=tblBuyOrder.DepartmentCode left join tblEmployee on tblEmployee.id=tblBuyOrder.EmployeeID left join tblStock on tblStock.classCode=tblBuyOrderDet.StockCode left join tblGoods on tblGoods.classCode=tblBuyOrderDet.GoodsCode left join tblCurrency on tblCurrency.id=tblBuyOrder.Currency left join tblProject on tblBuyOrder.ProjectCode=tblProject.id left join tblBuyApplication on tblBuyApplication.id=tblBuyOrder.BuyApplyID  where 1=1        and (tblBuyOrder.BillDate >= '2017-12-01')                                                                                                                                                                               and (NotInQty>0 and DATEDIFF(DAY,CONVERT(varchar(20),getDate(),23),ArriveDate)+1<=?)                            and (tblBuyOrder.workFlowNodeName ='finish')         
+ [DEBUG] 2017-12-06 22:11:07,995 Line:583 ReportDataMgt.getReportData 参数1:2
+ [ERROR] 2017-12-06 22:11:08,011 Line:1395 ReportDataMgt.getReportData() Error:
+ com.microsoft.sqlserver.jdbc.SQLServerException: 列名 'ArriveDate' 不明确。
+	at com.microsoft.sqlserver.jdbc.SQLServerException.makeFromDatabaseError(SQLServerException.java:197)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.getNextResult(SQLServerStatement.java:1493)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.doExecutePreparedStatement(SQLServerPreparedStatement.java:390)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement$PrepStmtExecCmd.doExecute(SQLServerPreparedStatement.java:340)
+	at com.microsoft.sqlserver.jdbc.TDSCommand.execute(IOBuffer.java:4575)
+	at com.microsoft.sqlserver.jdbc.SQLServerConnection.executeCommand(SQLServerConnection.java:1400)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeCommand(SQLServerStatement.java:179)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeStatement(SQLServerStatement.java:154)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.executeQuery(SQLServerPreparedStatement.java:283)
+	at org.apache.tomcat.dbcp.dbcp.DelegatingPreparedStatement.executeQuery(DelegatingPreparedStatement.java:96)
+	at org.apache.tomcat.dbcp.dbcp.DelegatingPreparedStatement.executeQuery(DelegatingPreparedStatement.java:96)
+	at com.menyi.aio.web.report.ReportDataMgt$12$1.execute(ReportDataMgt.java:585)
+	at org.hibernate.impl.SessionImpl.doWork(SessionImpl.java:1850)
+	at com.menyi.aio.web.report.ReportDataMgt$12.exec(ReportDataMgt.java:553)
+	at com.dbfactory.hibernate.DBUtil.execute(DBUtil.java:364)
+	at com.menyi.aio.web.report.ReportDataMgt.getReportData(ReportDataMgt.java:551)
+	at com.menyi.aio.web.alert.AlertCenterMgt.showData(AlertCenterMgt.java:933)
+	at com.menyi.aio.web.alert.AlertCenterMgt.queryAlertTotals(AlertCenterMgt.java:177)
+	at com.menyi.web.util.TimingMsgThread.run(TimingMsgThread.java:44)
+[DEBUG] 2017-12-06 22:11:12,718 Line:5227 GlobalsTool.js 生成js 时间187:/js/gen/login.vjs_zh_CN.js
+ [DEBUG] 2017-12-06 22:11:12,799 Line:88 CommonServlet.service 请求地址：/CommonServlet?operation=qrcodeDownload
+ [DEBUG] 2017-12-06 22:11:12,799 Line:99 CommonServlet.service 操作人:;请求数据：operation=[qrcodeDownload,];
+ [DEBUG] 2017-12-06 22:11:13,174 Line:135 BaseAction.execute 请求地址：/loginAction.do?operation=15
+ [DEBUG] 2017-12-06 22:11:13,174 Line:146 BaseAction.execute 操作人:;请求数据：operation=[15,];
+ [DEBUG] 2017-12-06 22:11:14,173 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=valpwd&time=1512569474158
+ [DEBUG] 2017-12-06 22:11:14,173 Line:163 UtilServlet.service 操作人:;请求数据：operation=[valpwd,];time=[1512569474158,];
+ [DEBUG] 2017-12-06 22:12:06,090 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [ERROR] 2017-12-06 22:12:07,287 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:12:07,950 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:12:09,778 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [INFO ] 2017-12-06 22:12:48,597 Line:148 SAFE 备份任务执行成功，时间2017-12-06 22:12:48
+ [ERROR] 2017-12-06 22:13:07,302 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:13:10,849 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:13:11,405 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:14:07,321 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:14:12,332 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:14:12,867 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:15:07,342 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:15:14,670 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:15:15,722 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:16:07,363 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [DEBUG] 2017-12-06 22:16:08,069 Line:549 ReportDataMgt.getReportData SQL=select      tblSalesOrder.BillDate as startDate,     tblSalesOrder.BillDate as endDate,     tblSalesOrder.BillNo as BillNo,     tblSalesOrder.BillDate as BillDate,     tblProject.ProjectName as ProjectName,     tblGoods.classCode as GoodsCode,     tblCompany.ComNumber as ComNumber,     tblCompany.ComFullName as ComFullName,     tblDepartment.DeptFullName as DeptFullName,     tblEmployee.EmpFullName as EmpFullName,     tblEmployee2.EmpFullName as createBy,     tblGoods.GoodsNumber as GoodsNumber,     tblGoods.GoodsFullName as GoodsFullName,     tblGoods.GoodsSpec as GoodsSpec,     tblGoods.BaseUnit as BaseUnit,     tblGoods.BarCode as BarCode,     tblSalesOrderDet.BatchNo as BatchNo,     tblSalesOrderDet.Inch as Inch,     tblSalesOrderDet.Hue as Hue,     tblSalesOrderDet.yearNO as yearNO,     tblSalesOrderDet.ProDate as ProDate,     tblSalesOrderDet.Availably as Availably,     tblSalesOrderDet.SendDate as SendDate,     tblSalesOrderDet.Qty as Qty,     tblSalesOrderDet.Price as Price,     tblSalesOrderDet.Amount as Amount,     (select Top 1 lastPrice from tblStocks a where a.GoodsCode=tblSalesOrderDet.GoodsCode and tblSalesOrderDet.PresentSampleType!=0) as lastPrice,     tblSalesOrderDet.Qty*(select Top 1 lastPrice from tblStocks a where a.GoodsCode=tblSalesOrderDet.GoodsCode and tblSalesOrderDet.PresentSampleType!=0) as lastAmount,     tblSalesOrderDet.SalesGoodsType as SalesGoodsType,     tblSalesOrderDet.SecUnit as SecName,     tblSalesOrderDet.UnitIntQty as SecUnitQty,     tblSalesOrderDet.UnitBaseQty as SecBaseQty,     tblSalesOrderDet.UnitQty as UnitQty,     tblSalesOrderDet.UnitPrice as UnitPrice,     tblSalesOrderDet.Discount as Discount,     tblSalesOrderDet.DisPrice as DisPrice,     tblSalesOrderDet.DisBackAmt as DisBackAmt,     tblSalesOrderDet.DisAmount as DisAmount,     tblSalesOrder.Tax as Tax,     tblSalesOrderDet.TaxPrice as TaxPrice,     tblSalesOrderDet.TaxAmount as TaxAmount,     tblSalesOrderDet.CoTaxAmt as CoTaxAmt,     tblCurrency.CurrencyName as CurrencyName,     tblSalesOrder.CurrencyRate as CurrencyRate,     tblSalesOrderDet.CurPrice as CurPrice,     tblSalesOrderDet.CurAmount as CurAmount,     tblSalesOrderDet.AccountingPrice as AccountingPrice,     tblSalesOrder.hasBuyOrder as hasBuyOrder,     tblSalesOrderDet.MRPQty as MRPQty,     tblSalesOrderDet.WorkOrderQty as WorkOrderQty,     (select sum(isnull(k.InQty,0)) from tblBuyOrderDet k where k.SourceID=tblSalesOrderDet.id) as inQty,     tblSalesOrderDet.OutQty as OutQty,     case when tblSalesOrderDet.NotOutQty <=0 or tblSalesOrder.statusId!=0 then 0 else tblSalesOrderDet.NotOutQty end as NotOutQty,     tblSalesOrderDet.BackQty as BackQty,     tblSalesOrder.id as id,     tblSalesOrderDet.SCompanyID as SCompanyID,     tblSalesOrderDet.FinishStatus as FinishStatus,     tblSalesOrderDet.PresentSampleType as PresentSampleType,     tblSalesOrder.Remark as Remark,     tblSalesOrderDet.Remark as ReRemark,     case when (tblSalesOrderDet.Qty-tblSalesOrderDet.OutQty) <0 then (-1)*(tblSalesOrderDet.Qty-tblSalesOrderDet.OutQty) else 0 end as OverOutQty,     viewcompanytotal.ComFullName as ComFullName1,     tblSalesOrderDet.taxPrice-tblGoods.PreBuyPrice as profitPrice,     tblSalesOrderDet.Qty*(tblSalesOrderDet.taxPrice-tblGoods.PreBuyPrice) as profitAmt,     tblGoods.classCode+'#;#0#;##;#' as hideCode,     tblSalesOrder.workFlowNodeName as workFlowNodeName,     tblSalesOrder.OldGiftId as OldGiftId from tblSalesOrderDet    left join tblGoods on tblGoods.ClassCode=tblSalesOrderDet.GoodsCode   left join viewcompanytotal on tblGoods.CompanyCode=viewcompanytotal.classCode   left join tblSalesOrder on tblSalesOrderDet.f_ref=tblSalesOrder.id   left join tblStock on tblStock.classCode=tblSalesOrderDet.StockCode   left join tblCurrency on tblCurrency.id=tblSalesOrder.Currency   left join tblEmployee on tblEmployee.id = tblSalesOrder.EmployeeID   left join tblEmployee as tblEmployee2 on tblEmployee2.id = tblSalesOrder.createBy   left join tblCompany on tblCompany.classCode = tblSalesOrder.CompanyCode   left join tblDepartment on tblDepartment.classCode = tblSalesOrder.DepartmentCode left join tblProject on tblSalesOrder.ProjectCode=tblProject.id  where 1=1        and (tblSalesOrder.BillDate >= '2017-12-01')                                                                                                                                                                 and (tblSalesOrder.workFlowNodeName ='finish')         
+ [DEBUG] 2017-12-06 22:16:08,099 Line:690 通过SQL读原始数据：28
+ [DEBUG] 2017-12-06 22:16:08,100 Line:1392 整理数据：0
+ [ERROR] 2017-12-06 22:16:16,595 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:16:17,221 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:17:07,378 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:17:18,462 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:17:19,179 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:18:07,390 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:18:20,075 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:18:20,564 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:19:07,417 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:19:21,508 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:19:21,964 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:20:07,443 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:20:22,774 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:20:23,949 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:21:07,460 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [DEBUG] 2017-12-06 22:21:08,135 Line:549 ReportDataMgt.getReportData SQL=select      tblSalesOrder.BillDate as startDate,     tblSalesOrder.BillDate as endDate,     tblSalesOrder.BillNo as BillNo,     tblSalesOrder.BillDate as BillDate,     tblProject.ProjectName as ProjectName,     tblGoods.classCode as GoodsCode,     tblCompany.ComNumber as ComNumber,     tblCompany.ComFullName as ComFullName,     tblDepartment.DeptFullName as DeptFullName,     tblEmployee.EmpFullName as EmpFullName,     tblEmployee2.EmpFullName as createBy,     tblGoods.GoodsNumber as GoodsNumber,     tblGoods.GoodsFullName as GoodsFullName,     tblGoods.GoodsSpec as GoodsSpec,     tblGoods.BaseUnit as BaseUnit,     tblGoods.BarCode as BarCode,     tblSalesOrderDet.BatchNo as BatchNo,     tblSalesOrderDet.Inch as Inch,     tblSalesOrderDet.Hue as Hue,     tblSalesOrderDet.yearNO as yearNO,     tblSalesOrderDet.ProDate as ProDate,     tblSalesOrderDet.Availably as Availably,     tblSalesOrderDet.SendDate as SendDate,     tblSalesOrderDet.Qty as Qty,     tblSalesOrderDet.Price as Price,     tblSalesOrderDet.Amount as Amount,     (select Top 1 lastPrice from tblStocks a where a.GoodsCode=tblSalesOrderDet.GoodsCode and tblSalesOrderDet.PresentSampleType!=0) as lastPrice,     tblSalesOrderDet.Qty*(select Top 1 lastPrice from tblStocks a where a.GoodsCode=tblSalesOrderDet.GoodsCode and tblSalesOrderDet.PresentSampleType!=0) as lastAmount,     tblSalesOrderDet.SalesGoodsType as SalesGoodsType,     tblSalesOrderDet.SecUnit as SecName,     tblSalesOrderDet.UnitIntQty as SecUnitQty,     tblSalesOrderDet.UnitBaseQty as SecBaseQty,     tblSalesOrderDet.UnitQty as UnitQty,     tblSalesOrderDet.UnitPrice as UnitPrice,     tblSalesOrderDet.Discount as Discount,     tblSalesOrderDet.DisPrice as DisPrice,     tblSalesOrderDet.DisBackAmt as DisBackAmt,     tblSalesOrderDet.DisAmount as DisAmount,     tblSalesOrder.Tax as Tax,     tblSalesOrderDet.TaxPrice as TaxPrice,     tblSalesOrderDet.TaxAmount as TaxAmount,     tblSalesOrderDet.CoTaxAmt as CoTaxAmt,     tblCurrency.CurrencyName as CurrencyName,     tblSalesOrder.CurrencyRate as CurrencyRate,     tblSalesOrderDet.CurPrice as CurPrice,     tblSalesOrderDet.CurAmount as CurAmount,     tblSalesOrderDet.AccountingPrice as AccountingPrice,     tblSalesOrder.hasBuyOrder as hasBuyOrder,     tblSalesOrderDet.MRPQty as MRPQty,     tblSalesOrderDet.WorkOrderQty as WorkOrderQty,     (select sum(isnull(k.InQty,0)) from tblBuyOrderDet k where k.SourceID=tblSalesOrderDet.id) as inQty,     tblSalesOrderDet.OutQty as OutQty,     case when tblSalesOrderDet.NotOutQty <=0 or tblSalesOrder.statusId!=0 then 0 else tblSalesOrderDet.NotOutQty end as NotOutQty,     tblSalesOrderDet.BackQty as BackQty,     tblSalesOrder.id as id,     tblSalesOrderDet.SCompanyID as SCompanyID,     tblSalesOrderDet.FinishStatus as FinishStatus,     tblSalesOrderDet.PresentSampleType as PresentSampleType,     tblSalesOrder.Remark as Remark,     tblSalesOrderDet.Remark as ReRemark,     case when (tblSalesOrderDet.Qty-tblSalesOrderDet.OutQty) <0 then (-1)*(tblSalesOrderDet.Qty-tblSalesOrderDet.OutQty) else 0 end as OverOutQty,     viewcompanytotal.ComFullName as ComFullName1,     tblSalesOrderDet.taxPrice-tblGoods.PreBuyPrice as profitPrice,     tblSalesOrderDet.Qty*(tblSalesOrderDet.taxPrice-tblGoods.PreBuyPrice) as profitAmt,     tblGoods.classCode+'#;#0#;##;#' as hideCode,     tblSalesOrder.workFlowNodeName as workFlowNodeName,     tblSalesOrder.OldGiftId as OldGiftId from tblSalesOrderDet    left join tblGoods on tblGoods.ClassCode=tblSalesOrderDet.GoodsCode   left join viewcompanytotal on tblGoods.CompanyCode=viewcompanytotal.classCode   left join tblSalesOrder on tblSalesOrderDet.f_ref=tblSalesOrder.id   left join tblStock on tblStock.classCode=tblSalesOrderDet.StockCode   left join tblCurrency on tblCurrency.id=tblSalesOrder.Currency   left join tblEmployee on tblEmployee.id = tblSalesOrder.EmployeeID   left join tblEmployee as tblEmployee2 on tblEmployee2.id = tblSalesOrder.createBy   left join tblCompany on tblCompany.classCode = tblSalesOrder.CompanyCode   left join tblDepartment on tblDepartment.classCode = tblSalesOrder.DepartmentCode left join tblProject on tblSalesOrder.ProjectCode=tblProject.id  where 1=1        and (tblSalesOrder.BillDate >= '2017-12-01')                                                                                                                                                                 and (tblSalesOrder.workFlowNodeName ='finish')         
+ [DEBUG] 2017-12-06 22:21:08,162 Line:690 通过SQL读原始数据：27
+ [DEBUG] 2017-12-06 22:21:08,163 Line:1392 整理数据：0
+ [ERROR] 2017-12-06 22:21:24,808 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:21:25,275 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:22:07,483 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:22:26,147 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:22:26,595 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:23:07,508 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:23:27,411 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:23:27,901 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:24:07,534 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:24:29,215 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:24:29,685 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:25:07,555 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:25:30,510 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:25:30,997 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:26:07,571 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:26:31,815 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:26:32,266 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [DEBUG] 2017-12-06 22:27:02,813 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=getUserInfo&name=admin&time=1512570422809
+ [DEBUG] 2017-12-06 22:27:02,813 Line:163 UtilServlet.service 操作人:;请求数据：operation=[getUserInfo,];name=[admin,];time=[1512570422809,];
+ [DEBUG] 2017-12-06 22:27:02,882 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=sunCompany&name=admin&time=1512570422880
+ [DEBUG] 2017-12-06 22:27:02,883 Line:163 UtilServlet.service 操作人:;请求数据：operation=[sunCompany,];name=[admin,];time=[1512570422880,];
+ [DEBUG] 2017-12-06 22:27:02,957 Line:135 BaseAction.execute 请求地址：/loginAction.do
+ [DEBUG] 2017-12-06 22:27:02,957 Line:146 BaseAction.execute 操作人:;请求数据：org.apache.struts.taglib.html.TOKEN=[,];NOTTOKEN=[true,];operation=[10,];ukId=[,];strM1=[,];strM2=[,];clientKey=[,];random=[,];screenWidth=[1263,];sunCompany=[1,];style=[style1,];system=[new,];loc=[zh_CN,];name=[admin,];password=[4bb014178122135956636fc13eb8033c,];
+ [DEBUG] 2017-12-06 22:27:03,057 Line:2987 select count(*) from tblSunCompanys a where a.classCode like '00001_____%'
+ [DEBUG] 2017-12-06 22:27:03,080 Line:530 select AccYear,AccOverYear from  tblAccPeriod group by Accyear,AccOverYear
+ [DEBUG] 2017-12-06 22:27:03,263 Line:135 BaseAction.execute 请求地址：/AIO.do
+ [DEBUG] 2017-12-06 22:27:03,264 Line:146 BaseAction.execute 操作人:admin;请求数据：
+ [DEBUG] 2017-12-06 22:27:03,384 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2017-12-06 22:27:03,937 Line:5227 GlobalsTool.js 生成js 时间71:/js/gen/body2.vjs_zh_CN.js
+ [DEBUG] 2017-12-06 22:27:04,229 Line:135 BaseAction.execute 请求地址：/newMenu.do?keyId=28141812_0811271603291400086&name=%E6%88%91%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8F%B0&operation=0&winCurIndex=0
+ [DEBUG] 2017-12-06 22:27:04,229 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=1&loadMenu=true
+ [DEBUG] 2017-12-06 22:27:04,229 Line:146 BaseAction.execute 操作人:admin;请求数据：keyId=[28141812_0811271603291400086,];name=[???????·??????°,];operation=[0,];winCurIndex=[0,];
+ [DEBUG] 2017-12-06 22:27:04,230 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[1,];loadMenu=[true,];
+ [DEBUG] 2017-12-06 22:27:04,230 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2017-12-06 22:27:04,250 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=2&loadMenu=true
+ [DEBUG] 2017-12-06 22:27:04,251 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[2,];loadMenu=[true,];
+ [DEBUG] 2017-12-06 22:27:04,252 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2017-12-06 22:27:04,273 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=3&loadMenu=true
+ [DEBUG] 2017-12-06 22:27:04,274 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[3,];loadMenu=[true,];
+ [DEBUG] 2017-12-06 22:27:04,275 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2017-12-06 22:27:04,297 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=0&loadMenu=true
+ [DEBUG] 2017-12-06 22:27:04,297 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[0,];loadMenu=[true,];
+ [DEBUG] 2017-12-06 22:27:04,299 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [ERROR] 2017-12-06 22:27:07,586 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [DEBUG] 2017-12-06 22:27:13,040 Line:135 BaseAction.execute 请求地址：/AdvanceAction.do?src=menu&winCurIndex=1
+ [DEBUG] 2017-12-06 22:27:13,041 Line:146 BaseAction.execute 操作人:admin;请求数据：src=[menu,];winCurIndex=[1,];
+ [DEBUG] 2017-12-06 22:27:13,041 Line:215 ---------->SET Page 1 DEFAULT URL = /AdvanceAction.do
+ [DEBUG] 2017-12-06 22:27:14,341 Line:135 BaseAction.execute 请求地址：/AdvanceAction.do?optype=index
+ [DEBUG] 2017-12-06 22:27:14,342 Line:146 BaseAction.execute 操作人:admin;请求数据：optype=[index,];
+ [DEBUG] 2017-12-06 22:27:16,011 Line:135 BaseAction.execute 请求地址：/CustomQueryAction.do?src=menu&winCurIndex=2
+ [DEBUG] 2017-12-06 22:27:16,011 Line:146 BaseAction.execute 操作人:admin;请求数据：src=[menu,];winCurIndex=[2,];
+ [DEBUG] 2017-12-06 22:27:16,012 Line:215 ---------->SET Page 2 DEFAULT URL = /CustomQueryAction.do
+ [ERROR] 2017-12-06 22:27:33,108 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:27:33,623 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [DEBUG] 2017-12-06 22:28:01,351 Line:135 BaseAction.execute 请求地址：/CustomQueryAction.do?src=menu&winCurIndex=3
+ [DEBUG] 2017-12-06 22:28:01,351 Line:146 BaseAction.execute 操作人:admin;请求数据：src=[menu,];winCurIndex=[3,];
+ [DEBUG] 2017-12-06 22:28:01,352 Line:215 ---------->SET Page 3 DEFAULT URL = /CustomQueryAction.do
+ [ERROR] 2017-12-06 22:28:07,594 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:28:34,382 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:28:34,869 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:29:07,605 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:29:35,683 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:29:36,194 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:30:07,622 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:30:37,006 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:30:37,827 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:31:07,651 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:31:38,700 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:31:39,178 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:32:07,671 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:32:40,001 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:32:40,454 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:33:07,691 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:33:41,240 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:33:41,709 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:34:07,711 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:34:42,536 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:34:43,009 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:35:07,730 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:35:43,827 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:35:44,306 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:36:07,750 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:36:45,158 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:36:45,627 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:37:07,769 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:37:46,508 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:37:46,981 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:38:07,788 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:38:47,966 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:38:48,450 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:39:07,811 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:39:49,331 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:39:49,815 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:40:07,827 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:40:50,631 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:40:51,077 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:41:07,855 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:41:51,935 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:41:52,361 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:42:07,874 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [DEBUG] 2017-12-06 22:42:52,389 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [ERROR] 2017-12-06 22:42:53,517 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:42:54,001 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:43:07,893 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:43:54,802 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:43:55,245 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:44:07,912 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:44:56,072 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:44:56,556 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:45:07,932 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:45:57,435 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:45:57,889 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:46:07,952 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:46:58,721 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:46:59,202 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:47:07,972 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:48:00,037 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:48:00,479 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:48:07,991 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:49:01,403 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:49:01,841 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:49:08,009 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:50:02,674 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:50:03,155 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:50:08,034 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:51:03,975 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:51:04,442 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:51:08,056 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:52:05,307 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:52:05,760 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:52:08,081 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ [ERROR] 2017-12-06 22:53:06,608 Line:68 -----------PopSelectConfig parseFile D:\Project\HFtomcat\tomcat7\bin\..\..\config_v7\popupSelect\QuoteMany\popuptblSaleReceive.xml error----------------
+ java.lang.Exception: 弹出窗popuptblSaleReceive复合字段：isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)未设置asName!!!!!
+	at com.menyi.aio.web.customize.PopupSelectBean.parse(PopupSelectBean.java:371)
+	at com.menyi.web.util.PopSelectConfig.parse(PopSelectConfig.java:63)
+	at com.menyi.web.util.PopSelectConfig.parseConfig(PopSelectConfig.java:38)
+	at com.menyi.web.util.InitMenData.initConfigFile(InitMenData.java:3881)
+	at com.menyi.web.util.ConfigRefresh.run(ConfigRefresh.java:192)
+[ERROR] 2017-12-06 22:53:07,061 Line:3882 --------Refresh PopSelectConfig Failture---------------
+ [ERROR] 2017-12-06 22:53:08,109 Line:152 TaskMgt Define Sql Not Exist :Name = getCallLogTask
+ 

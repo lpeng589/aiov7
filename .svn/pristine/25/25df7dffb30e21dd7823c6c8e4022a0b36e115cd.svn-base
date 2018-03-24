@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectProviderIn" belongTableName="tblCompany">
+     <table>tblCompany</table>
+     <forwardModel>tblCompany&amp;moduleType=1&amp;ClientFlag=1</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblCompany.classCode f1,
+      tblCompany.ComNumber f2,
+      tblCompany.ComFullName f3,
+      tblCompany.ComFullNamePYM f4,
+      case isCatalog when 1 then '-99999999' else tblCompany.PrePayTotalRemain end f5,
+      case isCatalog when 1 then '-99999999' else tblCompany.PayTotalRemain end f6
+from tblCompany 
+     </defineSQL>
+     <classCode   classSysType="Supplier">tblCompany.classCode</classCode>
+     <condition>(tblCompany.ClientFlag=1 or tblCompany.ClientFlag=3)</condition>
+	  <remark>往来转账转入单位</remark>
+     <changeCond>(tblCompany.statusId!='-1')</changeCond>
+     <orderBy>tblCompany.ComNumber</orderBy>
+     <displayFields>
+          <field name="tblCompany.ComNumber" asName="SelectProviderIn.ComNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"/>
+          <field name="tblCompany.ComFullName" asName="SelectProviderIn.ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.InCompanyCode" />
+          <field name="tblCompany.ComFullNamePYM" asName="SelectProviderIn.ComFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+          <field name="case isCatalog when 1 then '-99999999' else tblCompany.PrePayTotalRemain end" asName="SelectProviderIn.PrePayTotalRemain" width="100" searchType="scope" parentDisplay="false" display="ViewCompanyTotal.PrePayTotalRemain" />
+          <field name="case isCatalog when 1 then '-99999999' else tblCompany.PayTotalRemain end" asName="SelectProviderIn.PayTotalRemain" width="100" searchType="scope" parentDisplay="false" display="ViewCompanyTotal.PayTotalRemain" />
+     </displayFields>
+     <saveFields>
+          <field name="tblCompany.classCode" parentName="@TABLENAME.InCompanyCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

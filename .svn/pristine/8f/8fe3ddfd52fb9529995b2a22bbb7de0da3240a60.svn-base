@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+
+<!--=========================进销存预警================================================-->
+
+		<!--当前仓库可用库存不足时给与采购预警-->
+<define name="beforehandDepotClew">
+<sql type="condition" marker="GoodsNumber">select  distinct
+    tblGoods.GoodsNumber as GoodsNumber,
+	tblStock.StockFullName as StockFullName,
+    tblGoods.GoodsFullName as GoodsFullName,
+    tblSalesOrder.BillNo as BillNo,
+    tblEmployee.EmpFullName as EmpFullName,
+	tblSalesOrder.CreateBy as CreateBy,
+	tblSalesOrder.SCompanyID as SCompanyID,
+	tblSalesOrder.id as kid
+from  tblSalesOrderDet
+join tblSalesOrder on tblSalesOrder.id=tblSalesOrderDet.f_ref
+left join tblstocks on tblstocks.stockCode=tblSalesOrder.stockcode
+ and tblSalesOrderDet.Goodscode=tblstocks.GoodsCode
+left join tblstock on tblstock.classCode=tblSalesOrder.StockCode
+left join tblGoods on tblGoods.classcode=tblSalesOrderDet.Goodscode
+left join tblEmployee on tblEmployee.id=tblSalesOrder.employeeID
+left join tblVirtualStock on tblVirtualStock.GoodsCode=tblSalesOrderDet.GoodsCode
+ and tblSalesOrder.stockCode=tblVirtualStock.stockCode
+ group by  tblGoods.GoodsNumber,tblstock.StockFullName, tblGoods.GoodsFullName,tblSalesOrder.BillNo,tblSalesOrder.id,tblSalesOrder.BillDate,tblSalesOrderDet.GoodsCode,tblSalesOrder.StockCode,tblEmployee.EmpFullName,tblSalesOrder.CreateBy,tblSalesOrder.SCompanyID
+ having  isnull(sum(tblSalesOrderDet.Qty),0)&gt;isnull(sum(tblstocks.lastQty),0)-isnull(sum(tblVirtualStock.SaleOrderQty),0)+isnull(sum(tblVirtualStock.BuyOrderQty),0)
+</sql>
+<!--
+		<sql type="condition" marker="GoodsNumber">select  distinct
+    ViewtblStocksChild.GoodsNumber as GoodsNumber,
+	ViewtblStocksChild.StockFullName as StockFullName,
+    ViewtblStocksChild.GoodsFullName as GoodsFullName,
+    tblSalesOrder.BillNo as BillNo,
+    tblEmployee.EmpFullName as EmpFullName,
+	tblSalesOrder.CreateBy as CreateBy,
+	tblSalesOrder.SCompanyID as SCompanyID,
+	tblSalesOrder.id as kid
+from  ViewtblStocksChild
+left join tblVirtualStock on tblVirtualStock.GoodsCode=ViewtblStocksChild.classCode
+ and tblVirtualStock.StockCode=ViewtblStocksChild.StockCode
+left join tblstock on tblVirtualStock.StockCode=tblstock.classcode
+left join tblGoods on tblGoods.classCode=tblVirtualStock.GoodsCode
+left join tblSalesOrderDet on tblSalesOrderDet.GoodsCode=tblGoods.classCode 
+left join tblSalesOrder on (tblSalesOrderDet.f_ref=tblSalesOrder.id and tblSalesOrder.StockCode=tblstock.classcode )
+left join tblEmployee on tblEmployee.id=tblSalesOrder.CreateBy
+inner join tblNotEnoughStock on  ViewtblStocksChild.GoodsNumber=tblNotEnoughStock.GoodsNumber
+and ViewtblStocksChild.StockFullName=tblNotEnoughStock.StockFullName
+and ViewtblStocksChild.GoodsFullName=tblNotEnoughStock.GoodsFullName
+and tblSalesOrder.BillNo=tblNotEnoughStock.BillNo
+where   tblstock.isCatalog=0 and tblGoods.isCatalog=0 and  (tblGoods.isCataLog=0)
+and (ViewtblStocksChild.LastQty-tblVirtualStock.SaleOrderQty+tblVirtualStock.BuyOrderQty )&lt;0 
+and  tblSalesOrder.BillNo is not Null
+</sql>-->
+		<sql type="template"><a href=" javascript:mdiwin('UserFunctionAction.do?tableName=tblSalesOrder&amp;keyId=@SqlReturn:kid &amp;operation=5','res{Buy.Alert.Stock}','@alertId')">@SqlReturn:EmpFullName res{Sales.Alert.BillNo}@SqlReturn:BillNo res{Buy.Alert.NoStock}</a></sql>
+	</define>
+		<!--采购订单引用销售订单，对应有入库后提醒下销售订单的销售员-->
+<define name="InstockReminderSales">
+		<sql type="condition" marker="Kid">select tblSalesOrder.id as Kid,tblBuyInstock.BillNo as InBillNO,
+tblSalesOrder.BillNo as SaleBillNO,tblSalesOrder.CreateBy as CreateBy,tblEmployee.EmpFullName as EmpFullName,
+tblSalesOrder.SCompanyID as SCompanyID from tblBuyInstock  
+join tblBuyOrder on tblBuyOrder.id=tblBuyInStock.BuyOrderID and tblBuyOrder.workFlowNodeName != 'draft'
+join tblSalesOrder on tblSalesOrder.id=tblBuyOrder.SalesOrderID and tblBuyOrder.workFlowNodeName != 'draft'
+left join tblEmployee on tblEmployee.id=tblSalesOrder.CreateBy
+where tblSalesOrder.OrderStatus=0 and tblBuyInstock.workFlowNodeName != 'draft' 
+</sql>
+		<sql type="template"><a href=" javascript:mdiwin('UserFunctionAction.do?tableName=tblSalesOrder&amp;keyId=@SqlReturn:Kid &amp;operation=5','res{Sale.Alert.Cue}','@alertId')">@SqlReturn:EmpFullName res{Sales.Alert.BillNo}@SqlReturn:SaleBillNO res{Sale.Alert.InBillNo}@SqlReturn:InBillNO </a></sql>
+	</define>
+
+	<!--应收预警
+	<define name="CompanyReceive">	
+		<sql type="condition" marker="ComNumbers">select a.ComNumber as ComNumbers,a.ComFullName as ComFullName,cast(a.Credit as decimal(18,2)) as Credit,cast(b.ReceiveTotalRemain-b.PayTotalRemain+b.PrePayTotalRemain-b.PreReceiveTotalRemain as decimal(18,2)) as TotalAmt,a.CreateBy as CreateBy,a.SCompanyID as SCompanyID from tblCompany a left join tblCompanyTotal b on b.CompanyCode=a.classCode where a.isCatalog=0 and a.clientFlag in (2,3) and a.Credit&gt;0 and (b.ReceiveTotalRemain-b.PayTotalRemain+b.PrePayTotalRemain-b.PreReceiveTotalRemain)&gt;0 and (b.ReceiveTotalRemain-b.PayTotalRemain+b.PrePayTotalRemain-b.PreReceiveTotalRemain)&gt;a.Credit and b.Period=(select AccPeriod from tblAccPeriod where AccMonth = Month(getDate()) and AccYear=Year(getDate()))</sql>
+		<sql type="template"><a href=" javascript:mdiwin('ReportDataAction.do?reportNumber=CompanyBala&amp;src=menu&amp;ComNumber=@SqlReturn:ComNumbers&amp;src=menu','查看应收账款','@alertId') ">客户:@SqlReturn:ComFullName 的应收款 @SqlReturn:TotalAmt 元已经超过信用额度 @SqlReturn:Credit 元</a></sql>
+	</define>-->
+		<!--应收金额-->
+	<define name="CompanyReceive">	
+		<sql type="condition" marker="NowDay">select top 1 NowDay,CreateBy,ScompanyID from (select a.ComNumber as ComNumbers,a.ComFullName as ComFullName,cast(b.ReceiveTotalRemain as decimal(18,2)) as TotalAmt,substring(convert(varchar(1000),getdate(),120),1,10) as NowDay,a.CreateBy as CreateBy,a.SCompanyID as SCompanyID from tblCompany a left join tblCompanyTotal b on b.CompanyCode=a.classCode where a.isCatalog=0 and a.clientFlag in (2,3) and (b.ReceiveTotalRemain)&gt; @UseParam:) m order by NowDay</sql>
+	<sql type="template"><a href=" javascript:mdiwin('ReportDataAction.do?reportNumber=ReportCompanyReceiveAlter&amp;BillDate=@SqlReturn:NowDay&amp;LinkType=@URL:','res{CompanyReceive.Alert.Query}','@alertId') "> res{CompanyReceive.Alert.exist} @SqlReturn:TotalAmt </a></sql>
+	</define>
+	<!--应收天数-->
+	<define name="ReceiveQty">	
+		<sql type="condition" marker="BillNo">select top 1 BillNo,cast(NeedReturnAmt as Numeric(30,4)) as NeedAmt ,BillDate,ComFullName,DATEDIFF(d,BillDate,getdate()) as Day,tblSalesoutStock.id as kid ,tblSalesoutStock.CreateBy as CreateBy,tblSalesoutStock.SCompanyID as SCompanyID  from tblSalesoutStock
+left join tblCompany on tblCompany.classCode=tblSalesoutStock.CompanyCode
+where DATEDIFF (d,BillDate,getdate())&gt;=@UseParam: and NeedReturnAmt &gt;0 and tblSalesoutStock.workFlowNodeName = 'finish' order by BillDate,BillNo</sql>
+<sql type="template"><a href=" javascript:mdiwin('ReportDataAction.do?reportNumber=ReportReceiveQty&amp;src=menu&amp;LinkType=@URL:','res{ReceiveQty.Alert.Cue}','@alertId') "> res{ReceiveQty.Alert.exist} </a></sql>
+	</define>
+	<!--应付预警
+	<define name="CompanyPay">	
+		<sql type="condition" marker="ComNumbers">select a.ComNumber as ComNumbers,a.ComFullName as ComFullName,cast(a.Credit as decimal(18,2)) as Credit,ABS(cast(b.ReceiveTotalRemain-b.PayTotalRemain+b.PrePayTotalRemain-b.PreReceiveTotalRemain as decimal(18,2))) as TotalAmt,a.CreateBy as CreateBy,a.SCompanyID as SCompanyID from tblCompany a left join tblCompanyTotal b on b.CompanyCode=a.classCode where a.isCatalog=0 and a.clientFlag in (1,3) and a.Credit&gt;0 and (b.ReceiveTotalRemain-b.PayTotalRemain+b.PrePayTotalRemain-b.PreReceiveTotalRemain)&lt;0 and ABS(b.ReceiveTotalRemain-b.PayTotalRemain+b.PrePayTotalRemain-b.PreReceiveTotalRemain)&gt;a.Credit and b.Period=(select AccPeriod from tblAccPeriod where AccMonth = Month(getDate()) and AccYear=Year(getDate()))</sql>
+		<sql type="template"><a href=" javascript:mdiwin('ReportDataAction.do?reportNumber=CompanyBala&amp;src=menu&amp;ComNumber=@SqlReturn:ComNumbers&amp;src=menu','查看应付账款','@alertId') ">供应商:@SqlReturn:ComFullName 的应付款 @SqlReturn:TotalAmt 元已经超过信用额度 @SqlReturn:Credit 元</a></sql>
+	</define>-->
+
+<!--应付金额-->
+	<define name="CompanyPay">	
+		<sql type="condition" marker="NowDay">select top 1 NowDay,CreateBy,ScompanyID from (select a.ComNumber as ComNumbers,a.ComFullName as ComFullName,cast(b.PayTotalRemain as decimal(18,2)) as TotalAmt,substring(convert(varchar(1000),getdate(),120),1,10) as NowDay,a.CreateBy as CreateBy,a.SCompanyID as SCompanyID from tblCompany a left join tblCompanyTotal b on b.CompanyCode=a.classCode where a.isCatalog=0 and a.clientFlag in (1,3) and (b.PayTotalRemain)&gt; @UseParam:) m order by NowDay</sql>
+		<sql type="template"><a href=" javascript:mdiwin('ReportDataAction.do?reportNumber=ReportCompanyPayAlter&amp;BillDate=@SqlReturn:NowDay&amp;LinkType=@URL:','res{CompanyPay.Alert.pay}','@alertId') "> res{CompanyPay.Alert.exist} </a></sql>
+	</define>
+	<!--应付天数-->
+	<define name="PayQty">	
+		<sql type="condition" marker="BillNo">select top 1 BillNo,cast(NeedPayAmt as Numeric(30,4)) as NeedPayAmt ,BillDate,ComFullName,DATEDIFF(d,BillDate,getdate()) as Day,tblBuyInStock.id as kid ,tblBuyInStock.CreateBy as CreateBy,tblBuyInStock.SCompanyID as SCompanyID  from tblBuyInStock
+left join tblCompany on tblCompany.classCode=tblBuyInStock.CompanyCode
+where DATEDIFF (d,BillDate,getdate())&gt;=@UseParam: and NeedPayAmt &gt;0 and tblBuyInStock.workFlowNodeName = 'finish' order by BillDate,BillNo</sql>
+<sql type="template"><a href=" javascript:mdiwin('ReportDataAction.do?reportNumber=ReportPayDay&amp;src=menu&amp;LinkType=@URL:','res{PayQty.Alert.cue}','@alertId') "> res{PayQty.Alert.exist} </a></sql>
+	</define>
+	<!--车辆年审提醒,提前10天-->
+	<define name="CarCheck">	
+		<sql type="condition" marker="CarNo"> SELECT CarNo,CarApproveTime,tblCars.CreateBy as CreateBy, tblCars.SCompanyID as SCompanyID FROM tblCars WHERE (CarApproveTime &lt;= DATEADD([day], 10, GETDATE())) </sql>
+		<sql type="template">res{CarCheck.Alert.car}@SqlReturn:CarNo res{CarCheck.Alert.CheckDate}@SqlReturn:CarApproveTime </sql>
+	</define>
+	<!--车辆保险到期提醒,提前10天-->
+	<define name="CarInsure">	
+		<sql type="condition" marker="CarNo"> SELECT CarNo,CarApproveTime,tblCars.CreateBy as CreateBy,tblCars.SCompanyID as SCompanyID FROM tblCars WHERE (CarApproveTime &lt;= DATEADD([day], 10, GETDATE()))</sql>
+		<sql type="template">res{CarCheck.Alert.car}@SqlReturn:CarNo res{CarCheck.Alert.CheckDate}@SqlReturn:CarApproveTime </sql>
+	</define>	
+
+	<!--采购订单到货日期-->
+	<define name="BuyOrderArriveDate">	
+		<sql type="condition" marker="BillNo">select top 1 tblBuyOrder.id as bid,BillNo,ComFullName,GoodsFullName,tblBuyOrder.ArriveDate as AD,tblBuyOrder.CreateBy as CreateBy,tblBuyOrder.SCompanyID as SCompanyID from tblBuyOrder left join tblCompany on tblCompany.classCode=tblBuyOrder.CompanyCode
+left join tblBuyOrderDet on tblBuyOrder.id=tblBuyOrderDet.f_ref
+left join tblGoods on tblGoods.classCode =tblBuyOrderDet.GoodsCode WHERE DATEDIFF(day,convert(varchar(10),tblBuyOrder.ArriveDate,120),getdate())&gt;0 and DATEDIFF(day,convert(varchar(10),tblBuyOrderDet.ArriveDate,120),getdate())&gt;=@UseParam: and OrderStatus !=2 and tblBuyOrder.workFlowNodeName='finish' order by tblBuyOrder.id,BillNo</sql>
+		<sql type="template"><a href=" javascript:mdiwin('ReportDataAction.do?reportNumber=ReportBuyOrderArriveDate&amp;src=menu&amp;LinkType=@URL:','res{BuyOrderArriveDate.Alert.order}','@alertId') "> @SqlReturn:AD res{BuyOrderArriveDate.Alert.Re} @SqlReturn:GoodsFullName res{BuyOrderArriveDate.Alert.Goods} </a></sql>
+	</define>	
+	<!--销售订单的货品发送-->
+	<!--<define name="SalesOrderSendDate">	
+		<sql type="condition" marker="BillNo">select BillNo,ComFullName,SendDate from tblSalesOrder left join tblCompany on tblCompany.classCode=tblSalesOrder.CompanyCode
+ WHERE SendDate = Convert(varchar(10),GETDATE(),120)</sql>
+		<sql type="template">@SqlReturn:ComFullName 订单编号为@SqlReturn:BillNo 的货品发送</sql>
+	</define>-->
+	<!--销售订单发货日期
+	<define name="SalesOrderSendDate">	
+		<sql type="condition" marker="sid">select tblSalesOrder.id as sid,BillNo,ComFullName,GoodsFullName,tblSalesOrder.SendDate as SendDate, tblSalesOrder.CreateBy as CreateBy,tblSalesOrder.SCompanyID as SCompanyID from tblSalesOrder left join tblCompany on tblCompany.classCode=tblSalesOrder.CompanyCode left join tblSalesOrderDet on tblSalesOrder.id=tblSalesOrderDet.f_ref
+left join tblGoods on tblGoods.classCode =tblSalesOrderDet.GoodsCode
+ WHERE  DATEDIFF(day,convert(varchar(10),getdate(),120),tblSalesOrder.SendDate)&gt;=0 and DATEDIFF(day,convert(varchar(10),getdate(),120),tblSalesOrder.SendDate)&lt;=@UseParam: and OrderStatus !=2 and tblSalesOrder.workFlowNodeName = 'finish'</sql>
+		<sql type="template"><a href=" javascript:mdiwin('UserFunctionAction.do?tableName=tblSalesOrder&amp;keyId=@SqlReturn:sid&amp;operation=5&amp;LinkType=@URL:','查看销售订单','@alertId') "> @SqlReturn:SendDate 发 @SqlReturn:GoodsFullName 的货 </a></sql>
+	</define>-->
+	
+	<!--销售订单在发货日期到期前N天提醒-->
+	<define name="SalesOrderSendDate">	
+		<sql type="condition" marker="sid">select top 1 tblSalesOrder.id as sid,BillNo,ComFullName,GoodsFullName,tblSalesOrder.SendDate as SendDate, tblSalesOrder.CreateBy as CreateBy,tblSalesOrder.SCompanyID as SCompanyID from tblSalesOrder left join tblCompany on tblCompany.classCode=tblSalesOrder.CompanyCode left join tblSalesOrderDet on tblSalesOrder.id=tblSalesOrderDet.f_ref
+left join tblGoods on tblGoods.classCode =tblSalesOrderDet.GoodsCode
+ WHERE   DATEDIFF(day,tblSalesOrderDet.SendDate,convert(varchar(10),getdate(),120)) &gt;= @UseParam: and OrderStatus !=2 and tblSalesOrder.workFlowNodeName = 'finish' order by tblSalesOrder.id,BillNo</sql>
+		<sql type="template"><a href=" javascript:mdiwin('ReportDataAction.do?reportNumber=ReportSalesOrderSendDate&amp;src=menu&amp;LinkType=@URL:','res{SalesOrderSendDate.Alert.cue}','@alertId') "> res{SalesOrderSendDate.Alert.exist} </a></sql>
+	</define>	
+
+			<!--销售出库单在收款日期七天后一直提示-->
+	<define name="SalesOutPayDate">	
+		<sql type="condition" marker="BillNo">select BillNo,cast(NeedReturnAmt as Numeric(30,4)) as NeedAmt ,AcceptDate,ComFullName,tblSalesoutStock.id as kid ,tblSalesoutStock.CreateBy as CreateBy,tblSalesoutStock.SCompanyID as SCompanyID  from tblSalesoutStock
+left join tblCompany on tblCompany.classCode=tblSalesoutStock.CompanyCode
+where (convert(datetime,getdate(),120) &gt;= convert(varchar(10),DATEADD(day,7,AcceptDate),120)) and NeedReturnAmt &gt;0  and tblSalesOutStock.workFlowNodeName = 'finish' order by AcceptDate</sql>
+		<sql type="template"><a href=" UserFunctionAction.do?tableName=tblSalesOutStock&amp;keyId=@SqlReturn:kid &amp;operation=5"> @SqlReturn:ComFullName res{SalesOutPayDate.Alert.out} @SqlReturn:BillNo res{SalesOutPayDate.Alert.Re} @SqlReturn:NeedAmt </a></sql>
+	</define>
+	
+	<!--预售单转采购订单的货品已到-->	
+	<define name="SalesOrderInStock">	
+		<sql type="condition" marker="BillNo">select c.id as kid,c.BillNo as BillNo,d.ComFullName as ComFullName,c.CreateBy as CreateBy,c.SCompanyID as SCompanyID from tblBuyInStock a inner join tblBuyOrder b on a.BuyOrderID = b.id inner join tblSalesOrder c on c.id = b.refbillid inner join tblCompany d on c.CompanyCode = d.classCode where a.BillDate = convert(varchar(10),getdate(),120) where and a.workFlowNodeName = 'finish'</sql>
+		<sql type="template"><a href=" UserFunctionAction.do?tableName=tblSalesOrder&amp;keyId=@SqlReturn:kid &amp;operation=5">@SqlReturn:ComFullName res{SalesOrderInStock.Alert.BillNo}@SqlReturn:BillNo res{SalesOrderInStock.Alert.arrive} </a></sql>
+</define>
+
+
+	<!--商品库存低于库存下限-->	
+	<define name="LowerQty">	
+		<sql type="condition" marker="classCode">select tblGoods.GoodsNumber as GoodsNumber,tblGoods.GoodsFullName as GoodsFullName,tblGoods.classCode as classCode,'' as CreateBy,tblStockTotal.SCompanyID as SCompanyID from tblStockTotal left join tblGoods on tblGoods.classCode = tblStockTotal.GoodsCode where 1=1 and (select count(*) from tblGoods where tblGoods.classCode like tblStockTotal.GoodsCode+'_____%')=0 and (tblStockTotal.Qty &lt; tblGoods.lowerQty) and tblGoods.lowerQty &gt;0</sql>
+		<sql type="template"><a href=" ReportDataAction.do?reportNumber=ReportStockDet&amp;src=menu&amp;GoodsNumber=@SqlReturn:GoodsNumber&amp;src=menu">@SqlReturn:GoodsFullName res{LowerQty.Alert.exist} </a></sql>
+	</define>
+	
+	
+		<!--库存下限提醒-->
+	<define name="StockLowerAlert">
+		<sql type="condition" marker="GoodsNumbers">select top 1 GoodsNumbers,GoodsFullName,TotalQty,CreateBy,SCompanyID from (select tblGoods.GoodsNumber as GoodsNumbers,tblGoods.GoodsFullName as GoodsFullName,isNull(cast((sum(tblStockDet.InstoreQty)-sum(tblStockDet.OutstoreQty)) as numeric(18,2)),0) as TotalQty,tblStockDet.SCompanyID as SCompanyID,'' as CreateBy,case when isNull((sum(tblStockDet.InstoreQty)-sum(tblStockDet.OutstoreQty)),0) &lt; tblGoods.lowerQty then 0 else 1 end as UpperOrLower from tblGoods left join tblStockDet on tblGoods.classCode = tblStockDet.GoodsCode where tblGoods.isCatalog=0 and tblGoods.lowerQty!=0 group by tblGoods.GoodsNumber,tblGoods.GoodsFullName,tblStockDet.SCompanyID,tblGoods.lowerQty) a where UpperOrLower =0 order by GoodsNumbers</sql>
+	<sql type="template"><a href=" javascript:mdiwin('ReportDataAction.do?reportNumber=ReportStockLowerAlert&amp;src=menu&amp;LinkType=@URL:','res{StockLowerAlert.Alert.cue}','@alertId') "> res{StockLowerAlert.Alert.exist} </a></sql>
+	</define>
+	
+	
+	<!--库存上限提醒-->
+	<define name="StockUpperAlert">
+		<sql type="condition" marker="GoodsNumbers">select top 1 GoodsNumbers,GoodsFullName,TotalQty,CreateBy,SCompanyID from (select tblGoods.GoodsNumber as GoodsNumbers,tblGoods.GoodsFullName as GoodsFullName,isNull(cast((sum(tblStockDet.InstoreQty)-sum(tblStockDet.OutstoreQty)) as numeric(18,2)),0) as TotalQty,tblStockDet.SCompanyID as SCompanyID,'' as CreateBy,case when isNull((sum(tblStockDet.InstoreQty)-sum(tblStockDet.OutstoreQty)),0) &gt; tblGoods.upperQty then 0 else 1 end as UpperOrLower from tblGoods left join tblStockDet on tblGoods.classCode = tblStockDet.GoodsCode where tblGoods.isCatalog=0 and tblGoods.upperQty!=0 group by tblGoods.GoodsNumber,tblGoods.GoodsFullName,tblStockDet.SCompanyID,tblGoods.upperQty) a where UpperOrLower =0 order by GoodsNumbers</sql>
+	<sql type="template"><a href=" javascript:mdiwin('ReportDataAction.do?reportNumber=ReportStockUpperAlert&amp;src=menu&amp;LinkType=@URL:','res{StockUpperAlert.Alert.cue}','@alertId') "> res{StockUpperAlert.Alert.exist} </a></sql>
+	</define>
+	
+	
+		<!--待审核单据提醒--><!--where checkPerson like  ','+@Sess:UserId+',%'-->
+
+	<define name="pendingAuditing">
+		<sql type="condition" marker="Kid">select tblMyWorkFlow.keyid as Kid,BillType as BillType,tablename as tablename,comFullName as comFullName,'' as CreateBy,tblMyWorkFlow.SCompanyID
+from tblMyWorkFlow 
+left join tblcompany on tblMyWorkFlow.CompanyCode=tblCompany.classCode
+where tblMyWorkFlow.workFlowNodeName !='finish' and tblMyWorkFlow.workFlowNodeName != 'draft'
+</sql>
+	<sql type="template"><a href=" javascript:mdiwin('UserFunctionAction.do?tableName=@SqlReturn:tablename&amp;src=menu&amp;keyId=@SqlReturn:Kid&amp;src=menu&amp;operation=5&amp;LinkType=@URL:','res{pendingAuditing.Alert.bill}','@alertId') "> res{pendingAuditing.Alert.wait} @SqlReturn:BillType - @SqlReturn:comFullName </a></sql>
+	</define>
+				<!--库存报警
+	<define name="StockConfine">	
+		<sql type="condition" marker="kid">select tblgoods.Goodsfullname,tblStockConfine.id as kid,tblLanguage.zh_CN as color,tblstock.stockfullname as stockfullname,sum(cast(tblstocks.lastqty as numeric(18,2))) as lastqty,sum(cast(tblstocks.lasttwoqty as numeric(18,2))) as lasttwoqty,tblStockConfine.CreateBy as CreateBy,tblStockConfine.SCompanyID as SCompanyID
+from tblStockConfine 
+left join tblStockConfinedet on  tblStockConfinedet.f_ref=tblStockConfine.id
+left join tblgoods on tblStockConfinedet.GoodsCode=tblgoods.classcode
+left join tblGoodsOfProp on tblGoodsOfProp.GoodsCode=tblStockConfinedet.GoodsCode and tblGoodsOfProp.propId=(select id from tblGoodsPropInfo where propName='color') 
+left join tblGoodsOfPropDet on tblGoodsOfPropDet.f_ref=tblGoodsOfProp.id and tblGoodsOfPropDet.propItemid=tblStockConfinedet.color
+left join tblLanguage on  tblGoodsOfPropDet.languageId=tblLanguage.id
+left join tblstock on tblstock.classcode=tblStockConfine.stockcode
+left join tblstocks on tblStockConfine.stockcode=tblstocks.stockcode 
+						and tblStockConfinedet.goodscode=tblstocks.goodscode and tblStockConfinedet.color=tblstocks.color 
+where tblStocks.Period=(
+					select Max(a.Period) 
+					from tblStocks as a 
+					where 1=1  
+						and a.SCompanyID=tblStockConfine.SCompanyID 
+						and a.StockCode=tblStockConfine.StockCode
+						and a.GoodsCode=tblStockConfineDet.GoodsCode 
+						and a.color=tblStockConfineDet.color
+					)
+	
+group by tblgoods.Goodsfullname,tblStockConfine.id,tblLanguage.zh_CN,tblstock.stockfullname,tblStockConfine.CreateBy,tblStockConfine.SCompanyID,
+	lowerlimitqty,upperlimitqty,LowerLimitPiece,UpperLimitPiece
+having (sum(tblStocks.lastqty) &lt; lowerlimitqty and lowerlimitqty!=0) or (sum(tblStocks.lastqty) &gt; upperlimitqty and upperlimitqty!=0) or (sum(tblStocks.LastTwoQty) &lt; LowerLimitPiece and LowerLimitPiece!=0) or (sum(tblStocks.LastTwoQty) &gt; UpperLimitPiece and UpperLimitPiece!=0)</sql>
+		<sql type="template"><a href=" UserFunctionAction.do?tableName=tblStockConfine&amp;keyId=@SqlReturn:kid &amp;operation=5"> @SqlReturn:Goodsfullname @SqlReturn:color @SqlReturn:stockfullname 库存为 @SqlReturn:lastqty 米 @SqlReturn:lasttwoqty 条 </a></sql>
+	</define>-->
+		<!--库存报警-->
+	<define name="StockConfine">	
+		<sql type="condition" marker="kid">select tblgoods.Goodsfullname,tblStockConfine.id as kid,tblstock.stockfullname as stockfullname,sum(cast(tblstocks.lastqty as numeric(18,2))) as lastqty,tblStockConfine.CreateBy as CreateBy,tblStockConfine.SCompanyID as SCompanyID
+from tblStockConfine 
+left join tblStockConfinedet on  tblStockConfinedet.f_ref=tblStockConfine.id
+left join tblgoods on tblStockConfinedet.GoodsCode=tblgoods.classcode
+left join tblstock on tblstock.classcode=tblStockConfine.stockcode
+left join tblstocks on tblStockConfine.stockcode=tblstocks.stockcode 
+						and tblStockConfinedet.goodscode=tblstocks.goodscode
+group by tblgoods.Goodsfullname,tblStockConfine.id,tblstock.stockfullname,tblStockConfine.CreateBy,tblStockConfine.SCompanyID,
+	lowerlimitqty,upperlimitqty,LowerLimitPiece,UpperLimitPiece
+having sum(tblStocks.lastqty) &lt; lowerlimitqty or sum(tblStocks.lastqty) &gt; upperlimitqty</sql>
+		<sql type="template"><a href=" UserFunctionAction.do?tableName=tblStockConfine&amp;keyId=@SqlReturn:kid &amp;operation=5"> @SqlReturn:Goodsfullname  @SqlReturn:stockfullname res{StockConfine.Alert.stock} @SqlReturn:lastqty </a></sql>
+	</define>
+	
+	
+
+<!--=========================CRM 预警================================================-->
+
+<!--客户投诉预警-->
+	<define name="Complaints">	
+		<sql type="condition" marker="BillNo">select BillNo,CRMcomplaints.clientname as clientname,ViewCRMCompanyAll.CompanyName as ComFullName,''as CreateBy,CRMcomplaints.SCompanyID as SCompanyID from CRMcomplaints 
+left join ViewCRMCompanyAll on ViewCRMCompanyAll.id=CRMcomplaints.f_brother 
+where datediff(day,CRMcomplaints.createTime,getdate())&lt;5</sql>
+		<sql type="template">res{Complaints.Alert.company} @SqlReturn:ComFullName res{Complaints.Alert.exist} </sql>
+	</define>
+	
+		<!--客户服务预警-->
+	<define name="CRMServiceRet">	
+		<sql type="condition" marker="id">select CRMServiceRet.id,
+datediff(day,CRMServiceRet.createTime,getdate()) as newtime,
+tblCompany.ComFullName as ComFullName,CRMServiceRet.BillNO as BillNO,'' as CreateBy,CRMServiceRet.SCompanyID as SCompanyID from CRMServiceRet left join tblCompany on tblCompany.classCode=CRMServiceRet.clientname where datediff(day,CRMServiceRet.BillDate,getdate())=10 or datediff(day,CRMServiceRet.BillDate,getdate())=30 or datediff(day,CRMServiceRet.BillDate,getdate())=180 
+or datediff(day,CRMServiceRet.BillDate,getdate())=360 or datediff(day,CRMServiceRet.BillDate,getdate())=480 or datediff(day,CRMServiceRet.BillDate,getdate())=720
+</sql>
+		<sql type="template">res{Complaints.Alert.company}@SqlReturn:ComFullName res{CRMServiceRet.Alert.Re}@SqlReturn:newtime res{oa.calendar.day}</sql>
+	</define>
+	
+	<define name="PrintedNoAuditSalseQuote">
+		<sql type="condition" marker="BillNo">
+			select tblSalseQuote.BillNo as BillNo,tblSalseQuote.printCount as printCount,''as CreateBy,SCompanyID from tblSalseQuote where printCount!=0 and workFlowNodeName='notApprove'
+		</sql>
+		<sql type="template">
+			res{PrintedNoAuditSalseQuote.Alert.bill} @SqlReturn:BillNo res{PrintedNoAuditSalseQuote.Alert.print} @SqlReturn:printCount res{PrintedNoAuditSalseQuote.Alert.No}
+		</sql>
+	</define>
+	
+	<define name="PrintedNoAuditSalesOrder">
+		<sql type="condition" marker="BillNo">
+			select BillNo,printCount,''as CreateBy,SCompanyID from tblSalesOrder where printCount!=0 and workFlowNodeName='notApprove'
+		</sql>
+		<sql type="template">
+			res{QuoteInSalesOrder} @SqlReturn:BillNo res{PrintedNoAuditSalseQuote.Alert.print} @SqlReturn:printCount res{PrintedNoAuditSalseQuote.Alert.No}
+		</sql>
+	</define>
+
+	<define name="PrintedNoAuditSalesOutStock">
+		<sql type="condition" marker="BillNo">
+			select BillNo,printCount,''as CreateBy,SCompanyID from tblSalesOutStock where printCount!=0 and workFlowNodeName='notApprove'
+		</sql>
+		<sql type="template">
+			res{QuoteSalesOutStock} @SqlReturn:BillNo res{PrintedNoAuditSalseQuote.Alert.print} @SqlReturn:printCount res{PrintedNoAuditSalseQuote.Alert.No}
+		</sql>
+	</define>
+
+	<define name="PrintedNoAuditSalesReturnStock">
+		<sql type="condition" marker="BillNo">
+			select BillNo,printCount,''as CreateBy,SCompanyID from tblSalesReturnStock where printCount!=0 and workFlowNodeName='notApprove'
+		</sql>
+		<sql type="template">
+			res{moduleFlow.lb.SalesReturnStock} @SqlReturn:BillNo res{PrintedNoAuditSalseQuote.Alert.print} @SqlReturn:printCount res{PrintedNoAuditSalseQuote.Alert.No}
+		</sql>
+	</define>
+	
+	<define name="PrintedNoAuditSaleReceive">
+		<sql type="condition" marker="BillNo">
+			select BillNo,printCount,''as CreateBy,SCompanyID from tblSaleReceive where printCount!=0 and workFlowNodeName='notApprove'
+		</sql>
+		<sql type="template">
+			res{moduleFlow.lb.SaleReceive} @SqlReturn:BillNo res{PrintedNoAuditSalseQuote.Alert.print} @SqlReturn:printCount res{PrintedNoAuditSalseQuote.Alert.No}
+		</sql>
+	</define>
+	
+	<define name="PrintedNoAuditReturnPay">
+		<sql type="condition" marker="BillNo">
+			select BillNo,printCount,''as CreateBy,SCompanyID from tblReturnPay where printCount!=0 and workFlowNodeName='notApprove'
+		</sql>
+		<sql type="template">
+			res{PrintedNoAuditReturnPay.Alert.Bill} @SqlReturn:BillNo res{PrintedNoAuditSalseQuote.Alert.print} @SqlReturn:printCount res{PrintedNoAuditSalseQuote.Alert.No}
+		</sql>
+	</define>
+	
+	
+		<!--销售跟单根据下次跟单时间提前一天提醒，当天再提醒一次！
+	<define name="CRMsaleFollowNextCallTime">	
+		<sql type="condition" marker="FollowNo">select CRMsaleFollow.FollowNo as FollowNo,CRMsaleFollow.id as kid,ViewCRMCompanyAll.CompanyName,CRMsaleFollow.NextCallTime,CRMsaleFollow.Createby as CreateBy,CRMsaleFollow.SCompanyID as SCompanyID from CRMsaleFollow left join ViewCRMCompanyAll on ViewCRMCompanyAll.id=CRMsaleFollow.f_brother
+ WHERE (substring(CRMsaleFollow.NextCallTime,1,10) = convert(varchar(10),DATEADD(day,@UseParam:,getdate()),120)) </sql>
+		<sql type="template"><a href=" javascript:mdiwin('UserFunctionAction.do?tableName=CRMsaleFollow&amp;parentTableName=tblCMWillClient&amp;keyId=@SqlReturn:kid &amp;operation=5','跟进客户','@alertId')">请及时跟进客户：@SqlReturn:CompanyName </a></sql>
+	</define>-->
+		<!--销售跟单提醒-->
+	<define name="CRMsaleFollowNextCallTime">	
+		<sql type="condition" marker="createBys">select distinct ViewCRMCompanyAll.CreateBy as createBys,dbo.SaleFollow(@UseParam:,createBy) as CompanyName,ViewCRMCompanyAll.CreateBy as CreateBy,ViewCRMCompanyAll.SCompanyID
+ as SCompanyID from ViewCRMCompanyAll where len(dbo.SaleFollow(@UseParam:,createBy))&gt;0</sql>
+		<sql type="template"><a title="res{CRMsaleFollowNextCallTime.Alert.Cu} @SqlReturn:CompanyName ">res{CRMsaleFollowNextCallTime.Alert.Cu} @SqlReturn:CompanyName </a></sql>
+	</define>	
+			<!--销售跟单提醒
+	<define name="CRMsaleFollowNextCallTime">
+		<sql type="condition" marker="id">select top 1 id,dbo.SaleFollow(@UseParam:,@Sess:UserId) as CompanyName, ViewCRMCompanyAll.createBy as CreateBy,ViewCRMCompanyAll.SCompanyID
+ as SCompanyID from ViewCRMCompanyAll where len(dbo.SaleFollow(@UseParam:,@Sess:UserId))&gt;0  and createby=@Sess:UserId</sql>
+		<sql type="template"><a title="请及时跟进客户: @SqlReturn:CompanyName ">请及时跟进客户: @SqlReturn:CompanyName </a></sql>
+	</define>	-->
+	
+	
+		<!--职员添加新客户后提醒-->
+	<define name="ClientAdd">	
+		<sql type="condition" marker="id">select top 1 id,dbo.queryAlertCRM() EmpFullName, '' as CreateBy,ViewCRMCompanyAll.SCompanyID as SCompanyID from ViewCRMCompanyAll where len(dbo.queryAlertCRM())&gt;0</sql>
+		<sql type="template"><a title="res{ClientAdd.Alert.Cu} @SqlReturn:EmpFullName ">res{ClientAdd.Alert.Cu} @SqlReturn:EmpFullName </a></sql>
+	</define>		
+	
+	<!--客户回访下次回访时间到期提醒-->
+	<define name="ClientReview">	
+		<sql type="condition" marker="kid">select CRMClientReview.BillNo as BillNo,CRMClientReview.id as kid,ViewCRMCompanyAll.CompanyName,CRMClientReview.NextReviewTime, '' as CreateBy,CRMClientReview.SCompanyID as SCompanyID from CRMClientReview left join ViewCRMCompanyAll on ViewCRMCompanyAll.id=CRMClientReview.f_brother
+ WHERE (substring(CRMClientReview.NextReviewTime,1,10)= convert(varchar(10),DATEADD(day,0,getdate()),120))</sql>
+<sql type="template"><a href=" javascript:mdiwin('UserFunctionAction.do?tableName=CRMClientReview&amp;parentTableName=tblCMWillClient&amp;keyId=@SqlReturn:kid &amp;operation=5','res{ClientReview.Alert.Cu}','@alertId')">res{ClientReview.Alert.Review} @SqlReturn:CompanyName </a></sql>
+	</define>
+
+	<!--销售合同签订保存提醒5天-->
+	<define name="CRMsaleconcract">	
+		<sql type="condition" marker="ContractNo">select ContractNo,CRMsaleconcract.id as kid,ViewCRMCompanyAll.CompanyName as CompanyName,'' as CreateBy,CRMsaleconcract.SCompanyID as SCompanyID from CRMsaleconcract left join ViewCRMCompanyAll on ViewCRMCompanyAll.id=CRMsaleconcract.f_brother where datediff(day,CRMsaleconcract.createTime,getdate())&lt;3</sql>
+		<sql type="template"><a href=" javascript:mdiwin('UserFunctionAction.do?tableName=CRMsaleconcract&amp;parentTableName=tblCMWillClient&amp;keyId=@SqlReturn:kid &amp;operation=5','res{CRMsaleconcract.Alert.Concract}','@alertId')">res{CRMsaleconcract.Alert.Cu} @SqlReturn:CompanyName res{CRMsaleconcract.Alert.Su} </a></sql>
+	</define>
+	
+			<!--成交客户关怀预警
+	<define name="tblCMCompleteClient">	
+		<sql type="condition" marker="id">select tblCMCompleteClient.id,
+datediff(day,tblCMCompleteClient.createTime,getdate()) as newtime,
+tblCMCompleteClient.CompanyName as ComFullName,tblCMCompleteClient.CreateBy as CreateBy,tblCMCompleteClient.SCompanyID as SCompanyID from tblCMCompleteClient where datediff(day,tblCMCompleteClient.createTime,getdate())=7 or datediff(day,tblCMCompleteClient.createTime,getdate())=30 or datediff(day,tblCMCompleteClient.createTime,getdate())=90 
+or datediff(day,tblCMCompleteClient.createTime,getdate())=180 or datediff(day,tblCMCompleteClient.createTime,getdate())=365
+</sql>
+		<sql type="template">成交客户:@SqlReturn:ComFullName 关怀@SqlReturn:newtime 天提醒！</sql>
+	</define>-->
+	
+	
+
+<!--=========================HR 预警================================================-->
+
+
+	
+	<!--HR人事管理职员生日提前7天预警@Locale:HR.Alert.Birthday-->
+	<define name="HRBirthDay">	
+		<sql type="condition" marker="kid">select HREmpinform.id as kid,tblEmployee.EmpFullName as EmpFullName,HREmpinform.BornDate as BornDate,'' as CreateBy,HREmpinform.SCompanyID as SCompanyID from HREmpinform left join tblEmployee on tblEmployee.id=HREmpinform.EmpFullName where DateDIFF(day,getDate(),convert(varchar(5),year(getDate()))+'-'+convert(varchar(2),month(HREmpinform.BornDate))+'-'+convert(varchar(2),day(HREmpinform.BornDate)))&gt;=0 and DateDIFF(day,getDate(),convert(varchar(5),year(getDate()))+'-'+convert(varchar(2),month(HREmpinform.BornDate))+'-'+convert(varchar(2),day(HREmpinform.BornDate)))&lt;=7</sql>
+		<sql type="template">@SqlReturn:EmpFullName res{HRBirthDay.Alert.Bir}(res{HRBirthDay.Alert.Birthday} @SqlReturn:BornDate)</sql>
+	</define>
+	
+	<!-- HR人事管理 劳动合同到期提醒 提前30天 @Locale:HR.Alert.LaborContract-->
+	<define name="ContractTermAlert">
+		<sql type="condition" marker="kid">select a.id as kid,'' as CreateBy,a.SCompanyID as SCompanyID,c.EmpFullName as EmpFullName,a.EndTime as EndTime from HRWorkCntract a left join HREmpinform b on b.id=a.f_brother left join tblEmployee c on c.id=b.EmployeeID where a.EndTime&gt;=(select max(HRWorkCntract.EndTime) from HRWorkCntract left join HREmpinform on HREmpinform.id=HRWorkCntract.f_brother where HREmpinform.EmployeeID=b.EmployeeID) and DateDIFF(day,getDate(),a.EndTime)&gt;=0 and DateDIFF(day,getDate(),a.EndTime)&lt;=30</sql>
+		<sql type="template">@SqlReturn:EmpFullName res{ContractTermAlert.Alert.Fa}(res{ContractTermAlert.Alert.arr} @SqlReturn:EndTime)</sql>
+	</define>
+		
+	<!-- HR人事管理 长期未加薪提醒 提前365天 @Locale:HR.Alert.IncreaseWage-->
+	<define name="RiseWageAlert">
+		<sql type="condition" marker="kid">select a.id as kid,b.EmpFullName as EmpFullName,a.StartTime as StartTime,'' as CreateBy,a.SCompanyID as SCompanyID from HRPayAdjust a left join tblEmployee b on b.id=a.EmpName where a.StartTime&gt;=(select max(StartTime) from HRPayAdjust where EmpName=a.EmpName) and DateDIFF(day,a.StartTime,getDate())&gt;=365 and DateDIFF(day,a.StartTime,getDate())&lt;=395</sql>
+		<sql type="template">@SqlReturn:EmpFullName res{RiseWageAlert.Alert.long}(res{RiseWageAlert.Alert.last}@SqlReturn:StartTime)</sql>
+	</define>
+		
+						<!--VIP卡类型设置有效期到期提醒-->
+	<define name="CardTypeValidity">	
+		<sql type="condition" marker="kid">
+select tblCardType.id as kid,tblCardType.CardType as CardType,tblCardType.CreateBy as CreateBy,
+tblCardType.SCompanyID as SCompanyID,tblCardType.Validity as Validity,tblCardType.DateVarn as DateVarn from tblCardType where tblCardType.DateVarn=datediff(day,tblCardType.CreateTime,tblCardType.Validity)
+</sql>
+<sql type="template"><a href=" javascript:mdiwin('UserFunctionQueryAction.do?tableName=tblCardType&amp;keyId=@SqlReturn:kid &amp;operation=5&amp;LinkType=@URL:','res{CardTypeValidity.Alert.cue}','@alertId')"> res{CardTypeValidity.Alert.Card} @SqlReturn:CardType res{CardTypeValidity.Alert.use} @SqlReturn:Validity res{CardTypeValidity.Alert.have} @SqlReturn:DateVarn res{CardTypeValidity.Alert.day}  </a></sql>
+	</define>
+	
+	
+							<!--VIP会员下次联系时间提醒-->
+	<define name="MemberSupervise">	
+		<sql type="condition" marker="kid">
+select tblMemberSupervise.id as kid,tblMemberSupervise.CreateBy as CreateBy,
+tblMemberSupervise.SCompanyID as SCompanyID,tblMemberSupervise.EName as EName from tblMemberSupervise WHERE (substring(tblMemberSupervise.NextDate,1,10) = convert(varchar(10),DATEADD(day,@UseParam:,getdate()),120))
+</sql>
+<sql type="template"><a href=" javascript:mdiwin('UserFunctionQueryAction.do?tableName=tblMemberSupervise&amp;keyId=@SqlReturn:kid &amp;operation=5&amp;LinkType=@URL:','res{MemberSupervise.Alert.Next}','@alertId')"> res{MemberSupervise.Alert.Lea} @SqlReturn:EName res{MemberSupervise.Alert.Link} </a></sql>
+	</define>
+	
+		<!--VIP卡类型设置有效期到期提醒-->
+	<define name="CardTypeValidity">	
+		<sql type="condition" marker="kid">
+select tblCardType.id as kid,tblCardType.CardType as CardType,tblCardType.CreateBy as CreateBy,
+tblCardType.SCompanyID as SCompanyID,tblCardType.Validity as Validity,tblCardType.DateVarn as DateVarn,tblCardType.classCode as classCode from tblCardType where tblCardType.DateVarn=datediff(day,tblCardType.CreateTime,tblCardType.Validity)
+</sql>
+<sql type="template"><a href=" javascript:mdiwin('UserFunctionQueryAction.do?tableName=tblCardType&amp;keyId=@SqlReturn:kid &amp;operation=5&amp;parentCode=@SqlReturn:classCode&amp;LinkType=@URL:','res{CardTypeValidity.Alert.cue}','@alertId')">  res{CardTypeValidity.Alert.Card} @SqlReturn:CardType res{CardTypeValidity.Alert.use} @SqlReturn:Validity res{CardTypeValidity.Alert.have} @SqlReturn:DateVarn res{CardTypeValidity.Alert.day}  </a></sql>
+	</define>
+		
+	<!--VIP会员下次联系时间提醒-->
+	<define name="MemberSupervise">	
+		<sql type="condition" marker="kid">select tblMemberSupervise.id as kid,tblMemberSupervise.CreateBy as CreateBy,tblMemberSupervise.SCompanyID as SCompanyID,tblMemberSupervise.EName as EName,tblMemberSupervise.classCode as classCode from tblMemberSupervise where DateAdd(Day,-@UseParam:,tblMemberSupervise.NextDate)&lt;=convert(varchar(10),getDate(),21) and tblMemberSupervise.NextDate&gt;=convert(varchar(10),getdate(),120)</sql>
+		<sql type="template"><a href=" javascript:mdiwin('UserFunctionQueryAction.do?tableName=tblMemberSupervise&amp;keyId=@SqlReturn:kid &amp;operation=5&amp;parentCode=@SqlReturn:classCode&amp;LinkType=@URL:','res{Nextremindingtime}','@alertId')"> res{MemberSupervise.Alert.Lea} @SqlReturn:EName res{MemberSupervise.Alert.Link}  </a></sql>
+	</define>
+	
+	<!-- 低于库存下限提醒 -->
+	<define name="LowerStockLimitAlert">	
+		<sql type="condition" marker="kid">select lower(substring(replace(newid(),'-',''),1,28)) as kid,X.SCompanyID,'' as CreateBy,BatchNo,Inch,yearNo,Hue,StockCode,GoodsCode,(select top 1 PropItemName from tblGoodsPropInfo,tblGoodsOfProp,tblGoodsOfPropDet where tblGoodsPropInfo.id=tblGoodsOfProp.PropID and tblGoodsPropInfo.propName='Hue' and tblGoodsOfProp.id=tblGoodsOfPropDet.f_ref and tblGoodsOfPropDet.PropItemID=X.Hue) as HueName,(select top 1 PropItemName from tblGoodsPropInfo,tblGoodsOfProp,tblGoodsOfPropDet where tblGoodsPropInfo.id=tblGoodsOfProp.PropID and tblGoodsPropInfo.propName='yearNO' and tblGoodsOfProp.id=tblGoodsOfPropDet.f_ref and tblGoodsOfPropDet.PropItemID=X.yearNO) as yearNoName,(select StockFullName from tblStock where classCode=X.StockCode) as StockName,(select GoodsFullName from tblGoods where classCode=X.GoodsCode) as GoodsName,LastQty,LowerLimit from (select StockCode,GoodsCode,BatchNo,Hue,Inch,yearNO,lastQty as LastQty,lastPrice as LastPrice,SCompanyID from tblStocks X) as X cross apply (select lowerLimit as LowerLimit from tblUpperLowerLimit a where a.StockCode=X.StockCode and a.GoodsCode=X.GoodsCode and a.BatchNo=X.BatchNo and a.Hue=X.Hue and a.Inch=X.Inch and a.yearNo=X.yearNo and a.lowerLimit&gt;0 and a.lowerLimit&gt;X.lastQty) as Y</sql>
+		<sql type="template"><a href=" javascript:mdiwin('UserFunctionQueryAction.do?tableName=ViewStoreDetail&amp;StockCode=@SqlReturn:StockCode&amp;GoodsCode=@SqlReturn:GoodsCode&amp;BatchNo=@SqlReturn:BatchNo&amp;Inch=@SqlReturn:Inch&amp;Hue=@SqlReturn:Hue&amp;yearNO=@SqlReturn:yearNO&amp;LinkType=@URL:','res{LowerStockLimitAlert.Alert.Stock}','@alertId')"> res{LowerStockLimitAlert.Alert.Store} @SqlReturn:StockName res{LowerStockLimitAlert.Alert.Goods} @SqlReturn:GoodsName res{LowerStockLimitAlert.Alert.Batchno} @SqlReturn:BatchNo res{LowerStockLimitAlert.Alert.Inch} @SqlReturn:Inch res{LowerStockLimitAlert.Alert.yearNo} @SqlReturn:yearNoName res{LowerStockLimitAlert.Alert.color}@SqlReturn:HueName res{LowerStockLimitAlert.Alert.Qty} @SqlReturn:LastQty res{LowerStockLimitAlert.Alert.Low} @SqlReturn:LowerLimit 。 </a></sql>
+    	</define>
+	
+	<!-- 定期检测预警设置 -->
+	<define name="PeriodicExamine">	
+		<sql type="condition" marker="kid">select a.id as kid,'' as CreateBy,a.SCompanyID as SCompanyID,c.ClientName as ClientName,a.SignUpDate as SignUpDate,a.ContractNo as Contract,b.ExamineDate as ExamineDate from CRMSaleContract a left join CRMSaleContractDet2 b on b.f_ref=a.id left join CRMClientInfo c on c.id=a.f_brother where b.ExamineDate&gt;=convert(varchar(10),getDate(),21) and dateadd(day,-@UseParam:,b.ExamineDate)&lt;=convert(varchar(10),getDate(),21)</sql>
+		<sql type="template"><a href=" javascript:mdiwin('/UserFunctionQueryAction.do?parentTableName=CRMClientInfo&amp;tableName=CRMSaleContract&amp;keyId=@SqlReturn:kid &amp;operation=5','res{PeriodicExamine.Alert.cue}','@alertId')&quot; title=&quot;res{PeriodicExamine.Alert.Customer} @SqlReturn:ClientName res{PeriodicExamine.Alert.contract} @SqlReturn:Contract res{PeriodicExamine.Alert.Time} @SqlReturn:ExamineDate res{PeriodicExamine.Alert.fall} "> res{PeriodicExamine.Alert.Customer} @SqlReturn:ClientName res{PeriodicExamine.Alert.contract} @SqlReturn:Contract res{PeriodicExamine.Alert.Time} @SqlReturn:ExamineDate res{PeriodicExamine.Alert.fall} </a></sql>
+	</define>
+<!--生产任务单过期未完成预警-->
+	<define name="ProduceAssignmentOverdue">	
+		<sql type="condition" marker="BillNO">SELECT id as kid,BillNO,finishDate,tblProduce.CreateBy as CreateBy,tblProduce.SCompanyID as SCompanyID FROM tblProduce  WHERE statusId=0 AND GETDATE() &gt; finishDate	  </sql>
+		<sql type="template"><a href=" javascript:mdiwin('UserFunctionAction.do?tableName=tblProduce&amp;keyId=@SqlReturn:kid &amp;operation=5','生产任务单过期','@alertId')">生产任务单@SqlReturn:BillNO 超过计划完成日期@SqlReturn:finishDate</a> </sql>
+	</define>
+	
+	 <!--销售订单过期未发货预警-->
+  	<define name="SalesOrderFailure">	
+		<sql type="condition" marker="BillNo"> select tblSalesOrder.BillNo,tblSalesOrderDet.SendDate, tblSalesOrder.CreateBy AS CreateBy,tblSalesOrder.SCompanyID AS SCompanyID from tblSalesOrderDet 
+left join tblSalesOrder on tblSalesOrderDet.f_ref=tblSalesOrder.id where tblSalesOrderDet.NotOutQty&gt;0 and DATEDIFF(DAY,tblSalesOrderDet.SendDate,GETDATE())&gt;0</sql>
+	  <sql type="template">订单批号@SqlReturn:BillNo 发货日期@SqlReturn:SendDate</sql>
+	</define>
+	
+	<!--采购订单过期未到货预警-->
+  	<define name="BuyOrderFailure">	
+		<sql type="condition" marker="BillNo"> select tblBuyOrder.BillNo,tblBuyOrderDet.ArriveDate, tblBuyOrder.CreateBy AS CreateBy,tblBuyOrder.SCompanyID AS SCompanyID from tblBuyOrderDet 
+left join tblBuyOrder on tblBuyOrderDet.f_ref=tblBuyOrder.id where tblBuyOrderDet.NotInQty&gt;0 and DATEDIFF(DAY,tblBuyOrderDet.ArriveDate,GETDATE())&gt;0 </sql>
+		<sql type="template">订单批号@SqlReturn:BillNo 到货日期@SqlReturn:ArriveDate</sql>
+	</define>
+
+	
+			<!--工序序损耗预警-->
+		<define name="WorkingProcedureSpoilage">	
+		<sql type="condition" marker="BillNo">SELECT tblWorkingConnect.BillNo,tblWorking.TheoryLess AS TheoryLess,tblWorkingConnect.CreateBy AS CreateBy,tblWorkingConnect.SCompanyID AS SCompanyID 
+			  FROM tblWorkingConnect ,tblWorking  WHERE (1-tblWorkingConnect.completeQty/tblWorkingConnect.Qty)&gt;TheoryLess
+		</sql>
+		<sql type="template">工序交接单@SqlReturn:BillNo 损耗超过@SqlReturn:TheoryLess </sql>
+	</define>
+	
+	
+		<!--工序超时预警-->
+		<define name="WorkingProcedureOvertime">	
+		<sql type="condition" marker="BillNo">SELECT tblWorkingConnect.BillNo,worktime,tblWorkingConnect.CreateBy AS CreateBy,tblWorkingConnect.SCompanyID AS SCompanyID 
+			 FROM tblWorkingConnect,tblWorkingConnectDet,tblWorking WHERE tblWorkingConnectDet.worktime&gt;(tblWorking.StandManHour*tblWorkingConnectDet.Qty)	  </sql>
+		<sql type="template">工序交接单@SqlReturn:BillNo 超过@SqlReturn:worktime 仍然未交接</sql>
+	</define>
+	
+		<!--销售出库单超期限未收款预警-->
+  	<define name="SalesNoCollection">	
+		<sql type="condition" marker="BillNo"> select tblSalesOutStock.BillNo,@UseParam: as exceedtime,tblSalesOutStock.CreateBy as CreateBy, tblSalesOutStock.SCompanyID as SCompanyID  from tblSalesOutStock where id not in(select RefbillID from tblSaleReceiveDet ) and  DATEDIFF(day,BillDate,GETDATE())&gt;@UseParam: </sql>
+		<sql type="template">销售出库单 @SqlReturn:BillNo 超过 @SqlReturn:exceedtime 天仍未收款</sql>
+	</define>
+	
+	    <!--采购入库单超期限未付款预警-->
+  	<define name="BuyNoPay">	
+		<sql type="condition" marker="BillNo"> select tblBuyInStock.BillNo,@UseParam: as exceedtime,tblBuyInStock.CreateBy as CreateBy, tblBuyInStock.SCompanyID as SCompanyID  from tblBuyInStock where id not in(select RefbillID from tblPayDet ) and  DATEDIFF(day,BillDate,GETDATE())&gt;@UseParam: </sql>
+		<sql type="template">采购入库单 @SqlReturn:BillNo 超过 @SqlReturn:exceedtime 天仍未付款</sql>
+	</define>
+	
+	<!--结算账期预警-->
+  <define name="SettleCys">	
+			<sql type="condition" marker="BillNo">select tblSalesOutStock.BillNo as BillNo,convert(int,DATEDIFF(DAY,tblSalesOutStock.AcceptDate,GETDATE()))  as exceedtime, tblSalesOutStock.CreateBy as CreateBy, tblSalesOutStock.SCompanyID as SCompanyID  from tblSalesOutStock join tblCompany on tblCompany.classCode=tblSalesOutStock.CompanyCode where  tblSalesOutStock.workFlowNodeName='finish' and  tblSalesOutStock.NeedReturnAmt&gt;0  and (case SettleCys when 0 then null else SettleCys end)&gt;0 and convert(int,DATEDIFF(DAY,tblSalesOutStock.AcceptDate,GETDATE()))&gt;0</sql>
+			<sql type="template">销售出库单 @SqlReturn:BillNo 超过结算账期 @SqlReturn:exceedtime 天仍未收款 </sql>
+	</define>
+	
+	<!--高危库存预警-->
+  <define name="RiskStockConfine">	
+			<sql type="condition" marker="Seq">select c.StockFullName as StockFullName,d.GoodsFullName as GoodsFullName,b.seq as Seq,convert(int,DATEDIFF(DAY,inTime,GETDATE()),121)-d.StockTerm as exceedtime,'1' as CreateBy,'00001' as SCompanyID from tblStockDet a right join tblAllStockSeq b on a.Seq=b.seq join tblStock c on a.StockCode=c.classCode join tblGoods d on a.GoodsCode=d.classCode where inTime!='期初' and (case d.StockTerm when 0 then null else d.StockTerm end)&gt;0 AND DATEDIFF(DAY,inTime,GETDATE())&gt;StockTerm</sql>
+			<sql type="template">@SqlReturn:StockFullName 中序列号 @SqlReturn:Seq 商品 @SqlReturn:GoodsFullName 已超过在库限期 @SqlReturn:exceedtime 天 </sql>
+	</define>
+</defineSqls>

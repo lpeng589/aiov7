@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineButtons>
+		<button name="ContractManagement_Terminate" type="execDefine" buttonName="终止合同"  defineName="ContractManagement_Terminate"></button>
+		<button name="ContractManagement_Delay" type="execDefine" buttonName="延期合同"  defineName="ContractManagement_Delay"></button>
+
+	 <!--利息单 拓展按钮:派送-->	
+	<button name="updatestate_tblInterestBill" type="execDefine" buttonName="statesend" defineName="InterestBillstate">
+	</button>  
+	<!--本金单 拓展按钮:派送-->	
+	<button name="updatestate_tblCapitalBill" type="execDefine" buttonName="statesend" defineName="CapitalBillstate">
+	</button>  
+	<button name="activeX">
+	&lt;input type="button" value="buttonExtend"&gt;
+	</button>
+
+	<button name="ApproveDesign">
+&lt;OBJECT classid="clsid:71A43137-D7CB-4A2F-A4EA-4EE483FDE542" width=90  height=20 id=appdesign &gt;
+&lt;/OBJECT&gt;	
+	</button>
+	
+	<!--button name="end">
+	&lt;input type="button" value="完成"&gt;
+	</button-->
+	
+	<!-- 执行define配置文件中的语句的拓展按钮 同时调用此拓展按钮的模块，在表信息维护中拓展按钮处设置
+	<button type="define" operation="list" value="salesOut">-->
+	<button name="salesOut" type="execDefine"> 
+		&lt;input type="hidden" name="defineName" value="testExtend"&gt;<!-- value:执行的define配置文件中的define名称 -->
+	</button>
+	<button name="confirm" type="execDefine" buttonName="define.button.confirm" defineName="SalesOutStock_confirm"> 
+		<!--&lt;input type="hidden" name="defineName" value="SalesOutStock_confirm"&gt; value:执行的define配置文件中的define名称 -->
+	</button>
+	<button name="reverse" type="execDefine" buttonName="define.button.reverse" defineName="SalesOutStock_reverse">
+	</button>
+	<!--
+	<button name="ServerRet"  type="" buttonName="define.button.ServerRet">
+	&lt;input type="button"  onClick="location.href='/UserFunctionAction.do?tableName=CRMServiceRet&amp;parentCode=&amp;operation=6&amp;f_brother=&amp;parentTableName='" value="新增服务接单"&gt;
+	</button>
+	-->
+<!--管道行业：销售出库单：部门主管签字，仓库主管签字-->	
+	<button name="AuUser1_confirm" type="execDefine" buttonName="SalesOutAuUser1.button.confirm" defineName="SalesOutAuUser1_confirm">
+	</button> 
+	<button name="AuUser2_confirm" type="execDefine" buttonName="SalesOutAuUser2.button.confirm" defineName="SalesOutAuUser2_confirm"> 
+		<!--&lt;input type="hidden" name="defineName" value="SalesOutStock_confirm"&gt; value:执行的define配置文件中的define名称 -->
+	</button>	
+	
+     <!--布匹行业销售出库单：发送消息、回复信息-->	
+	<button name="SendMessage" type="execDefine" buttonName="SendMessage.button.confirm" defineName="SalesOut_SendMessage">
+	</button> 
+	<button name="BackMessage" type="execDefine" buttonName="BackMessage.button.confirm" defineName="SalesOut_BackMessage"> 	
+	</button>	
+	
+     <!--启用基本信息、停用商品信息-->	
+	<button name="OpenValue_tblGoods" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_Goods">
+	</button> 
+	<button name="StopValue_tblGoods" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_Goods"> 	
+	</button>
+
+     <!--启用基本信息、停用模块信息-->   
+    <button name="OpenValue_tblModules" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_Modules">
+    </button> 
+    <button name="StopValue_tblModules" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_Modules">    
+    </button>
+		
+	<!--MAC地址过滤停用MAC地址-->	
+	<button name="OpenValue_tblMacFilter" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_SysInfo_tblMacFilter">
+	</button> 
+	<button name="StopValue_tblMacFilter" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_SysInfo_tblMacFilter"> 	
+	</button> 
+	
+	<!--启用基本信息、停用商品信息-->	
+	<button name="Yes_tblBillEmployeeDepartment" type="execDefine" buttonName="Yes.button.confirm" defineName="Yes_tblBillEmployeeDepartment">
+	</button> 
+	<button name="No_tblBillEmployeeDepartment" type="execDefine" buttonName="No.button.confirm" defineName="No_tblBillEmployeeDepartment"> 	
+	</button>
+	
+	<!-- 启用和不启用考勤规则 -->
+	
+	<button name="OpenValue_tblWorkRule" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_workRule_define">
+	</button> 
+	<button name="StopValue_tblWorkRule" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_workRule_define"> 	
+	</button>	
+	
+	<!-- 请货单订单状态已完成 -->
+	<button name="billstate_applyGoodsBill" type="execDefine" buttonName="billstate.button.confirm" defineName="billstate_true_applyGoodsBill"> 	
+	</button>
+	<!--启用仓库信息、停用仓库信息-->	
+	<button name="OpenValue_tblStock" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblStock">
+	</button> 
+	<button name="StopValue_tblStock" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblStock"> 	
+	</button>	
+	<!--启用维修仓库信息、停用维修仓库信息-->	
+	<button name="OpenValue_tblRepStock" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblRepStock">
+	</button> 
+	<button name="StopValue_tblRepStock" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblRepStock"> 	
+	</button>
+		
+	<!--启用往来单位信息、停用往来单位信息-->	
+	<button name="OpenValue_tblCompany" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblCompany">
+	</button> 
+	<button name="StopValue_tblCompany" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblCompany"> 	
+	</button>
+	<!--计量单位停用、启用按钮-->	
+	<button name="OpenValue_tblUnit" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblUnit">
+	</button> 
+	<button name="StopValue_tblUnit" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblUnit"> 	
+	</button>
+	<!--部门管理停用、启用按钮-->	
+	<button name="OpenValue_tblDepartment" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblDepartment">
+	</button> 
+	<button name="StopValue_tblDepartment" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblDepartment"> 	
+	</button>
+	<!--职员管理停用、启用按钮-->	
+	<button name="OpenValue_tblEmployee" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblEmployee">
+	</button> 
+	<button name="StopValue_tblEmployee" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblEmployee"> 	
+	</button>
+	<!--短信模板停用、启用按钮-->	
+	<button name="OpenValue_tblSMSModel" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblSMSModel">
+	</button> 
+	<button name="StopValue_tblSMSModel" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblSMSModel"> 	
+	</button>
+	<!--往来信用额度停用、启用按钮-->	
+	<button name="OpenValue_tblCompanyCredit" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblCompanyCredit">
+	</button> 
+	<button name="StopValue_tblCompanyCredit" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblCompanyCredit"> 	
+	</button>
+		<!--并圈类型停用、启用按钮-->	
+	<button name="OpenValue_tblGoodsConnectType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblGoodsConnectType">
+	</button> 
+	<button name="StopValue_tblGoodsConnectType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblGoodsConnectType"> 	
+	</button>
+	
+		<!--分圈类型停用、启用按钮-->	
+	<button name="OpenValue_tblGoodsDisconnectType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblGoodsDisconnectType">
+	</button> 
+	<button name="StopValue_tblGoodsDisconnectType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblGoodsDisconnectType"> 	
+	</button>
+	
+    <!--区域设置停用、启用按钮-->	
+	<button name="OpenValue_tblArea" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblArea">
+	</button> 
+	<button name="StopValue_tblArea" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblArea"> 	
+	</button>
+	<!--行业设置停用、启用按钮-->	
+    <button name="OpenValue_tblTrade" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblTrade">
+	</button> 
+	<button name="StopValue_tblTrade" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblTrade"> 	
+	</button>
+    <!--运输公司停用、启用按钮-->	
+    <button name="OpenValue_tblFreightCom" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblFreightCom">
+	</button> 
+	<button name="StopValue_tblFreightCom" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblFreightCom"> 	
+	</button>
+	
+	 <!--收入类型停用、启用按钮-->	
+    <button name="OpenValue_tblInComeType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblInComeType">
+	</button> 
+	<button name="StopValue_tblInComeType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblInComeType"> 	
+	</button>
+	
+	<!--出库类型停用、启用按钮-->	
+    <button name="OpenValue_tblOutType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblOutType">
+	</button> 
+	<button name="StopValue_tblOutType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblOutType"> 	
+	</button>
+	
+	<!--入库类型停用、启用按钮-->	
+    <button name="OpenValue_tblInType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblInType">
+	</button> 
+	<button name="StopValue_tblInType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblInType"> 	
+	</button>
+	
+	<!--报损类型停用、启用按钮-->	
+    <button name="OpenValue_tblCheckLessType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblCheckLessType">
+	</button> 
+	<button name="StopValue_tblCheckLessType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblCheckLessType"> 	
+	</button>
+	
+	<!--报溢类型停用、启用按钮-->	
+    <button name="OpenValue_tblCheckMoreType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblCheckMoreType">
+	</button> 
+	<button name="StopValue_tblCheckMoreType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblCheckMoreType"> 	
+	</button>
+	
+	<!--存货核算方式停用、启用按钮-->	
+    <button name="OpenValue_tblGoodsAccProp" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblGoodsAccProp">
+	</button> 
+	<button name="StopValue_tblGoodsAccProp" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblGoodsAccProp"> 	
+	</button>
+	
+	<!--调价类型停用、启用按钮-->	
+    <button name="OpenValue_tblPriceType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblPriceType">
+	</button> 
+	<button name="StopValue_tblPriceType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblPriceType"> 	
+	</button>
+		
+	<!--调拨类型停用、启用按钮-->	
+    <button name="OpenValue_tblAllotType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblAllotType">
+	</button> 
+	<button name="StopValue_tblAllotType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblAllotType"> 	
+	</button>
+	
+	<!--费用类型停用、启用按钮-->	
+    <button name="OpenValue_tblFeeType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblFeeType">
+	</button> 
+	<button name="StopValue_tblFeeType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblFeeType"> 	
+	</button>
+	<!--工资类型停用、启用按钮-->	
+    <button name="OpenValue_tblWageType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblWageType">
+	</button> 
+	<button name="StopValue_tblWageType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblWageType"> 	
+	</button>
+	<!--加工费用类型停用、启用按钮-->	
+    <button name="OpenValue_tblFareType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblFareType">
+	</button> 
+	<button name="StopValue_tblFareType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblFareType"> 	
+	</button>
+	
+	<!--现金账户设置停用、启用按钮-->	
+    <button name="OpenValue_tblCashs" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblCashs">
+	</button> 
+	<button name="StopValue_tblCashs" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblCashs"> 	
+	</button>
+	
+	<!--银行账户设置停用、启用按钮-->	
+    <button name="OpenValue_tblBanks" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblBanks">
+	</button> 
+	<button name="StopValue_tblBanks" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblBanks"> 	
+	</button>
+	
+	<!--裁剪类型设置停用、启用按钮-->	
+    <button name="OpenValue_tblSplitFormType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblSplitFormType">
+	</button> 
+	<button name="StopValue_tblSplitFormType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblSplitFormType"> 	
+	</button>
+	
+	<!--分摊类型设置停用、启用按钮-->	
+    <button name="OpenValue_tblPrecessCostType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblPrecessCostType">
+	</button> 
+	<button name="StopValue_tblPrecessCostType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblPrecessCostType"> 	
+	</button>
+	
+	<!--组装类型设置停用、启用按钮-->	
+    <button name="OpenValue_tblGoodsAssemblyType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblGoodsAssemblyType">
+	</button> 
+	<button name="StopValue_tblGoodsAssemblyType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblGoodsAssemblyType"> 	
+	</button>
+
+	<!--单据汇总复核按钮-->
+	<button name="ReportBillViewCheck" type="execDefine" buttonName="ReportBillView.button.Check"  defineName="ReportBillView_Check">	
+	</button>
+	
+	<!--采购申请单终止按钮-->	
+    <button name="BuyApplicationStatusStop" type="execDefine" buttonName="BuyOrder.button.stop"  defineName="BuyApplicationStatus_stop">
+	</button> 
+	<!--采购申请单激活按钮-->
+	<button name="BuyApplicationStatusReverse" type="execDefine" buttonName="BuyOrder.button.reverse"  defineName="BuyApplicationStatus_Reverse">	
+	</button>
+	<!--采购申请单完成按钮-->
+	<button name="BuyApplicationStatusFinish" type="execDefine" buttonName="BuyOrder.button.finish"  defineName="BuyApplicationStatus_Finish">	
+	</button>	
+
+	<!--采购申请汇总单终止按钮-->	
+    <button name="tblBuyApplicationTotalStatusStop" type="execDefine" buttonName="BuyOrder.button.stop"  defineName="tblBuyApplicationTotalStatus_stop">
+	</button> 
+	<!--采购申请汇总单激活按钮-->
+	<button name="tblBuyApplicationTotalStatusReverse" type="execDefine" buttonName="BuyOrder.button.reverse"  defineName="tblBuyApplicationTotalStatus_Reverse">	
+	</button>
+	<!--采购申请汇总单完成按钮-->
+	<button name="tblBuyApplicationTotalStatusFinish" type="execDefine" buttonName="BuyOrder.button.finish"  defineName="tblBuyApplicationTotalStatus_Finish">	
+	</button>
+	
+	<!--采购订单状态设置强制终止、还原按钮-->	
+    <button name="BuyOrderStatusStop" type="execDefine" buttonName="BuyOrder.button.stop"  defineName="BuyOrderStatus_stop">
+	</button> 
+	<!--采购订单激活-->
+	<button name="BuyOrderStatusReverse" type="execDefine" buttonName="BuyOrder.button.reverse"  defineName="BuyOrderStatusStop_reverse">	
+	</button>
+		<!--采购订单强制完成-->
+	<button name="BuyOrderStatusFinish" type="execDefine" buttonName="BuyOrder.button.finish"  defineName="BuyOrderStatus_finish">	
+	</button>
+	
+	<!--销售订单状态设置强制终止、还原按钮-->	
+    <button name="SalesOrderStatusStop" type="execDefine" buttonName="SalesOrder.button.stop"  defineName="SalesOrderStatus_stop">
+	</button> 
+	<!--销售订单状态设置激活-->	
+	<button name="SalesOrderactivation" type="execDefine" buttonName="SalesOrder.button.reverse"  defineName="SalesOrderStatusStop_reverse">
+	</button>
+	<!--销售订单强制完成-->	
+	<button name="SalesOrderfinish" type="execDefine" buttonName="SalesOrder.button.finish"  defineName="SalesOrderStatus_finish">
+	</button>
+	
+		<!--PG销售订单状态锁定库存-->	
+    <button name="SalesOrderLock" type="execDefine" buttonName="SalesOrder.button.LockQty"  defineName="SalesOrderStatus_LockQty">
+	</button> 
+	
+		<!--PG销售订单状态解锁-->	
+    <button name="SalesOrderUnLock" type="execDefine" buttonName="SalesOrder.button.UnLockQty"  defineName="SalesOrderStatus_UnLockQty">
+	</button> 
+	<!--PG客户回访单批量完成-->	
+    <button name="CRMClientRevisitbatchAuditing" type="execDefine" buttonName="Bill.batch.breakup"  defineName="CRMClientRevisit_confirm">
+	</button> 
+	
+	<!--BP委托生产通知单“通知单完成，取消完成按钮”-->	
+    <button name="OpenValue_tblProduceInform" type="execDefine" buttonName="OpenValue.button.tblProduceInform" defineName="OpenValue_BaseInfo_tblProduceInform">
+	</button> 
+	<button name="StopValue_tblProduceInform" type="execDefine" buttonName="StopValue.button.tblProduceInform" defineName="StopValue_BaseInfo_tblProduceInform"> 	
+	</button>
+	<button name="Stop_tblProduceInform" type="execDefine" buttonName="Stop.button.tblProduceInform" defineName="Stop_BaseInfo_tblProduceInform"> 	
+	</button>	
+	<button name="Open_tblProduceInform" type="execDefine" buttonName="Open.button.tblProduceInform" defineName="Open_BaseInfo_tblProduceInform"> 	
+	</button>
+
+
+	<!--采购询价单”生成采购订单“按钮-->
+	<button name="Create_BuyOrder" type="execDefine" buttonName="Create.button.BuyOrder" defineName="tblBuyAskPrice_Create_BuyOrders">
+	</button>
+		
+	<!--库存下限预警报表生成采购订单“按钮-->
+	<button name="StocklowerCreate_BuyOrder" type="execDefine" buttonName="Create.button.BuyOrder" defineName="ViewStocklower_Create_BuyOrders">
+	</button> 
+	 
+	
+	<!--终止生产任务单-->
+	<button name="ProduceStatusStop" type="execDefine" buttonName="ProduceStatusStop" defineName="ProduceStatusStop">
+	</button> 
+	
+	<!--完成生产任务单-->
+	<button name="ProduceStatusComplete" type="execDefine" buttonName="ProduceStatusComplete" defineName="ProduceStatusComplete">
+	</button> 
+	
+	<!-- 终止 领料单  -->
+	<button name="ApplyStatusStop" type="execDefine" buttonName="Apply.Status.Stop" defineName="ApplyStatus_Stop">
+	</button>
+	<!-- 完成 领料单  -->
+	<button name="ApplyStatusComplete" type="execDefine" buttonName="Apply.Status.Complete" defineName="ApplyStatus_Complete">
+	</button>
+	<!-- 激活 领料单  -->
+	<button name="ApplyStatusactivation" type="execDefine" buttonName="Apply.Status.activation" defineName="ApplyStatus_Activation">
+	</button>
+	
+	<!-- 启用序列号 -->
+	<button name="GoodsSeqStartUsing" type="execDefine" buttonName="GoodsSeqStartUsing" defineName="GoodsSeqStartUsing">
+	</button> 
+	
+	<!--激活生产任务单-->
+	<button name="ProduceStatusactivation" type="execDefine" buttonName="ProduceStatusactivation" defineName="ProduceStatusactivation">
+	</button> 
+	
+	<!-- 禁用序列号 -->
+	<button name="GoodsSeqStopUsing" type="execDefine" buttonName="GoodsSeqStopUsing" defineName="GoodsSeqStopUsing">
+	</button>
+	
+	<!-- 强制录入序列号 -->
+	<button name="GoodsSeqForceInput" type="execDefine" buttonName="GoodsSeqForceInput" defineName="GoodsSeqForceInput">
+	</button>
+	
+	<!-- 非强制录入序列号 -->
+	<button name="GoodsSeqNotForceInput" type="execDefine" buttonName="GoodsSeqNotForceInput" defineName="GoodsSeqNotForceInput">
+	</button>
+	
+	<!--
+	CRM客户转向按钮
+	-->
+    <!-- 目标客户转为意向客户 -->
+	<button name="tblCMAimClient_tblCMWillClient" type="execDefine" buttonName="CMWillClient" defineName="Aim_Change_Intent">
+	</button>
+	
+	   <!-- 目标客户转为成交客户 -->
+	<button name="tblCMAimClient_tblCMCompleteClient" type="execDefine" buttonName="CMCompleteClient" defineName="Aim_Change_Business">
+	</button>
+	
+	<!-- 目标客户转为放弃客户 -->
+	<button name="tblCMAimClient_tblCMAbandonClient" type="execDefine" buttonName="CMAbandonClient" defineName="Aim_Change_Abandon">
+	</button>
+
+	    <!-- 意向客户转为目标客户 -->
+	<button name="tblCMWillClient_tblCMAimClient" type="execDefine" buttonName="CMAimClient" defineName="Intent_Change_Aim">
+	</button>
+	
+	 <!-- 意向客户转为成交客户 -->
+	<button name="tblCMWillClient_tblCMCompleteClient" type="execDefine" buttonName="CMCompleteClient" defineName="Intent_Change_Business">
+	</button>
+	
+	<!-- 意向客户转为放弃客户 -->
+	<button name="tblCMWillClient_tblCMAbandonClient" type="execDefine" buttonName="CMAbandonClient" defineName="Intent_Change_Abandon">
+	</button>
+	
+     <!-- 放弃客户转为目标客户 -->
+	<button name="tblCMAbandonClient_tblCMAimClient" type="execDefine" buttonName="CMAimClient" defineName="Abandon_Change_Aim">
+	</button>
+	 <!-- 放弃客户转为成交客户 -->
+	<button name="tblCMAbandonClient_tblCMCompleteClient" type="execDefine" buttonName="CMCompleteClient" defineName="Abandon_Change_Business">
+	</button>
+	<!-- 放弃客户转为意向客户 -->
+	<button name="tblCMAbandonClient_tblCMWillClient" type="execDefine" buttonName="CMWillClient" defineName="Abandon_Change_Intent">
+	</button>
+		
+	<!--应付增加类型停用、启用按钮-->	
+    <button name="OpenValue_tblPayAddType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblPayAddType">
+	</button> 
+	<button name="StopValue_tblPayAddType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblPayAddType"> 	
+	</button>	
+	<!--应付减少类型停用、启用按钮-->	
+    <button name="OpenValue_tblPayLessType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblPayLessType">
+	</button> 
+	<button name="StopValue_tblPayLessType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblPayLessType"> 	
+	</button>	
+	<!--应收增加类型停用、启用按钮-->	
+    <button name="OpenValue_tblReceiveAddType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblReceiveAddType">
+	</button> 
+	<button name="StopValue_tblReceiveAddType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblReceiveAddType"> 	
+	</button>	
+	<!--应收减少类型停用、启用按钮-->	
+    <button name="OpenValue_tblReceiveLessType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblReceiveLessType">
+	</button> 
+	<button name="StopValue_tblReceiveLessType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblReceiveLessType"> 	
+	</button>
+		<!-- 客户报备转为放弃客户 -->
+	<button name="CRMClientReport_tblCMAbandonClient" type="execDefine" buttonName="CMAbandonClient" defineName="Intent_ClientReport_Abandon">
+	</button>
+
+		 <!-- 客户报备转为成交客户 -->
+	<button name="CRMClientReport_tblCMCompleteClient" type="execDefine" buttonName="CMCompleteClient" defineName="Intent_ClientReport_Business">
+	</button>
+	
+	<!-- 智能调拨 "><button type="define" right="add" operation="list" value="IntellectAllot" isCheck="no">-->
+	<button name="IntellectAllot" type="execDefine" buttonName="IntellectAllot.Name" defineName="IntellectAllot">
+	</button>
+	
+	<!-- 转换为公共池客户 -->
+	<button name="Transfer_PublicPool" type="execDefine" buttonName="Transfer_PublicPool.Name" defineName="Transfer_PublicPool">
+	</button>
+	<!-- 转换为目标客户 -->
+	<button name="Transfer_TargetClient" type="execDefine" buttonName="Transfer_TargetClient.Name" defineName="Transfer_TargetClient">
+	</button>
+	<!-- 转换为意向客户 -->
+	<button name="Transfer_WillClient" type="execDefine" buttonName="Transfer_WillClient.Name" defineName="Transfer_WillClient">
+	</button>
+	<!-- 转换为成交客户 -->
+	<button name="Transfer_SuccessClient" type="execDefine" buttonName="Transfer_SuccessClient.Name" defineName="Transfer_SuccessClient">
+	</button>
+
+	<!-- 系统重启 -->
+	<button name="System_Restart" type="execDefine" buttonName="System_Restart" defineName="System_Restart">
+	</button>
+	<!-- 系统重新加载 -->
+	<!-- <button name="System_Reload" type="execDefine" buttonName="System_Reload" defineName="System_Reload"></button> -->
+
+	<!-- 启用客户回访设置 -->
+	<button name="OpenValue_tblBillReviewSetting" type="execDefine" buttonName="OpenValue_tblBillReviewSetting" defineName="OpenValue_tblBillReviewSetting_define"></button>
+	
+	<!-- 停用客户回访设置 -->
+	<button name="StopValue_tblBillReviewSetting" type="execDefine" buttonName="StopValue_tblBillReviewSetting" defineName="StopValue_tblBillReviewSetting_define"></button>
+	
+	<!-- 客户移交 接受 -->
+	<button name="CRMClientTransfer_Receive" type="execDefine" buttonName="CRMClientTransfer_Receive" defineName="CRMClientTransfer_Receive "></button>
+	
+	<!-- 客户移交 拒绝 -->
+	<button name="CRMClientTransfer_Reject" type="execDefine" buttonName="CRMClientTransfer_Reject" defineName="CRMClientTransfer_Reject"></button>
+	
+	<!-- 纪念日提醒设置 启用 -->
+	<button name="MemoryDayNoteSet_Start" type="execDefine" buttonName="MemoryDayNoteSet_Start" defineName="MemoryDayNoteSet_Start "></button>
+	
+	<!-- 纪念日提醒设置 禁用 -->
+	<button name="MemoryDayNoteSet_Stop" type="execDefine" buttonName="MemoryDayNoteSet_Stop" defineName="MemoryDayNoteSet_Stop"></button>
+	
+	<!--客户资料停用、启用按钮-->	
+	<button name="OpenValue_CRMClientInfo" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_CRMClientInfo">
+	</button> 
+	<button name="StopValue_CRMClientInfo" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_CRMClientInfo"> 	
+	</button>
+	
+	<!--模块导航设置 停用、启用按钮-->	
+	<button name="tblModuleFlow_Start" type="execDefine" buttonName="tblModuleFlow_Start" defineName="tblModuleFlow_Start">
+	</button> 
+	<button name="tblModuleFlow_Stop" type="execDefine" buttonName="tblModuleFlow_Stop" defineName="tblModuleFlow_Stop"> 	
+	</button>
+	<!-- 公司目标列表部门目标统计按钮-->
+	<button name="CountDepartmentGoal" type="execDefine" buttonName="CountDepartmentGoal" defineName="CountDepartmentGoal"></button>
+	
+	<!--信息来源管理停用、启用按钮-->	
+	<button name="OpenValue_tblSourceInfo" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblSourceInfo">
+	</button> 
+	<button name="StopValue_tblSourceInfo" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblSourceInfo"> 	
+	</button>
+
+	<!--故障类型管理停用、启用按钮-->	
+	<button name="OpenValue_CRMFaultType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_CRMFaultType">
+	</button> 
+	<button name="StopValue_CRMFaultType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_CRMFaultType"> 	
+	</button>	
+	
+	<!--检测项目管理停用、启用按钮-->	
+	<button name="OpenValue_CRMCheckItem" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_CRMCheckItem">
+	</button> 
+	<button name="StopValue_CRMCheckItem" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_CRMCheckItem"> 	
+	</button>		
+	
+	<!--工贸 盘点处理-->
+	<button name="StatCheckReady" type="execDefine" buttonName="StatCheckReady"  defineName="StatCheckReady_Add">	
+	</button>
+	<!--工贸 取消处理-->
+	<button name="NoStatCheckReady" type="execDefine" buttonName="NoStatCheckReady"  defineName="NoStatCheckReady_Del">	
+	</button>
+	
+	<!--工贸 盘点处理序列号-->
+	<button name="CheckSeq" type="execDefine" buttonName="StatCheckReady"  defineName="CheckSeq">	
+	</button>
+	<!--工贸 取消处理序列号-->
+	<button name="DelCheckSeq" type="execDefine" buttonName="NoStatCheckReady"  defineName="DelCheckSeq">	
+	</button>
+	
+	
+	<!--项目信息状态设置激活-->	
+	<button name="OAItemactivation" type="execDefine" buttonName="SalesOrder.button.reverse"  defineName="OAItemrStatusStop_reverse">
+	</button>
+	<!--项目信息强制完成-->	
+	<button name="OAItemfinish" type="execDefine" buttonName="SalesOrder.button.finish"  defineName="OAItenStatus_finish">
+	</button>
+		<!--收款单状态设置激活-->	
+	<button name="SaleReceiveactivation" type="execDefine" buttonName="SalesOrder.button.reverse"  defineName="ReceiveStatusStop_reverse">
+	</button>
+	<!--收款单强制完成-->	
+	<button name="SaleReceivefinish" type="execDefine" buttonName="SalesOrder.button.finish"  defineName="ReceiveStatus_finish">
+	</button>
+		<!--付款单状态设置激活-->	
+	<button name="Payactivation" type="execDefine" buttonName="SalesOrder.button.reverse"  defineName="PayStatusStop_reverse">
+	</button>
+	<!--付款单强制完成-->	
+	<button name="Payfinish" type="execDefine" buttonName="SalesOrder.button.finish"  defineName="PayStatus_finish">
+	</button>
+	     <!--启用停用物料清单-->	
+	<button name="OpenValue_tblBOM" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BOM">
+	</button> 
+	<button name="StopValue_tblBOM" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BOM">	
+	</button>	
+	     <!--启用停用品种物料清单-->	
+	<button name="OpenValue_tblVarietiesBOM" type="execDefine" buttonName="VarietiesBOM.button.Enable" defineName="OpenValue_VarietiesBOM">
+	</button> 
+	<button name="StopValue_tblVarietiesBOM" type="execDefine" buttonName="VarietiesBOM.button.Cease" defineName="StopValue_VarietiesBOM">	
+	</button>		
+	     <!--启用基本信息、停用商品信息-->	
+	<button name="OpenValue_tblTaskManage" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblTaskManage">
+	</button> 
+	<button name="StopValue_tblTaskManage" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblTaskManage"> 	
+	</button>
+		<!-- 启用停用光荣榜 -->
+	<button name="OpenValue_tblfameTop" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblfameTop">
+	</button> 
+	<button name="StopValue_tblfameTop" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblfameTop"> 	
+	</button>	
+	    
+			 <!-- 启用停用目标级别  -->
+	<button name="OpenValue_tblGoalGrade" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblGoalGrade">
+	</button> 
+	<button name="StopValue_tblGoalGrade" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblGoalGrade"> 	
+	</button>		
+		
+		 <!-- 启用停用目标类别  -->
+	<button name="OpenValue_tblGoalType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblGoalType">
+	</button> 
+	<button name="StopValue_tblGoalType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblGoalType"> 	
+	</button>	
+	
+	  <!--启用停用组拆装模板-->	
+	<button name="OpenValue_tblAssemblyTemplate" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_AssemblyTemplate">
+	</button> 
+	<button name="StopValue_tblAssemblyTemplate" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_AssemblyTemplate">	
+	</button>	
+	  <!--启用停用计划关联项-->	
+	<button name="OpenValue_tblPlanAssociate" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_PlanAssociate">
+	</button> 
+	<button name="StopValue_tblPlanAssociate" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_PlanAssociate">	
+	</button>	
+	
+	<!--添加预算期间时生成项目设置-->
+	<button name="CreatePeriodItemSet" type="execDefine" buttonName="CreateItemSet.button.confirm" defineName="CreatePeriodItemSet_tblBudgetItem">	
+	</button>
+	<!--添加项目时生成项目设置-->
+	<button name="CreateItemPeriodSet" type="execDefine" buttonName="CreateItemSet.button.confirm" defineName="CreateItemPeriodSet_tblBudgetItem">	
+	</button>
+	
+		<!--生产计划表状态设置强制终止、还原按钮-->	
+    <button name="produceplanStatusStop" type="execDefine" buttonName="tblplan.button.stop"  defineName="produceplan_stop">
+	</button> 
+	<!--生产计划表激活-->
+	<button name="produceplanStatusReverse" type="execDefine" buttonName="tblplan.button.reverse"  defineName="produceplan_reverse">	
+	</button>
+		<!--生产计划表强制完成-->
+	<button name="produceplanStatusFinish" type="execDefine" buttonName="tblplan.button.finish"  defineName="produceplan_finish">	
+	</button>
+	
+	
+	<!-- 任务分配的已处理和退回 -->
+	<button name="CRM_TaskDeal" type="execDefine" buttonName="common.task.deal" defineName="task_deal"></button>
+	
+	<button name="CRM_TaskRound" type="execDefine" buttonName="common.task.round" defineName="task_round"></button>
+	
+	<!-- 固定资产计提折旧 折旧按钮 -->
+	<button name="FixedAssetDepreciate" type="execDefine" buttonName="Fixed.Asset.Depreciate" defineName="FixedAsset_Depreciate_Do">
+	</button>
+	
+	<!-- 固定资产计提折旧 反折旧按钮 -->
+	<button name="FixedAssetReDepreciate" type="execDefine" buttonName="Fixed.Asset.ReDepreciate" defineName="FixedAsset_ReDepreciate_Do">
+	</button>
+	<!--入库单生成凭证，删除凭证按钮-->	
+	<button name="createAcc_tblBuyInStock" type="execDefine" buttonName="createAcc.lb.button" defineName="tblBuyInStock_Add_CreateAcc"></button> 
+	<button name="deleteAcc_tblBuyInStock" type="execDefine" buttonName="deleteAcc.lb.button" defineName="tblBuyInStock_deleteAcc_hand"></button>
+	<!--销售出库单生成凭证，删除凭证按钮-->	
+	<button name="createAcc_tblSalesOutStock" type="execDefine" buttonName="createAcc.lb.button" defineName="tblSalesOutStock_Add_CreateAcc"></button> 
+	<button name="deleteAcc_tblSalesOutStock" type="execDefine" buttonName="deleteAcc.lb.button" defineName="tblSalesOutStock_deleteAcc_hand"></button>
+	 <!--商品属性启用，停用按钮-->	
+	<button name="Open_tblGoodsAttribute" type="execDefine" buttonName="OpenValue.button.confirm" defineName="tblGoodsAttribute_Open"></button> 
+	<button name="Stop_tblGoodsAttribute" type="execDefine" buttonName="StopValue.button.confirm" defineName="tblGoodsAttribute_Stop"></button>
+	<!--配送单终止按钮-->	
+  <button name="SendStatusStop" type="execDefine" buttonName="Send.button.stop"  defineName="SendStatus_stop">
+	</button> 
+	<!--配送单激活按钮-->
+	<button name="SendStatusReverse" type="execDefine" buttonName="Send.button.reverse"  defineName="SendStatus_Reverse">	
+	</button>
+	<!--配送单完成按钮-->
+	<button name="SendStatusFinish" type="execDefine" buttonName="Send.button.finish"  defineName="SendStatus_Finish">	
+	</button>	
+	
+	
+	<!--获利单充货款按钮-->	
+    <button name="tblProfit_chk" type="execDefine" buttonName="Profit.button.chonghuokuang"  defineName="tblProfitbutton_chk">
+	</button> 
+	
+	<!--获利单返现金按钮-->	
+    <button name="tblProfit_fxj" type="execDefine" buttonName="Profit.button.fanxianjin"  defineName="tblProfitbutton_fxj">
+	</button> 
+	
+	<!--返利单充货款按钮-->	
+    <button name="tblReturnProfit_chk" type="execDefine" buttonName="Profit.button.chonghuokuang"  defineName="tblReturnProfitbutton_chk">
+	</button> 
+	
+	<!--返利单返现金按钮-->	
+    <button name="tblReturnProfit_fxj" type="execDefine" buttonName="Profit.button.fanxianjin"  defineName="tblReturnProfitbutton_fxj">
+	</button> 
+	
+	<!--会计科目停用、启用按钮-->	
+	<button name="OpenValue_tblAccTypeInfo" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblAccTypeInfo">
+	</button> 
+	<button name="StopValue_tblAccTypeInfo" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblAccTypeInfo"> 	
+	</button>
+	<!--销售订单生成采购订单-->
+	<button name="CreateBuyOrder" type="execDefine" buttonName="tblSalesOrder.CreateBuyOrder.lb" defineName="tblSalesOrder_CreateBuyOrder"> 	
+	</button>
+	
+	<!--获利类型停用、启用按钮-->	
+  <button name="OpenValue_tblProfitType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblProfitType">
+	</button> 
+	<button name="StopValue_tblProfitType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblProfitType"> 	
+	</button>
+	
+	   <!--返利类型停用、启用按钮-->	
+  <button name="OpenValue_tblReturnProfitType" type="execDefine" buttonName="OpenValue.button.confirm" defineName="OpenValue_BaseInfo_tblReturnProfitType">
+	</button> 
+	<button name="StopValue_tblReturnProfitType" type="execDefine" buttonName="StopValue.button.confirm" defineName="StopValue_BaseInfo_tblReturnProfitType"> 	
+	</button>
+	
+	
+	
+	<!--调拨申请单状态设置强制终止、还原按钮-->	
+    <button name="AllotAppStatusStop" type="execDefine" buttonName="SalesOrder.button.stop"  defineName="AllotAppStatus_stop">
+	</button> 
+	<!--调拨申请单状态设置激活-->	
+	<button name="AllotAppStatusStopReverse" type="execDefine" buttonName="SalesOrder.button.reverse"  defineName="AllotAppStatusStop_reverse">
+	</button>
+	<!--调拨申请单强制完成-->	
+	<button name="AllotAppStatusFinish" type="execDefine" buttonName="SalesOrder.button.finish"  defineName="AllotAppStatus_finish">
+	</button>
+	<!--CRM线索获取按钮-->	
+	<button name="Potential_Achieve" type="execDefine" buttonName="获取"  defineName="Potential_Achieve">
+	</button>
+	<!--CRM线索回收按钮-->	
+	<button name="Potential_Release" type="execDefine" buttonName="回收"  defineName="Potential_Release">
+	</button>
+</defineButtons>
+
+

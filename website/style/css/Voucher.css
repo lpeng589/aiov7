@@ -1,0 +1,69 @@
+.tablediv Table tr td{border: 1px solid #C0C0C0;}
+.TopSharing_button{width:auto;}
+.alignDiv{align: center;}
+.ABK_Add input{border:solid 1px #CFCFCF; height:20px; color:Gray;background:#fff;cursor:text;}
+.ABK_Add ul{padding:0 0 0 10px;}
+.ABK_Add ul li{min-width:200px;width:24%;}
+.tablediv {float: left;}
+.tablediv table{table-layout: fixed;word-break: break-all;border-collapse: collapse;}
+.tablediv table input{width:98%;border: 0px;background:#fff;box-sizing:border-box;}
+#btns{float: right;/*padding-top: 10px;*/}
+.c_main{margin-left:10px;position: static;}
+.mains{padding: 0px 0px 0px 0px;width:100%;border: #dedede 1px solid;}
+.ABK_Add input{color: black;}
+select{padding: 0px 0px 0px 0px;}
+#titles td{background: url(/style/images/client/bg.gif) no-repeat 1000px 1000px;background-position: 0px -78px;background-repeat: repeat-x;text-align: center;}
+#selAll{width: auto;}
+#keyIds{width:auto;}
+.divs ul li{height: 30px;float: left;}
+.divs ul li input{width:100px;}
+#computeDiv{overflow-x:hidden;overflow-y:auto;margin: 0px 10px 0px 10px;border: #dedede 1px solid;background-color: #fff;height:200px;}
+.div2{width: 18%;overflow-x:hidden;overflow-y:auto;margin: 0px 10px 0px 10px;border: #dedede 1px solid;background-color: #fff;height:100px;}
+.div2 input{border:solid 1px #CFCFCF;}
+h4{font-size: 12px;font: bolder 12px '宋体';padding-bottom: 5px;}
+#computeDiv input{border:solid 1px #CFCFCF;background:#fff;cursor:text;}
+.btnlp{margin:6px;float: left;cursor: pointer;}
+.TopTitle div{float: left;}
+.TopTitle{margin:0 10px 0 0;float:right;}
+.headdiv{float:right;padding-right:20px;}
+.div1 input{color: black;border: #cfcfcf 1px solid;background-color: #fff;width: 100px;background:#fff;cursor:text;}
+.headdiv table select{width:100px;}
+.data_img1{position: absolute;z-index:3;width: 146px;float: right;height: 102px;top: 8%;left: 15%;}
+.data_img2{position: absolute;z-index:3;width: 170px;float: right;height: 120px;top: 8%;left: 15%;}
+.data_img3{position: absolute;z-index:3;width: 160px;float: right;height: 120px;top: 8%;left: 15%;}
+.hlight{background-color:#C0C0C0;}
+.normal{backgroud-color:transparent;}
+.img1{cursor:pointer;}
+.divsear{height:200px;}
+.moneyposition{text-align: right;}
+input{padding-right: -2px;}
+.affixdiv{overflow-x:hidden;overflow-y:auto;margin: 0px 10px 0px 10px;border: #dedede 1px solid;background-color: #fff;height:70px;}
+
+#files_preview>div a{float:left;margin:7px 5px 0 0;}
+#files_preview>div i{float:left;display:inline-block;width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:normal;}
+
+.bill_Label:hover{text-decoration: underline;}
+
+.cf_container{position:absolute;left:30%;top:15%;width:700px;background:#fff;}
+.cf_container div{margin:10px 10px;}
+.cf_subjects table thead,.cf_refs table thead{background-color:#5fa3e7;}
+
+.cf_subjects table tbody tr:hover{background-color:rgb(231,252,169);}
+
+.cf_subjects table,.cf_refs table{border-right:1px solid black;border-bottom:1px solid black;table-layout:fixed;}
+.cf_refs table{width:100%;}
+
+.cf_subjects table td,.cf_refs table td{border-left:1px solid black;border-top:1px solid black;}
+.cf_container_hidden{display:none;}
+.cf_buttons span{margin:5px 7px;}
+.cf_subjects_item_hidden{display:none;}
+
+.cf_container .selectmItems,.cf_container .selectsItems{width:100px;}
+.cf_container .cf_subjects_active{background-color:#4BC6D1;}
+.cf_container .cf_delItem{text-align:center;}
+.cf_container .cf_title{font-weight:bold;}
+.cf_container .cf_ref_hidden{display:none;}
+.cf_container select{width:100%;}
+//.cf_container{filter:alpha(opacity=50);-moz-opacity:0.50;opacity:0.50;}
+.cf_container{}
+.cashflowFlag{color:red;line-height:3em;}

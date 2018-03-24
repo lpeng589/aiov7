@@ -1,0 +1,93 @@
+[INFO ] 2018-03-09 11:21:20,219 Line:206 系统开始启动，最大内存：1792;目前总内存：250;目前空闲内存：159
+ [INFO ] 2018-03-09 11:21:20,637 Line:284 ===========Tomcat Port=8888
+ [INFO ] 2018-03-09 11:21:37,040 Line:2660 ---------------------------------first read dog =======-----------
+ [DEBUG] 2018-03-09 11:21:37,619 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canJxc=1 
+ [DEBUG] 2018-03-09 11:21:37,665 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canOa=1 
+ [DEBUG] 2018-03-09 11:21:37,681 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canCrm=1 
+ [DEBUG] 2018-03-09 11:21:37,697 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canHr=1 
+ [DEBUG] 2018-03-09 11:21:37,728 Line:594 select AccPeriod,AccMonth,AccYear,scompanyId,statusId,isBegin from tblAccPeriod where statusId=1 or isBegin=1
+ [DEBUG] 2018-03-09 11:21:37,744 Line:626 ------Init initAccPeriod record:1
+ [DEBUG] 2018-03-09 11:21:42,498 Line:1061 ------Init Enumeration record:392
+ [DEBUG] 2018-03-09 11:21:42,580 Line:1091 ------Init WorkProfession record:58
+ [DEBUG] 2018-03-09 11:21:42,690 Line:1121 ------Init District record:3984
+ [DEBUG] 2018-03-09 11:21:42,737 Line:1152 ------Init deptMap record:2
+ [DEBUG] 2018-03-09 11:21:46,716 Line:1832 ------Init ModuleList record:
+ [DEBUG] 2018-03-09 11:21:46,716 Line:2855 --------Init ModuleList Successful---------------
+ [DEBUG] 2018-03-09 11:21:48,586 Line:297  select * from tblDBTableInfo order by TableName 
+ [DEBUG] 2018-03-09 11:21:48,890 Line:370 select * from tblDBFieldInfo order by tableId,listOrder
+ [DEBUG] 2018-03-09 11:21:52,148 Line:538 ------Init TableInfo record:644
+ [DEBUG] 2018-03-09 11:21:52,258 Line:651  select cataName,disName,module,tableName,nameField,codeField from tblScopeCataData order by orderby 
+ [DEBUG] 2018-03-09 11:21:52,274 Line:682 ------Init TableInfo record:4
+ [DEBUG] 2018-03-09 11:21:52,336 Line:775 ------Init initModuleField record:0
+ [DEBUG] 2018-03-09 11:21:52,414 Line:702  select tableName,sentence from tblPopDisSentence where statusId=0 order by tableName 
+ [DEBUG] 2018-03-09 11:21:52,430 Line:721 ------Init TableInfo record:26
+ [DEBUG] 2018-03-09 11:21:52,570 Line:891 ------Init PropInfo record:7
+ [DEBUG] 2018-03-09 11:22:02,251 Line:2947 --------Init Config File ---------------
+ [ERROR] 2018-03-09 11:22:02,959 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\16498250_1107301011023635761.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:02,974 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\1696218b_1303071432056211826.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:02,974 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\1e49ec73_1310141513554302768.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:02,974 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\2b637a85_1301151535291656265.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:02,974 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\2b637a85_1301161408119037671.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:02,990 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\3222e73f_1303110904036610349.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:02,990 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\33eaec0d_1301050950293021694.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:02,990 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\33eaec0d_1301061557287273935.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:02,990 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\33eaec0d_1301061608391253982.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,037 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\41c430d2_1208141805027402835.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,099 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\46a78652_1210151349025782027.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,162 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\4f7f6b1e_1303221111597339437.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,318 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\5fcf5f77_1304021554367043609.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,323 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\5fcf5f77_1304071406166069339.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,323 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\5fcf5f77_1304090927277926103.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,323 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\5fcf5f77_1304091008228756401.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,401 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\634bf574_1209071615094958205.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,417 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\634bf574_1209080902548768433.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,417 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\634bf574_1209121614089763945.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,417 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\6b602213_1205210942199878477.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,432 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\6b602213_1205221639204860973.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,432 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\6b602213_1205301613391641532.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,495 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\73eed876_1309241732076726431.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,612 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\8161d7ca_1312251105052885382.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,612 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\84e5c0c2_1203162038085610023.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,612 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\93da24a1_1205160946069131222.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,628 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\948d1bcf_1203241057415520350.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,628 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\978c0b22_1204191406175403275.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,628 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\978c0b22_1204251048517142444.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,706 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\a348895a_1306281020552880950.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,722 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\a348895a_1307010903526496874.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,722 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\a95dce41_1204281406032060703.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,878 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\ad48c0ba_1204141758384922624.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:03,956 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\c60c0a1d_1305161604424726111.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:04,112 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\eae3edac_0906121936590150223.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:04,159 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\eb548c0f_1203161107216570078.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:04,159 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\eb548c0f_1203162014422750845.xml (系统找不到指定的文件。)
+ [ERROR] 2018-03-09 11:22:04,222 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\ffd4bcdd_1701241708235230006.xml (系统找不到指定的文件。)
+ [DEBUG] 2018-03-09 11:22:04,253 Line:1873 ------Init RefreshTime 
+ [DEBUG] 2018-03-09 11:22:04,362 Line:2994 --------Init SMS Start ---------------
+ [INFO ] 2018-03-09 11:22:05,565 Line:3011 -------System init Secussful Set Normal status--------------
+ [DEBUG] 2018-03-09 11:22:05,580 Line:3855 --------Init Dog Successful---------------
+ [INFO ] 2018-03-09 11:22:10,214 Line:89 SAFE 数据库第一个备份任务启动，时间2018-03-09 00:00:00
+ [INFO ] 2018-03-09 11:22:10,214 Line:144 SAFE 备份任务开始执行，时间2018-03-09 11:22:10
+ [INFO ] 2018-03-09 11:22:10,224 Line:137 SAFE 碎片任务启动，时间2018-03-11 00:00:00
+ [INFO ] 2018-03-09 11:22:17,869 Line:148 SAFE 备份任务执行成功，时间2018-03-09 11:22:17
+ [DEBUG] 2018-03-09 11:22:19,116 Line:5242 GlobalsTool.js 生成js 时间218:/js/gen/login.vjs_zh_CN.js
+ [DEBUG] 2018-03-09 11:22:19,116 Line:5242 GlobalsTool.js 生成js 时间218:/js/gen/login.vjs_zh_CN.js
+ [DEBUG] 2018-03-09 11:22:19,307 Line:88 CommonServlet.service 请求地址：/CommonServlet?operation=qrcodeDownload
+ [DEBUG] 2018-03-09 11:22:19,311 Line:99 CommonServlet.service 操作人:;请求数据：operation=[qrcodeDownload,];
+ [DEBUG] 2018-03-09 11:22:20,633 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=valpwd&time=1520565740566
+ [DEBUG] 2018-03-09 11:22:20,732 Line:163 UtilServlet.service 操作人:;请求数据：operation=[valpwd,];time=[1520565740566,];
+ [DEBUG] 2018-03-09 11:22:21,261 Line:135 BaseAction.execute 请求地址：/loginAction.do?operation=15
+ [DEBUG] 2018-03-09 11:22:21,261 Line:146 BaseAction.execute 操作人:;请求数据：operation=[15,];
+ [DEBUG] 2018-03-09 11:23:09,233 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-09 11:23:21,505 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=getUserInfo&name=lp&time=1520565801490
+ [DEBUG] 2018-03-09 11:23:21,505 Line:163 UtilServlet.service 操作人:;请求数据：operation=[getUserInfo,];name=[lp,];time=[1520565801490,];
+ [DEBUG] 2018-03-09 11:23:21,788 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=sunCompany&name=lp&time=1520565801788
+ [DEBUG] 2018-03-09 11:23:21,788 Line:163 UtilServlet.service 操作人:;请求数据：operation=[sunCompany,];name=[lp,];time=[1520565801788,];
+ [DEBUG] 2018-03-09 11:23:25,819 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=getUserInfo&name=lp&time=1520565805819
+ [DEBUG] 2018-03-09 11:23:25,819 Line:163 UtilServlet.service 操作人:;请求数据：operation=[getUserInfo,];name=[lp,];time=[1520565805819,];
+ [DEBUG] 2018-03-09 11:23:25,832 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=sunCompany&name=lp&time=1520565805832
+ [DEBUG] 2018-03-09 11:23:25,832 Line:163 UtilServlet.service 操作人:;请求数据：operation=[sunCompany,];name=[lp,];time=[1520565805832,];
+ [DEBUG] 2018-03-09 11:23:26,796 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=getUserInfo&name=lp&time=1520565806792
+ [DEBUG] 2018-03-09 11:23:26,796 Line:163 UtilServlet.service 操作人:;请求数据：operation=[getUserInfo,];name=[lp,];time=[1520565806792,];
+ [DEBUG] 2018-03-09 11:23:26,804 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=sunCompany&name=lp&time=1520565806800
+ [DEBUG] 2018-03-09 11:23:26,808 Line:163 UtilServlet.service 操作人:;请求数据：operation=[sunCompany,];name=[lp,];time=[1520565806800,];
+ 

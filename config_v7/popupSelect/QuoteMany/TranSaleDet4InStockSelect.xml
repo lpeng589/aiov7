@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="TranSaleDet4InStockSelect" type="checkBox">
+     <table>tblCompany</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblBuyInStock.BillNo f1,
+      tblBuyInStock.TotalTaxAmount f2,
+      tblBuyInStock.AlreadyPayAmt f3,
+      tblBuyInStock.NeedPayAmt f4,
+      tblCompany.ComFullName f5
+  from tblBuyInStock
+  left join tblCompany on tblBuyInStock.CompanyCode = tblCompany.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>TranSaleDet4InStockSelect</remark>
+     <condition>tblBuyInStock.workFlowNodeName = 'finish' and tblBuyInStock.BillDate&lt;='@ValueofDB:BillDate' and tblCompany.classCode='@ValueofDB:InCompanyCode' and tblBuyInStock.NeedPayAmt &gt; 0</condition>
+     <changeCond></changeCond>
+     <orderBy>tblBuyInStock.BillNo,tblCompany.ComFullName</orderBy>
+     <displayFields>
+          <field name="tblBuyInStock.BillNo" width="100" searchType="match" keySearch="true" parentDisplay="true" display="tblTransferSaleDet4.RefbillID" orderBy="升" />
+          <field name="tblCompany.ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblBuyInStock.TotalTaxAmount" width="100" parentDisplay="true" display="tblTransferSaleDet4.BillAmt" />
+          <field name="tblBuyInStock.AlreadyPayAmt" width="100" parentDisplay="false" display="tblTransferSaleDet4.SettledAmt" />
+          <field name="tblBuyInStock.NeedPayAmt" width="100" parentDisplay="false" display="tblTransferSaleDet4.WexeBalAmt" />
+     </displayFields>
+     <saveFields>
+          <field name="tblBuyInStock.BillNo" parentName="tblTransferSaleDet4.RefbillID" display="tblTransferSaleDet4.RefbillID" relationKey="true" hidden="false" orderBy="升" />
+          <field name="tblBuyInStock.TotalTaxAmount" parentName="tblTransferSaleDet4.BillAmt" display="tblTransferSaleDet4.BillAmt" relationKey="false" hidden="false" />
+          <field name="tblBuyInStock.AlreadyPayAmt" parentName="tblTransferSaleDet4.SettledAmt" display="tblTransferSaleDet4.SettledAmt" relationKey="false" hidden="true" />
+          <field name="tblBuyInStock.NeedPayAmt" parentName="tblTransferSaleDet4.WexeBalAmt" display="tblTransferSaleDet4.WexeBalAmt" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

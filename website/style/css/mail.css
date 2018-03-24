@@ -1,0 +1,207 @@
+body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,select,legend,button,input,textarea,th,td {margin:0;padding:0;}
+body,button,input,select,textarea {font:12px/1.5 Microsoft Yahei;outline:0;}
+img{border:0;}
+em,i{font-style:normal;}
+b{font-weight:normal;}
+li{list-style:none;}
+.lf{float:left;display:inline-block;}
+.rf{float:right;display:inline-block;}
+.pr{position:relative;}
+.pa{position:absolute;}
+.clear{clear:both;}
+.hBtns{padding:1px 12px;font-weight:bold;cursor:pointer;display:inline-block;height:21px;line-height:21px;color:#666;border:1px #bbb solid;border-radius:3px;}
+.hBtns:hover{background:#f2f2f2;}
+.h-child-btn{position:relative;padding:0 17px 0 12px;}
+.triangle{width:0;height:0;font-size:0;line-height:0;position:absolute;border-color:#000 transparent transparent;border-style:solid dashed dashed;border-width:5px 4px 0;}
+.HeadingButton li .triangle{top:11px;right:4px;}
+.HeadingButton li:hover .triangle{-webkit-transform:rotate(180deg);transform:rotate(180deg);}
+
+.sb{ background:url(../images/mail/sbut.gif); width:47px; height:22px; border:0px; color:#fff;letter-spacing:5px; word-spacing:0px;margin-top:3px;}
+.MailSearch{ height:28px;width:100%; margin:10px 0 0 0;}
+.MailSearch li{ float:right;margin-right:10px;}
+.search_popup {width: 429px;height: 204px;border: 1px solid #CCD1D1;float: left;position: absolute;top: 150px;left: 250px;background: #fff;;-webkit-box-shadow: #666 0px 0px 10px;;-moz-box-shadow: #666 0px 0px 10px;;box-shadow: #666 0px 0px 10px;}
+.reply_div {width: 540px;height: 170px;border: 1px solid #CCD1D1;float: left;position: absolute;top: 20px;left: 150px;background: #fff;;-webkit-box-shadow: #666 0px 0px 10px;;-moz-box-shadow: #666 0px 0px 10px;;box-shadow: #666 0px 0px 10px;}
+.reply_div div {width: 100%;;height: 28px;line-height: 28px;background: url(/style1/images/oaimages/pop-up_tite.gif);}
+.search_popup div {width: 420px;;_width: 110%;height: 28px;line-height: 28px;padding-left: 9px;;background: url(/style1/images/oaimages/pop-up_tite.gif);font-weight: bold;}
+.search_popup ul {width: 400px;height: auto;float: left;;padding-left: 29px;padding-top: 20px;}
+.search_popup ul li {width: 175px;height: 36px;float: left;margin-right: 25px;}
+.search_popup ul li select {width: 120px;}
+.search_popup_bu {width: 100%;height: 30px;float: left;;text-align: center;margin-top: 20px;}
+.bu_1 {width: 62px;height: 19px;background: url(../images/oaimages/search.gif);margin: 0px 5px 0px 5px;border: 0px;cursor: pointer;}
+.bu_2 {width: 48px;height: 19px;background: url(../images/oaimages/close.gif);margin: 0px 5px 0px 5px;border: 0px;cursor: pointer;}
+.ico_4 {width: 16px;height: 16px;float: left;;background: url(/style1/images/oaimages/Icons.gif) no-repeat -27px 0px;margin: 2px 0px 0px 3px;}
+
+
+.toolbar{height:44px;width:100%;text-align:left;}
+.toolbat_center{float:left;display:inline-block;padding:0px;}
+.toolbu_01{cursor: pointer;width:46px; height:24px; line-height:24px; background:url(../images/mail/bu_01.gif); text-align:center; float:left;color:#000000}
+.toolbu_02{cursor: pointer;width:68px; height:24px; line-height:24px; background:url(../images/mail/bu_02.gif); text-align:center; float:left;color:#000000}
+.toolbu_03{width:67px; height:24px; background:url(../images/mail/bu_03.gif); text-align:center; float:left;}
+.toolbu_04{width:65px; height:24px; background:url(../images/mail/bu_04.gif); text-align:center; float:left;}
+.toolbu_05{width:53px; height:24px; background:url(../images/mail/bu_05.gif); text-align:center; float:left;}
+.toolbu_06{width:56px; height:24px; background:url(../images/mail/bu_06.gif); text-align:center; float:left;}
+.toolbu_07{cursor: pointer;width:84px; height:24px; line-height:24px; background:url(../images/mail/bu_07.gif); text-align:center; float:left;}
+.toolbat_center>ul{float:left;}
+.toolbat_center>ul>li{ float:left;display:inline-block;margin:0px 3px 0px 0px;}
+.toolbat_center>ul>li.tollbarover{}
+
+.d-menu-li{position:relative;}
+.d-menu-li:hover .hBtns{background:#f2f2f2;}
+.br-link{position:absolute;display:inline-block;width:100%;height:1px;background:red;z-index:100;top:10px;}
+.in-nav-ul{position:absolute;z-index:99;border:1px #bbb solid;min-width:90px;border-radius:4px;background:#fff;top:28px;display:none;box-shadow:0px 1px 5px RGBA(0,0,0,0.5);}
+.in-nav-ul>li{padding:0 0 0 10px;line-height:25px;cursor:pointer;}
+.in-nav-ul>li:hover{color:#3C78AA;background:#f9f9f9;}
+.frame-left{width:180px;}
+.frame-left>li{width:170px;display:inline-block;overflow:hidden;text-align:left;text-overflow:ellipsis;white-space:nowrap;}
+
+.list_left{width:300px;height:100%;float:left;background:#fff;  border:1px solid #B3E2FF; position:relative;}
+.list_left_topleft{width:5px; font-size:1px; height:5px;float:left; position:absolute; top:-1px; left:-1px;}
+.list_left_topright{width:5px; font-size:1px; height:5px;float:right;position:absolute; top:-1px; right:-1px;}
+.list_left_bottomleft{width:5px; font-size:1px; height:5px;float:left;position:absolute; bottom:-1px; left:-1px;}
+.list_left_bottomright{width:5px; font-size:1px; height:5px;float:right;position:absolute; bottom:-1px; right:-1px;}
+
+.maillisthead{height:25px;padding:0px;margin:5px 5px 0px 5px;border-bottom:1px solid #CCCCCC;white-space:nowrap; float:left;width:97%;}
+.listhead_down{width:92px; height:22px;vertical-align:middle; margin:0px 0px 0px 10px; float:right; text-align:center; background:url(../images/mail/drop-down.gif) no-repeat;}
+.maillisthead input{ vertical-align:middle;}
+.maillisttable {table-layout :fixed ; margin:5px 5px 0px 5px;}
+.maillisttable tbody tr{		
+	font-size:12px;	
+	width:100%;
+	height:42px;
+	text-align:left;
+}
+.maillisttable tbody tr td{
+	border-bottom:1px solid #bbb;
+	white-space:nowrap;overflow: hidden;text-overflow: ellipsis;
+}
+.fgx{width:1px;float:left;}
+.list_right{float:left;width:70%; background:#ffffff; border:1px solid #B3E2FF; }
+
+
+.si{
+	width:16px;
+	height:13px;  
+}
+.mc{white-space:nowrap;overflow: hidden;text-overflow: ellipsis;display:block;}
+.ma{
+	width:60px;text-align:right;white-space:nowrap;overflow: hidden;display:block;
+}
+.oalistRange_pagebar{white-space:nowrap; vertical-align:middle;	padding-left:10px;text-align:left;overflow:hidden;}
+.oalistRange_pagebar img,.oalistRange_pagebar input,.oalistRange_pagebar select,.oalistRange_pagebar button{ vertical-align:middle;}
+.oalistRange_pagebar button{ margin-top:-2px;}
+
+.left_list{float:left; width:194px; height:10px; margin-left:10px;}
+.mail_button{ float:left; width:100%; height:27px; margin:8px 0px 5px 18px;}
+.mail_button li{ float:left;  padding-left:32px; height:27px; line-height:27px;}
+.mail_button li a{ color:#484A4C; font-size:14px;}
+.left_list_menu{width:100%; background:#ffffff; border:1px solid #CCCCCC; position:relative;border-radius: 3px;}
+.navigation ul li,.navigation span,.navigation li,.navigation{ background:none;}
+.navigation a,.navigation_bottom a{ color:#484A4C;}
+.navigation_bottom li{line-height:25px;}
+#oalistRange2{padding:0px 8px 8px 8px;float:left;overflow:auto;width:97%;}
+#oalistRange2 ul{border-bottom:1px solid #D0D0D0; margin:0px; margin-bottom:8px;}
+#oalistRange2 ul li{ margin:0px; width:100%;  line-height:22px;}
+#oalistRange2 div{ float:left; height:100%}
+
+.oamainhead{ border:none;float:left; margin-top:10px; padding-top:5px; color:#484A4C;}
+.oalistRange_write{width:100%; background:#ffffff; border:1px solid #B3E2FF; position:relative; }
+.oalistRange_topleft{width:5px; font-size:1px; height:5px;float:left; background:url(../images/mail/top_left.gif) no-repeat; position:absolute; top:-1px; left:-1px;}
+.oalistRange_topright{width:5px; font-size:1px; height:5px;float:right; background:url(../images/mail/top_right.gif) no-repeat;position:absolute; top:-1px; right:-1px;}
+.oalistRange_bottomleft{width:5px; font-size:1px; height:5px;float:left; background:url(../images/mail/bottom_left.gif) no-repeat;position:absolute; bottom:-1px; left:-1px;}
+.oalistRange_bottomright{width:5px; font-size:1px; height:5px;float:right; background:url(../images/mail/bottom_right.gif) no-repeat; position:relative; bottom:-1px; right:-1px;}
+
+.oalistRange_write table{width:99%;height:100%;}
+.oalistRange_write table td ul{float:left; width:99%; margin:8px 0px 8px 8px; padding:0px 0px 8px 8px; border-bottom:1px solid #939292;}
+.oalistRange_write table td ul li{ float:left;}
+.oalistRange_write table td ul li button{ border:0px; padding:0px; color:#000;}
+.oalistRange_write table td .mail_label{width:99%; float:left;}
+.oalistRange_write table td div .mail_label{ width:100%; float:left;  line-height:24px; margin:2px 0px 2px 0px}
+.oalistRange_write table td div .mail_label label{ width:70px; float:left;margin-right:5px; color:#606060; text-align:right;}
+.textKK{ border:1px solid #BBBBBB; height:24px; line-height:20px; width:300px;}
+.oalistRange_write table td div .mail_label span{ margin-right:20px; float:left; color:#606060;}
+.oalistRange_write table td div .mail_label span a{ color:#606060; margin:0px 5px 0px 5px}
+.oalistRange_write table td div .mail_label span div{float:left; width:auto;}
+.mail_content label{width:70px; float:left;margin-right:3px; color:#606060; text-align:right;}
+
+.mailCL{width:160px; height:50%; margin:10px 0px 10px 0px; float:left; border:1px solid #7F9DB9;}
+.mailCLTitle{ font-weight:bold; margin:5px 0px 0px 5px;padding-left:5px; float:left;}
+.mailfdj{ float:left; margin-bottom:5px;}
+.mailfdj_text{width:130px; margin-left:5px; border-left:1px solid #C3C3C3;border-top:1px solid #C3C3C3;border-bottom:1px solid #C3C3C3;border-right:0px; height:19px; line-height:19px;}
+.mailfdj_button{border:0px; width:17px; height:19px; background:url(../images/mail/sdj.gif) left no-repeat center;}
+.mailCaLList{ overflow:hidden; overflow-y:auto; width:100%; height:87%; float:left; margin:0px; padding:0px; border-top:1px solid #CCCCCC;}
+.mailCaLList_title{width:100%; margin:0px; padding:0px; padding-left:5px; height:20px; float:left; line-height:20px; background:#EFF5FB; border-bottom:1px solid #D3E1F0;}
+.listMail{ background:none; border:none; padding-left:5px; float:left;}
+
+.AccountList{width:99%; height:100%; background:#ffffff; float:left;border:1px solid #B3E2FF; position:relative;}
+
+.AccountList_top{float:left; width:100%; height:30px; margin-top:8px;}
+.AccountList_top button{float:right; border:none; margin:0px 10px 0px 0px; padding:0px;}
+.M_AccountList{width:98.2%; margin:0px 0px 0px 10px;border-bottom:1px solid #C8CECE;border-left:1px solid #C8CECE;border-right:1px solid #C8CECE;}
+.M_AccountList thead{background:#F9F9F9;}
+.M_AccountList td{border-top:1px solid #C8CECE;height:30px; line-height:30px; text-align:center;}
+.M_AccountList td a{ color:#000;}
+
+.MailAccount{text-align:center; width:99%; height:100%; position:relative;}
+.MailAccount_content{margin:auto;}
+.MailAccount_title{width:90%; float:left; background:url(../images/mail/news_M.gif) no-repeat left; padding-left:35px;  margin:16px 0px 8px 20px; text-align:left; height:25px; line-height:25px;}
+.MailAccount_form{padding-top:40px;}
+.MailAccount_form li{ float:left; width:100%; text-align:left; height:30px;}
+.MailAccount_form li span{ width:150px; float:left;height:30px;line-height:30px;text-align:right;}
+.MailAccount_form li p{ float:left; color:#838383;}
+.MailAccount_form li input{ border:1px solid #bbb; height:22px; width:230px; background:#fff; vertical-align:middle}
+.MailAccount_form li button{ border:0px; padding:0px; margin:0px; margin:5px 5px 0px 5px; text-align:center;}
+.MailAccount_smtp{display:none; width:322px; border:3px solid #D7D7D7; cursor:default; position:absolute; left:20%; top:50px;}
+.MailAccount_smtp_C_W{position:absolute; top:-3px; right:-3px;}
+.MailAccount_smtp_C_W a{background:url(../images/mail/C_W.gif); width:19px; height:19px; display:block;}
+.MailAccount_smtp_div{width:100%; height:243px; border:1px solid #C3C2C2; background:#fff;}
+.MailAccount_smtp_title{text-align:left; width:90%; margin:auto; height:40px; line-height:40px; border-bottom:1px solid #D7D7D7;}
+.MailAccount_smtp_div ul{margin:0px; width:90%;}
+.MailAccount_smtp_div ul li{ float:left; width:100%; text-align:left; height:30px; line-height:30px;}
+.MailAccount_smtp_div ul ol{ background:#F5F5F5; float:left; height:20px; line-height:20px; width:100%; margin:0px; padding:8px;}
+.MailAccount_smtp_div ul ol input{ border:1px solid #bbb; height:22px; width:150px; background:#fff; vertical-align:middle}
+.MailAccount_smtp_button{margin:8px  auto auto 10px;}
+.search_text{ height:24px; line-height:24px; color:#c0c0c0; border:0px; vertical-align:middle; border-top:1px solid #bbbbbb; border-left:1px solid #bbbbbb; border-bottom:1px solid #bbbbbb; width:130px;background:#fff;}
+.search_button{ height:24px; vertical-align:middle; border:0px; border-top:1px solid #bbbbbb; border-right:1px solid #bbbbbb; border-bottom:1px solid #bbbbbb; width:20px; background:url(../images/bbs/search.gif) center}
+
+
+.btn_a{color:#344F6E;float:left;display:inline-block;line-height:26px;margin-left:10px;cursor:pointer;}
+.time-block-email{overflow:auto;max-height:380px;}
+.time-block-email .p-time{color:#468dc8;font-size:14px;font-weight:bold;border-bottom:1.5px #C6C6C6 solid;padding:5px 0;}
+.time-block-email .p-time>i{font-size:12px;font-family:����;font-weight:normal;}
+.head-t-ul{overflow:hidden;padding:5px 125px 5px 180px;position:relative;background:#F3F4F6;border:1px #C6C7C9 solid;}
+.head-t-ul>li{display:inline-block;border-left:1px #ccc solid;}
+.head-t-ul>.img{position:absolute;left:30px;top:7px;}
+.head-t-ul>.cbox{position:absolute;left:5px;top:8px;}
+.head-t-ul>.addressee-li{position:absolute;left:60px;top:6px;width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-left:0;}
+.head-t-ul>.time-li{position:absolute;right:0;top:6px;width:120px;padding-left:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.head-t-ul>.content-li{width:100%;box-sizing:border-box;padding-left:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+
+
+
+.content-ul{overflow:hidden;padding:5px 120px 5px 180px;position:relative;border-bottom:1px #efefef solid;}
+.content-ul:hover{background:#f2f2f2;}
+.content-ul>li{display:inline-block;}
+.content-ul>.img{position:absolute;left:30px;top:7px;cursor:pointer;}
+.content-ul>.cbox{position:absolute;left:5px;top:8px;}
+.content-ul>.addressee-li{position:absolute;left:60px;top:6px;width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.content-ul>.time-li{position:absolute;right:0;top:6px;width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.content-ul>.content-li{width:100%;box-sizing:border-box;padding-left:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+
+
+div.scott {float:right;padding:10px 0 20px 0;text-align:center;margin:3px 10px 0 0;}
+div.scott a {border:#ddd 1px solid;padding:3px 8px; color: #88af3f; margin-right: 2px; text-decoration: none}
+div.scott a:hover {border: #85bd1e 1px solid;color:#638425;background-color: #f1ffd6}
+div.scott a:active {border: #85bd1e 1px solid;color:#638425;background-color: #f1ffd6}
+div.scott span.current {border:#b2e05d 1px solid; padding:3px 8px;font-weight:bold;color:#fff;margin-right:2px;background-color:#b2e05d}
+div.scott span.disabled {border:#f3f3f3 1px solid; padding:2px 5px;color:#ccc;margin-right:2px;}
+div.scott input{width:20px;border:1px solid #d5d5d5;text-align:center;}
+div.scott .page-number{margin-left:5px;color:#88af3f;}
+div.scott .page-number a{padding:2px 4px 2px 2px;}
+div.scott select{margin-left:7px;}
+
+.btn_detail{border-bottom: 1px solid #cccccc;}
+.btn_detail ul li{ float:left;display:inline-block;margin: 20px 0 0 10px;}
+
+.HeadingButton{float: left;padding-top:10px;}

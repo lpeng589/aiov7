@@ -1,0 +1,62 @@
+/*--icon--*/
+
+.icon57,.icon58{background:url(../images/home/ico_1.gif);}
+.icon57,.icon58{width:12px; height:12px;}
+.icon57{background-position: -79px -153px;}
+.icon58{background-position: -91px -153px;}
+
+.shortBg{position:absolute; top:35px; width:170px;height:410px; left:1px; overflow:hidden; z-index:2000; background:url(../images/home/bg.png) ; }
+.shortcut{position:absolute; top:35px; left:1px; overflow:hidden; z-index:2001; }
+.shortcut_btn{background:url(../images/home/bg.png) 0 -430px; width:8px; height:70px; position:absolute; top:35px; left:0; display:none; }
+.shortcut iframe{height:550px}
+
+.shortcut_top{ width:170px; height:39px; overflow:hidden; position:relative; font-weight:bold; color:#fff; font-size:12px;}
+.shortcut_top span{float:left; margin:16px 0 0 40px; }
+.shortcut_top b{float:right; cursor:pointer; margin:12px 10px 0 0; position:absolute; top:0px; right:-12px}
+
+.shortcut_body{width:170px;  height:500px; padding:2px 0 5px 4px;}
+#shortcutBody{ width:165px;overflow-y:scroll; height:468px; background:#F2F2F2; overflow-x:hidden}
+#shortcutId{}
+#shortcutId div{ height:26px; overflow:none;}
+.shortcut_body a{width:145px; height:26px; padding:3px 0px 3px 0px; display:block; margin:0px 0px 0px 0px; float:left; line-height:22px; overflow:hidden; color:#000;}
+.shortcut_body a:hover{ color:#fff; text-decoration:none;	-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;}
+.shortcut_body span{margin:0px 0px 0px 0px; float:left;}
+.shortcut_body span img{width:20px; height:20px;}
+
+.shortcut_status{width:130px; margin:auto; padding-top:10px; overflow:hidden;}
+.shortcut_status li{float:left; width:43px; padding:5px 0;}
+.shortcut_status li span{float:left; margin:-2px 3px 0 5px; cursor:pointer; _margin-right:1px;}
+.shortcut_status li a, .shortcut_status li a:hover{font-weight:bold; color:#0098c6; text-decoration:none; text-align:center; width:40px; float:left;}
+.shortcut_status_line{height:2px; font-size:0; width:120px; margin:auto;}
+.shortcut_msg{width:130px; margin:10px auto; line-height:20px; color:#2b6ca3;}
+.shortcut_msg b{font-weight:bold; color:#fff;}
+
+.shortcut_trundle{
+	width:12px;
+	height:30px;
+	position:absolute;
+	float:left;
+	right:27px;
+	bottom:26px;
+	z-index:2100;
+}
+.shortcut_up,.shortcut_down,.shortcut_up:hover,.shortcut_down:hover,{
+	width:15px;
+	height:15px;
+	display:block;
+	font-size:1px;
+	background:url(../images/home/SmallIcon.png);
+	_background:url(../images/home/SmallIcon.gif);
+	background-position:73px 31px;
+}
+.shortcut_up:hover{
+
+	background-position:56px 31px;
+}
+.shortcut_down,.shortcut_down:hover{
+	margin-top:306px;
+	background-position:73px 48px;
+}
+.shortcut_down:hover{
+	background-position:56px 48px;
+}

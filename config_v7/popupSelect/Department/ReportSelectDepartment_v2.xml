@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectDepartment_v2" type="checkBox" version="2" belongTableName="tblDepartment">
+     <table>tblDepartment</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag>true</saveParentFlag>
+     <defineSQL>select 
+      tblDepartment.classCode f1,
+      tblDepartment.isCatalog f2,
+      tblDepartment.DeptCode f3,
+      tblDepartment.DeptFullName f4,
+	tblDepartment.DeptFullNamePYM f5
+  from tblDepartment
+     </defineSQL>
+     <classCode>tblDepartment.classCode</classCode>
+     <condition>tblDepartment.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <!--<orderBy></orderBy>-->
+     <displayFields>
+          <field name="tblDepartment.DeptCode" width="100" searchType="match" parentDisplay="false" />
+          <field name="tblDepartment.DeptFullName" width="80" searchType="match" parentDisplay="true" display="tblBuyInStock.DepartmentCode" />
+		  <field name="tblDepartment.DeptFullNamePYM" width="100" searchType="match" parentDisplay="false" hiddenInput="true"/>
+     </displayFields>
+     <saveFields>
+          <field name="tblDepartment.classCode" parentName="DepartmentCode" relationKey="false" hidden="true" />
+          <field name="tblDepartment.isCatalog" parentName="isCatalog" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

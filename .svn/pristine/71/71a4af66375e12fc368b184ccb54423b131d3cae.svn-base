@@ -1,0 +1,454 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+<!--
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ *
+ * == BEGIN LICENSE ==
+ *
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ *
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ *
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ *
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ *
+ * == END LICENSE ==
+ *
+ * Text field dialog window.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta content="noindex, nofollow" name="robots" />
+		<script type="text/javascript" src="/js/jquery.js"></script>
+		<script language="javascript" src="/js/function.js"></script>
+		<script src="common/fck_dialog_common.js" type="text/javascript"></script>
+		<script type="text/javascript">
+	
+var dialog	= window.parent ;
+var oEditor = dialog.InnerDialogLoaded() ;
+var oDOM = oEditor.FCK.EditorDocument ;
+var oActiveEl = dialog.Selection.GetSelectedElement() ;
+
+window.onload = function(){
+	oEditor.FCKLanguageManager.TranslatePage(document) ;
+	if ( oActiveEl && oActiveEl.tagName == 'INPUT' && GetAttribute( oActiveEl,'inputtype') == 'BillNo' ){
+		GetE('txtName').value	= GetAttribute( oActiveEl, 'title' )  ;
+		$('#txtValue').html(oActiveEl.value);
+		GetE('inputType').value	= GetAttribute( oActiveEl,'inputtype') ;
+	    GetE('billValue').value	= GetAttribute( oActiveEl,'billvalue') ;
+		GetE('start').value	= GetAttribute( oActiveEl,'start') ;
+		GetE('step').value	= GetAttribute( oActiveEl,'step') ;
+		
+		var resetTime= GetAttribute( oActiveEl,'resettime') ;
+		$("#resetTime option[value="+resetTime+"]").attr("selected","selected");
+		
+		if(GetAttribute( oActiveEl,'isback')=="true"){
+			GetE('isBack').checked=true;
+		}else{
+			GetE('isBack').checked=false;
+		}
+	}else{
+		oActiveEl = null ;
+	}
+	$("#oldVal").val(GetE('txtName').value);
+	var billValue=GetE('billValue').value;
+	if(billValue.length > 0){
+		var billVal=$("#billValue").val();
+		fillBillValue(billVal);
+	}
+
+	dialog.SetOkButton( true ) ;
+	dialog.SetAutoSize( true ) ;
+	SelectField( 'txtName' ) ;
+}
+
+function Ok(){
+	if (GetE('txtName').value.Trim().length == 0 ){
+		alert( "控件名称不能为空！" ) ;
+		GetE('txtName').focus() ;
+		return false ;
+	}
+
+	var billValue=$("#billValue").val();
+	if($.trim(billValue).length==0){
+		alert("编号规则不能为空，请重新输入!");
+		return false;
+	}
+	if(!(billValue.indexOf("{serial")>-1)){
+		alert("编号规则必须包含一个流水号，请重新输入!");
+		return false;
+	}
+	//判断是否存在重复标签
+	if(!checkTitle(window.parent.Selection.GetSelectedElement() )){
+		return false;
+	}
+
+	oEditor.FCKUndo.SaveUndoStep() ;
+	oActiveEl = CreateNamedElement( oEditor, oActiveEl, 'INPUT', { type: 'text'} ) ;
+	SetAttribute( oActiveEl, 'title'    , GetE('txtName').value) ;
+	SetAttribute( oActiveEl, 'value'    , $('#txtValue').html()) ;
+	SetAttribute( oActiveEl, 'billvalue'	,GetE('billValue').value) ;
+	SetAttribute( oActiveEl, 'start'	    ,GetE('start').value) ;
+	SetAttribute( oActiveEl, 'step'	        ,GetE('step').value) ;
+	SetAttribute( oActiveEl, 'inputtype'	,GetE('inputType').value) ;
+	var resetTime=$("#resetTime option:selected").val();
+	SetAttribute( oActiveEl, 'resettime'	,resetTime);
+	
+	if(GetE('isBack').checked){
+		SetAttribute( oActiveEl, 'isback'	, 'true' ) ;
+	}else{
+		SetAttribute( oActiveEl, 'isback'	, 'false' ) ;
+	}
+	return true ;
+}
+
+function paterns(){
+	var patterns = "";
+	jQuery(":input[name='patterns']").each(function(){
+		var value = jQuery(this).val();
+		if($(this).attr("id")!="patterns"){
+			patterns = patterns.substring(0,patterns.length-1)+value+"}";
+		}else{
+			patterns += value;
+		}
+	});
+	patterns = patterns.replace("undefined","");
+	if(patterns == ""){
+		return false;
+	}
+	//保存
+	jQuery("#pattern").val(patterns);
+}
+	
+
+//option选中的值
+function checkboxs(obj){
+	var value=$(obj).attr("lang");
+	var objvalue = $(obj).val();
+	if(objvalue.indexOf('input')!=-1){
+		if(document.getElementById(value)==undefined){
+			jQuery(obj).after("<input id='"+value+"' name='patterns' type='text' style='width:30px;height:13px;' onChange='checkcase()'/>");
+		}
+	}else{
+		jQuery("input[id='"+value+"']").remove();
+	}
+	checkcase();
+}
+	
+function checkcase(){
+	var patterns = "";
+	var showpatterns="";
+	var start = jQuery("#start").val();
+	if(!isInt(start) || start<0){
+		alert("起始流水号必须为大于等于0的正整数!");
+		jQuery("#start").focus();
+		return false;
+	}
+	jQuery(":input[name='patterns']").each(function(){
+		var value = jQuery(this).val();
+		if($(this).attr("id")!="patterns"){
+			patterns = patterns.substring(0,patterns.length-1)+value+"}";
+			showpatterns = showpatterns.substring(0,showpatterns.length-1)+value+"}";
+		}else{
+			if(value.indexOf('serial')!=-1){
+				var numbers = value.substring(value.indexOf(' ')+1,value.length-1);
+				var number = numbers+start;
+				var numberstr = number.substring(number.length-numbers.length);
+				patterns += value.replace(numbers,numberstr);
+			}else{
+				patterns += value;
+			}
+			showpatterns+=value;
+		}
+	});
+	
+	$("#billValue").val(showpatterns);
+	var url = "/OAWorkFlowTableAction.do?operation=1&selectType=queryCase&patterns="+encodeURIComponent(patterns);
+	jQuery.ajax({type: "POST", url: url, success: function(result){
+	    jQuery("#txtValue").html(result);
+	}});
+}
+	
+	
+//填充编号规则的值
+function fillBillValue(patternvalue){
+	patternvalue = patternvalue.replaceAll("{","|{").replaceAll("}","}|");
+	if(patternvalue.lastIndexOf('|')==patternvalue.length-1){
+		patternvalue = patternvalue.substring(0,patternvalue.length-1);
+	}
+	var value = patternvalue.split("|");
+	
+	var j=0;
+	jQuery(":input[name='patterns']").each(function(){
+		//存在
+		if(value[j]!=undefined){
+			$(this).val(value[j]);		
+		}
+		j++;
+	});
+}
+</script>
+
+	</head>
+	<body style="overflow: hidden">
+		<input type="hidden" value="" id="oldVal" name="oldVal" />
+		<input type="hidden" id="inputType" name="inputType" size="25" value="BillNo" />
+		<input type="hidden" id="billValue" name="billValue" />
+		<table width="100%" style="height: 100%">
+			<tbody>
+				<tr>
+					<td align="right">
+						控件名称：
+					</td>
+					<td>
+						<input name="txtName" id="txtName" size="20">
+					</td>
+				</tr>
+				<tr id="noRole">
+					<td align="right" nowrap="" style="vertical-align: top; width: 90px;">
+						编号规则：
+					</td>
+					<td id="copyTd">
+						<input name="patterns" id="patterns" type="text"  style="width:40px;margin-right:2px;" onchange="checkcase();">
+						<select name="patterns" lang="lang_1" id="patterns"
+							onchange="checkboxs(this)" style="width:120px;height:20px;">
+							<option value=""></option>
+							<option value="{date yy}">
+								年年
+							</option>
+							<option value="{date MM}">
+								月月
+							</option>
+							<option value="{date dd}">
+								日日
+							</option>
+							<option value="{date yyyy}">
+								年年年年
+							</option>
+							<option value="{date yyyyMMdd}">
+								年年年年月月日日
+							</option>
+							<option value="{date yyyy-MM-dd}">
+								年年年年-月月-日日
+							</option>
+							<option value="{date yyyy/MM/dd}">
+								年年年年/月月/日日
+							</option>
+							<option value="{login.getempFullName}">
+								用户全称
+							</option>
+							<option value="{login.getname}">
+								登录名
+							</option>
+							<option value="{login.getdepartCode}">
+								部门编号
+							</option>
+							<option value="{login.getdepartmentName}">
+								部门名称
+							</option>
+							<option value="{serial 000}">
+								流水号格式[000]
+							</option>
+							<option value="{serial 0000}">
+								流水号格式[0000]
+							</option>
+							<option value="{serial 00000}">
+								流水号格式[00000]
+							</option>
+						</select><br/>
+						<input name="patterns" id="patterns" type="text"  style="width:40px;margin-right:2px;" onchange="checkcase();">
+						<select name="patterns" lang="lang_2" id="patterns"
+							onchange="checkboxs(this)" style="width:120px;height:20px;">
+							<option value=""></option>
+							<option value="{date yy}">
+								年年
+							</option>
+							<option value="{date MM}">
+								月月
+							</option>
+							<option value="{date dd}">
+								日日
+							</option>
+							<option value="{date yyyy}">
+								年年年年
+							</option>
+							<option value="{date yyyyMMdd}">
+								年年年年月月日日
+							</option>
+							<option value="{date yyyy-MM-dd}">
+								年年年年-月月-日日
+							</option>
+							<option value="{date yyyy/MM/dd}">
+								年年年年/月月/日日
+							</option>
+							<option value="{login.getempFullName}">
+								用户全称
+							</option>
+							<option value="{login.getname}">
+								登录名
+							</option>
+							<option value="{login.getdepartCode}">
+								部门编号
+							</option>
+							<option value="{login.getdepartmentName}">
+								部门名称
+							</option>
+							<option value="{serial 000}">
+								流水号格式[000]
+							</option>
+							<option value="{serial 0000}">
+								流水号格式[0000]
+							</option>
+							<option value="{serial 00000}">
+								流水号格式[00000]
+							</option>
+						</select><br/>
+						<input name="patterns" id="patterns" type="text"  style="width:40px;margin-right:2px;" onchange="checkcase();">
+						<select name="patterns" lang="lang_3" id="patterns"
+							onchange="checkboxs(this)" style="width:120px;height:20px;">
+							<option value=""></option>
+							<option value="{date yy}">
+								年年
+							</option>
+							<option value="{date MM}">
+								月月
+							</option>
+							<option value="{date dd}">
+								日日
+							</option>
+							<option value="{date yyyy}">
+								年年年年
+							</option>
+							<option value="{date yyyyMMdd}">
+								年年年年月月日日
+							</option>
+							<option value="{date yyyy-MM-dd}">
+								年年年年-月月-日日
+							</option>
+							<option value="{date yyyy/MM/dd}">
+								年年年年/月月/日日
+							</option>
+							<option value="{login.getempFullName}">
+								用户全称
+							</option>
+							<option value="{login.getname}">
+								登录名
+							</option>
+							<option value="{login.getdepartCode}">
+								部门编号
+							</option>
+							<option value="{login.getdepartmentName}">
+								部门名称
+							</option>
+							<option value="{serial 000}">
+								流水号格式[000]
+							</option>
+							<option value="{serial 0000}">
+								流水号格式[0000]
+							</option>
+							<option value="{serial 00000}">
+								流水号格式[00000]
+							</option>
+						</select><br/>
+						<input name="patterns" id="patterns" type="text"  style="width:40px;margin-right:2px;" onchange="checkcase();">
+						<select name="patterns" lang="lang_4" id="patterns"
+							onchange="checkboxs(this)" style="width:120px;height:20px;">
+							<option value=""></option>
+							<option value="{date yy}">
+								年年
+							</option>
+							<option value="{date MM}">
+								月月
+							</option>
+							<option value="{date dd}">
+								日日
+							</option>
+							<option value="{date yyyy}">
+								年年年年
+							</option>
+							<option value="{date yyyyMMdd}">
+								年年年年月月日日
+							</option>
+							<option value="{date yyyy-MM-dd}">
+								年年年年-月月-日日
+							</option>
+							<option value="{date yyyy/MM/dd}">
+								年年年年/月月/日日
+							</option>
+							<option value="{login.getempFullName}">
+								用户全称
+							</option>
+							<option value="{login.getname}">
+								登录名
+							</option>
+							<option value="{login.getdepartCode}">
+								部门编号
+							</option>
+							<option value="{login.getdepartmentName}">
+								部门名称
+							</option>
+							<option value="{serial 000}">
+								流水号格式[000]
+							</option>
+							<option value="{serial 0000}">
+								流水号格式[0000]
+							</option>
+							<option value="{serial 00000}">
+								流水号格式[00000]
+							</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">例如：</td>
+					<td>
+						<label name="txtValue" id="txtValue" ></label>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						起始流水号：
+					</td>
+					<td>
+						<input name="start" id="start" value="1" onchange="checkcase()">
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						流水号增量：
+					</td>
+					<td>
+						<input name="step" id="step" value="1">
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						重置周期：
+					</td>
+					<td>
+						<select name="resetTime" id="resetTime">
+						<option value="year">年</option>
+						<option value="month">月</option>
+						<option value="day">日</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						启用补号：
+					</td>
+					<td>
+						<input id="isBack" type="checkbox" />&nbsp;<font color="blue">注意：更改后，需重新启动服务器</font>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</body>
+</html>

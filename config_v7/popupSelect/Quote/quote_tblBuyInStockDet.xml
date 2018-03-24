@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="quote_tblBuyInStockDet">
+     <table>viewBuyInStock</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      viewBuyInStock.id f1,
+      tblGoods.GoodsNumber f2,
+      tblGoods.GoodsFullName f3,
+      tblGoods.GoodsSpec f4,
+      tblGoods.GoodsFullNamePYM f5,
+      viewBuyInStock.BatchNo f6,
+      viewBuyInStock.Inch f7,
+      viewBuyInStock.Hue f8,
+      viewBuyInStock.yearNO f9,
+      viewBuyInStock.ProDate f10,
+      viewBuyInStock.Availably f11,
+      viewBuyInStock.Qty f12,
+      viewBuyInStock.Price f13,
+      viewBuyInStock.FactInQty f14,
+      viewBuyInStock.BackQty f15
+  from viewBuyInStock
+		left join tblGoods on viewBuyInStock.GoodsCode=tblGoods.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>采购退货明细引用采购入库明细</remark>
+     <condition>(viewBuyInStock.FactInQty &gt; 0)</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.GoodsNumber" width="120" parentDisplay="false" orderBy="升" />
+          <field name="tblGoods.GoodsFullName" width="150"  parentDisplay="false" orderBy="升" />
+          <field name="tblGoods.GoodsSpec" width="100"  parentDisplay="false" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100"  parentDisplay="true" />
+          <field name="viewBuyInStock.BatchNo" width="120"  parentDisplay="false" />
+          <field name="viewBuyInStock.Inch" width="70"  parentDisplay="false" />
+          <field name="viewBuyInStock.Hue" width="70"  parentDisplay="false" />
+          <field name="viewBuyInStock.yearNO" width="70"  parentDisplay="false" />
+          <field name="viewBuyInStock.ProDate" width="70"   parentDisplay="false" display="tblBuyOutStockDet.ProDate" />
+          <field name="viewBuyInStock.Availably" width="70"   parentDisplay="false" display="tblBuyOutStockDet.Availably" />
+          <field name="viewBuyInStock.Qty" width="100" parentDisplay="false" />
+          <field name="viewBuyInStock.Price" width="100" parentDisplay="false" />
+          <field name="viewBuyInStock.FactInQty" width="100" parentDisplay="false" />
+          <field name="viewBuyInStock.BackQty" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="viewBuyInStock.id" parentName="@TABLENAME.SourceID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

@@ -1,0 +1,894 @@
+[INFO ] 2017-12-25 08:44:28,501 Line:206 系统开始启动，最大内存：1792;目前总内存：254;目前空闲内存：172
+ [INFO ] 2017-12-25 08:44:28,742 Line:284 ===========Tomcat Port=8888
+ [INFO ] 2017-12-25 08:44:34,681 Line:2660 ---------------------------------first read dog =======-----------
+ [DEBUG] 2017-12-25 08:44:34,883 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canJxc=1 
+ [DEBUG] 2017-12-25 08:44:34,900 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canOa=1 
+ [DEBUG] 2017-12-25 08:44:34,900 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canCrm=1 
+ [DEBUG] 2017-12-25 08:44:34,900 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canHr=1 
+ [DEBUG] 2017-12-25 08:44:34,916 Line:594 select AccPeriod,AccMonth,AccYear,scompanyId,statusId,isBegin from tblAccPeriod where statusId=1 or isBegin=1
+ [DEBUG] 2017-12-25 08:44:34,916 Line:626 ------Init initAccPeriod record:1
+ [DEBUG] 2017-12-25 08:44:35,947 Line:1061 ------Init Enumeration record:390
+ [DEBUG] 2017-12-25 08:44:35,969 Line:1091 ------Init WorkProfession record:58
+ [DEBUG] 2017-12-25 08:44:36,000 Line:1121 ------Init District record:3984
+ [DEBUG] 2017-12-25 08:44:36,016 Line:1152 ------Init deptMap record:1
+ [DEBUG] 2017-12-25 08:44:37,063 Line:1832 ------Init ModuleList record:
+ [DEBUG] 2017-12-25 08:44:37,063 Line:2855 --------Init ModuleList Successful---------------
+ [DEBUG] 2017-12-25 08:44:37,606 Line:297  select * from tblDBTableInfo order by TableName 
+ [DEBUG] 2017-12-25 08:44:37,684 Line:370 select * from tblDBFieldInfo order by tableId,listOrder
+ [DEBUG] 2017-12-25 08:44:38,497 Line:538 ------Init TableInfo record:634
+ [DEBUG] 2017-12-25 08:44:38,520 Line:651  select cataName,disName,module,tableName,nameField,codeField from tblScopeCataData order by orderby 
+ [DEBUG] 2017-12-25 08:44:38,535 Line:682 ------Init TableInfo record:4
+ [DEBUG] 2017-12-25 08:44:38,551 Line:775 ------Init initModuleField record:0
+ [DEBUG] 2017-12-25 08:44:38,551 Line:702  select tableName,sentence from tblPopDisSentence where statusId=0 order by tableName 
+ [DEBUG] 2017-12-25 08:44:38,566 Line:721 ------Init TableInfo record:26
+ [DEBUG] 2017-12-25 08:44:38,598 Line:891 ------Init PropInfo record:7
+ [DEBUG] 2017-12-25 08:44:42,020 Line:2947 --------Init Config File ---------------
+ [ERROR] 2017-12-25 08:44:42,371 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\ffd4bcdd_1701241708235230006.xml (系统找不到指定的文件。)
+ [DEBUG] 2017-12-25 08:44:42,387 Line:1873 ------Init RefreshTime 
+ [DEBUG] 2017-12-25 08:44:42,449 Line:2994 --------Init SMS Start ---------------
+ [INFO ] 2017-12-25 08:44:42,903 Line:3011 -------System init Secussful Set Normal status--------------
+ [DEBUG] 2017-12-25 08:44:42,903 Line:3855 --------Init Dog Successful---------------
+ [INFO ] 2017-12-25 08:44:44,848 Line:89 SAFE 数据库第一个备份任务启动，时间2017-12-25 00:00:00
+ [INFO ] 2017-12-25 08:44:44,848 Line:144 SAFE 备份任务开始执行，时间2017-12-25 08:44:44
+ [INFO ] 2017-12-25 08:44:44,860 Line:137 SAFE 碎片任务启动，时间2017-12-31 00:00:00
+ [INFO ] 2017-12-25 08:44:52,795 Line:148 SAFE 备份任务执行成功，时间2017-12-25 08:44:52
+ [DEBUG] 2017-12-25 08:45:43,085 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2017-12-25 08:45:53,145 Line:2992 MobileAjax 请求地址：/MobileAjax?op=getSessEmp
+ [DEBUG] 2017-12-25 08:45:53,160 Line:3003 MobileAjax 操作人:;请求数据：op=[getSessEmp,];
+ [DEBUG] 2017-12-25 08:45:53,161 Line:243 AIOApi op=getSessEmp&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 08:45:53,208 Line:2961 MobileAjax 操作人:;返回数据：{"code":"NOLOGIN","msg":"未登陆"}
+ [DEBUG] 2017-12-25 08:46:03,893 Line:2992 MobileAjax 请求地址：/MobileAjax?op=LOGIN
+ [DEBUG] 2017-12-25 08:46:03,894 Line:3003 MobileAjax 操作人:;请求数据：op=[LOGIN,];name=[admin,];password=[21232f297a57a5a743894a0e4a801fc3,];
+ [DEBUG] 2017-12-25 08:46:03,894 Line:243 AIOApi op=LOGIN&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 08:46:03,946 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2017-12-25 08:46:04,005 Line:2987 select count(*) from tblSunCompanys a where a.classCode like '00001_____%'
+ [DEBUG] 2017-12-25 08:46:04,027 Line:530 select AccYear,AccOverYear from  tblAccPeriod group by Accyear,AccOverYear
+ [DEBUG] 2017-12-25 08:46:04,189 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"登陆成功"}
+ [DEBUG] 2017-12-25 08:46:04,663 Line:2992 MobileAjax 请求地址：/MobileAjax?op=getSessEmp
+ [DEBUG] 2017-12-25 08:46:04,664 Line:3003 MobileAjax 操作人:admin;请求数据：op=[getSessEmp,];
+ [DEBUG] 2017-12-25 08:46:04,664 Line:243 AIOApi op=getSessEmp&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 08:46:04,668 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"departmentName":"默认部门","titleId":"12","name":"admin","id":"1"}}
+ [DEBUG] 2017-12-25 08:46:04,699 Line:2992 MobileAjax 请求地址：/MobileAjax?op=getEnum&enum=duty
+ [DEBUG] 2017-12-25 08:46:04,699 Line:3003 MobileAjax 操作人:admin;请求数据：op=[getEnum,];enum=[duty,];
+ [DEBUG] 2017-12-25 08:46:04,700 Line:243 AIOApi op=getEnum&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 08:46:04,705 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":[{"name":"职员","value":"11"},{"name":"法人","value":"1"},{"name":"董事","value":"10"},{"name":"董事长","value":"9"},{"name":"总经理","value":"2"},{"name":"部门经理","value":"3"},{"name":"副经理","value":"5"},{"name":"部长","value":"4"},{"name":"副部长","value":"6"},{"name":"主管","value":"7"},{"name":"副主管","value":"8"},{"name":"其他","value":"12"}]}
+ [DEBUG] 2017-12-25 08:46:07,111 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&reportNumber=tblVirtualStock
+ [DEBUG] 2017-12-25 08:46:07,112 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];reportNumber=[tblVirtualStock,];pageNo=[1,];pageSize=[10,];src=[menu,];DataType=[tblGoods,];mobileGoodsFullName=[,];parentCode=[,];StockCode=[,];
+ [DEBUG] 2017-12-25 08:46:07,112 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 08:46:07,620 Line:549 ReportDataMgt.getReportData SQL={call report_VirtualStock (@pageNo=?,@pageSize=?,@locale=?,@userId=?,@sunCompany=?,@classCode=?,@StockCode=?,@GoodsCode=?,@BatchNo=?,@Inch=?,@Hue=?,@yearNO=?,@ProDate=?,@Availably=?,@NumberType=?,@DataType=?,@upperQtyQ=?,@mobileGoodsFullName=?)}
+ [DEBUG] 2017-12-25 08:46:07,630 Line:567 ReportDataMgt.getReportData 参数1:1
+ [DEBUG] 2017-12-25 08:46:07,631 Line:568 ReportDataMgt.getReportData 参数2:10
+ [DEBUG] 2017-12-25 08:46:07,631 Line:569 ReportDataMgt.getReportData 参数3:zh_CN
+ [DEBUG] 2017-12-25 08:46:07,631 Line:570 ReportDataMgt.getReportData 参数4:1
+ [DEBUG] 2017-12-25 08:46:07,631 Line:571 ReportDataMgt.getReportData 参数5:00001
+ [DEBUG] 2017-12-25 08:46:07,631 Line:582 ReportDataMgt.getReportData 参数6:
+ [DEBUG] 2017-12-25 08:46:07,632 Line:582 ReportDataMgt.getReportData 参数7:
+ [DEBUG] 2017-12-25 08:46:07,632 Line:582 ReportDataMgt.getReportData 参数8:
+ [DEBUG] 2017-12-25 08:46:07,632 Line:582 ReportDataMgt.getReportData 参数9:
+ [DEBUG] 2017-12-25 08:46:07,632 Line:582 ReportDataMgt.getReportData 参数10:
+ [DEBUG] 2017-12-25 08:46:07,632 Line:582 ReportDataMgt.getReportData 参数11:
+ [DEBUG] 2017-12-25 08:46:07,633 Line:582 ReportDataMgt.getReportData 参数12:
+ [DEBUG] 2017-12-25 08:46:07,633 Line:582 ReportDataMgt.getReportData 参数13:
+ [DEBUG] 2017-12-25 08:46:07,633 Line:582 ReportDataMgt.getReportData 参数14:
+ [DEBUG] 2017-12-25 08:46:07,633 Line:582 ReportDataMgt.getReportData 参数15:0
+ [DEBUG] 2017-12-25 08:46:07,634 Line:582 ReportDataMgt.getReportData 参数16:tblGoods
+ [DEBUG] 2017-12-25 08:46:07,634 Line:582 ReportDataMgt.getReportData 参数17:
+ [DEBUG] 2017-12-25 08:46:07,634 Line:582 ReportDataMgt.getReportData 参数18:
+ [DEBUG] 2017-12-25 08:46:07,711 Line:587 ReportDataMgt.getReportData warn 正在直接执行 SQL；无游标。
+ [DEBUG] 2017-12-25 08:46:07,711 Line:587 ReportDataMgt.getReportData warn 商品，仓库权限语句
+ [DEBUG] 2017-12-25 08:46:07,711 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 08:46:07,711 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 08:46:07,712 Line:587 ReportDataMgt.getReportData warn 解析出的查询条件
+ [DEBUG] 2017-12-25 08:46:07,712 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 08:46:07,712 Line:587 ReportDataMgt.getReportData warn 最终显示数据的查询语句
+ [DEBUG] 2017-12-25 08:46:07,712 Line:587 ReportDataMgt.getReportData warn SELECT ROW_NUMBER() OVER(ORDER BY tblGoods.GoodsNumber) AS rowid,
+			tblGoods.classCode,
+            tblGoods.isCatalog,
+            tblGoods.classCode+ '#;#'+ CAST(tblGoods.isCatalog AS VARCHAR(10))+ '#;##;#' AS hide_GoodsCode,
+            tblGoods.GoodsNumber AS GoodsNumber,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end as BatchNo,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end as Inch,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end as Hue,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end as yearNO,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end as ProDate,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end as Availably,sum(isnull(lastQty,0)),sum(isnull(inQtyNotAudit,0)),sum(isnull(SInQtyNotAudit,0)),sum(isnull(outQtyNotAudit,0)),sum(isnull(BOutQtyNotAudit,0)),sum(isnull(UseQty,0)),sum(isnull(buyOrderQty,0)),sum(isnull(salesOrderQty,0)),sum(isnull(UseQty,0))+sum(isnull(buyOrderQty,0))-sum(isnull(salesOrderQty,0)) as orderQty FROM (select GoodsNumber,classCode,isCatalog,upperQty,lowerQty from tblGoods where workFlowNodeName='finish' and (tblGoods.classCode like '_____')) as tblGoods  LEFT JOIN (SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,lastQty,inQtyNotAudit,SInQtyNotAudit,outQtyNotAudit,BOutQtyNotAudit,lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit as UseQty,0 as buyOrderQty,0 as salesOrderQty FROM tblStocks as b where 1=1 union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,NotInQty,0 FROM tblBuyOrder a,tblBuyOrderDet b WHERE a.id = b.f_ref AND b.NotInQty>0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,0,NotOutQty FROM tblSalesOrder a,tblSalesOrderDet b WHERE a.id = b.f_ref AND b.NotOutQty> 0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish') as b on tblGoods.classCode = SUBSTRING(b.GoodsCode, 1, LEN(tblGoods.classCode)) group by tblGoods.classCode,tblGoods.GoodsNumber,tblGoods.isCatalog,tblGoods.upperQty,tblGoods.lowerQty,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end  having 1=1 and abs(sum(isnull(lastQty,0)))+abs(sum(isnull(inQtyNotAudit,0)))+abs(sum(isnull(SInQtyNotAudit,0)))+abs(sum(isnull(outQtyNotAudit,0)))+abs(sum(isnull(BOutQtyNotAudit,0)))+abs(sum(isnull(buyOrderQty,0)))+abs(sum(isnull(salesOrderQty,0)))>0
+ [DEBUG] 2017-12-25 08:46:07,714 Line:689 通过SQL读原始数据：84
+ [DEBUG] 2017-12-25 08:46:07,716 Line:1391 整理数据：1
+ [DEBUG] 2017-12-25 08:46:07,772 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["StockCode",""],["GoodsCode",""],["NumberType","0"],["DataType","tblGoods"],["upperQtyQ",""],["mobileGoodsFullName",""]],"cols":[["classCode","-1","string","","GoodsCode"],["","-1","string","","classCode"],["商品编号","100","string","","GoodsNumber"],["商品名称","150","string","","GoodsFullName"],["商品规格","200","string","","GoodsSpec"],["单位","30","string","","BaseUnit"],["库存上限","90","float","","upperQty"],["库存下限","90","float","","lowerQty"],["实际库存","90","floatc等等！
+ [DEBUG] 2017-12-25 08:46:08,568 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&reportNumber=tblVirtualStock
+ [DEBUG] 2017-12-25 08:46:08,569 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];reportNumber=[tblVirtualStock,];pageNo=[2,];pageSize=[10,];src=[menu,];DataType=[tblGoods,];
+ [DEBUG] 2017-12-25 08:46:08,569 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 08:46:08,580 Line:549 ReportDataMgt.getReportData SQL={call report_VirtualStock (@pageNo=?,@pageSize=?,@locale=?,@userId=?,@sunCompany=?,@classCode=?,@StockCode=?,@GoodsCode=?,@BatchNo=?,@Inch=?,@Hue=?,@yearNO=?,@ProDate=?,@Availably=?,@NumberType=?,@DataType=?,@upperQtyQ=?,@mobileGoodsFullName=?)}
+ [DEBUG] 2017-12-25 08:46:08,581 Line:567 ReportDataMgt.getReportData 参数1:2
+ [DEBUG] 2017-12-25 08:46:08,581 Line:568 ReportDataMgt.getReportData 参数2:10
+ [DEBUG] 2017-12-25 08:46:08,581 Line:569 ReportDataMgt.getReportData 参数3:zh_CN
+ [DEBUG] 2017-12-25 08:46:08,581 Line:570 ReportDataMgt.getReportData 参数4:1
+ [DEBUG] 2017-12-25 08:46:08,582 Line:571 ReportDataMgt.getReportData 参数5:00001
+ [DEBUG] 2017-12-25 08:46:08,582 Line:582 ReportDataMgt.getReportData 参数6:
+ [DEBUG] 2017-12-25 08:46:08,582 Line:582 ReportDataMgt.getReportData 参数7:
+ [DEBUG] 2017-12-25 08:46:08,582 Line:582 ReportDataMgt.getReportData 参数8:
+ [DEBUG] 2017-12-25 08:46:08,582 Line:582 ReportDataMgt.getReportData 参数9:
+ [DEBUG] 2017-12-25 08:46:08,582 Line:582 ReportDataMgt.getReportData 参数10:
+ [DEBUG] 2017-12-25 08:46:08,583 Line:582 ReportDataMgt.getReportData 参数11:
+ [DEBUG] 2017-12-25 08:46:08,583 Line:582 ReportDataMgt.getReportData 参数12:
+ [DEBUG] 2017-12-25 08:46:08,583 Line:582 ReportDataMgt.getReportData 参数13:
+ [DEBUG] 2017-12-25 08:46:08,583 Line:582 ReportDataMgt.getReportData 参数14:
+ [DEBUG] 2017-12-25 08:46:08,583 Line:582 ReportDataMgt.getReportData 参数15:0
+ [DEBUG] 2017-12-25 08:46:08,584 Line:582 ReportDataMgt.getReportData 参数16:tblGoods
+ [DEBUG] 2017-12-25 08:46:08,584 Line:582 ReportDataMgt.getReportData 参数17:
+ [DEBUG] 2017-12-25 08:46:08,584 Line:582 ReportDataMgt.getReportData 参数18:
+ [DEBUG] 2017-12-25 08:46:08,586 Line:587 ReportDataMgt.getReportData warn 正在直接执行 SQL；无游标。
+ [DEBUG] 2017-12-25 08:46:08,586 Line:587 ReportDataMgt.getReportData warn 商品，仓库权限语句
+ [DEBUG] 2017-12-25 08:46:08,587 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 08:46:08,587 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 08:46:08,587 Line:587 ReportDataMgt.getReportData warn 解析出的查询条件
+ [DEBUG] 2017-12-25 08:46:08,587 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 08:46:08,588 Line:587 ReportDataMgt.getReportData warn 最终显示数据的查询语句
+ [DEBUG] 2017-12-25 08:46:08,588 Line:587 ReportDataMgt.getReportData warn SELECT ROW_NUMBER() OVER(ORDER BY tblGoods.GoodsNumber) AS rowid,
+			tblGoods.classCode,
+            tblGoods.isCatalog,
+            tblGoods.classCode+ '#;#'+ CAST(tblGoods.isCatalog AS VARCHAR(10))+ '#;##;#' AS hide_GoodsCode,
+            tblGoods.GoodsNumber AS GoodsNumber,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end as BatchNo,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end as Inch,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end as Hue,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end as yearNO,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end as ProDate,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end as Availably,sum(isnull(lastQty,0)),sum(isnull(inQtyNotAudit,0)),sum(isnull(SInQtyNotAudit,0)),sum(isnull(outQtyNotAudit,0)),sum(isnull(BOutQtyNotAudit,0)),sum(isnull(UseQty,0)),sum(isnull(buyOrderQty,0)),sum(isnull(salesOrderQty,0)),sum(isnull(UseQty,0))+sum(isnull(buyOrderQty,0))-sum(isnull(salesOrderQty,0)) as orderQty FROM (select GoodsNumber,classCode,isCatalog,upperQty,lowerQty from tblGoods where workFlowNodeName='finish' and (tblGoods.classCode like '_____')) as tblGoods  LEFT JOIN (SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,lastQty,inQtyNotAudit,SInQtyNotAudit,outQtyNotAudit,BOutQtyNotAudit,lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit as UseQty,0 as buyOrderQty,0 as salesOrderQty FROM tblStocks as b where 1=1 union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,NotInQty,0 FROM tblBuyOrder a,tblBuyOrderDet b WHERE a.id = b.f_ref AND b.NotInQty>0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,0,NotOutQty FROM tblSalesOrder a,tblSalesOrderDet b WHERE a.id = b.f_ref AND b.NotOutQty> 0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish') as b on tblGoods.classCode = SUBSTRING(b.GoodsCode, 1, LEN(tblGoods.classCode)) group by tblGoods.classCode,tblGoods.GoodsNumber,tblGoods.isCatalog,tblGoods.upperQty,tblGoods.lowerQty,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end  having 1=1 and abs(sum(isnull(lastQty,0)))+abs(sum(isnull(inQtyNotAudit,0)))+abs(sum(isnull(SInQtyNotAudit,0)))+abs(sum(isnull(outQtyNotAudit,0)))+abs(sum(isnull(BOutQtyNotAudit,0)))+abs(sum(isnull(buyOrderQty,0)))+abs(sum(isnull(salesOrderQty,0)))>0
+ [DEBUG] 2017-12-25 08:46:08,590 Line:689 通过SQL读原始数据：9
+ [DEBUG] 2017-12-25 08:46:08,591 Line:1391 整理数据：1
+ [DEBUG] 2017-12-25 08:46:08,608 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["StockCode",""],["GoodsCode",""],["NumberType","0"],["DataType","tblGoods"],["upperQtyQ",""],["mobileGoodsFullName",""]],"cols":[["classCode","-1","string","","GoodsCode"],["","-1","string","","classCode"],["商品编号","100","string","","GoodsNumber"],["商品名称","150","string","","GoodsFullName"],["商品规格","200","string","","GoodsSpec"],["单位","30","string","","BaseUnit"],["库存上限","90","float","","upperQty"],["库存下限","90","float","","lowerQty"],["实际库存","90","floatc等等！
+ [DEBUG] 2017-12-25 08:59:57,319 Line:2992 MobileAjax 请求地址：/MobileAjax?op=getSessEmp
+ [DEBUG] 2017-12-25 08:59:57,320 Line:3003 MobileAjax 操作人:admin;请求数据：op=[getSessEmp,];
+ [DEBUG] 2017-12-25 08:59:57,320 Line:243 AIOApi op=getSessEmp&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 08:59:57,321 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"departmentName":"默认部门","titleId":"12","name":"admin","id":"1"}}
+ [DEBUG] 2017-12-25 08:59:57,347 Line:2992 MobileAjax 请求地址：/MobileAjax?op=getEnum&enum=duty
+ [DEBUG] 2017-12-25 08:59:57,348 Line:3003 MobileAjax 操作人:admin;请求数据：op=[getEnum,];enum=[duty,];
+ [DEBUG] 2017-12-25 08:59:57,348 Line:243 AIOApi op=getEnum&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 08:59:57,350 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":[{"name":"职员","value":"11"},{"name":"法人","value":"1"},{"name":"董事","value":"10"},{"name":"董事长","value":"9"},{"name":"总经理","value":"2"},{"name":"部门经理","value":"3"},{"name":"副经理","value":"5"},{"name":"部长","value":"4"},{"name":"副部长","value":"6"},{"name":"主管","value":"7"},{"name":"副主管","value":"8"},{"name":"其他","value":"12"}]}
+ [DEBUG] 2017-12-25 08:59:59,472 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&reportNumber=tblVirtualStock
+ [DEBUG] 2017-12-25 08:59:59,473 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];reportNumber=[tblVirtualStock,];pageNo=[1,];pageSize=[10,];src=[menu,];DataType=[tblGoods,];mobileGoodsFullName=[,];parentCode=[,];StockCode=[,];
+ [DEBUG] 2017-12-25 08:59:59,473 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 08:59:59,513 Line:549 ReportDataMgt.getReportData SQL={call report_VirtualStock (@pageNo=?,@pageSize=?,@locale=?,@userId=?,@sunCompany=?,@classCode=?,@StockCode=?,@GoodsCode=?,@BatchNo=?,@Inch=?,@Hue=?,@yearNO=?,@ProDate=?,@Availably=?,@NumberType=?,@DataType=?,@upperQtyQ=?,@mobileGoodsFullName=?)}
+ [DEBUG] 2017-12-25 08:59:59,514 Line:567 ReportDataMgt.getReportData 参数1:1
+ [DEBUG] 2017-12-25 08:59:59,514 Line:568 ReportDataMgt.getReportData 参数2:10
+ [DEBUG] 2017-12-25 08:59:59,514 Line:569 ReportDataMgt.getReportData 参数3:zh_CN
+ [DEBUG] 2017-12-25 08:59:59,514 Line:570 ReportDataMgt.getReportData 参数4:1
+ [DEBUG] 2017-12-25 08:59:59,514 Line:571 ReportDataMgt.getReportData 参数5:00001
+ [DEBUG] 2017-12-25 08:59:59,515 Line:582 ReportDataMgt.getReportData 参数6:
+ [DEBUG] 2017-12-25 08:59:59,515 Line:582 ReportDataMgt.getReportData 参数7:
+ [DEBUG] 2017-12-25 08:59:59,515 Line:582 ReportDataMgt.getReportData 参数8:
+ [DEBUG] 2017-12-25 08:59:59,515 Line:582 ReportDataMgt.getReportData 参数9:
+ [DEBUG] 2017-12-25 08:59:59,515 Line:582 ReportDataMgt.getReportData 参数10:
+ [DEBUG] 2017-12-25 08:59:59,515 Line:582 ReportDataMgt.getReportData 参数11:
+ [DEBUG] 2017-12-25 08:59:59,516 Line:582 ReportDataMgt.getReportData 参数12:
+ [DEBUG] 2017-12-25 08:59:59,516 Line:582 ReportDataMgt.getReportData 参数13:
+ [DEBUG] 2017-12-25 08:59:59,516 Line:582 ReportDataMgt.getReportData 参数14:
+ [DEBUG] 2017-12-25 08:59:59,516 Line:582 ReportDataMgt.getReportData 参数15:0
+ [DEBUG] 2017-12-25 08:59:59,516 Line:582 ReportDataMgt.getReportData 参数16:tblGoods
+ [DEBUG] 2017-12-25 08:59:59,516 Line:582 ReportDataMgt.getReportData 参数17:
+ [DEBUG] 2017-12-25 08:59:59,517 Line:582 ReportDataMgt.getReportData 参数18:
+ [DEBUG] 2017-12-25 08:59:59,613 Line:587 ReportDataMgt.getReportData warn 正在直接执行 SQL；无游标。
+ [DEBUG] 2017-12-25 08:59:59,614 Line:587 ReportDataMgt.getReportData warn 商品，仓库权限语句
+ [DEBUG] 2017-12-25 08:59:59,614 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 08:59:59,614 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 08:59:59,614 Line:587 ReportDataMgt.getReportData warn 解析出的查询条件
+ [DEBUG] 2017-12-25 08:59:59,614 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 08:59:59,615 Line:587 ReportDataMgt.getReportData warn 最终显示数据的查询语句
+ [DEBUG] 2017-12-25 08:59:59,615 Line:587 ReportDataMgt.getReportData warn SELECT ROW_NUMBER() OVER(ORDER BY tblGoods.GoodsNumber) AS rowid,
+			tblGoods.classCode,
+            tblGoods.isCatalog,
+            tblGoods.classCode+ '#;#'+ CAST(tblGoods.isCatalog AS VARCHAR(10))+ '#;##;#' AS hide_GoodsCode,
+            tblGoods.GoodsNumber AS GoodsNumber,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end as BatchNo,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end as Inch,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end as Hue,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end as yearNO,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end as ProDate,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end as Availably,sum(isnull(lastQty,0)),sum(isnull(inQtyNotAudit,0)),sum(isnull(SInQtyNotAudit,0)),sum(isnull(outQtyNotAudit,0)),sum(isnull(BOutQtyNotAudit,0)),sum(isnull(UseQty,0)),sum(isnull(buyOrderQty,0)),sum(isnull(salesOrderQty,0)),sum(isnull(UseQty,0))+sum(isnull(buyOrderQty,0))-sum(isnull(salesOrderQty,0)) as orderQty FROM (select GoodsNumber,classCode,isCatalog,upperQty,lowerQty from tblGoods where workFlowNodeName='finish' and (tblGoods.classCode like '_____')) as tblGoods  LEFT JOIN (SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,lastQty,inQtyNotAudit,SInQtyNotAudit,outQtyNotAudit,BOutQtyNotAudit,lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit as UseQty,0 as buyOrderQty,0 as salesOrderQty FROM tblStocks as b where 1=1 union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,NotInQty,0 FROM tblBuyOrder a,tblBuyOrderDet b WHERE a.id = b.f_ref AND b.NotInQty>0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,0,NotOutQty FROM tblSalesOrder a,tblSalesOrderDet b WHERE a.id = b.f_ref AND b.NotOutQty> 0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish') as b on tblGoods.classCode = SUBSTRING(b.GoodsCode, 1, LEN(tblGoods.classCode)) group by tblGoods.classCode,tblGoods.GoodsNumber,tblGoods.isCatalog,tblGoods.upperQty,tblGoods.lowerQty,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end  having 1=1 and abs(sum(isnull(lastQty,0)))+abs(sum(isnull(inQtyNotAudit,0)))+abs(sum(isnull(SInQtyNotAudit,0)))+abs(sum(isnull(outQtyNotAudit,0)))+abs(sum(isnull(BOutQtyNotAudit,0)))+abs(sum(isnull(buyOrderQty,0)))+abs(sum(isnull(salesOrderQty,0)))>0
+ [DEBUG] 2017-12-25 08:59:59,616 Line:689 通过SQL读原始数据：102
+ [DEBUG] 2017-12-25 08:59:59,617 Line:1391 整理数据：1
+ [DEBUG] 2017-12-25 08:59:59,628 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["StockCode",""],["GoodsCode",""],["NumberType","0"],["DataType","tblGoods"],["upperQtyQ",""],["mobileGoodsFullName",""]],"cols":[["classCode","-1","string","","GoodsCode"],["","-1","string","","classCode"],["商品编号","100","string","","GoodsNumber"],["商品名称","150","string","","GoodsFullName"],["商品规格","200","string","","GoodsSpec"],["单位","30","string","","BaseUnit"],["库存上限","90","float","","upperQty"],["库存下限","90","float","","lowerQty"],["实际库存","90","floatc等等！
+ [DEBUG] 2017-12-25 09:00:00,954 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&reportNumber=tblVirtualStock
+ [DEBUG] 2017-12-25 09:00:00,956 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];reportNumber=[tblVirtualStock,];pageNo=[2,];pageSize=[10,];src=[menu,];DataType=[tblGoods,];
+ [DEBUG] 2017-12-25 09:00:00,957 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 09:00:00,985 Line:549 ReportDataMgt.getReportData SQL={call report_VirtualStock (@pageNo=?,@pageSize=?,@locale=?,@userId=?,@sunCompany=?,@classCode=?,@StockCode=?,@GoodsCode=?,@BatchNo=?,@Inch=?,@Hue=?,@yearNO=?,@ProDate=?,@Availably=?,@NumberType=?,@DataType=?,@upperQtyQ=?,@mobileGoodsFullName=?)}
+ [DEBUG] 2017-12-25 09:00:00,986 Line:567 ReportDataMgt.getReportData 参数1:2
+ [DEBUG] 2017-12-25 09:00:00,986 Line:568 ReportDataMgt.getReportData 参数2:10
+ [DEBUG] 2017-12-25 09:00:00,986 Line:569 ReportDataMgt.getReportData 参数3:zh_CN
+ [DEBUG] 2017-12-25 09:00:00,987 Line:570 ReportDataMgt.getReportData 参数4:1
+ [DEBUG] 2017-12-25 09:00:00,987 Line:571 ReportDataMgt.getReportData 参数5:00001
+ [DEBUG] 2017-12-25 09:00:00,987 Line:582 ReportDataMgt.getReportData 参数6:
+ [DEBUG] 2017-12-25 09:00:00,988 Line:582 ReportDataMgt.getReportData 参数7:
+ [DEBUG] 2017-12-25 09:00:00,988 Line:582 ReportDataMgt.getReportData 参数8:
+ [DEBUG] 2017-12-25 09:00:00,988 Line:582 ReportDataMgt.getReportData 参数9:
+ [DEBUG] 2017-12-25 09:00:00,989 Line:582 ReportDataMgt.getReportData 参数10:
+ [DEBUG] 2017-12-25 09:00:00,989 Line:582 ReportDataMgt.getReportData 参数11:
+ [DEBUG] 2017-12-25 09:00:00,990 Line:582 ReportDataMgt.getReportData 参数12:
+ [DEBUG] 2017-12-25 09:00:00,990 Line:582 ReportDataMgt.getReportData 参数13:
+ [DEBUG] 2017-12-25 09:00:00,990 Line:582 ReportDataMgt.getReportData 参数14:
+ [DEBUG] 2017-12-25 09:00:00,991 Line:582 ReportDataMgt.getReportData 参数15:0
+ [DEBUG] 2017-12-25 09:00:00,991 Line:582 ReportDataMgt.getReportData 参数16:tblGoods
+ [DEBUG] 2017-12-25 09:00:00,991 Line:582 ReportDataMgt.getReportData 参数17:
+ [DEBUG] 2017-12-25 09:00:00,992 Line:582 ReportDataMgt.getReportData 参数18:
+ [DEBUG] 2017-12-25 09:00:00,997 Line:587 ReportDataMgt.getReportData warn 正在直接执行 SQL；无游标。
+ [DEBUG] 2017-12-25 09:00:00,998 Line:587 ReportDataMgt.getReportData warn 商品，仓库权限语句
+ [DEBUG] 2017-12-25 09:00:00,999 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:00:00,999 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:00:01,000 Line:587 ReportDataMgt.getReportData warn 解析出的查询条件
+ [DEBUG] 2017-12-25 09:00:01,000 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:00:01,000 Line:587 ReportDataMgt.getReportData warn 最终显示数据的查询语句
+ [DEBUG] 2017-12-25 09:00:01,001 Line:587 ReportDataMgt.getReportData warn SELECT ROW_NUMBER() OVER(ORDER BY tblGoods.GoodsNumber) AS rowid,
+			tblGoods.classCode,
+            tblGoods.isCatalog,
+            tblGoods.classCode+ '#;#'+ CAST(tblGoods.isCatalog AS VARCHAR(10))+ '#;##;#' AS hide_GoodsCode,
+            tblGoods.GoodsNumber AS GoodsNumber,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end as BatchNo,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end as Inch,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end as Hue,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end as yearNO,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end as ProDate,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end as Availably,sum(isnull(lastQty,0)),sum(isnull(inQtyNotAudit,0)),sum(isnull(SInQtyNotAudit,0)),sum(isnull(outQtyNotAudit,0)),sum(isnull(BOutQtyNotAudit,0)),sum(isnull(UseQty,0)),sum(isnull(buyOrderQty,0)),sum(isnull(salesOrderQty,0)),sum(isnull(UseQty,0))+sum(isnull(buyOrderQty,0))-sum(isnull(salesOrderQty,0)) as orderQty FROM (select GoodsNumber,classCode,isCatalog,upperQty,lowerQty from tblGoods where workFlowNodeName='finish' and (tblGoods.classCode like '_____')) as tblGoods  LEFT JOIN (SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,lastQty,inQtyNotAudit,SInQtyNotAudit,outQtyNotAudit,BOutQtyNotAudit,lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit as UseQty,0 as buyOrderQty,0 as salesOrderQty FROM tblStocks as b where 1=1 union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,NotInQty,0 FROM tblBuyOrder a,tblBuyOrderDet b WHERE a.id = b.f_ref AND b.NotInQty>0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,0,NotOutQty FROM tblSalesOrder a,tblSalesOrderDet b WHERE a.id = b.f_ref AND b.NotOutQty> 0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish') as b on tblGoods.classCode = SUBSTRING(b.GoodsCode, 1, LEN(tblGoods.classCode)) group by tblGoods.classCode,tblGoods.GoodsNumber,tblGoods.isCatalog,tblGoods.upperQty,tblGoods.lowerQty,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end  having 1=1 and abs(sum(isnull(lastQty,0)))+abs(sum(isnull(inQtyNotAudit,0)))+abs(sum(isnull(SInQtyNotAudit,0)))+abs(sum(isnull(outQtyNotAudit,0)))+abs(sum(isnull(BOutQtyNotAudit,0)))+abs(sum(isnull(buyOrderQty,0)))+abs(sum(isnull(salesOrderQty,0)))>0
+ [DEBUG] 2017-12-25 09:00:01,002 Line:689 通过SQL读原始数据：17
+ [DEBUG] 2017-12-25 09:00:01,004 Line:1391 整理数据：1
+ [DEBUG] 2017-12-25 09:00:01,021 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["StockCode",""],["GoodsCode",""],["NumberType","0"],["DataType","tblGoods"],["upperQtyQ",""],["mobileGoodsFullName",""]],"cols":[["classCode","-1","string","","GoodsCode"],["","-1","string","","classCode"],["商品编号","100","string","","GoodsNumber"],["商品名称","150","string","","GoodsFullName"],["商品规格","200","string","","GoodsSpec"],["单位","30","string","","BaseUnit"],["库存上限","90","float","","upperQty"],["库存下限","90","float","","lowerQty"],["实际库存","90","floatc等等！
+ [DEBUG] 2017-12-25 09:01:16,085 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&reportNumber=tblVirtualStock
+ [DEBUG] 2017-12-25 09:01:16,085 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];reportNumber=[tblVirtualStock,];pageNo=[1,];pageSize=[10,];src=[menu,];DataType=[tblGoods,];mobileGoodsFullName=[,];parentCode=[,];StockCode=[00001,];
+ [DEBUG] 2017-12-25 09:01:16,086 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 09:01:16,124 Line:549 ReportDataMgt.getReportData SQL={call report_VirtualStock (@pageNo=?,@pageSize=?,@locale=?,@userId=?,@sunCompany=?,@classCode=?,@StockCode=?,@GoodsCode=?,@BatchNo=?,@Inch=?,@Hue=?,@yearNO=?,@ProDate=?,@Availably=?,@NumberType=?,@DataType=?,@upperQtyQ=?,@mobileGoodsFullName=?)}
+ [DEBUG] 2017-12-25 09:01:16,125 Line:567 ReportDataMgt.getReportData 参数1:1
+ [DEBUG] 2017-12-25 09:01:16,125 Line:568 ReportDataMgt.getReportData 参数2:10
+ [DEBUG] 2017-12-25 09:01:16,125 Line:569 ReportDataMgt.getReportData 参数3:zh_CN
+ [DEBUG] 2017-12-25 09:01:16,125 Line:570 ReportDataMgt.getReportData 参数4:1
+ [DEBUG] 2017-12-25 09:01:16,125 Line:571 ReportDataMgt.getReportData 参数5:00001
+ [DEBUG] 2017-12-25 09:01:16,125 Line:582 ReportDataMgt.getReportData 参数6:
+ [DEBUG] 2017-12-25 09:01:16,126 Line:582 ReportDataMgt.getReportData 参数7:00001
+ [DEBUG] 2017-12-25 09:01:16,126 Line:582 ReportDataMgt.getReportData 参数8:
+ [DEBUG] 2017-12-25 09:01:16,126 Line:582 ReportDataMgt.getReportData 参数9:
+ [DEBUG] 2017-12-25 09:01:16,126 Line:582 ReportDataMgt.getReportData 参数10:
+ [DEBUG] 2017-12-25 09:01:16,126 Line:582 ReportDataMgt.getReportData 参数11:
+ [DEBUG] 2017-12-25 09:01:16,126 Line:582 ReportDataMgt.getReportData 参数12:
+ [DEBUG] 2017-12-25 09:01:16,126 Line:582 ReportDataMgt.getReportData 参数13:
+ [DEBUG] 2017-12-25 09:01:16,127 Line:582 ReportDataMgt.getReportData 参数14:
+ [DEBUG] 2017-12-25 09:01:16,127 Line:582 ReportDataMgt.getReportData 参数15:0
+ [DEBUG] 2017-12-25 09:01:16,127 Line:582 ReportDataMgt.getReportData 参数16:tblGoods
+ [DEBUG] 2017-12-25 09:01:16,127 Line:582 ReportDataMgt.getReportData 参数17:
+ [DEBUG] 2017-12-25 09:01:16,127 Line:582 ReportDataMgt.getReportData 参数18:
+ [DEBUG] 2017-12-25 09:01:16,209 Line:587 ReportDataMgt.getReportData warn 正在直接执行 SQL；无游标。
+ [DEBUG] 2017-12-25 09:01:16,209 Line:587 ReportDataMgt.getReportData warn 商品，仓库权限语句
+ [DEBUG] 2017-12-25 09:01:16,210 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:01:16,210 Line:587 ReportDataMgt.getReportData warn  and ( b.StockCode like '00001'+'%' )
+ [DEBUG] 2017-12-25 09:01:16,210 Line:587 ReportDataMgt.getReportData warn 解析出的查询条件
+ [DEBUG] 2017-12-25 09:01:16,210 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:01:16,210 Line:587 ReportDataMgt.getReportData warn 最终显示数据的查询语句
+ [DEBUG] 2017-12-25 09:01:16,210 Line:587 ReportDataMgt.getReportData warn SELECT ROW_NUMBER() OVER(ORDER BY tblGoods.GoodsNumber) AS rowid,
+			tblGoods.classCode,
+            tblGoods.isCatalog,
+            tblGoods.classCode+ '#;#'+ CAST(tblGoods.isCatalog AS VARCHAR(10))+ '#;##;#' AS hide_GoodsCode,
+            tblGoods.GoodsNumber AS GoodsNumber,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end as BatchNo,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end as Inch,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end as Hue,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end as yearNO,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end as ProDate,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end as Availably,sum(isnull(lastQty,0)),sum(isnull(inQtyNotAudit,0)),sum(isnull(SInQtyNotAudit,0)),sum(isnull(outQtyNotAudit,0)),sum(isnull(BOutQtyNotAudit,0)),sum(isnull(UseQty,0)),sum(isnull(buyOrderQty,0)),sum(isnull(salesOrderQty,0)),sum(isnull(UseQty,0))+sum(isnull(buyOrderQty,0))-sum(isnull(salesOrderQty,0)) as orderQty FROM (select GoodsNumber,classCode,isCatalog,upperQty,lowerQty from tblGoods where workFlowNodeName='finish' and (tblGoods.classCode like '_____')) as tblGoods  LEFT JOIN (SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,lastQty,inQtyNotAudit,SInQtyNotAudit,outQtyNotAudit,BOutQtyNotAudit,lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit as UseQty,0 as buyOrderQty,0 as salesOrderQty FROM tblStocks as b where 1=1 and ( b.StockCode like '00001'+'%' ) union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,NotInQty,0 FROM tblBuyOrder a,tblBuyOrderDet b WHERE a.id = b.f_ref AND b.NotInQty>0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' and ( b.StockCode like '00001'+'%' ) union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,0,NotOutQty FROM tblSalesOrder a,tblSalesOrderDet b WHERE a.id = b.f_ref AND b.NotOutQty> 0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' and ( b.StockCode like '00001'+'%' )) as b on tblGoods.classCode = SUBSTRING(b.GoodsCode, 1, LEN(tblGoods.classCode)) group by tblGoods.classCode,tblGoods.GoodsNumber,tblGoods.isCatalog,tblGoods.upperQty,tblGoods.lowerQty,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end  having 1=1 and abs(sum(isnull(lastQty,0)))+abs(sum(isnull(inQtyNotAudit,0)))+abs(sum(isnull(SInQtyNotAudit,0)))+abs(sum(isnull(outQtyNotAudit,0)))+abs(sum(isnull(BOutQtyNotAudit,0)))+abs(sum(isnull(buyOrderQty,0)))+abs(sum(isnull(salesOrderQty,0)))>0
+ [DEBUG] 2017-12-25 09:01:16,211 Line:689 通过SQL读原始数据：87
+ [DEBUG] 2017-12-25 09:01:16,211 Line:1391 整理数据：0
+ [DEBUG] 2017-12-25 09:01:16,215 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["StockCode","00001"],["GoodsCode",""],["NumberType","0"],["DataType","tblGoods"],["upperQtyQ",""],["mobileGoodsFullName",""]],"cols":[["classCode","-1","string","","GoodsCode"],["","-1","string","","classCode"],["商品编号","100","string","","GoodsNumber"],["商品名称","150","string","","GoodsFullName"],["商品规格","200","string","","GoodsSpec"],["单位","30","string","","BaseUnit"],["库存上限","90","float","","upperQty"],["库存下限","90","float","","lowerQty"],["实际库存","90","f等等！
+ [DEBUG] 2017-12-25 09:01:29,688 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&reportNumber=tblVirtualStock
+ [DEBUG] 2017-12-25 09:01:29,691 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];reportNumber=[tblVirtualStock,];pageNo=[1,];pageSize=[10,];src=[menu,];DataType=[tblGoods,];mobileGoodsFullName=[g,];parentCode=[,];StockCode=[00001,];
+ [DEBUG] 2017-12-25 09:01:29,691 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 09:01:29,735 Line:549 ReportDataMgt.getReportData SQL={call report_VirtualStock (@pageNo=?,@pageSize=?,@locale=?,@userId=?,@sunCompany=?,@classCode=?,@StockCode=?,@GoodsCode=?,@BatchNo=?,@Inch=?,@Hue=?,@yearNO=?,@ProDate=?,@Availably=?,@NumberType=?,@DataType=?,@upperQtyQ=?,@mobileGoodsFullName=?)}
+ [DEBUG] 2017-12-25 09:01:29,736 Line:567 ReportDataMgt.getReportData 参数1:1
+ [DEBUG] 2017-12-25 09:01:29,738 Line:568 ReportDataMgt.getReportData 参数2:10
+ [DEBUG] 2017-12-25 09:01:29,738 Line:569 ReportDataMgt.getReportData 参数3:zh_CN
+ [DEBUG] 2017-12-25 09:01:29,739 Line:570 ReportDataMgt.getReportData 参数4:1
+ [DEBUG] 2017-12-25 09:01:29,740 Line:571 ReportDataMgt.getReportData 参数5:00001
+ [DEBUG] 2017-12-25 09:01:29,741 Line:582 ReportDataMgt.getReportData 参数6:
+ [DEBUG] 2017-12-25 09:01:29,741 Line:582 ReportDataMgt.getReportData 参数7:00001
+ [DEBUG] 2017-12-25 09:01:29,742 Line:582 ReportDataMgt.getReportData 参数8:
+ [DEBUG] 2017-12-25 09:01:29,742 Line:582 ReportDataMgt.getReportData 参数9:
+ [DEBUG] 2017-12-25 09:01:29,742 Line:582 ReportDataMgt.getReportData 参数10:
+ [DEBUG] 2017-12-25 09:01:29,743 Line:582 ReportDataMgt.getReportData 参数11:
+ [DEBUG] 2017-12-25 09:01:29,743 Line:582 ReportDataMgt.getReportData 参数12:
+ [DEBUG] 2017-12-25 09:01:29,743 Line:582 ReportDataMgt.getReportData 参数13:
+ [DEBUG] 2017-12-25 09:01:29,744 Line:582 ReportDataMgt.getReportData 参数14:
+ [DEBUG] 2017-12-25 09:01:29,744 Line:582 ReportDataMgt.getReportData 参数15:0
+ [DEBUG] 2017-12-25 09:01:29,744 Line:582 ReportDataMgt.getReportData 参数16:tblGoods
+ [DEBUG] 2017-12-25 09:01:29,745 Line:582 ReportDataMgt.getReportData 参数17:
+ [DEBUG] 2017-12-25 09:01:29,745 Line:582 ReportDataMgt.getReportData 参数18:g
+ [DEBUG] 2017-12-25 09:01:29,748 Line:587 ReportDataMgt.getReportData warn 正在直接执行 SQL；无游标。
+ [DEBUG] 2017-12-25 09:01:29,749 Line:587 ReportDataMgt.getReportData warn 商品，仓库权限语句
+ [DEBUG] 2017-12-25 09:01:29,749 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:01:29,750 Line:587 ReportDataMgt.getReportData warn  and ( b.StockCode like '00001'+'%' )
+ [DEBUG] 2017-12-25 09:01:29,750 Line:587 ReportDataMgt.getReportData warn 解析出的查询条件
+ [DEBUG] 2017-12-25 09:01:29,750 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:01:29,751 Line:587 ReportDataMgt.getReportData warn 最终显示数据的查询语句
+ [DEBUG] 2017-12-25 09:01:29,751 Line:587 ReportDataMgt.getReportData warn SELECT ROW_NUMBER() OVER(ORDER BY tblGoods.GoodsNumber) AS rowid,
+			tblGoods.classCode,
+            tblGoods.isCatalog,
+            tblGoods.classCode+ '#;#'+ CAST(tblGoods.isCatalog AS VARCHAR(10))+ '#;##;#' AS hide_GoodsCode,
+            tblGoods.GoodsNumber AS GoodsNumber,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end as BatchNo,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end as Inch,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end as Hue,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end as yearNO,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end as ProDate,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end as Availably,sum(isnull(lastQty,0)),sum(isnull(inQtyNotAudit,0)),sum(isnull(SInQtyNotAudit,0)),sum(isnull(outQtyNotAudit,0)),sum(isnull(BOutQtyNotAudit,0)),sum(isnull(UseQty,0)),sum(isnull(buyOrderQty,0)),sum(isnull(salesOrderQty,0)),sum(isnull(UseQty,0))+sum(isnull(buyOrderQty,0))-sum(isnull(salesOrderQty,0)) as orderQty FROM (select GoodsNumber,classCode,isCatalog,upperQty,lowerQty from tblGoods where workFlowNodeName='finish' and (tblGoods.classCode like '_____')) as tblGoods  LEFT JOIN (SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,lastQty,inQtyNotAudit,SInQtyNotAudit,outQtyNotAudit,BOutQtyNotAudit,lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit as UseQty,0 as buyOrderQty,0 as salesOrderQty FROM tblStocks as b where 1=1 and ( b.StockCode like '00001'+'%' ) union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,NotInQty,0 FROM tblBuyOrder a,tblBuyOrderDet b WHERE a.id = b.f_ref AND b.NotInQty>0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' and ( b.StockCode like '00001'+'%' ) union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,0,NotOutQty FROM tblSalesOrder a,tblSalesOrderDet b WHERE a.id = b.f_ref AND b.NotOutQty> 0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' and ( b.StockCode like '00001'+'%' )) as b on tblGoods.classCode = SUBSTRING(b.GoodsCode, 1, LEN(tblGoods.classCode)) group by tblGoods.classCode,tblGoods.GoodsNumber,tblGoods.isCatalog,tblGoods.upperQty,tblGoods.lowerQty,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end  having 1=1 and abs(sum(isnull(lastQty,0)))+abs(sum(isnull(inQtyNotAudit,0)))+abs(sum(isnull(SInQtyNotAudit,0)))+abs(sum(isnull(outQtyNotAudit,0)))+abs(sum(isnull(BOutQtyNotAudit,0)))+abs(sum(isnull(buyOrderQty,0)))+abs(sum(isnull(salesOrderQty,0)))>0
+ [DEBUG] 2017-12-25 09:01:29,752 Line:689 通过SQL读原始数据：16
+ [DEBUG] 2017-12-25 09:01:29,752 Line:1391 整理数据：0
+ [DEBUG] 2017-12-25 09:01:29,755 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["StockCode","00001"],["GoodsCode",""],["NumberType","0"],["DataType","tblGoods"],["upperQtyQ",""],["mobileGoodsFullName","g"]],"cols":[["classCode","-1","string","","GoodsCode"],["","-1","string","","classCode"],["商品编号","100","string","","GoodsNumber"],["商品名称","150","string","","GoodsFullName"],["商品规格","200","string","","GoodsSpec"],["单位","30","string","","BaseUnit"],["库存上限","90","float","","upperQty"],["库存下限","90","float","","lowerQty"],["实际库存","90","等等！
+ [DEBUG] 2017-12-25 09:01:30,450 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&reportNumber=tblVirtualStock
+ [DEBUG] 2017-12-25 09:01:30,452 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];reportNumber=[tblVirtualStock,];pageNo=[1,];pageSize=[10,];src=[menu,];DataType=[tblGoods,];mobileGoodsFullName=[,];parentCode=[,];StockCode=[00001,];
+ [DEBUG] 2017-12-25 09:01:30,454 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 09:01:30,478 Line:549 ReportDataMgt.getReportData SQL={call report_VirtualStock (@pageNo=?,@pageSize=?,@locale=?,@userId=?,@sunCompany=?,@classCode=?,@StockCode=?,@GoodsCode=?,@BatchNo=?,@Inch=?,@Hue=?,@yearNO=?,@ProDate=?,@Availably=?,@NumberType=?,@DataType=?,@upperQtyQ=?,@mobileGoodsFullName=?)}
+ [DEBUG] 2017-12-25 09:01:30,478 Line:567 ReportDataMgt.getReportData 参数1:1
+ [DEBUG] 2017-12-25 09:01:30,479 Line:568 ReportDataMgt.getReportData 参数2:10
+ [DEBUG] 2017-12-25 09:01:30,479 Line:569 ReportDataMgt.getReportData 参数3:zh_CN
+ [DEBUG] 2017-12-25 09:01:30,480 Line:570 ReportDataMgt.getReportData 参数4:1
+ [DEBUG] 2017-12-25 09:01:30,480 Line:571 ReportDataMgt.getReportData 参数5:00001
+ [DEBUG] 2017-12-25 09:01:30,481 Line:582 ReportDataMgt.getReportData 参数6:
+ [DEBUG] 2017-12-25 09:01:30,481 Line:582 ReportDataMgt.getReportData 参数7:00001
+ [DEBUG] 2017-12-25 09:01:30,482 Line:582 ReportDataMgt.getReportData 参数8:
+ [DEBUG] 2017-12-25 09:01:30,482 Line:582 ReportDataMgt.getReportData 参数9:
+ [DEBUG] 2017-12-25 09:01:30,483 Line:582 ReportDataMgt.getReportData 参数10:
+ [DEBUG] 2017-12-25 09:01:30,483 Line:582 ReportDataMgt.getReportData 参数11:
+ [DEBUG] 2017-12-25 09:01:30,484 Line:582 ReportDataMgt.getReportData 参数12:
+ [DEBUG] 2017-12-25 09:01:30,484 Line:582 ReportDataMgt.getReportData 参数13:
+ [DEBUG] 2017-12-25 09:01:30,485 Line:582 ReportDataMgt.getReportData 参数14:
+ [DEBUG] 2017-12-25 09:01:30,485 Line:582 ReportDataMgt.getReportData 参数15:0
+ [DEBUG] 2017-12-25 09:01:30,486 Line:582 ReportDataMgt.getReportData 参数16:tblGoods
+ [DEBUG] 2017-12-25 09:01:30,486 Line:582 ReportDataMgt.getReportData 参数17:
+ [DEBUG] 2017-12-25 09:01:30,486 Line:582 ReportDataMgt.getReportData 参数18:
+ [DEBUG] 2017-12-25 09:01:30,490 Line:587 ReportDataMgt.getReportData warn 正在直接执行 SQL；无游标。
+ [DEBUG] 2017-12-25 09:01:30,490 Line:587 ReportDataMgt.getReportData warn 商品，仓库权限语句
+ [DEBUG] 2017-12-25 09:01:30,491 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:01:30,491 Line:587 ReportDataMgt.getReportData warn  and ( b.StockCode like '00001'+'%' )
+ [DEBUG] 2017-12-25 09:01:30,492 Line:587 ReportDataMgt.getReportData warn 解析出的查询条件
+ [DEBUG] 2017-12-25 09:01:30,492 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:01:30,492 Line:587 ReportDataMgt.getReportData warn 最终显示数据的查询语句
+ [DEBUG] 2017-12-25 09:01:30,493 Line:587 ReportDataMgt.getReportData warn SELECT ROW_NUMBER() OVER(ORDER BY tblGoods.GoodsNumber) AS rowid,
+			tblGoods.classCode,
+            tblGoods.isCatalog,
+            tblGoods.classCode+ '#;#'+ CAST(tblGoods.isCatalog AS VARCHAR(10))+ '#;##;#' AS hide_GoodsCode,
+            tblGoods.GoodsNumber AS GoodsNumber,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end as BatchNo,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end as Inch,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end as Hue,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end as yearNO,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end as ProDate,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end as Availably,sum(isnull(lastQty,0)),sum(isnull(inQtyNotAudit,0)),sum(isnull(SInQtyNotAudit,0)),sum(isnull(outQtyNotAudit,0)),sum(isnull(BOutQtyNotAudit,0)),sum(isnull(UseQty,0)),sum(isnull(buyOrderQty,0)),sum(isnull(salesOrderQty,0)),sum(isnull(UseQty,0))+sum(isnull(buyOrderQty,0))-sum(isnull(salesOrderQty,0)) as orderQty FROM (select GoodsNumber,classCode,isCatalog,upperQty,lowerQty from tblGoods where workFlowNodeName='finish' and (tblGoods.classCode like '_____')) as tblGoods  LEFT JOIN (SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,lastQty,inQtyNotAudit,SInQtyNotAudit,outQtyNotAudit,BOutQtyNotAudit,lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit as UseQty,0 as buyOrderQty,0 as salesOrderQty FROM tblStocks as b where 1=1 and ( b.StockCode like '00001'+'%' ) union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,NotInQty,0 FROM tblBuyOrder a,tblBuyOrderDet b WHERE a.id = b.f_ref AND b.NotInQty>0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' and ( b.StockCode like '00001'+'%' ) union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,0,NotOutQty FROM tblSalesOrder a,tblSalesOrderDet b WHERE a.id = b.f_ref AND b.NotOutQty> 0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' and ( b.StockCode like '00001'+'%' )) as b on tblGoods.classCode = SUBSTRING(b.GoodsCode, 1, LEN(tblGoods.classCode)) group by tblGoods.classCode,tblGoods.GoodsNumber,tblGoods.isCatalog,tblGoods.upperQty,tblGoods.lowerQty,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end  having 1=1 and abs(sum(isnull(lastQty,0)))+abs(sum(isnull(inQtyNotAudit,0)))+abs(sum(isnull(SInQtyNotAudit,0)))+abs(sum(isnull(outQtyNotAudit,0)))+abs(sum(isnull(BOutQtyNotAudit,0)))+abs(sum(isnull(buyOrderQty,0)))+abs(sum(isnull(salesOrderQty,0)))>0
+ [DEBUG] 2017-12-25 09:01:30,494 Line:689 通过SQL读原始数据：16
+ [DEBUG] 2017-12-25 09:01:30,495 Line:1391 整理数据：1
+ [DEBUG] 2017-12-25 09:01:30,501 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["StockCode","00001"],["GoodsCode",""],["NumberType","0"],["DataType","tblGoods"],["upperQtyQ",""],["mobileGoodsFullName",""]],"cols":[["classCode","-1","string","","GoodsCode"],["","-1","string","","classCode"],["商品编号","100","string","","GoodsNumber"],["商品名称","150","string","","GoodsFullName"],["商品规格","200","string","","GoodsSpec"],["单位","30","string","","BaseUnit"],["库存上限","90","float","","upperQty"],["库存下限","90","float","","lowerQty"],["实际库存","90","f等等！
+ [DEBUG] 2017-12-25 09:01:37,321 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&reportNumber=tblVirtualStock
+ [DEBUG] 2017-12-25 09:01:37,323 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];reportNumber=[tblVirtualStock,];pageNo=[1,];pageSize=[10,];src=[menu,];DataType=[tblGoods,];mobileGoodsFullName=[干真,];parentCode=[,];StockCode=[00001,];
+ [DEBUG] 2017-12-25 09:01:37,324 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 09:01:37,371 Line:549 ReportDataMgt.getReportData SQL={call report_VirtualStock (@pageNo=?,@pageSize=?,@locale=?,@userId=?,@sunCompany=?,@classCode=?,@StockCode=?,@GoodsCode=?,@BatchNo=?,@Inch=?,@Hue=?,@yearNO=?,@ProDate=?,@Availably=?,@NumberType=?,@DataType=?,@upperQtyQ=?,@mobileGoodsFullName=?)}
+ [DEBUG] 2017-12-25 09:01:37,371 Line:567 ReportDataMgt.getReportData 参数1:1
+ [DEBUG] 2017-12-25 09:01:37,371 Line:568 ReportDataMgt.getReportData 参数2:10
+ [DEBUG] 2017-12-25 09:01:37,372 Line:569 ReportDataMgt.getReportData 参数3:zh_CN
+ [DEBUG] 2017-12-25 09:01:37,372 Line:570 ReportDataMgt.getReportData 参数4:1
+ [DEBUG] 2017-12-25 09:01:37,372 Line:571 ReportDataMgt.getReportData 参数5:00001
+ [DEBUG] 2017-12-25 09:01:37,372 Line:582 ReportDataMgt.getReportData 参数6:
+ [DEBUG] 2017-12-25 09:01:37,372 Line:582 ReportDataMgt.getReportData 参数7:00001
+ [DEBUG] 2017-12-25 09:01:37,372 Line:582 ReportDataMgt.getReportData 参数8:
+ [DEBUG] 2017-12-25 09:01:37,373 Line:582 ReportDataMgt.getReportData 参数9:
+ [DEBUG] 2017-12-25 09:01:37,373 Line:582 ReportDataMgt.getReportData 参数10:
+ [DEBUG] 2017-12-25 09:01:37,373 Line:582 ReportDataMgt.getReportData 参数11:
+ [DEBUG] 2017-12-25 09:01:37,373 Line:582 ReportDataMgt.getReportData 参数12:
+ [DEBUG] 2017-12-25 09:01:37,373 Line:582 ReportDataMgt.getReportData 参数13:
+ [DEBUG] 2017-12-25 09:01:37,373 Line:582 ReportDataMgt.getReportData 参数14:
+ [DEBUG] 2017-12-25 09:01:37,373 Line:582 ReportDataMgt.getReportData 参数15:0
+ [DEBUG] 2017-12-25 09:01:37,373 Line:582 ReportDataMgt.getReportData 参数16:tblGoods
+ [DEBUG] 2017-12-25 09:01:37,374 Line:582 ReportDataMgt.getReportData 参数17:
+ [DEBUG] 2017-12-25 09:01:37,374 Line:582 ReportDataMgt.getReportData 参数18:干真
+ [DEBUG] 2017-12-25 09:01:37,462 Line:587 ReportDataMgt.getReportData warn 正在直接执行 SQL；无游标。
+ [DEBUG] 2017-12-25 09:01:37,462 Line:587 ReportDataMgt.getReportData warn 商品，仓库权限语句
+ [DEBUG] 2017-12-25 09:01:37,463 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:01:37,463 Line:587 ReportDataMgt.getReportData warn  and ( b.StockCode like '00001'+'%' )
+ [DEBUG] 2017-12-25 09:01:37,463 Line:587 ReportDataMgt.getReportData warn 解析出的查询条件
+ [DEBUG] 2017-12-25 09:01:37,463 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:01:37,463 Line:587 ReportDataMgt.getReportData warn 最终显示数据的查询语句
+ [DEBUG] 2017-12-25 09:01:37,463 Line:587 ReportDataMgt.getReportData warn SELECT ROW_NUMBER() OVER(ORDER BY tblGoods.GoodsNumber) AS rowid,
+			tblGoods.classCode,
+            tblGoods.isCatalog,
+            tblGoods.classCode+ '#;#'+ CAST(tblGoods.isCatalog AS VARCHAR(10))+ '#;##;#' AS hide_GoodsCode,
+            tblGoods.GoodsNumber AS GoodsNumber,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end as BatchNo,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end as Inch,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end as Hue,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end as yearNO,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end as ProDate,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end as Availably,sum(isnull(lastQty,0)),sum(isnull(inQtyNotAudit,0)),sum(isnull(SInQtyNotAudit,0)),sum(isnull(outQtyNotAudit,0)),sum(isnull(BOutQtyNotAudit,0)),sum(isnull(UseQty,0)),sum(isnull(buyOrderQty,0)),sum(isnull(salesOrderQty,0)),sum(isnull(UseQty,0))+sum(isnull(buyOrderQty,0))-sum(isnull(salesOrderQty,0)) as orderQty FROM (select GoodsNumber,classCode,isCatalog,upperQty,lowerQty from tblGoods where workFlowNodeName='finish' and (tblGoods.classCode like '_____')) as tblGoods  LEFT JOIN (SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,lastQty,inQtyNotAudit,SInQtyNotAudit,outQtyNotAudit,BOutQtyNotAudit,lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit as UseQty,0 as buyOrderQty,0 as salesOrderQty FROM tblStocks as b where 1=1 and ( b.StockCode like '00001'+'%' ) union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,NotInQty,0 FROM tblBuyOrder a,tblBuyOrderDet b WHERE a.id = b.f_ref AND b.NotInQty>0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' and ( b.StockCode like '00001'+'%' ) union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,0,NotOutQty FROM tblSalesOrder a,tblSalesOrderDet b WHERE a.id = b.f_ref AND b.NotOutQty> 0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' and ( b.StockCode like '00001'+'%' )) as b on tblGoods.classCode = SUBSTRING(b.GoodsCode, 1, LEN(tblGoods.classCode)) group by tblGoods.classCode,tblGoods.GoodsNumber,tblGoods.isCatalog,tblGoods.upperQty,tblGoods.lowerQty,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end  having 1=1 and abs(sum(isnull(lastQty,0)))+abs(sum(isnull(inQtyNotAudit,0)))+abs(sum(isnull(SInQtyNotAudit,0)))+abs(sum(isnull(outQtyNotAudit,0)))+abs(sum(isnull(BOutQtyNotAudit,0)))+abs(sum(isnull(buyOrderQty,0)))+abs(sum(isnull(salesOrderQty,0)))>0
+ [DEBUG] 2017-12-25 09:01:37,463 Line:689 通过SQL读原始数据：92
+ [DEBUG] 2017-12-25 09:01:37,464 Line:1391 整理数据：0
+ [DEBUG] 2017-12-25 09:01:37,465 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["StockCode","00001"],["GoodsCode",""],["NumberType","0"],["DataType","tblGoods"],["upperQtyQ",""],["mobileGoodsFullName","干真"]],"cols":[["classCode","-1","string","","GoodsCode"],["","-1","string","","classCode"],["商品编号","100","string","","GoodsNumber"],["商品名称","150","string","","GoodsFullName"],["商品规格","200","string","","GoodsSpec"],["单位","30","string","","BaseUnit"],["库存上限","90","float","","upperQty"],["库存下限","90","float","","lowerQty"],["实际库存","90",等等！
+ [DEBUG] 2017-12-25 09:01:37,856 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&reportNumber=tblVirtualStock
+ [DEBUG] 2017-12-25 09:01:37,859 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];reportNumber=[tblVirtualStock,];pageNo=[1,];pageSize=[10,];src=[menu,];DataType=[tblGoods,];mobileGoodsFullName=[干,];parentCode=[,];StockCode=[00001,];
+ [DEBUG] 2017-12-25 09:01:37,859 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 09:01:37,936 Line:549 ReportDataMgt.getReportData SQL={call report_VirtualStock (@pageNo=?,@pageSize=?,@locale=?,@userId=?,@sunCompany=?,@classCode=?,@StockCode=?,@GoodsCode=?,@BatchNo=?,@Inch=?,@Hue=?,@yearNO=?,@ProDate=?,@Availably=?,@NumberType=?,@DataType=?,@upperQtyQ=?,@mobileGoodsFullName=?)}
+ [DEBUG] 2017-12-25 09:01:37,937 Line:567 ReportDataMgt.getReportData 参数1:1
+ [DEBUG] 2017-12-25 09:01:37,938 Line:568 ReportDataMgt.getReportData 参数2:10
+ [DEBUG] 2017-12-25 09:01:37,939 Line:569 ReportDataMgt.getReportData 参数3:zh_CN
+ [DEBUG] 2017-12-25 09:01:37,939 Line:570 ReportDataMgt.getReportData 参数4:1
+ [DEBUG] 2017-12-25 09:01:37,940 Line:571 ReportDataMgt.getReportData 参数5:00001
+ [DEBUG] 2017-12-25 09:01:37,941 Line:582 ReportDataMgt.getReportData 参数6:
+ [DEBUG] 2017-12-25 09:01:37,941 Line:582 ReportDataMgt.getReportData 参数7:00001
+ [DEBUG] 2017-12-25 09:01:37,942 Line:582 ReportDataMgt.getReportData 参数8:
+ [DEBUG] 2017-12-25 09:01:37,943 Line:582 ReportDataMgt.getReportData 参数9:
+ [DEBUG] 2017-12-25 09:01:37,944 Line:582 ReportDataMgt.getReportData 参数10:
+ [DEBUG] 2017-12-25 09:01:37,944 Line:582 ReportDataMgt.getReportData 参数11:
+ [DEBUG] 2017-12-25 09:01:37,945 Line:582 ReportDataMgt.getReportData 参数12:
+ [DEBUG] 2017-12-25 09:01:37,946 Line:582 ReportDataMgt.getReportData 参数13:
+ [DEBUG] 2017-12-25 09:01:37,946 Line:582 ReportDataMgt.getReportData 参数14:
+ [DEBUG] 2017-12-25 09:01:37,947 Line:582 ReportDataMgt.getReportData 参数15:0
+ [DEBUG] 2017-12-25 09:01:37,947 Line:582 ReportDataMgt.getReportData 参数16:tblGoods
+ [DEBUG] 2017-12-25 09:01:37,948 Line:582 ReportDataMgt.getReportData 参数17:
+ [DEBUG] 2017-12-25 09:01:37,949 Line:582 ReportDataMgt.getReportData 参数18:干
+ [DEBUG] 2017-12-25 09:01:38,018 Line:587 ReportDataMgt.getReportData warn 正在直接执行 SQL；无游标。
+ [DEBUG] 2017-12-25 09:01:38,018 Line:587 ReportDataMgt.getReportData warn 商品，仓库权限语句
+ [DEBUG] 2017-12-25 09:01:38,019 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:01:38,019 Line:587 ReportDataMgt.getReportData warn  and ( b.StockCode like '00001'+'%' )
+ [DEBUG] 2017-12-25 09:01:38,019 Line:587 ReportDataMgt.getReportData warn 解析出的查询条件
+ [DEBUG] 2017-12-25 09:01:38,019 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:01:38,019 Line:587 ReportDataMgt.getReportData warn 最终显示数据的查询语句
+ [DEBUG] 2017-12-25 09:01:38,019 Line:587 ReportDataMgt.getReportData warn SELECT ROW_NUMBER() OVER(ORDER BY tblGoods.GoodsNumber) AS rowid,
+			tblGoods.classCode,
+            tblGoods.isCatalog,
+            tblGoods.classCode+ '#;#'+ CAST(tblGoods.isCatalog AS VARCHAR(10))+ '#;##;#' AS hide_GoodsCode,
+            tblGoods.GoodsNumber AS GoodsNumber,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end as BatchNo,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end as Inch,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end as Hue,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end as yearNO,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end as ProDate,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end as Availably,sum(isnull(lastQty,0)),sum(isnull(inQtyNotAudit,0)),sum(isnull(SInQtyNotAudit,0)),sum(isnull(outQtyNotAudit,0)),sum(isnull(BOutQtyNotAudit,0)),sum(isnull(UseQty,0)),sum(isnull(buyOrderQty,0)),sum(isnull(salesOrderQty,0)),sum(isnull(UseQty,0))+sum(isnull(buyOrderQty,0))-sum(isnull(salesOrderQty,0)) as orderQty FROM (select GoodsNumber,classCode,isCatalog,upperQty,lowerQty from tblGoods where workFlowNodeName='finish' and (tblGoods.classCode like '_____')) as tblGoods  LEFT JOIN (SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,lastQty,inQtyNotAudit,SInQtyNotAudit,outQtyNotAudit,BOutQtyNotAudit,lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit as UseQty,0 as buyOrderQty,0 as salesOrderQty FROM tblStocks as b where 1=1 and ( b.StockCode like '00001'+'%' ) union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,NotInQty,0 FROM tblBuyOrder a,tblBuyOrderDet b WHERE a.id = b.f_ref AND b.NotInQty>0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' and ( b.StockCode like '00001'+'%' ) union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,0,NotOutQty FROM tblSalesOrder a,tblSalesOrderDet b WHERE a.id = b.f_ref AND b.NotOutQty> 0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' and ( b.StockCode like '00001'+'%' )) as b on tblGoods.classCode = SUBSTRING(b.GoodsCode, 1, LEN(tblGoods.classCode)) group by tblGoods.classCode,tblGoods.GoodsNumber,tblGoods.isCatalog,tblGoods.upperQty,tblGoods.lowerQty,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end  having 1=1 and abs(sum(isnull(lastQty,0)))+abs(sum(isnull(inQtyNotAudit,0)))+abs(sum(isnull(SInQtyNotAudit,0)))+abs(sum(isnull(outQtyNotAudit,0)))+abs(sum(isnull(BOutQtyNotAudit,0)))+abs(sum(isnull(buyOrderQty,0)))+abs(sum(isnull(salesOrderQty,0)))>0
+ [DEBUG] 2017-12-25 09:01:38,020 Line:689 通过SQL读原始数据：83
+ [DEBUG] 2017-12-25 09:01:38,020 Line:1391 整理数据：0
+ [DEBUG] 2017-12-25 09:01:38,023 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["StockCode","00001"],["GoodsCode",""],["NumberType","0"],["DataType","tblGoods"],["upperQtyQ",""],["mobileGoodsFullName","干"]],"cols":[["classCode","-1","string","","GoodsCode"],["","-1","string","","classCode"],["商品编号","100","string","","GoodsNumber"],["商品名称","150","string","","GoodsFullName"],["商品规格","200","string","","GoodsSpec"],["单位","30","string","","BaseUnit"],["库存上限","90","float","","upperQty"],["库存下限","90","float","","lowerQty"],["实际库存","90","等等！
+ [DEBUG] 2017-12-25 09:07:07,371 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&reportNumber=tblVirtualStock
+ [DEBUG] 2017-12-25 09:07:07,373 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&reportNumber=tblVirtualStock
+ [DEBUG] 2017-12-25 09:07:07,373 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];reportNumber=[tblVirtualStock,];pageNo=[1,];pageSize=[10,];src=[menu,];DataType=[tblGoods,];mobileGoodsFullName=[,];parentCode=[,];StockCode=[,];
+ [DEBUG] 2017-12-25 09:07:07,374 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];reportNumber=[tblVirtualStock,];pageNo=[1,];pageSize=[10,];src=[menu,];DataType=[tblGoods,];mobileGoodsFullName=[,];parentCode=[,];StockCode=[,];
+ [DEBUG] 2017-12-25 09:07:07,374 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 09:07:07,374 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 09:07:07,416 Line:549 ReportDataMgt.getReportData SQL={call report_VirtualStock (@pageNo=?,@pageSize=?,@locale=?,@userId=?,@sunCompany=?,@classCode=?,@StockCode=?,@GoodsCode=?,@BatchNo=?,@Inch=?,@Hue=?,@yearNO=?,@ProDate=?,@Availably=?,@NumberType=?,@DataType=?,@upperQtyQ=?,@mobileGoodsFullName=?)}
+ [DEBUG] 2017-12-25 09:07:07,416 Line:549 ReportDataMgt.getReportData SQL={call report_VirtualStock (@pageNo=?,@pageSize=?,@locale=?,@userId=?,@sunCompany=?,@classCode=?,@StockCode=?,@GoodsCode=?,@BatchNo=?,@Inch=?,@Hue=?,@yearNO=?,@ProDate=?,@Availably=?,@NumberType=?,@DataType=?,@upperQtyQ=?,@mobileGoodsFullName=?)}
+ [DEBUG] 2017-12-25 09:07:07,417 Line:567 ReportDataMgt.getReportData 参数1:1
+ [DEBUG] 2017-12-25 09:07:07,417 Line:568 ReportDataMgt.getReportData 参数2:10
+ [DEBUG] 2017-12-25 09:07:07,417 Line:569 ReportDataMgt.getReportData 参数3:zh_CN
+ [DEBUG] 2017-12-25 09:07:07,418 Line:570 ReportDataMgt.getReportData 参数4:1
+ [DEBUG] 2017-12-25 09:07:07,418 Line:571 ReportDataMgt.getReportData 参数5:00001
+ [DEBUG] 2017-12-25 09:07:07,417 Line:567 ReportDataMgt.getReportData 参数1:1
+ [DEBUG] 2017-12-25 09:07:07,418 Line:568 ReportDataMgt.getReportData 参数2:10
+ [DEBUG] 2017-12-25 09:07:07,418 Line:569 ReportDataMgt.getReportData 参数3:zh_CN
+ [DEBUG] 2017-12-25 09:07:07,418 Line:582 ReportDataMgt.getReportData 参数6:
+ [DEBUG] 2017-12-25 09:07:07,419 Line:570 ReportDataMgt.getReportData 参数4:1
+ [DEBUG] 2017-12-25 09:07:07,419 Line:582 ReportDataMgt.getReportData 参数7:
+ [DEBUG] 2017-12-25 09:07:07,419 Line:571 ReportDataMgt.getReportData 参数5:00001
+ [DEBUG] 2017-12-25 09:07:07,419 Line:582 ReportDataMgt.getReportData 参数6:
+ [DEBUG] 2017-12-25 09:07:07,419 Line:582 ReportDataMgt.getReportData 参数8:
+ [DEBUG] 2017-12-25 09:07:07,420 Line:582 ReportDataMgt.getReportData 参数7:
+ [DEBUG] 2017-12-25 09:07:07,420 Line:582 ReportDataMgt.getReportData 参数9:
+ [DEBUG] 2017-12-25 09:07:07,420 Line:582 ReportDataMgt.getReportData 参数8:
+ [DEBUG] 2017-12-25 09:07:07,421 Line:582 ReportDataMgt.getReportData 参数10:
+ [DEBUG] 2017-12-25 09:07:07,421 Line:582 ReportDataMgt.getReportData 参数9:
+ [DEBUG] 2017-12-25 09:07:07,422 Line:582 ReportDataMgt.getReportData 参数11:
+ [DEBUG] 2017-12-25 09:07:07,424 Line:582 ReportDataMgt.getReportData 参数10:
+ [DEBUG] 2017-12-25 09:07:07,425 Line:582 ReportDataMgt.getReportData 参数12:
+ [DEBUG] 2017-12-25 09:07:07,425 Line:582 ReportDataMgt.getReportData 参数11:
+ [DEBUG] 2017-12-25 09:07:07,426 Line:582 ReportDataMgt.getReportData 参数12:
+ [DEBUG] 2017-12-25 09:07:07,425 Line:582 ReportDataMgt.getReportData 参数13:
+ [DEBUG] 2017-12-25 09:07:07,426 Line:582 ReportDataMgt.getReportData 参数13:
+ [DEBUG] 2017-12-25 09:07:07,426 Line:582 ReportDataMgt.getReportData 参数14:
+ [DEBUG] 2017-12-25 09:07:07,427 Line:582 ReportDataMgt.getReportData 参数14:
+ [DEBUG] 2017-12-25 09:07:07,427 Line:582 ReportDataMgt.getReportData 参数15:0
+ [DEBUG] 2017-12-25 09:07:07,427 Line:582 ReportDataMgt.getReportData 参数16:tblGoods
+ [DEBUG] 2017-12-25 09:07:07,427 Line:582 ReportDataMgt.getReportData 参数15:0
+ [DEBUG] 2017-12-25 09:07:07,427 Line:582 ReportDataMgt.getReportData 参数17:
+ [DEBUG] 2017-12-25 09:07:07,428 Line:582 ReportDataMgt.getReportData 参数18:
+ [DEBUG] 2017-12-25 09:07:07,428 Line:582 ReportDataMgt.getReportData 参数16:tblGoods
+ [DEBUG] 2017-12-25 09:07:07,428 Line:582 ReportDataMgt.getReportData 参数17:
+ [DEBUG] 2017-12-25 09:07:07,428 Line:582 ReportDataMgt.getReportData 参数18:
+ [DEBUG] 2017-12-25 09:07:07,515 Line:587 ReportDataMgt.getReportData warn 正在直接执行 SQL；无游标。
+ [DEBUG] 2017-12-25 09:07:07,516 Line:587 ReportDataMgt.getReportData warn 商品，仓库权限语句
+ [DEBUG] 2017-12-25 09:07:07,516 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:07:07,516 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:07:07,516 Line:587 ReportDataMgt.getReportData warn 解析出的查询条件
+ [DEBUG] 2017-12-25 09:07:07,516 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:07:07,516 Line:587 ReportDataMgt.getReportData warn 最终显示数据的查询语句
+ [DEBUG] 2017-12-25 09:07:07,517 Line:587 ReportDataMgt.getReportData warn SELECT ROW_NUMBER() OVER(ORDER BY tblGoods.GoodsNumber) AS rowid,
+			tblGoods.classCode,
+            tblGoods.isCatalog,
+            tblGoods.classCode+ '#;#'+ CAST(tblGoods.isCatalog AS VARCHAR(10))+ '#;##;#' AS hide_GoodsCode,
+            tblGoods.GoodsNumber AS GoodsNumber,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end as BatchNo,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end as Inch,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end as Hue,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end as yearNO,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end as ProDate,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end as Availably,sum(isnull(lastQty,0)),sum(isnull(inQtyNotAudit,0)),sum(isnull(SInQtyNotAudit,0)),sum(isnull(outQtyNotAudit,0)),sum(isnull(BOutQtyNotAudit,0)),sum(isnull(UseQty,0)),sum(isnull(buyOrderQty,0)),sum(isnull(salesOrderQty,0)),sum(isnull(UseQty,0))+sum(isnull(buyOrderQty,0))-sum(isnull(salesOrderQty,0)) as orderQty FROM (select GoodsNumber,classCode,isCatalog,upperQty,lowerQty from tblGoods where workFlowNodeName='finish' and (tblGoods.classCode like '_____')) as tblGoods  LEFT JOIN (SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,lastQty,inQtyNotAudit,SInQtyNotAudit,outQtyNotAudit,BOutQtyNotAudit,lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit as UseQty,0 as buyOrderQty,0 as salesOrderQty FROM tblStocks as b where 1=1 union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,NotInQty,0 FROM tblBuyOrder a,tblBuyOrderDet b WHERE a.id = b.f_ref AND b.NotInQty>0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,0,NotOutQty FROM tblSalesOrder a,tblSalesOrderDet b WHERE a.id = b.f_ref AND b.NotOutQty> 0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish') as b on tblGoods.classCode = SUBSTRING(b.GoodsCode, 1, LEN(tblGoods.classCode)) group by tblGoods.classCode,tblGoods.GoodsNumber,tblGoods.isCatalog,tblGoods.upperQty,tblGoods.lowerQty,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end  having 1=1 and abs(sum(isnull(lastQty,0)))+abs(sum(isnull(inQtyNotAudit,0)))+abs(sum(isnull(SInQtyNotAudit,0)))+abs(sum(isnull(outQtyNotAudit,0)))+abs(sum(isnull(BOutQtyNotAudit,0)))+abs(sum(isnull(buyOrderQty,0)))+abs(sum(isnull(salesOrderQty,0)))>0
+ [DEBUG] 2017-12-25 09:07:07,515 Line:587 ReportDataMgt.getReportData warn 正在直接执行 SQL；无游标。
+ [DEBUG] 2017-12-25 09:07:07,517 Line:587 ReportDataMgt.getReportData warn 商品，仓库权限语句
+ [DEBUG] 2017-12-25 09:07:07,517 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:07:07,517 Line:689 通过SQL读原始数据：100
+ [DEBUG] 2017-12-25 09:07:07,517 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:07:07,518 Line:587 ReportDataMgt.getReportData warn 解析出的查询条件
+ [DEBUG] 2017-12-25 09:07:07,518 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:07:07,519 Line:587 ReportDataMgt.getReportData warn 最终显示数据的查询语句
+ [DEBUG] 2017-12-25 09:07:07,519 Line:587 ReportDataMgt.getReportData warn SELECT ROW_NUMBER() OVER(ORDER BY tblGoods.GoodsNumber) AS rowid,
+			tblGoods.classCode,
+            tblGoods.isCatalog,
+            tblGoods.classCode+ '#;#'+ CAST(tblGoods.isCatalog AS VARCHAR(10))+ '#;##;#' AS hide_GoodsCode,
+            tblGoods.GoodsNumber AS GoodsNumber,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end as BatchNo,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end as Inch,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end as Hue,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end as yearNO,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end as ProDate,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end as Availably,sum(isnull(lastQty,0)),sum(isnull(inQtyNotAudit,0)),sum(isnull(SInQtyNotAudit,0)),sum(isnull(outQtyNotAudit,0)),sum(isnull(BOutQtyNotAudit,0)),sum(isnull(UseQty,0)),sum(isnull(buyOrderQty,0)),sum(isnull(salesOrderQty,0)),sum(isnull(UseQty,0))+sum(isnull(buyOrderQty,0))-sum(isnull(salesOrderQty,0)) as orderQty FROM (select GoodsNumber,classCode,isCatalog,upperQty,lowerQty from tblGoods where workFlowNodeName='finish' and (tblGoods.classCode like '_____')) as tblGoods  LEFT JOIN (SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,lastQty,inQtyNotAudit,SInQtyNotAudit,outQtyNotAudit,BOutQtyNotAudit,lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit as UseQty,0 as buyOrderQty,0 as salesOrderQty FROM tblStocks as b where 1=1 union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,NotInQty,0 FROM tblBuyOrder a,tblBuyOrderDet b WHERE a.id = b.f_ref AND b.NotInQty>0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,0,NotOutQty FROM tblSalesOrder a,tblSalesOrderDet b WHERE a.id = b.f_ref AND b.NotOutQty> 0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish') as b on tblGoods.classCode = SUBSTRING(b.GoodsCode, 1, LEN(tblGoods.classCode)) group by tblGoods.classCode,tblGoods.GoodsNumber,tblGoods.isCatalog,tblGoods.upperQty,tblGoods.lowerQty,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end  having 1=1 and abs(sum(isnull(lastQty,0)))+abs(sum(isnull(inQtyNotAudit,0)))+abs(sum(isnull(SInQtyNotAudit,0)))+abs(sum(isnull(outQtyNotAudit,0)))+abs(sum(isnull(BOutQtyNotAudit,0)))+abs(sum(isnull(buyOrderQty,0)))+abs(sum(isnull(salesOrderQty,0)))>0
+ [DEBUG] 2017-12-25 09:07:07,519 Line:1391 整理数据：1
+ [DEBUG] 2017-12-25 09:07:07,519 Line:689 通过SQL读原始数据：102
+ [DEBUG] 2017-12-25 09:07:07,521 Line:1391 整理数据：1
+ [DEBUG] 2017-12-25 09:07:07,532 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["StockCode",""],["GoodsCode",""],["NumberType","0"],["DataType","tblGoods"],["upperQtyQ",""],["mobileGoodsFullName",""]],"cols":[["classCode","-1","string","","GoodsCode"],["","-1","string","","classCode"],["商品编号","100","string","","GoodsNumber"],["商品名称","150","string","","GoodsFullName"],["商品规格","200","string","","GoodsSpec"],["单位","30","string","","BaseUnit"],["库存上限","90","float","","upperQty"],["库存下限","90","float","","lowerQty"],["实际库存","90","floatc等等！
+ [DEBUG] 2017-12-25 09:07:07,536 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["StockCode",""],["GoodsCode",""],["NumberType","0"],["DataType","tblGoods"],["upperQtyQ",""],["mobileGoodsFullName",""]],"cols":[["classCode","-1","string","","GoodsCode"],["","-1","string","","classCode"],["商品编号","100","string","","GoodsNumber"],["商品名称","150","string","","GoodsFullName"],["商品规格","200","string","","GoodsSpec"],["单位","30","string","","BaseUnit"],["库存上限","90","float","","upperQty"],["库存下限","90","float","","lowerQty"],["实际库存","90","floatc等等！
+ [DEBUG] 2017-12-25 09:07:09,751 Line:2992 MobileAjax 请求地址：/MobileAjax?op=popup
+ [DEBUG] 2017-12-25 09:07:09,751 Line:3003 MobileAjax 操作人:admin;请求数据：op=[popup,];tableName=[tblSalesOrder,];selectName=[model_getWorkNodeByTblName,];pageNo=[1,];pageSize=[10,];
+ [DEBUG] 2017-12-25 09:07:09,752 Line:243 AIOApi op=popup&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 09:07:09,775 Line:3434 DynDBManager.popSelect selectName=model_getWorkNodeByTblName; sql=select *  from (select OAWorkFlowNode.keyId f1 ,OAWorkFlowNode.display f2 
+,ROW_NUMBER() over( order by OAWorkFlowNode.keyId) as row_id from OAWorkFlowNode 
+left join OAWorkFlowTemplate on OAWorkFlowNode.flowId = OAWorkFlowTemplate.id
+where OAWorkFlowTemplate.templateFile = 'tblSalesOrder' and statusId = 0) a where  row_id between 1 and 10 order by row_id 
+ [DEBUG] 2017-12-25 09:07:09,785 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"result":[{"label":"开始","value":"0"},{"label":"结束","value":"-1"},{"label":"主管审核","value":"1513322741341"},{"label":"财务审核","value":"1513322743692"}]}}
+ [DEBUG] 2017-12-25 09:07:11,268 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&tableName=tblSalesOrder
+ [DEBUG] 2017-12-25 09:07:11,270 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];tableName=[tblSalesOrder,];pageNo=[1,];pageSize=[10,];src=[menu,];statusId=[,];BillNo=[,];BillDate1=[2009-12-31T16:00:00.000Z,];BillDate2=[2017-12-25T16:00:00.000Z,];workFlowNodeName=[,];
+ [DEBUG] 2017-12-25 09:07:11,271 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 09:07:11,306 Line:549 ReportDataMgt.getReportData SQL=select keyId,createBy,deptCodeR,employeeId,deptCodeRE,BillDate,BillNo,ComFullName,ComNumber,DeptFullName,EmpFullName,ReceiveDate,TotalTaxAmount,CurTotalTaxAmount,SaleAmount,AccAmount,BackAmount,AccName,AlrAccAmt,sysName,id,statusId,Qty,OutQty,NotOut,Remark,CompanyCode,JAmount,JAmountz,InvoiceType,workFlowNodeName,workFlowNode,checkPersons,lastNodeID from ( select tblSalesOrder.id as keyId,tblSalesOrder.createBy as createBy,(select isnull(DepartmentCode,'') from tblEmployee where tblEmployee.id=tblSalesOrder.createBy) as deptCodeR,tblSalesOrder.employeeId as employeeId,tblSalesOrder.departmentCode as deptCodeRE, tblSalesOrder.workFlowNode as workFlowNode,tblSalesOrder.workFlowNodeName as workFlowNodeName,tblSalesOrder.checkPersons as checkPersons,(select lastNodeId from OAMyWorkFlow where OAMyWorkFlow.keyID=tblSalesOrder.id and OAMyWorkFlow.tableName='tblSalesOrder' and '1' = OAMyWorkFlow.lastCheckPerson and tblSalesOrder.workFlowNode!='-1' ) as lastNodeID,       tblSalesOrder.BillDate as BillDate,     tblSalesOrder.BillNo as BillNo,     tblCompany.ComFullName as ComFullName,     tblCompany.ComNumber as ComNumber,     tblDepartment.DeptFullName as DeptFullName,     tblEmployee1.EmpFullName as EmpFullName,     tblSalesOrder.ReceiveDate as ReceiveDate,     tblSalesOrder.TotalTaxAmount as TotalTaxAmount,     tblSalesOrder.CurTotalAmount as CurTotalTaxAmount,     isnull((select SUM(a.AfterChangeAmt) from tblSalesOutStockDet a,tblSalesOutStock b where a.SalesOrderID=tblSalesOrder.id and a.f_ref=b.id and b.workFlowNodeName='finish'),0)-isnull((select SUM(a.TaxAmount) from tblSalesReturnStockDet a,tblSalesReturnStock b where a.SalesOrderID=tblSalesOrder.id and a.f_ref=b.id and b.workFlowNodeName='finish'),0) as SaleAmount,     (select isnull(sum(a.TotalAlrAccAmt),0) from tblsalesoutstock a where a.SalesOrderID=tblSalesOrder.id and a.workFlowNodeName='finish') as AccAmount,     tblSalesOrder.BackAmount as BackAmount,     tblAccTypeInfo.AccName as AccName,     tblSalesOrder.AlrAccAmt as AlrAccAmt,     tblEmployee2.EmpFullName as sysName,     tblSalesOrder.id as id,     tblSalesOrder.statusId as statusId,     (select isnull(sum(Qty),0) from tblsalesOrderDet where tblsalesOrderDet.f_ref=tblSalesOrder.id) as Qty,     (select isnull(sum(isnull(case when OutQty<=0 then 0 else OutQty end,0)),0) from tblsalesOrderDet where tblsalesOrderDet.f_ref=tblSalesOrder.id) as OutQty,     (select isnull(sum(isnull(case when NotOutQty<=0 then 0 else NotOutQty end,0)),0) from tblsalesOrderDet where tblsalesOrderDet.f_ref=tblSalesOrder.id) as NotOut,     tblSalesOrder.Remark as Remark,     tblSalesOrder.CompanyCode as CompanyCode,     abs(isnull(tblSalesOrder.TotalTaxAmount,0)-isnull(tblSalesOrder.BackAmount,0)) as JAmount,     abs(isnull(tblSalesOrder.TotalTaxAmount,0)-isnull(tblSalesOrder.BackAmount,0)) as JAmountz,     tblSalesOrder.InvoiceType as InvoiceType   ,ROW_NUMBER() over(order by     tblSalesOrder.BillDate desc,    tblSalesOrder.BillNo desc) as row_id  from tblSalesOrder   left join tblCompany on tblCompany.classCode=tblSalesOrder.CompanyCode  left join tblDepartment on tblDepartment.classCode=tblSalesOrder.DepartmentCode  left join tblEmployee tblEmployee1 on tblEmployee1.id=tblSalesOrder.EmployeeID   left join tblEmployee tblEmployee2 on tblEmployee2.id=tblSalesOrder.createBy   left join tblAccTypeInfo on tblAccTypeInfo.AccNumber=tblSalesOrder.Account where 1=1 and isNull(tblSalesOrder.workFlowNodeName,'')!='print'        and (tblSalesOrder.BillDate >= ?)       and (tblSalesOrder.BillDate <= ?)                                                                    )  a  where row_id between 1 and 11 order by row_id
+ [DEBUG] 2017-12-25 09:07:11,307 Line:582 ReportDataMgt.getReportData 参数1:2009-12-31T16:00:00.000Z
+ [DEBUG] 2017-12-25 09:07:11,307 Line:582 ReportDataMgt.getReportData 参数2:2017-12-25T16:00:00.000Z
+ [DEBUG] 2017-12-25 09:07:11,440 Line:689 通过SQL读原始数据：133
+ [DEBUG] 2017-12-25 09:07:11,441 Line:1391 整理数据：1
+ [DEBUG] 2017-12-25 09:07:11,451 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["BillDate1","2009-12-31T16:00:00.000Z"],["BillDate2","2017-12-25T16:00:00.000Z"],["BillNo",""],["ComFullNamen",""],["ComName",""],["DeptFullName",""],["EmpFullName",""],["sysName",""],["statusId",""],["JAmount",""],["workFlowNodeName",""]],"cols":[["单据日期","70","date","","BillDate"],["单据编号","100","stringcall","","BillNo"],["客户全称","200","string","","ComFullName"],["客户编号","100","string","","ComNumber"],["部门","75","string","","DeptFullName"],["经手人","50","s等等！
+ [DEBUG] 2017-12-25 09:07:12,991 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&tableName=tblSalesOrder
+ [DEBUG] 2017-12-25 09:07:12,993 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];tableName=[tblSalesOrder,];pageNo=[2,];pageSize=[10,];src=[menu,];statusId=[,];BillNo=[,];BillDate1=[2009-12-31T16:00:00.000Z,];BillDate2=[2017-12-25T16:00:00.000Z,];workFlowNodeName=[,];
+ [DEBUG] 2017-12-25 09:07:12,994 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 09:07:13,027 Line:549 ReportDataMgt.getReportData SQL=select keyId,createBy,deptCodeR,employeeId,deptCodeRE,BillDate,BillNo,ComFullName,ComNumber,DeptFullName,EmpFullName,ReceiveDate,TotalTaxAmount,CurTotalTaxAmount,SaleAmount,AccAmount,BackAmount,AccName,AlrAccAmt,sysName,id,statusId,Qty,OutQty,NotOut,Remark,CompanyCode,JAmount,JAmountz,InvoiceType,workFlowNodeName,workFlowNode,checkPersons,lastNodeID from ( select tblSalesOrder.id as keyId,tblSalesOrder.createBy as createBy,(select isnull(DepartmentCode,'') from tblEmployee where tblEmployee.id=tblSalesOrder.createBy) as deptCodeR,tblSalesOrder.employeeId as employeeId,tblSalesOrder.departmentCode as deptCodeRE, tblSalesOrder.workFlowNode as workFlowNode,tblSalesOrder.workFlowNodeName as workFlowNodeName,tblSalesOrder.checkPersons as checkPersons,(select lastNodeId from OAMyWorkFlow where OAMyWorkFlow.keyID=tblSalesOrder.id and OAMyWorkFlow.tableName='tblSalesOrder' and '1' = OAMyWorkFlow.lastCheckPerson and tblSalesOrder.workFlowNode!='-1' ) as lastNodeID,       tblSalesOrder.BillDate as BillDate,     tblSalesOrder.BillNo as BillNo,     tblCompany.ComFullName as ComFullName,     tblCompany.ComNumber as ComNumber,     tblDepartment.DeptFullName as DeptFullName,     tblEmployee1.EmpFullName as EmpFullName,     tblSalesOrder.ReceiveDate as ReceiveDate,     tblSalesOrder.TotalTaxAmount as TotalTaxAmount,     tblSalesOrder.CurTotalAmount as CurTotalTaxAmount,     isnull((select SUM(a.AfterChangeAmt) from tblSalesOutStockDet a,tblSalesOutStock b where a.SalesOrderID=tblSalesOrder.id and a.f_ref=b.id and b.workFlowNodeName='finish'),0)-isnull((select SUM(a.TaxAmount) from tblSalesReturnStockDet a,tblSalesReturnStock b where a.SalesOrderID=tblSalesOrder.id and a.f_ref=b.id and b.workFlowNodeName='finish'),0) as SaleAmount,     (select isnull(sum(a.TotalAlrAccAmt),0) from tblsalesoutstock a where a.SalesOrderID=tblSalesOrder.id and a.workFlowNodeName='finish') as AccAmount,     tblSalesOrder.BackAmount as BackAmount,     tblAccTypeInfo.AccName as AccName,     tblSalesOrder.AlrAccAmt as AlrAccAmt,     tblEmployee2.EmpFullName as sysName,     tblSalesOrder.id as id,     tblSalesOrder.statusId as statusId,     (select isnull(sum(Qty),0) from tblsalesOrderDet where tblsalesOrderDet.f_ref=tblSalesOrder.id) as Qty,     (select isnull(sum(isnull(case when OutQty<=0 then 0 else OutQty end,0)),0) from tblsalesOrderDet where tblsalesOrderDet.f_ref=tblSalesOrder.id) as OutQty,     (select isnull(sum(isnull(case when NotOutQty<=0 then 0 else NotOutQty end,0)),0) from tblsalesOrderDet where tblsalesOrderDet.f_ref=tblSalesOrder.id) as NotOut,     tblSalesOrder.Remark as Remark,     tblSalesOrder.CompanyCode as CompanyCode,     abs(isnull(tblSalesOrder.TotalTaxAmount,0)-isnull(tblSalesOrder.BackAmount,0)) as JAmount,     abs(isnull(tblSalesOrder.TotalTaxAmount,0)-isnull(tblSalesOrder.BackAmount,0)) as JAmountz,     tblSalesOrder.InvoiceType as InvoiceType   ,ROW_NUMBER() over(order by     tblSalesOrder.BillDate desc,    tblSalesOrder.BillNo desc) as row_id  from tblSalesOrder   left join tblCompany on tblCompany.classCode=tblSalesOrder.CompanyCode  left join tblDepartment on tblDepartment.classCode=tblSalesOrder.DepartmentCode  left join tblEmployee tblEmployee1 on tblEmployee1.id=tblSalesOrder.EmployeeID   left join tblEmployee tblEmployee2 on tblEmployee2.id=tblSalesOrder.createBy   left join tblAccTypeInfo on tblAccTypeInfo.AccNumber=tblSalesOrder.Account where 1=1 and isNull(tblSalesOrder.workFlowNodeName,'')!='print'        and (tblSalesOrder.BillDate >= ?)       and (tblSalesOrder.BillDate <= ?)                                                                    )  a  where row_id between 11 and 21 order by row_id
+ [DEBUG] 2017-12-25 09:07:13,029 Line:582 ReportDataMgt.getReportData 参数1:2009-12-31T16:00:00.000Z
+ [DEBUG] 2017-12-25 09:07:13,029 Line:582 ReportDataMgt.getReportData 参数2:2017-12-25T16:00:00.000Z
+ [DEBUG] 2017-12-25 09:07:13,096 Line:689 通过SQL读原始数据：67
+ [DEBUG] 2017-12-25 09:07:13,115 Line:1391 整理数据：18
+ [DEBUG] 2017-12-25 09:07:13,118 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["BillDate1","2009-12-31T16:00:00.000Z"],["BillDate2","2017-12-25T16:00:00.000Z"],["BillNo",""],["ComFullNamen",""],["ComName",""],["DeptFullName",""],["EmpFullName",""],["sysName",""],["statusId",""],["JAmount",""],["workFlowNodeName",""]],"cols":[["单据日期","70","date","","BillDate"],["单据编号","100","stringcall","","BillNo"],["客户全称","200","string","","ComFullName"],["客户编号","100","string","","ComNumber"],["部门","75","string","","DeptFullName"],["经手人","50","s等等！
+ [DEBUG] 2017-12-25 09:07:18,046 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&tableName=tblSalesOrder
+ [DEBUG] 2017-12-25 09:07:18,047 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];tableName=[tblSalesOrder,];pageNo=[1,];pageSize=[10,];src=[menu,];statusId=[,];BillNo=[,];BillDate1=[2009-12-31T16:00:00.000Z,];BillDate2=[2017-12-25T16:00:00.000Z,];workFlowNodeName=[draft,];
+ [DEBUG] 2017-12-25 09:07:18,047 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 09:07:18,059 Line:549 ReportDataMgt.getReportData SQL=select keyId,createBy,deptCodeR,employeeId,deptCodeRE,BillDate,BillNo,ComFullName,ComNumber,DeptFullName,EmpFullName,ReceiveDate,TotalTaxAmount,CurTotalTaxAmount,SaleAmount,AccAmount,BackAmount,AccName,AlrAccAmt,sysName,id,statusId,Qty,OutQty,NotOut,Remark,CompanyCode,JAmount,JAmountz,InvoiceType,workFlowNodeName,workFlowNode,checkPersons,lastNodeID from ( select tblSalesOrder.id as keyId,tblSalesOrder.createBy as createBy,(select isnull(DepartmentCode,'') from tblEmployee where tblEmployee.id=tblSalesOrder.createBy) as deptCodeR,tblSalesOrder.employeeId as employeeId,tblSalesOrder.departmentCode as deptCodeRE, tblSalesOrder.workFlowNode as workFlowNode,tblSalesOrder.workFlowNodeName as workFlowNodeName,tblSalesOrder.checkPersons as checkPersons,(select lastNodeId from OAMyWorkFlow where OAMyWorkFlow.keyID=tblSalesOrder.id and OAMyWorkFlow.tableName='tblSalesOrder' and '1' = OAMyWorkFlow.lastCheckPerson and tblSalesOrder.workFlowNode!='-1' ) as lastNodeID,       tblSalesOrder.BillDate as BillDate,     tblSalesOrder.BillNo as BillNo,     tblCompany.ComFullName as ComFullName,     tblCompany.ComNumber as ComNumber,     tblDepartment.DeptFullName as DeptFullName,     tblEmployee1.EmpFullName as EmpFullName,     tblSalesOrder.ReceiveDate as ReceiveDate,     tblSalesOrder.TotalTaxAmount as TotalTaxAmount,     tblSalesOrder.CurTotalAmount as CurTotalTaxAmount,     isnull((select SUM(a.AfterChangeAmt) from tblSalesOutStockDet a,tblSalesOutStock b where a.SalesOrderID=tblSalesOrder.id and a.f_ref=b.id and b.workFlowNodeName='finish'),0)-isnull((select SUM(a.TaxAmount) from tblSalesReturnStockDet a,tblSalesReturnStock b where a.SalesOrderID=tblSalesOrder.id and a.f_ref=b.id and b.workFlowNodeName='finish'),0) as SaleAmount,     (select isnull(sum(a.TotalAlrAccAmt),0) from tblsalesoutstock a where a.SalesOrderID=tblSalesOrder.id and a.workFlowNodeName='finish') as AccAmount,     tblSalesOrder.BackAmount as BackAmount,     tblAccTypeInfo.AccName as AccName,     tblSalesOrder.AlrAccAmt as AlrAccAmt,     tblEmployee2.EmpFullName as sysName,     tblSalesOrder.id as id,     tblSalesOrder.statusId as statusId,     (select isnull(sum(Qty),0) from tblsalesOrderDet where tblsalesOrderDet.f_ref=tblSalesOrder.id) as Qty,     (select isnull(sum(isnull(case when OutQty<=0 then 0 else OutQty end,0)),0) from tblsalesOrderDet where tblsalesOrderDet.f_ref=tblSalesOrder.id) as OutQty,     (select isnull(sum(isnull(case when NotOutQty<=0 then 0 else NotOutQty end,0)),0) from tblsalesOrderDet where tblsalesOrderDet.f_ref=tblSalesOrder.id) as NotOut,     tblSalesOrder.Remark as Remark,     tblSalesOrder.CompanyCode as CompanyCode,     abs(isnull(tblSalesOrder.TotalTaxAmount,0)-isnull(tblSalesOrder.BackAmount,0)) as JAmount,     abs(isnull(tblSalesOrder.TotalTaxAmount,0)-isnull(tblSalesOrder.BackAmount,0)) as JAmountz,     tblSalesOrder.InvoiceType as InvoiceType   ,ROW_NUMBER() over(order by     tblSalesOrder.BillDate desc,    tblSalesOrder.BillNo desc) as row_id  from tblSalesOrder   left join tblCompany on tblCompany.classCode=tblSalesOrder.CompanyCode  left join tblDepartment on tblDepartment.classCode=tblSalesOrder.DepartmentCode  left join tblEmployee tblEmployee1 on tblEmployee1.id=tblSalesOrder.EmployeeID   left join tblEmployee tblEmployee2 on tblEmployee2.id=tblSalesOrder.createBy   left join tblAccTypeInfo on tblAccTypeInfo.AccNumber=tblSalesOrder.Account where 1=1 and isNull(tblSalesOrder.workFlowNodeName,'')!='print'        and (tblSalesOrder.BillDate >= ?)       and (tblSalesOrder.BillDate <= ?)                                                                  and (tblSalesOrder.workFlowNodeName = ?)  )  a  where row_id between 1 and 11 order by row_id
+ [DEBUG] 2017-12-25 09:07:18,059 Line:582 ReportDataMgt.getReportData 参数1:2009-12-31T16:00:00.000Z
+ [DEBUG] 2017-12-25 09:07:18,059 Line:582 ReportDataMgt.getReportData 参数2:2017-12-25T16:00:00.000Z
+ [DEBUG] 2017-12-25 09:07:18,059 Line:582 ReportDataMgt.getReportData 参数3:draft
+ [DEBUG] 2017-12-25 09:07:18,085 Line:689 通过SQL读原始数据：26
+ [DEBUG] 2017-12-25 09:07:18,086 Line:1391 整理数据：0
+ [DEBUG] 2017-12-25 09:07:18,089 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["BillDate1","2009-12-31T16:00:00.000Z"],["BillDate2","2017-12-25T16:00:00.000Z"],["BillNo",""],["ComFullNamen",""],["ComName",""],["DeptFullName",""],["EmpFullName",""],["sysName",""],["statusId",""],["JAmount",""],["workFlowNodeName","draft"]],"cols":[["单据日期","70","date","","BillDate"],["单据编号","100","stringcall","","BillNo"],["客户全称","200","string","","ComFullName"],["客户编号","100","string","","ComNumber"],["部门","75","string","","DeptFullName"],["经手人","5等等！
+ [DEBUG] 2017-12-25 09:07:19,869 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&tableName=tblSalesOrder
+ [DEBUG] 2017-12-25 09:07:19,870 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];tableName=[tblSalesOrder,];pageNo=[1,];pageSize=[10,];src=[menu,];statusId=[0,];BillNo=[,];BillDate1=[2009-12-31T16:00:00.000Z,];BillDate2=[2017-12-25T16:00:00.000Z,];workFlowNodeName=[draft,];
+ [DEBUG] 2017-12-25 09:07:19,870 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 09:07:19,881 Line:549 ReportDataMgt.getReportData SQL=select keyId,createBy,deptCodeR,employeeId,deptCodeRE,BillDate,BillNo,ComFullName,ComNumber,DeptFullName,EmpFullName,ReceiveDate,TotalTaxAmount,CurTotalTaxAmount,SaleAmount,AccAmount,BackAmount,AccName,AlrAccAmt,sysName,id,statusId,Qty,OutQty,NotOut,Remark,CompanyCode,JAmount,JAmountz,InvoiceType,workFlowNodeName,workFlowNode,checkPersons,lastNodeID from ( select tblSalesOrder.id as keyId,tblSalesOrder.createBy as createBy,(select isnull(DepartmentCode,'') from tblEmployee where tblEmployee.id=tblSalesOrder.createBy) as deptCodeR,tblSalesOrder.employeeId as employeeId,tblSalesOrder.departmentCode as deptCodeRE, tblSalesOrder.workFlowNode as workFlowNode,tblSalesOrder.workFlowNodeName as workFlowNodeName,tblSalesOrder.checkPersons as checkPersons,(select lastNodeId from OAMyWorkFlow where OAMyWorkFlow.keyID=tblSalesOrder.id and OAMyWorkFlow.tableName='tblSalesOrder' and '1' = OAMyWorkFlow.lastCheckPerson and tblSalesOrder.workFlowNode!='-1' ) as lastNodeID,       tblSalesOrder.BillDate as BillDate,     tblSalesOrder.BillNo as BillNo,     tblCompany.ComFullName as ComFullName,     tblCompany.ComNumber as ComNumber,     tblDepartment.DeptFullName as DeptFullName,     tblEmployee1.EmpFullName as EmpFullName,     tblSalesOrder.ReceiveDate as ReceiveDate,     tblSalesOrder.TotalTaxAmount as TotalTaxAmount,     tblSalesOrder.CurTotalAmount as CurTotalTaxAmount,     isnull((select SUM(a.AfterChangeAmt) from tblSalesOutStockDet a,tblSalesOutStock b where a.SalesOrderID=tblSalesOrder.id and a.f_ref=b.id and b.workFlowNodeName='finish'),0)-isnull((select SUM(a.TaxAmount) from tblSalesReturnStockDet a,tblSalesReturnStock b where a.SalesOrderID=tblSalesOrder.id and a.f_ref=b.id and b.workFlowNodeName='finish'),0) as SaleAmount,     (select isnull(sum(a.TotalAlrAccAmt),0) from tblsalesoutstock a where a.SalesOrderID=tblSalesOrder.id and a.workFlowNodeName='finish') as AccAmount,     tblSalesOrder.BackAmount as BackAmount,     tblAccTypeInfo.AccName as AccName,     tblSalesOrder.AlrAccAmt as AlrAccAmt,     tblEmployee2.EmpFullName as sysName,     tblSalesOrder.id as id,     tblSalesOrder.statusId as statusId,     (select isnull(sum(Qty),0) from tblsalesOrderDet where tblsalesOrderDet.f_ref=tblSalesOrder.id) as Qty,     (select isnull(sum(isnull(case when OutQty<=0 then 0 else OutQty end,0)),0) from tblsalesOrderDet where tblsalesOrderDet.f_ref=tblSalesOrder.id) as OutQty,     (select isnull(sum(isnull(case when NotOutQty<=0 then 0 else NotOutQty end,0)),0) from tblsalesOrderDet where tblsalesOrderDet.f_ref=tblSalesOrder.id) as NotOut,     tblSalesOrder.Remark as Remark,     tblSalesOrder.CompanyCode as CompanyCode,     abs(isnull(tblSalesOrder.TotalTaxAmount,0)-isnull(tblSalesOrder.BackAmount,0)) as JAmount,     abs(isnull(tblSalesOrder.TotalTaxAmount,0)-isnull(tblSalesOrder.BackAmount,0)) as JAmountz,     tblSalesOrder.InvoiceType as InvoiceType   ,ROW_NUMBER() over(order by     tblSalesOrder.BillDate desc,    tblSalesOrder.BillNo desc) as row_id  from tblSalesOrder   left join tblCompany on tblCompany.classCode=tblSalesOrder.CompanyCode  left join tblDepartment on tblDepartment.classCode=tblSalesOrder.DepartmentCode  left join tblEmployee tblEmployee1 on tblEmployee1.id=tblSalesOrder.EmployeeID   left join tblEmployee tblEmployee2 on tblEmployee2.id=tblSalesOrder.createBy   left join tblAccTypeInfo on tblAccTypeInfo.AccNumber=tblSalesOrder.Account where 1=1 and isNull(tblSalesOrder.workFlowNodeName,'')!='print'        and (tblSalesOrder.BillDate >= ?)       and (tblSalesOrder.BillDate <= ?)                                                 and (tblSalesOrder.statusId = ?)                 and (tblSalesOrder.workFlowNodeName = ?)  )  a  where row_id between 1 and 11 order by row_id
+ [DEBUG] 2017-12-25 09:07:19,881 Line:582 ReportDataMgt.getReportData 参数1:2009-12-31T16:00:00.000Z
+ [DEBUG] 2017-12-25 09:07:19,881 Line:582 ReportDataMgt.getReportData 参数2:2017-12-25T16:00:00.000Z
+ [DEBUG] 2017-12-25 09:07:19,881 Line:582 ReportDataMgt.getReportData 参数3:0
+ [DEBUG] 2017-12-25 09:07:19,881 Line:582 ReportDataMgt.getReportData 参数4:draft
+ [DEBUG] 2017-12-25 09:07:19,913 Line:689 通过SQL读原始数据：32
+ [DEBUG] 2017-12-25 09:07:19,914 Line:1391 整理数据：0
+ [DEBUG] 2017-12-25 09:07:19,916 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["BillDate1","2009-12-31T16:00:00.000Z"],["BillDate2","2017-12-25T16:00:00.000Z"],["BillNo",""],["ComFullNamen",""],["ComName",""],["DeptFullName",""],["EmpFullName",""],["sysName",""],["statusId","0"],["JAmount",""],["workFlowNodeName","draft"]],"cols":[["单据日期","70","date","","BillDate"],["单据编号","100","stringcall","","BillNo"],["客户全称","200","string","","ComFullName"],["客户编号","100","string","","ComNumber"],["部门","75","string","","DeptFullName"],["经手人","等等！
+ [DEBUG] 2017-12-25 09:10:45,616 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&reportNumber=tblVirtualStock
+ [DEBUG] 2017-12-25 09:10:45,619 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];reportNumber=[tblVirtualStock,];pageNo=[1,];pageSize=[10,];src=[menu,];DataType=[tblGoods,];mobileGoodsFullName=[,];parentCode=[,];StockCode=[,];
+ [DEBUG] 2017-12-25 09:10:45,620 Line:243 AIOApi op=report&sessionid=7A62E795BBFB78BC3D2651FE6C9D6A9A
+ [DEBUG] 2017-12-25 09:10:45,671 Line:549 ReportDataMgt.getReportData SQL={call report_VirtualStock (@pageNo=?,@pageSize=?,@locale=?,@userId=?,@sunCompany=?,@classCode=?,@StockCode=?,@GoodsCode=?,@BatchNo=?,@Inch=?,@Hue=?,@yearNO=?,@ProDate=?,@Availably=?,@NumberType=?,@DataType=?,@upperQtyQ=?,@mobileGoodsFullName=?)}
+ [DEBUG] 2017-12-25 09:10:45,672 Line:567 ReportDataMgt.getReportData 参数1:1
+ [DEBUG] 2017-12-25 09:10:45,672 Line:568 ReportDataMgt.getReportData 参数2:10
+ [DEBUG] 2017-12-25 09:10:45,672 Line:569 ReportDataMgt.getReportData 参数3:zh_CN
+ [DEBUG] 2017-12-25 09:10:45,672 Line:570 ReportDataMgt.getReportData 参数4:1
+ [DEBUG] 2017-12-25 09:10:45,672 Line:571 ReportDataMgt.getReportData 参数5:00001
+ [DEBUG] 2017-12-25 09:10:45,672 Line:582 ReportDataMgt.getReportData 参数6:
+ [DEBUG] 2017-12-25 09:10:45,673 Line:582 ReportDataMgt.getReportData 参数7:
+ [DEBUG] 2017-12-25 09:10:45,673 Line:582 ReportDataMgt.getReportData 参数8:
+ [DEBUG] 2017-12-25 09:10:45,673 Line:582 ReportDataMgt.getReportData 参数9:
+ [DEBUG] 2017-12-25 09:10:45,673 Line:582 ReportDataMgt.getReportData 参数10:
+ [DEBUG] 2017-12-25 09:10:45,673 Line:582 ReportDataMgt.getReportData 参数11:
+ [DEBUG] 2017-12-25 09:10:45,673 Line:582 ReportDataMgt.getReportData 参数12:
+ [DEBUG] 2017-12-25 09:10:45,673 Line:582 ReportDataMgt.getReportData 参数13:
+ [DEBUG] 2017-12-25 09:10:45,674 Line:582 ReportDataMgt.getReportData 参数14:
+ [DEBUG] 2017-12-25 09:10:45,674 Line:582 ReportDataMgt.getReportData 参数15:0
+ [DEBUG] 2017-12-25 09:10:45,674 Line:582 ReportDataMgt.getReportData 参数16:tblGoods
+ [DEBUG] 2017-12-25 09:10:45,674 Line:582 ReportDataMgt.getReportData 参数17:
+ [DEBUG] 2017-12-25 09:10:45,674 Line:582 ReportDataMgt.getReportData 参数18:
+ [DEBUG] 2017-12-25 09:10:45,747 Line:587 ReportDataMgt.getReportData warn 正在直接执行 SQL；无游标。
+ [DEBUG] 2017-12-25 09:10:45,748 Line:587 ReportDataMgt.getReportData warn 商品，仓库权限语句
+ [DEBUG] 2017-12-25 09:10:45,748 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:10:45,748 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:10:45,748 Line:587 ReportDataMgt.getReportData warn 解析出的查询条件
+ [DEBUG] 2017-12-25 09:10:45,748 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 09:10:45,748 Line:587 ReportDataMgt.getReportData warn 最终显示数据的查询语句
+ [DEBUG] 2017-12-25 09:10:45,749 Line:587 ReportDataMgt.getReportData warn SELECT ROW_NUMBER() OVER(ORDER BY tblGoods.GoodsNumber) AS rowid,
+			tblGoods.classCode,
+            tblGoods.isCatalog,
+            tblGoods.classCode+ '#;#'+ CAST(tblGoods.isCatalog AS VARCHAR(10))+ '#;##;#' AS hide_GoodsCode,
+            tblGoods.GoodsNumber AS GoodsNumber,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end as BatchNo,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end as Inch,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end as Hue,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end as yearNO,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end as ProDate,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end as Availably,sum(isnull(lastQty,0)),sum(isnull(inQtyNotAudit,0)),sum(isnull(SInQtyNotAudit,0)),sum(isnull(outQtyNotAudit,0)),sum(isnull(BOutQtyNotAudit,0)),sum(isnull(UseQty,0)),sum(isnull(buyOrderQty,0)),sum(isnull(salesOrderQty,0)),sum(isnull(UseQty,0))+sum(isnull(buyOrderQty,0))-sum(isnull(salesOrderQty,0)) as orderQty FROM (select GoodsNumber,classCode,isCatalog,upperQty,lowerQty from tblGoods where workFlowNodeName='finish' and (tblGoods.classCode like '_____')) as tblGoods  LEFT JOIN (SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,lastQty,inQtyNotAudit,SInQtyNotAudit,outQtyNotAudit,BOutQtyNotAudit,lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit as UseQty,0 as buyOrderQty,0 as salesOrderQty FROM tblStocks as b where 1=1 union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,NotInQty,0 FROM tblBuyOrder a,tblBuyOrderDet b WHERE a.id = b.f_ref AND b.NotInQty>0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,0,NotOutQty FROM tblSalesOrder a,tblSalesOrderDet b WHERE a.id = b.f_ref AND b.NotOutQty> 0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish') as b on tblGoods.classCode = SUBSTRING(b.GoodsCode, 1, LEN(tblGoods.classCode)) group by tblGoods.classCode,tblGoods.GoodsNumber,tblGoods.isCatalog,tblGoods.upperQty,tblGoods.lowerQty,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end  having 1=1 and abs(sum(isnull(lastQty,0)))+abs(sum(isnull(inQtyNotAudit,0)))+abs(sum(isnull(SInQtyNotAudit,0)))+abs(sum(isnull(outQtyNotAudit,0)))+abs(sum(isnull(BOutQtyNotAudit,0)))+abs(sum(isnull(buyOrderQty,0)))+abs(sum(isnull(salesOrderQty,0)))>0
+ [DEBUG] 2017-12-25 09:10:45,749 Line:689 通过SQL读原始数据：77
+ [DEBUG] 2017-12-25 09:10:45,750 Line:1391 整理数据：1
+ [DEBUG] 2017-12-25 09:10:45,756 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["StockCode",""],["GoodsCode",""],["NumberType","0"],["DataType","tblGoods"],["upperQtyQ",""],["mobileGoodsFullName",""]],"cols":[["classCode","-1","string","","GoodsCode"],["","-1","string","","classCode"],["商品编号","100","string","","GoodsNumber"],["商品名称","150","string","","GoodsFullName"],["商品规格","200","string","","GoodsSpec"],["单位","30","string","","BaseUnit"],["库存上限","90","float","","upperQty"],["库存下限","90","float","","lowerQty"],["实际库存","90","floatc等等！
+ [DEBUG] 2017-12-25 09:16:06,013 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [INFO ] 2017-12-25 15:31:18,199 Line:206 系统开始启动，最大内存：1792;目前总内存：302;目前空闲内存：208
+ [INFO ] 2017-12-25 15:31:18,487 Line:284 ===========Tomcat Port=8888
+ [INFO ] 2017-12-25 15:31:28,425 Line:2660 ---------------------------------first read dog =======-----------
+ [DEBUG] 2017-12-25 15:31:28,840 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canJxc=1 
+ [DEBUG] 2017-12-25 15:31:28,864 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canOa=1 
+ [DEBUG] 2017-12-25 15:31:28,870 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canCrm=1 
+ [DEBUG] 2017-12-25 15:31:28,877 Line:3336  select count(*) from tblEmployee where openFlag = 1 and statusid=0 and id <> '1' and canHr=1 
+ [DEBUG] 2017-12-25 15:31:28,898 Line:594 select AccPeriod,AccMonth,AccYear,scompanyId,statusId,isBegin from tblAccPeriod where statusId=1 or isBegin=1
+ [DEBUG] 2017-12-25 15:31:28,912 Line:626 ------Init initAccPeriod record:1
+ [DEBUG] 2017-12-25 15:31:31,287 Line:1061 ------Init Enumeration record:390
+ [DEBUG] 2017-12-25 15:31:31,341 Line:1091 ------Init WorkProfession record:58
+ [DEBUG] 2017-12-25 15:31:31,401 Line:1121 ------Init District record:3984
+ [DEBUG] 2017-12-25 15:31:31,427 Line:1152 ------Init deptMap record:1
+ [DEBUG] 2017-12-25 15:31:32,425 Line:1832 ------Init ModuleList record:
+ [DEBUG] 2017-12-25 15:31:32,426 Line:2855 --------Init ModuleList Successful---------------
+ [DEBUG] 2017-12-25 15:31:33,037 Line:297  select * from tblDBTableInfo order by TableName 
+ [DEBUG] 2017-12-25 15:31:33,136 Line:370 select * from tblDBFieldInfo order by tableId,listOrder
+ [DEBUG] 2017-12-25 15:31:33,957 Line:538 ------Init TableInfo record:634
+ [DEBUG] 2017-12-25 15:31:33,988 Line:651  select cataName,disName,module,tableName,nameField,codeField from tblScopeCataData order by orderby 
+ [DEBUG] 2017-12-25 15:31:33,994 Line:682 ------Init TableInfo record:4
+ [DEBUG] 2017-12-25 15:31:34,006 Line:775 ------Init initModuleField record:0
+ [DEBUG] 2017-12-25 15:31:34,020 Line:702  select tableName,sentence from tblPopDisSentence where statusId=0 order by tableName 
+ [DEBUG] 2017-12-25 15:31:34,026 Line:721 ------Init TableInfo record:26
+ [DEBUG] 2017-12-25 15:31:34,059 Line:891 ------Init PropInfo record:7
+ [DEBUG] 2017-12-25 15:31:37,596 Line:2947 --------Init Config File ---------------
+ [ERROR] 2017-12-25 15:31:37,985 Line:48 java.io.FileNotFoundException: D:\Project\aio\tomcat7\bin\..\..\fileServer_v7\wokeflow\ffd4bcdd_1701241708235230006.xml (系统找不到指定的文件。)
+ [DEBUG] 2017-12-25 15:31:38,003 Line:1873 ------Init RefreshTime 
+ [DEBUG] 2017-12-25 15:31:38,059 Line:2994 --------Init SMS Start ---------------
+ [INFO ] 2017-12-25 15:31:38,824 Line:3011 -------System init Secussful Set Normal status--------------
+ [DEBUG] 2017-12-25 15:31:38,824 Line:3855 --------Init Dog Successful---------------
+ [INFO ] 2017-12-25 15:31:41,686 Line:89 SAFE 数据库第一个备份任务启动，时间2017-12-26 00:00:00
+ [INFO ] 2017-12-25 15:31:41,687 Line:137 SAFE 碎片任务启动，时间2017-12-31 00:00:00
+ [DEBUG] 2017-12-25 15:32:23,554 Line:2992 MobileAjax 请求地址：/MobileAjax?op=getSessEmp
+ [DEBUG] 2017-12-25 15:32:23,558 Line:3003 MobileAjax 操作人:;请求数据：op=[getSessEmp,];
+ [DEBUG] 2017-12-25 15:32:23,558 Line:243 AIOApi op=getSessEmp&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:32:23,623 Line:2961 MobileAjax 操作人:;返回数据：{"code":"NOLOGIN","msg":"未登陆"}
+ [DEBUG] 2017-12-25 15:32:39,042 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2017-12-25 15:32:40,302 Line:2992 MobileAjax 请求地址：/MobileAjax?op=LOGIN
+ [DEBUG] 2017-12-25 15:32:40,303 Line:3003 MobileAjax 操作人:;请求数据：op=[LOGIN,];name=[admin,];password=[21232f297a57a5a743894a0e4a801fc3,];
+ [DEBUG] 2017-12-25 15:32:40,304 Line:243 AIOApi op=LOGIN&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:32:40,453 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2017-12-25 15:32:40,633 Line:2987 select count(*) from tblSunCompanys a where a.classCode like '00001_____%'
+ [DEBUG] 2017-12-25 15:32:40,676 Line:530 select AccYear,AccOverYear from  tblAccPeriod group by Accyear,AccOverYear
+ [DEBUG] 2017-12-25 15:32:41,144 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"登陆成功"}
+ [DEBUG] 2017-12-25 15:32:41,688 Line:2992 MobileAjax 请求地址：/MobileAjax?op=getSessEmp
+ [DEBUG] 2017-12-25 15:32:41,689 Line:3003 MobileAjax 操作人:admin;请求数据：op=[getSessEmp,];
+ [DEBUG] 2017-12-25 15:32:41,690 Line:243 AIOApi op=getSessEmp&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:32:41,700 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"departmentName":"默认部门","titleId":"12","name":"admin","id":"1"}}
+ [DEBUG] 2017-12-25 15:32:41,786 Line:2992 MobileAjax 请求地址：/MobileAjax?op=getEnum&enum=duty
+ [DEBUG] 2017-12-25 15:32:41,788 Line:3003 MobileAjax 操作人:admin;请求数据：op=[getEnum,];enum=[duty,];
+ [DEBUG] 2017-12-25 15:32:41,789 Line:243 AIOApi op=getEnum&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:32:41,806 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":[{"name":"职员","value":"11"},{"name":"法人","value":"1"},{"name":"董事","value":"10"},{"name":"董事长","value":"9"},{"name":"总经理","value":"2"},{"name":"部门经理","value":"3"},{"name":"副经理","value":"5"},{"name":"部长","value":"4"},{"name":"副部长","value":"6"},{"name":"主管","value":"7"},{"name":"副主管","value":"8"},{"name":"其他","value":"12"}]}
+ [DEBUG] 2017-12-25 15:32:45,443 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&tableName=tblcardscan
+ [DEBUG] 2017-12-25 15:32:45,445 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];tableName=[tblcardscan,];pageNo=[1,];pageSize=[10,];src=[menu,];
+ [DEBUG] 2017-12-25 15:32:45,446 Line:243 AIOApi op=report&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:32:45,447 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"ERROR","msg":"没有权限"}
+ [DEBUG] 2017-12-25 15:33:12,245 Line:2992 MobileAjax 请求地址：/MobileAjax?op=cardscan
+ [DEBUG] 2017-12-25 15:33:12,245 Line:3003 MobileAjax 操作人:admin;请求数据：op=[cardscan,];
+ [DEBUG] 2017-12-25 15:33:12,246 Line:243 AIOApi op=cardscan&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:33:12,429 Line:1750 AIOConnect发送远程请求返回：c01fb9f7d34032ae72181f54e625d509f9f3a16c38915a0f7ce889484d6327e5
+ [DEBUG] 2017-12-25 15:34:09,105 Line:2992 MobileAjax 请求地址：/MobileAjax?op=getSessEmp
+ [DEBUG] 2017-12-25 15:34:09,106 Line:3003 MobileAjax 操作人:admin;请求数据：op=[getSessEmp,];
+ [DEBUG] 2017-12-25 15:34:09,107 Line:243 AIOApi op=getSessEmp&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:34:09,109 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"departmentName":"默认部门","titleId":"12","name":"admin","id":"1"}}
+ [DEBUG] 2017-12-25 15:34:09,164 Line:2992 MobileAjax 请求地址：/MobileAjax?op=getEnum&enum=duty
+ [DEBUG] 2017-12-25 15:34:09,165 Line:3003 MobileAjax 操作人:admin;请求数据：op=[getEnum,];enum=[duty,];
+ [DEBUG] 2017-12-25 15:34:09,166 Line:243 AIOApi op=getEnum&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:34:09,169 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":[{"name":"职员","value":"11"},{"name":"法人","value":"1"},{"name":"董事","value":"10"},{"name":"董事长","value":"9"},{"name":"总经理","value":"2"},{"name":"部门经理","value":"3"},{"name":"副经理","value":"5"},{"name":"部长","value":"4"},{"name":"副部长","value":"6"},{"name":"主管","value":"7"},{"name":"副主管","value":"8"},{"name":"其他","value":"12"}]}
+ [DEBUG] 2017-12-25 15:34:13,664 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&tableName=tblcardscan
+ [DEBUG] 2017-12-25 15:34:13,665 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];tableName=[tblcardscan,];pageNo=[1,];pageSize=[10,];src=[menu,];
+ [DEBUG] 2017-12-25 15:34:13,665 Line:243 AIOApi op=report&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:34:13,666 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"ERROR","msg":"没有权限"}
+ [DEBUG] 2017-12-25 15:35:02,507 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&tableName=tblcardscan
+ [DEBUG] 2017-12-25 15:35:02,508 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];tableName=[tblcardscan,];pageNo=[1,];pageSize=[10,];src=[menu,];
+ [DEBUG] 2017-12-25 15:35:02,508 Line:243 AIOApi op=report&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:35:14,198 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"ERROR","msg":"没有权限"}
+ [DEBUG] 2017-12-25 15:36:03,597 Line:2992 MobileAjax 请求地址：/MobileAjax?op=getSessEmp
+ [DEBUG] 2017-12-25 15:36:03,598 Line:3003 MobileAjax 操作人:admin;请求数据：op=[getSessEmp,];
+ [DEBUG] 2017-12-25 15:36:03,598 Line:243 AIOApi op=getSessEmp&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:37:33,271 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"departmentName":"默认部门","titleId":"12","name":"admin","id":"1"}}
+ [DEBUG] 2017-12-25 15:37:37,993 Line:2992 MobileAjax 请求地址：/MobileAjax?op=getEnum&enum=duty
+ [DEBUG] 2017-12-25 15:37:37,993 Line:3003 MobileAjax 操作人:admin;请求数据：op=[getEnum,];enum=[duty,];
+ [DEBUG] 2017-12-25 15:37:37,994 Line:243 AIOApi op=getEnum&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:37:42,866 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":[{"name":"职员","value":"11"},{"name":"法人","value":"1"},{"name":"董事","value":"10"},{"name":"董事长","value":"9"},{"name":"总经理","value":"2"},{"name":"部门经理","value":"3"},{"name":"副经理","value":"5"},{"name":"部长","value":"4"},{"name":"副部长","value":"6"},{"name":"主管","value":"7"},{"name":"副主管","value":"8"},{"name":"其他","value":"12"}]}
+ [DEBUG] 2017-12-25 15:37:50,147 Line:2992 MobileAjax 请求地址：/MobileAjax?op=cardscan
+ [DEBUG] 2017-12-25 15:37:50,148 Line:3003 MobileAjax 操作人:admin;请求数据：op=[cardscan,];
+ [DEBUG] 2017-12-25 15:37:50,148 Line:243 AIOApi op=cardscan&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:38:26,443 Line:1750 AIOConnect发送远程请求返回：c01fb9f7d34032ae72181f54e625d509f9f3a16c38915a0f7ce889484d6327e5
+ [DEBUG] 2017-12-25 15:39:44,098 Line:2992 MobileAjax 请求地址：/MobileAjax?op=report&tableName=tblcardscan
+ [DEBUG] 2017-12-25 15:39:44,100 Line:3003 MobileAjax 操作人:admin;请求数据：op=[report,];tableName=[tblcardscan,];pageNo=[1,];pageSize=[10,];src=[menu,];
+ [DEBUG] 2017-12-25 15:39:44,101 Line:243 AIOApi op=report&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:39:46,317 Line:2961 MobileAjax 操作人:admin;返回数据：{"code":"ERROR","msg":"没有权限"}
+ [DEBUG] 2017-12-25 15:39:54,264 Line:2992 MobileAjax 请求地址：/MobileAjax?op=cardscan
+ [DEBUG] 2017-12-25 15:39:54,265 Line:3003 MobileAjax 操作人:admin;请求数据：op=[cardscan,];
+ [DEBUG] 2017-12-25 15:39:54,265 Line:243 AIOApi op=cardscan&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:40:16,866 Line:1750 AIOConnect发送远程请求返回：c01fb9f7d34032ae72181f54e625d509f9f3a16c38915a0f7ce889484d6327e5
+ [DEBUG] 2017-12-25 15:42:47,687 Line:2992 MobileAjax 请求地址：/MobileAjax?op=cardscan
+ [DEBUG] 2017-12-25 15:42:47,687 Line:3003 MobileAjax 操作人:admin;请求数据：op=[cardscan,];
+ [DEBUG] 2017-12-25 15:42:47,687 Line:243 AIOApi op=cardscan&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:43:19,152 Line:1750 AIOConnect发送远程请求返回：c01fb9f7d34032ae72181f54e625d509f9f3a16c38915a0f7ce889484d6327e5
+ [DEBUG] 2017-12-25 15:45:32,649 Line:2993 MobileAjax 请求地址：/MobileAjax?op=report&tableName=tblcardscan
+ [DEBUG] 2017-12-25 15:45:32,651 Line:3004 MobileAjax 操作人:admin;请求数据：op=[report,];tableName=[tblcardscan,];pageNo=[1,];pageSize=[10,];src=[menu,];
+ [DEBUG] 2017-12-25 15:45:32,652 Line:243 AIOApi op=report&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:45:36,542 Line:2962 MobileAjax 操作人:admin;返回数据：{"code":"ERROR","msg":"没有权限"}
+ [DEBUG] 2017-12-25 15:45:41,596 Line:2993 MobileAjax 请求地址：/MobileAjax?op=cardscan
+ [DEBUG] 2017-12-25 15:45:41,596 Line:3004 MobileAjax 操作人:admin;请求数据：op=[cardscan,];
+ [DEBUG] 2017-12-25 15:45:41,597 Line:243 AIOApi op=cardscan&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:45:57,290 Line:1750 AIOConnect发送远程请求返回：2da381dff55b0b7be544417f0b5e08e0a4256b158d24f4987ecaf61b2ae18590173f0ab9ab0c6865506a85edf0b0a4221b3f5e5b55d6229f439e6153160765b6499fe5bbd5d48f757611175e2f15e2bc1b3de318b302073b326019d176b63628abcd4fe33d5676e7a3b17d4d45309a9b9485db1ecf6f205dd1fa01b42c82aeb3e1c98cb8a499d93dd79bbf1079213b5d
+ [DEBUG] 2017-12-25 15:46:07,518 Line:1750 AIOConnect发送远程请求返回：c01fb9f7d34032ae72181f54e625d50919972443cec8a0b97ce889484d6327e5
+ [DEBUG] 2017-12-25 15:46:08,036 Line:2993 MobileAjax 请求地址：/MobileAjax?op=detail
+ [DEBUG] 2017-12-25 15:46:08,037 Line:3004 MobileAjax 操作人:admin;请求数据：op=[detail,];tableName=[tblcardscan,];keyId=[765853d6_1712251546074300002,];
+ [DEBUG] 2017-12-25 15:46:08,037 Line:243 AIOApi op=detail&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:46:10,137 Line:5010 OAMyWorkFLowMgt.getOAMyWorkFlowInfo 取流程详情 sql=select a.createBy,applyType,a.checkPerson,nextNodeIds,currentNode,b.oaTimeLimitUnit,b.benchmarkTime,a.applyContent,a.departmentCode,a.tableName,a.keyId,a.id,a.lastNodeId,a.lastCheckPerson,a.applyContent,display as currentNodeName from OAMyWorkFlow a  left join OAMyWorkFlowDet b on a.id=b.f_ref left join OAWorkFlowNode c on c.flowId=a.applyType and c.keyId=a.currentNode  where a.keyId='765853d6_1712251546074300002' and  a.tableName='tblcardscan'
+ [DEBUG] 2017-12-25 15:46:10,182 Line:2962 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"code":0,"retCheckRight":false,"checkRight":false,"hurryTrans":false,"hasCancel":false,"opType":"detail","updateRight":false,"deleteRight":false,"values":{"createByName":"admin","ComAddress":"深圳市罗湖区国成路互联网产业园3栋5楼","createBy":"1","statusId":0,"createTime":"2017-12-25 15:46:07","ComContactorMobile":"15986780403","printCount":0,"LANGUAGEQUERY":{},"ComTel":"0755-22384000","id":"765853d6_1712251546074300002","ComName":"深圳市科荣软件股份有限公司","isCatalog":0,"ComContactor":"李广钺"},"ch等等！
+ [DEBUG] 2017-12-25 15:48:35,266 Line:2993 MobileAjax 请求地址：/MobileAjax?op=getSessEmp
+ [DEBUG] 2017-12-25 15:48:35,272 Line:3004 MobileAjax 操作人:admin;请求数据：op=[getSessEmp,];
+ [DEBUG] 2017-12-25 15:48:35,273 Line:243 AIOApi op=getSessEmp&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:48:38,859 Line:2962 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"departmentName":"默认部门","titleId":"12","name":"admin","id":"1"}}
+ [DEBUG] 2017-12-25 15:48:38,874 Line:2993 MobileAjax 请求地址：/MobileAjax?op=getEnum&enum=duty
+ [DEBUG] 2017-12-25 15:48:38,875 Line:3004 MobileAjax 操作人:admin;请求数据：op=[getEnum,];enum=[duty,];
+ [DEBUG] 2017-12-25 15:48:38,876 Line:243 AIOApi op=getEnum&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 15:48:38,879 Line:2962 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":[{"name":"职员","value":"11"},{"name":"法人","value":"1"},{"name":"董事","value":"10"},{"name":"董事长","value":"9"},{"name":"总经理","value":"2"},{"name":"部门经理","value":"3"},{"name":"副经理","value":"5"},{"name":"部长","value":"4"},{"name":"副部长","value":"6"},{"name":"主管","value":"7"},{"name":"副主管","value":"8"},{"name":"其他","value":"12"}]}
+ [DEBUG] 2017-12-25 16:03:02,566 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2017-12-25 16:08:37,724 Line:2993 MobileAjax 请求地址：/MobileAjax?op=report&reportNumber=tblVirtualStock
+ [DEBUG] 2017-12-25 16:08:37,725 Line:3004 MobileAjax 操作人:admin;请求数据：op=[report,];reportNumber=[tblVirtualStock,];pageNo=[1,];pageSize=[10,];src=[menu,];DataType=[tblGoods,];mobileGoodsFullName=[,];parentCode=[,];StockCode=[,];
+ [DEBUG] 2017-12-25 16:08:37,726 Line:243 AIOApi op=report&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 16:08:38,298 Line:549 ReportDataMgt.getReportData SQL={call report_VirtualStock (@pageNo=?,@pageSize=?,@locale=?,@userId=?,@sunCompany=?,@classCode=?,@StockCode=?,@GoodsCode=?,@BatchNo=?,@Inch=?,@Hue=?,@yearNO=?,@ProDate=?,@Availably=?,@NumberType=?,@DataType=?,@upperQtyQ=?,@mobileGoodsFullName=?)}
+ [DEBUG] 2017-12-25 16:08:38,309 Line:567 ReportDataMgt.getReportData 参数1:1
+ [DEBUG] 2017-12-25 16:08:38,310 Line:568 ReportDataMgt.getReportData 参数2:10
+ [DEBUG] 2017-12-25 16:08:38,310 Line:569 ReportDataMgt.getReportData 参数3:zh_CN
+ [DEBUG] 2017-12-25 16:08:38,310 Line:570 ReportDataMgt.getReportData 参数4:1
+ [DEBUG] 2017-12-25 16:08:38,310 Line:571 ReportDataMgt.getReportData 参数5:00001
+ [DEBUG] 2017-12-25 16:08:38,311 Line:582 ReportDataMgt.getReportData 参数6:
+ [DEBUG] 2017-12-25 16:08:38,311 Line:582 ReportDataMgt.getReportData 参数7:
+ [DEBUG] 2017-12-25 16:08:38,311 Line:582 ReportDataMgt.getReportData 参数8:
+ [DEBUG] 2017-12-25 16:08:38,311 Line:582 ReportDataMgt.getReportData 参数9:
+ [DEBUG] 2017-12-25 16:08:38,311 Line:582 ReportDataMgt.getReportData 参数10:
+ [DEBUG] 2017-12-25 16:08:38,312 Line:582 ReportDataMgt.getReportData 参数11:
+ [DEBUG] 2017-12-25 16:08:38,312 Line:582 ReportDataMgt.getReportData 参数12:
+ [DEBUG] 2017-12-25 16:08:38,312 Line:582 ReportDataMgt.getReportData 参数13:
+ [DEBUG] 2017-12-25 16:08:38,312 Line:582 ReportDataMgt.getReportData 参数14:
+ [DEBUG] 2017-12-25 16:08:38,313 Line:582 ReportDataMgt.getReportData 参数15:0
+ [DEBUG] 2017-12-25 16:08:38,313 Line:582 ReportDataMgt.getReportData 参数16:tblGoods
+ [DEBUG] 2017-12-25 16:08:38,313 Line:582 ReportDataMgt.getReportData 参数17:
+ [DEBUG] 2017-12-25 16:08:38,314 Line:582 ReportDataMgt.getReportData 参数18:
+ [DEBUG] 2017-12-25 16:08:38,444 Line:587 ReportDataMgt.getReportData warn 正在直接执行 SQL；无游标。
+ [DEBUG] 2017-12-25 16:08:38,444 Line:587 ReportDataMgt.getReportData warn 商品，仓库权限语句
+ [DEBUG] 2017-12-25 16:08:38,444 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 16:08:38,445 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 16:08:38,445 Line:587 ReportDataMgt.getReportData warn 解析出的查询条件
+ [DEBUG] 2017-12-25 16:08:38,445 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 16:08:38,445 Line:587 ReportDataMgt.getReportData warn 最终显示数据的查询语句
+ [DEBUG] 2017-12-25 16:08:38,446 Line:587 ReportDataMgt.getReportData warn SELECT ROW_NUMBER() OVER(ORDER BY tblGoods.GoodsNumber) AS rowid,
+			tblGoods.classCode,
+            tblGoods.isCatalog,
+            tblGoods.classCode+ '#;#'+ CAST(tblGoods.isCatalog AS VARCHAR(10))+ '#;##;#' AS hide_GoodsCode,
+            tblGoods.GoodsNumber AS GoodsNumber,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end as BatchNo,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end as Inch,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end as Hue,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end as yearNO,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end as ProDate,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end as Availably,sum(isnull(lastQty,0)),sum(isnull(inQtyNotAudit,0)),sum(isnull(SInQtyNotAudit,0)),sum(isnull(outQtyNotAudit,0)),sum(isnull(BOutQtyNotAudit,0)),sum(isnull(UseQty,0)),sum(isnull(buyOrderQty,0)),sum(isnull(salesOrderQty,0)),sum(isnull(UseQty,0))+sum(isnull(buyOrderQty,0))-sum(isnull(salesOrderQty,0)) as orderQty FROM (select GoodsNumber,classCode,isCatalog,upperQty,lowerQty from tblGoods where workFlowNodeName='finish' and (tblGoods.classCode like '_____')) as tblGoods  LEFT JOIN (SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,lastQty,inQtyNotAudit,SInQtyNotAudit,outQtyNotAudit,BOutQtyNotAudit,lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit as UseQty,0 as buyOrderQty,0 as salesOrderQty FROM tblStocks as b where 1=1 union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,NotInQty,0 FROM tblBuyOrder a,tblBuyOrderDet b WHERE a.id = b.f_ref AND b.NotInQty>0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,0,NotOutQty FROM tblSalesOrder a,tblSalesOrderDet b WHERE a.id = b.f_ref AND b.NotOutQty> 0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish') as b on tblGoods.classCode = SUBSTRING(b.GoodsCode, 1, LEN(tblGoods.classCode)) group by tblGoods.classCode,tblGoods.GoodsNumber,tblGoods.isCatalog,tblGoods.upperQty,tblGoods.lowerQty,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end  having 1=1 and abs(sum(isnull(lastQty,0)))+abs(sum(isnull(inQtyNotAudit,0)))+abs(sum(isnull(SInQtyNotAudit,0)))+abs(sum(isnull(outQtyNotAudit,0)))+abs(sum(isnull(BOutQtyNotAudit,0)))+abs(sum(isnull(buyOrderQty,0)))+abs(sum(isnull(salesOrderQty,0)))>0
+ [DEBUG] 2017-12-25 16:08:38,448 Line:689 通过SQL读原始数据：139
+ [DEBUG] 2017-12-25 16:08:38,450 Line:1391 整理数据：2
+ [DEBUG] 2017-12-25 16:08:38,504 Line:2962 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["StockCode",""],["GoodsCode",""],["NumberType","0"],["DataType","tblGoods"],["upperQtyQ",""],["mobileGoodsFullName",""]],"cols":[["classCode","-1","string","","GoodsCode"],["","-1","string","","classCode"],["商品编号","100","string","","GoodsNumber"],["商品名称","150","string","","GoodsFullName"],["商品规格","200","string","","GoodsSpec"],["单位","30","string","","BaseUnit"],["库存上限","90","float","","upperQty"],["库存下限","90","float","","lowerQty"],["实际库存","90","floatc等等！
+ [DEBUG] 2017-12-25 16:08:39,197 Line:2993 MobileAjax 请求地址：/MobileAjax?op=report&reportNumber=tblVirtualStock
+ [DEBUG] 2017-12-25 16:08:39,200 Line:3004 MobileAjax 操作人:admin;请求数据：op=[report,];reportNumber=[tblVirtualStock,];pageNo=[2,];pageSize=[10,];src=[menu,];DataType=[tblGoods,];
+ [DEBUG] 2017-12-25 16:08:39,202 Line:243 AIOApi op=report&sessionid=DAC5B2611025C45ED5777DBC9E418928
+ [DEBUG] 2017-12-25 16:08:39,231 Line:549 ReportDataMgt.getReportData SQL={call report_VirtualStock (@pageNo=?,@pageSize=?,@locale=?,@userId=?,@sunCompany=?,@classCode=?,@StockCode=?,@GoodsCode=?,@BatchNo=?,@Inch=?,@Hue=?,@yearNO=?,@ProDate=?,@Availably=?,@NumberType=?,@DataType=?,@upperQtyQ=?,@mobileGoodsFullName=?)}
+ [DEBUG] 2017-12-25 16:08:39,231 Line:567 ReportDataMgt.getReportData 参数1:2
+ [DEBUG] 2017-12-25 16:08:39,232 Line:568 ReportDataMgt.getReportData 参数2:10
+ [DEBUG] 2017-12-25 16:08:39,232 Line:569 ReportDataMgt.getReportData 参数3:zh_CN
+ [DEBUG] 2017-12-25 16:08:39,232 Line:570 ReportDataMgt.getReportData 参数4:1
+ [DEBUG] 2017-12-25 16:08:39,233 Line:571 ReportDataMgt.getReportData 参数5:00001
+ [DEBUG] 2017-12-25 16:08:39,233 Line:582 ReportDataMgt.getReportData 参数6:
+ [DEBUG] 2017-12-25 16:08:39,233 Line:582 ReportDataMgt.getReportData 参数7:
+ [DEBUG] 2017-12-25 16:08:39,233 Line:582 ReportDataMgt.getReportData 参数8:
+ [DEBUG] 2017-12-25 16:08:39,234 Line:582 ReportDataMgt.getReportData 参数9:
+ [DEBUG] 2017-12-25 16:08:39,235 Line:582 ReportDataMgt.getReportData 参数10:
+ [DEBUG] 2017-12-25 16:08:39,235 Line:582 ReportDataMgt.getReportData 参数11:
+ [DEBUG] 2017-12-25 16:08:39,236 Line:582 ReportDataMgt.getReportData 参数12:
+ [DEBUG] 2017-12-25 16:08:39,236 Line:582 ReportDataMgt.getReportData 参数13:
+ [DEBUG] 2017-12-25 16:08:39,236 Line:582 ReportDataMgt.getReportData 参数14:
+ [DEBUG] 2017-12-25 16:08:39,237 Line:582 ReportDataMgt.getReportData 参数15:0
+ [DEBUG] 2017-12-25 16:08:39,237 Line:582 ReportDataMgt.getReportData 参数16:tblGoods
+ [DEBUG] 2017-12-25 16:08:39,237 Line:582 ReportDataMgt.getReportData 参数17:
+ [DEBUG] 2017-12-25 16:08:39,238 Line:582 ReportDataMgt.getReportData 参数18:
+ [DEBUG] 2017-12-25 16:08:39,242 Line:587 ReportDataMgt.getReportData warn 正在直接执行 SQL；无游标。
+ [DEBUG] 2017-12-25 16:08:39,242 Line:587 ReportDataMgt.getReportData warn 商品，仓库权限语句
+ [DEBUG] 2017-12-25 16:08:39,242 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 16:08:39,243 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 16:08:39,243 Line:587 ReportDataMgt.getReportData warn 解析出的查询条件
+ [DEBUG] 2017-12-25 16:08:39,243 Line:587 ReportDataMgt.getReportData warn  
+ [DEBUG] 2017-12-25 16:08:39,243 Line:587 ReportDataMgt.getReportData warn 最终显示数据的查询语句
+ [DEBUG] 2017-12-25 16:08:39,243 Line:587 ReportDataMgt.getReportData warn SELECT ROW_NUMBER() OVER(ORDER BY tblGoods.GoodsNumber) AS rowid,
+			tblGoods.classCode,
+            tblGoods.isCatalog,
+            tblGoods.classCode+ '#;#'+ CAST(tblGoods.isCatalog AS VARCHAR(10))+ '#;##;#' AS hide_GoodsCode,
+            tblGoods.GoodsNumber AS GoodsNumber,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end as BatchNo,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end as Inch,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end as Hue,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end as yearNO,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end as ProDate,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end as Availably,sum(isnull(lastQty,0)),sum(isnull(inQtyNotAudit,0)),sum(isnull(SInQtyNotAudit,0)),sum(isnull(outQtyNotAudit,0)),sum(isnull(BOutQtyNotAudit,0)),sum(isnull(UseQty,0)),sum(isnull(buyOrderQty,0)),sum(isnull(salesOrderQty,0)),sum(isnull(UseQty,0))+sum(isnull(buyOrderQty,0))-sum(isnull(salesOrderQty,0)) as orderQty FROM (select GoodsNumber,classCode,isCatalog,upperQty,lowerQty from tblGoods where workFlowNodeName='finish' and (tblGoods.classCode like '_____')) as tblGoods  LEFT JOIN (SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,lastQty,inQtyNotAudit,SInQtyNotAudit,outQtyNotAudit,BOutQtyNotAudit,lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit as UseQty,0 as buyOrderQty,0 as salesOrderQty FROM tblStocks as b where 1=1 union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,NotInQty,0 FROM tblBuyOrder a,tblBuyOrderDet b WHERE a.id = b.f_ref AND b.NotInQty>0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish' union all SELECT GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,0,0,0,0,0,0,0,NotOutQty FROM tblSalesOrder a,tblSalesOrderDet b WHERE a.id = b.f_ref AND b.NotOutQty> 0 AND a.statusId = 0 AND a.workFlowNodeName = 'finish') as b on tblGoods.classCode = SUBSTRING(b.GoodsCode, 1, LEN(tblGoods.classCode)) group by tblGoods.classCode,tblGoods.GoodsNumber,tblGoods.isCatalog,tblGoods.upperQty,tblGoods.lowerQty,case when tblGoods.isCatalog=1 then '' else isnull(b.BatchNo,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Inch,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Hue,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.yearNO,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.ProDate,'') end,
+						case when tblGoods.isCatalog=1 then '' else isnull(b.Availably,'') end  having 1=1 and abs(sum(isnull(lastQty,0)))+abs(sum(isnull(inQtyNotAudit,0)))+abs(sum(isnull(SInQtyNotAudit,0)))+abs(sum(isnull(outQtyNotAudit,0)))+abs(sum(isnull(BOutQtyNotAudit,0)))+abs(sum(isnull(buyOrderQty,0)))+abs(sum(isnull(salesOrderQty,0)))>0
+ [DEBUG] 2017-12-25 16:08:39,244 Line:689 通过SQL读原始数据：13
+ [DEBUG] 2017-12-25 16:08:39,245 Line:1391 整理数据：1
+ [DEBUG] 2017-12-25 16:08:39,265 Line:2962 MobileAjax 操作人:admin;返回数据：{"code":"OK","msg":"","obj":{"conditions":[["StockCode",""],["GoodsCode",""],["NumberType","0"],["DataType","tblGoods"],["upperQtyQ",""],["mobileGoodsFullName",""]],"cols":[["classCode","-1","string","","GoodsCode"],["","-1","string","","classCode"],["商品编号","100","string","","GoodsNumber"],["商品名称","150","string","","GoodsFullName"],["商品规格","200","string","","GoodsSpec"],["单位","30","string","","BaseUnit"],["库存上限","90","float","","upperQty"],["库存下限","90","float","","lowerQty"],["实际库存","90","floatc等等！
+ [DEBUG] 2017-12-25 16:33:23,571 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2017-12-25 17:03:42,426 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ 

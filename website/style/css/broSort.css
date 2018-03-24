@@ -1,0 +1,21 @@
+*{ margin:0; padding:0; border:none 0;}
+ul,li,dt,dd { list-style-type:none;}
+.tb { border:1px solid #AED3F1;border-width:1px 0 0 1px; font:12px Verdana, Geneva, sans-serif;  float:left;}
+.tb_inner { overflow:hidden;}
+.tb_inner li { border:1px solid #AED3F1; border-width:0 1px 1px 0; float:left; height:48px;}
+.caption li { height:26px; line-height:26px; background:url(/style/images/client/li_icon1.png) left top repeat-x;color:#0B5B98; }
+.cell1 { text-indent:5px;}
+.cell1 input { margin-top:20px;}
+.caption .cell2,.caption .cell3,.caption .cell4 {
+	text-indent:80px;
+}
+.caption input { margin-top:5px;}
+.tb_inner .cell1 { width:30px;}
+.tb_inner .cell2,.tb_inner .cell3,.tb_inner .cell4 { width:200px;}
+.cell2 p,.cell4 p { margin-top:20px; margin-left:5px;}
+.cell4 a { margin-right:10px; color:#0179BB; text-decoration:none;}
+.cell3 p { margin-left:70px; margin-top:8px;}
+.tb li:hover { background-color:ghostwhite;}
+.imageBox{position:absolute;top:115px;left:350px;display:none;width:450px;border-radius:4px;background:white;border:1px solid #999;}
+.imageBox li{float:left;width:50px;height:56px;cursor:pointer;border:1px;}
+.imageBox li img:hover {border: 1px solid #999;}

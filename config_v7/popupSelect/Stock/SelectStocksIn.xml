@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectStocksIn" belongTableName="tblStock">
+     <table>tblStock</table>
+     <forwardModel>tblStock</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblStock.classCode f1,
+      tblStock.StockNumber f2,
+      tblStock.StockFullName f3,
+      tblStock.StockFullNamePYM f4
+from tblStock
+     </defineSQL>
+     <classCode>tblStock.classCode</classCode>
+     <remark>入库仓库,因回填字段特殊而保留,供同时具有出库仓库与入库仓库的单据使用</remark>
+     <condition>tblStock.statusid!='-1' and tblStock.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblStock.StockNumber,tblStock.StockFullName</orderBy>
+     <displayFields>
+          <field name="tblStock.StockNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblStock.StockFullName" asName="ViewtblStocksChild.StockFullName" width="75" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.InStockCode" orderBy="升" />
+          <field name="tblStock.StockFullNamePYM" asName="tblStock.StockFullNamePYM2" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblStock.classCode" parentName="@TABLENAME.InStockCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

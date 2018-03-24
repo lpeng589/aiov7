@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SelectCertificateTransferSale"  type="checkBox" > 
+		<orderBy>tblTransferSale1.BillDate,tblTransferSale1.BillNo</orderBy>
+		<defineSQL>
+from (
+    --预收转应收
+    select tblTransferSale1.id as Id,
+    tblTransferSale1.BillDate as BillDate,     
+    tblTransferSale1.BillNo as BillNo,     
+    tblCompanyOut.ComFullName as CompanyCode,     
+    tblCompanyIn.ComFullName as InCompanyCode,     
+    tblTransferSale1.ExeTransferAmt as ExeTransferAmt,     
+    tblTransferSale1.FcExeTransferAmt as FcExeTransferAmt,     
+    tblEmployee.EmpFullName as EmpFullName,           
+    tblTransferSale1.Period as Period,
+    'tblTransferSale1' as BillType,
+    tblTransferSale1.CertificateNo as CertificateNo,
+    tblTransferSale1.EmployeeID,
+    tblTransferSale1.CreateBy,
+    tblTransferSale1.DepartmentCode
+    from tblTransferSale1  
+    left join tblCompany as tblCompanyOut on tblTransferSale1.CompanyCode=tblCompanyOut.classCode  
+    left join tblCompany as tblCompanyIn on tblTransferSale1.InCompanyCode=tblCompanyIn.classCode   
+    left join tblEmployee as tblEmployee on tblEmployee.id=tblTransferSale1.EmployeeID   
+    where 1=1 
+    and isNull(tblTransferSale1.workFlowNodeName,'')='finish'                                                  
+    UNION ALL 
+    --应付转应收
+    select tblTransferSale2.id as Id,
+    tblTransferSale2.BillDate as BillDate,     
+    tblTransferSale2.BillNo as BillNo,     
+    tblCompanyOut.ComFullName as CompanyCode,     
+    tblCompanyIn.ComFullName as InCompanyCode,     
+    tblTransferSale2.ExeTransferAmt as ExeTransferAmt,     
+    tblTransferSale2.FcExeTransferAmt as FcExeTransferAmt,     
+    tblEmployee.EmpFullName as EmpFullName,            
+    tblTransferSale2.Period as Period,
+    'tblTransferSale2' as BillType,
+    tblTransferSale2.CertificateNo as CertificateNo,
+    tblTransferSale2.EmployeeID,
+    tblTransferSale2.CreateBy,
+    tblTransferSale2.DepartmentCode   
+    from tblTransferSale2  
+    left join tblCompany as tblCompanyOut on tblTransferSale2.CompanyCode=tblCompanyOut.classCode  
+    left join tblCompany as tblCompanyIn on tblTransferSale2.InCompanyCode=tblCompanyIn.classCode   
+    left join tblEmployee as tblEmployee on tblEmployee.id=tblTransferSale2.EmployeeID   
+    left join tblBuyInStock on tblBuyInStock.BillNo=tblTransferSale2.RefBillNo  
+    where 1=1 
+    and isNull(tblTransferSale2.workFlowNodeName,'')='finish'                                                                 
+    UNION all
+    --预付转应付
+    select tblTransferSale3.id as Id,
+    tblTransferSale3.BillDate as BillDate,     
+    tblTransferSale3.BillNo as BillNo,     
+    tblCompanyOut.ComFullName as CompanyCode,     
+    tblCompanyIn.ComFullName as InCompanyCode,     
+    tblTransferSale3.ExeTransferAmt as ExeTransferAmt,     
+    tblTransferSale3.FcExeTransferAmt as FcExeTransferAmt,     
+    tblEmployee.EmpFullName as EmpFullName,        
+    tblTransferSale3.Period as Period,
+    'tblTransferSale3' as BillType,
+    tblTransferSale3.CertificateNo as CertificateNo,
+    tblTransferSale3.EmployeeID,
+    tblTransferSale3.CreateBy,
+    tblTransferSale3.DepartmentCode  
+    from tblTransferSale3  
+    left join tblCompany as tblCompanyOut on tblTransferSale3.CompanyCode=tblCompanyOut.classCode  
+    left join tblCompany as tblCompanyIn on tblTransferSale3.InCompanyCode=tblCompanyIn.classCode   
+    left join tblEmployee as tblEmployee on tblEmployee.id=tblTransferSale3.EmployeeID   
+    where 1=1 
+    and isNull(tblTransferSale3.workFlowNodeName,'')='finish'                                                           
+    UNION ALL
+    --应收转应付
+    select tblTransferSale4.id as Id,
+    tblTransferSale4.BillDate as BillDate,     
+    tblTransferSale4.BillNo as BillNo,     
+      tblCompanyOut.ComFullName as CompanyCode,     
+      tblCompanyIn.ComFullName as InCompanyCode,     
+    tblTransferSale4.ExeTransferAmt as ExeTransferAmt,     
+    tblTransferSale4.FcExeTransferAmt as FcExeTransferAmt,     
+    tblEmployee.EmpFullName as EmpFullName,       
+    tblTransferSale4.Period as Period,
+    'tblTransferSale4' as BillType,
+    tblTransferSale4.CertificateNo as CertificateNo,
+    tblTransferSale4.EmployeeID,
+    tblTransferSale4.CreateBy,
+    tblTransferSale4.DepartmentCode   
+    from tblTransferSale4  
+    left join tblCompany as tblCompanyOut on tblTransferSale4.CompanyCode=tblCompanyOut.classCode  
+    left join tblCompany as tblCompanyIn on tblTransferSale4.InCompanyCode=tblCompanyIn.classCode   
+    left join tblEmployee as tblEmployee on tblEmployee.id=tblTransferSale4.EmployeeID   
+    left join tblSalesOutStock on tblSalesOutStock.BillNo=tblTransferSale4.RefBillNo and len(tblSalesOutStock.BillNo)!=0  
+    where 1=1 
+    and isNull(tblTransferSale4.workFlowNodeName,'')='finish'                                       
+  ) tblTransferSale1
+      where 1=1  and tblTransferSale1.BillType='@TABLENAME' and len(isnull(tblTransferSale1.CertificateNo,''))=0
+		</defineSQL>
+		<displayFields>
+			<field name="tblTransferSale1.BillDate" parentDisplay="false" width="80" searchType="scope" />
+			<field name="tblTransferSale1.BillNo" parentDisplay="false" width="120" searchType="match" />
+			<field name="tblTransferSale1.CompanyCode" display="tblTransferSale1.CompanyCode" parentDisplay="false" width="150" searchType="match" />
+			<field name="tblTransferSale1.InCompanyCode" display="tblTransferSale1.InCompanyCode" parentDisplay="false" width="150" searchType="match" />
+			<field name="tblTransferSale1.ExeTransferAmt" parentDisplay="false" width="100" />
+			<field name="tblTransferSale1.FcExeTransferAmt" parentDisplay="false" width="100" />
+			<field name="tblTransferSale1.EmpFullName" display="tblTransferSale1.EmployeeID" parentDisplay="false" width="65" />
+		</displayFields>
+		<saveFields>
+			<field name="tblTransferSale1.id" parentName="@TABLENAME.id" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

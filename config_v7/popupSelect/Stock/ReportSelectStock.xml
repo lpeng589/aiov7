@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectStock" belongTableName="tblStock">
+     <table>tblStock</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblStock.StockNumber f1,
+      tblStock.StockFullName f2,
+      tblStock.StockFullNamePYM f3,
+	  tblStock.classCode
+  from tblStock
+     </defineSQL>
+     <classCode>tblStock.classCode</classCode>
+     <remark>仓库,V1版,供数据列表使用</remark>
+     <condition>tblStock.statusid!='-1' and tblStock.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblStock.StockNumber,tblStock.StockFullName</orderBy>
+     <displayFields>
+          <field name="tblStock.StockNumber" width="80" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblStock.StockFullName" asName="tblStock.StockFullName" width="75" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+          <field name="tblStock.StockFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+     </saveFields>
+</select>
+</popupSelect>

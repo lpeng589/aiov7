@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="HueForGoodsStockLimit" type="checkBox">
+     <table>tblGoodsOfProp,tblGoodsOfPropDet</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblGoodsOfPropDet.languageId f1
+	from tblGoodsOfProp,tblGoodsOfPropDet 
+     </defineSQL>
+     <classCode></classCode>
+     <remark>颜色,因条件中用于判断的字段不同而保留,供库存上下限明细表使用</remark>
+     <condition>tblGoodsOfProp.id=tblGoodsOfPropDet.f_ref and tblGoodsOfProp.moduleType='Hue' and tblGoodsOfProp.groupName='@ValueofDB:HueGroup'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoodsOfPropDet.languageId</orderBy>
+     <displayFields>
+          <field name="tblGoodsOfPropDet.languageId" width="80" searchType="match" parentDisplay="true" display="@TABLENAME.Hue" orderBy="升" />
+     </displayFields>
+     <saveFields>
+          <field name="tblGoodsOfPropDet.languageId" parentName="@TABLENAME.Hue" display="@TABLENAME.Hue" relationKey="true" hidden="false" orderBy="升" />
+     </saveFields>
+</select>
+</popupSelect>

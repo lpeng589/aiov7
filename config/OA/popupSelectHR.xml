@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<!--
+displayFields 中的字段全都是会显示在弹出页面的字段
+   parentDisplay为true表示该字段需在主表界面显示，但不一定会保存在主表，由saveFields决定，
+   如果在主表显示，并配有display则主表显示字段对应的标签名取display的字段名，
+   searchType no:不作为查询条件，equal：等于，match：模糊查询,scope：区间查询
+saveFields 中的字段全都是必须在主表保存的字段
+   其中必须有且仅有一个relationKey="true"的字段。该字段表示的是关联字段，关联查询通过这个字段建立
+   关联关系，该关联字段在主表是否显示由hidden属性决定，如果为true表示隐藏，界面不显示，通过隐藏变
+   量传递值。
+   其它非关联字段，在主表必须存在，且可录入。
+
+-->
+
+<!--员工信息中弹出窗口选择部门-->	
+	<select name = "OAEmployeeinfoDept">
+		<table>tblDepartment</table>
+		<condition> tblDepartment.workFlowNodeName='finish' </condition>
+		<relation></relation>
+		<displayFields>
+			<field name="tblDepartment.DeptCode"  width="100" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblDepartment.DeptFullName"  display="OAEmployeeBasic.EmpoyeeDept" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblDepartment.departmentManager" width="100"  parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+		  <field name="tblDepartment.classCode" parentName="OAEmployeeBasic.EmpoyeeDept" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+
+
+<!--岗位变动弹出窗口选择员工-->	
+<!--	<select name = "OAEmployeechangechoose">
+		<table>OAEmployeeBasic,tblDepartment</table>
+		<relation>OAEmployeeBasic.EmpoyeeDept=tblDepartment.classCode<</relation>
+		<displayFields>
+			<field name="OAEmployeeBasic.EmpoyeeId" width="200" searchType="match" parentDisplay="false" />
+			<field name="OAEmployeeBasic.EmpoyeeName"  display="OAEmployeeChange.ChangeName" width="200" searchType="match" parentDisplay="true" />
+			<field name="OAEmployeeBasic.EmpoyeeDept"  width="200" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+		  <field name="OAEmployeeBasic.id" parentName="OAEmployeeBasic.EmployeeCode" relationKey="true" hidden="true"/>
+			<field name="tblEmployee.DepartmentCode" parentName="OAEmployeeChange.ChangeName" />
+			<field name="tblDepartment.DeptFullName"  parentName="tblDepartment.tblDepartment_DeptFullName" />
+		</saveFields>
+	</select>
+	-->
+
+<!--岗位变动中新部门弹出窗口选择部门-->	
+	<select name = "OAEmployeeNewDept">
+		<table>tblDepartment</table>
+		<condition> tblDepartment.workFlowNodeName='finish' </condition>
+		<relation></relation>
+		<displayFields>
+			<field name="tblDepartment.DeptCode"  width="100" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblDepartment.DeptFullName"  display="OAEmployeeChange.NewDept" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblDepartment.departmentManager" width="100"  parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+		  <field name="tblDepartment.classCode" parentName="OAEmployeeChange.NewDept" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+
+<!--弹出窗口选择职员
+	<select name = "EmployeeBuyInStock">
+		<table>tblEmployee,tblDepartment</table>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+		<displayFields>
+			<field name="tblEmployee.EmpNumber"  width="200" searchType="match" parentDisplay="false" />
+			<field name="tblEmployee.EmpFullName"  display="tblBuyInStock.EmployeeCode" width="200" searchType="match" parentDisplay="true" />
+			<field name="tblDepartment.DeptFullName"  width="200" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+		  <field name="tblEmployee.id" parentName="tblBuyInStock.EmployeeCode" relationKey="true" hidden="true"/>
+			<field name="tblEmployee.DepartmentCode" parentName="tblBuyInStock.DepartmentCode" />
+			<field name="tblDepartment.DeptFullName"  parentName="tblDepartment.tblDepartment_DeptFullName" />
+		</saveFields>
+	</select>
+					   -->
+							   
+		
+</popupSelect>

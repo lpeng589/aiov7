@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="Companybeginning" type="checkBox">
+     <table>tblCompany</table>
+     <forwardModel>tblCompany&amp;moduleType=2&amp;ClientFlag=2</forwardModel>
+     <relation></relation>
+     <defineSQL>
+  from tblCompany
+     </defineSQL>
+     <classCode>tblCompany.classCode</classCode>
+     <condition>((tblCompany.ClientFlag= case '@ValueofDB:BeginningType' when '1' then 1 when '2' then 2 when '3' then 1 when '4' then 2 when '5' then 1 when '6' then 2 end )	or tblCompany.ClientFlag=3) and tblCompany.workFlowNodeName='finish'</condition>
+     <changeCond>(tblCompany.statusId!='-1')</changeCond>
+     <orderBy>tblCompany.ComNumber,tblCompany.ComFullName</orderBy>
+     <displayFields>
+          <field name="tblCompany.[tblCompany]" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"/>
+          <field name="tblCompany.PreReceiveTotalRemain" width="100" parentDisplay="false" hiddenInput="true" />
+          <field name="tblCompany.ReceiveTotalRemain" width="100" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblCompany.classCode" parentName="@TABLENAME.CompanyCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

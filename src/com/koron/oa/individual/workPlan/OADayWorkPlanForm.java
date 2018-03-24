@@ -1,0 +1,161 @@
+package com.koron.oa.individual.workPlan;
+
+import java.util.List;
+
+import org.apache.struts.upload.FormFile;
+
+import com.menyi.web.util.BaseForm;
+/**
+ * 
+ * <p>Title: 表单类，接收客户端传来信息</p> 
+ * <p>Description: </p>
+ *
+ * @Date:2010-5-10
+ * @Copyright: 科荣软件
+ * @Author 文小钱
+ */
+public class OADayWorkPlanForm  extends BaseForm{
+
+	private String id ;
+	private String departmentCode ;
+	private String employeeID ;
+	private String title ;
+	private String content ;
+	private String time ;
+	private String history ;
+	private String attach ;
+	private String summary ;
+	private String createBy ;
+	private String lastUpdateBy ;
+	private String createTime ;
+	private String lastUpdateTime ;
+	private int statusId ;
+	private String scompanyID ;
+	private String beginDate ;
+	private String endDate ;
+	private String planType ;
+	private String grade ;
+	private String summaryTime ;
+	public String getAttach() {
+		return attach;
+	}
+	public void setAttach(String attach) {
+		this.attach = attach;
+	}
+	public String getBeginDate() {
+		return beginDate;
+	}
+	public void setBeginDate(String beginDate) {
+		this.beginDate = beginDate;
+	}
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
+	public String getCreateBy() {
+		return createBy;
+	}
+	public void setCreateBy(String createBy) {
+		this.createBy = createBy;
+	}
+	public String getCreateTime() {
+		return createTime;
+	}
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
+	public String getDepartmentCode() {
+		return departmentCode;
+	}
+	public void setDepartmentCode(String departmentCode) {
+		this.departmentCode = departmentCode;
+	}
+	public String getEmployeeID() {
+		return employeeID;
+	}
+	public void setEmployeeID(String employeeID) {
+		this.employeeID = employeeID;
+	}
+	public String getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+	public String getGrade() {
+		return grade;
+	}
+	public void setGrade(String grade) {
+		this.grade = grade;
+	}
+	public String getHistory() {
+		return history;
+	}
+	public void setHistory(String history) {
+		this.history = history;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getLastUpdateBy() {
+		return lastUpdateBy;
+	}
+	public void setLastUpdateBy(String lastUpdateBy) {
+		this.lastUpdateBy = lastUpdateBy;
+	}
+	public String getLastUpdateTime() {
+		return lastUpdateTime;
+	}
+	public void setLastUpdateTime(String lastUpdateTime) {
+		this.lastUpdateTime = lastUpdateTime;
+	}
+	public String getPlanType() {
+		return planType;
+	}
+	public void setPlanType(String planType) {
+		this.planType = planType;
+	}
+	public String getScompanyID() {
+		return scompanyID;
+	}
+	public void setScompanyID(String scompanyID) {
+		this.scompanyID = scompanyID;
+	}
+	public int getStatusId() {
+		return statusId;
+	}
+	public void setStatusId(int statusId) {
+		this.statusId = statusId;
+	}
+	public String getSummary() {
+		return summary;
+	}
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+	public String getSummaryTime() {
+		return summaryTime;
+	}
+	public void setSummaryTime(String summaryTime) {
+		this.summaryTime = summaryTime;
+	}
+	public String getTime() {
+		return time;
+	}
+	public void setTime(String time) {
+		this.time = time;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
+	
+}

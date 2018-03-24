@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<!--电商 证书 选择 订单状态-->
+<select name="SelectCertificateStatus" type="checkBox">
+     <table>tblEBStatus</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      tblEBStatus.OrderStaID f1,
+      tblEBStatus.StatusName f2
+from tblEBStatus
+     </defineSQL>
+     <classCode></classCode>
+     <condition>EBStyle='@ValueofDB:EBStyle'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblEBStatus.OrderStaID desc</orderBy>
+     <displayFields>
+          <field name="tblEBStatus.OrderStaID" width="200" searchType="match" keySearch="true" parentDisplay="true" />
+          <field name="tblEBStatus.StatusName" width="200" searchType="match" keySearch="true" parentDisplay="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblEBStatus.OrderStaID" parentName="@TABLENAME.OrderStaID" relationKey="true" hidden="false" />
+     </saveFields>
+</select>
+</popupSelect>

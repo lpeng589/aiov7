@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<!-- 固定资产减值 sql设计器选择固定资产(供报表引用,不是多单引用弹窗) -->
+	<select name = "ReportSelecttblFixedAssetAdd">
+		<table>tblFixedAssetAdd</table>
+		<changeCond>(tblFixedAssetAdd.statusId!='-1')</changeCond>
+		<displayFields>
+			<field name="tblFixedAssetAdd.GoodsNumber"  width="150" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblFixedAssetAdd.GoodsName" display="tblFixedAssetDevalue.AssetsAddId"  width="150" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblFixedAssetAdd.GoodsSpec"  width="100" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+</popupSelect>

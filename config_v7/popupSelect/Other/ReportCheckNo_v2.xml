@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportCheckNo_v2" version="2">
+     <table>tblCheckReady</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblCheckReady.CheckNo f1,
+      tblCheckReady.CheckTime f2
+  from (select CheckNo,CheckTime from tblCheckReady where LEN(CheckNo)&gt;0 union all select CheckNo,CheckTime from tblseqCheck where LEN(CheckNo)&gt;0 Group by CheckNo,CheckTime) as tblCheckReady
+     </defineSQL>
+     <classCode></classCode>
+     <condition></condition>
+     <changeCond></changeCond>
+     <orderBy>tblCheckReady.CheckNo desc</orderBy>
+     <displayFields>
+          <field name="tblCheckReady.CheckNo" width="120" searchType="match" parentDisplay="true" />
+          <field name="tblCheckReady.CheckTime" width="180" searchType="match" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblCheckReady.CheckNo" parentName="CheckNo" relationKey="false" hidden="false" />
+     </saveFields>
+</select>
+</popupSelect>

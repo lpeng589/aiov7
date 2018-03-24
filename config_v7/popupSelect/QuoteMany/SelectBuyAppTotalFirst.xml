@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SelectBuyAppTotalFirst"  type="checkBox" > 
+		<orderBy>tblBuyApplicationTotal.BillDate desc,tblBuyApplicationTotal.BillNo desc</orderBy>
+		<defineSQL>
+from tblBuyApplicationTotal
+ left join tblDepartment on tblDepartment.classCode=tblBuyApplicationTotal.DepartmentCode
+ left join tblEmployee on tblEmployee.id=tblBuyApplicationTotal.EmployeeID
+      where 1=1  and tblBuyApplicationTotal.BillDate&lt;='@ValueofDB:BillDate'
+		</defineSQL>
+		<changeCond>(tblBuyApplicationTotal.SendStatus=0 and tblBuyApplicationTotal.workFlowNodeName='finish')</changeCond>
+		<displayFields>
+			<field name="tblDepartment.DeptFullName" display="tblSendDet.DepartmentCode" parentDisplay="true" width="75" searchType="match" />
+			<field name="tblBuyApplicationTotal.BillDate" parentDisplay="false" width="70" searchType="scope" />
+			<field name="tblBuyApplicationTotal.BillNo" display="@TABLENAME.BuyAppTotalID" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblEmployee.EmpFullName" parentDisplay="false" width="100" />
+		</displayFields>
+		<saveFields>
+			<field name="tblBuyApplicationTotal.id" parentName="@TABLENAME.BuyAppTotalID" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

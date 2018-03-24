@@ -1,0 +1,761 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+<!-- ============================================= 固定资产增加 开始  ========================================= -->
+<define name="tblFixedAssetAdd_Add">
+	<sql type="condition"><!-- 当折旧方法为“双倍余额递减法”，“年数总和法”所输入的预计使用月份必须大于等于24 -->
+		<exec condition="(@ValueofDB:tblFixedAssetAdd_depreciaMonth==3||@ValueofDB:tblFixedAssetAdd_depreciaMonth==4)&amp;&amp;@ValueofDB:tblFixedAssetAdd_planUseMonth&lt;24">
+			<error>tblFixedAssetAdd.planUseMonth3.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--入账原值必须大于0-->
+		<exec condition="@ValueofDB:tblFixedAssetAdd_originalWorth &lt;= 0">
+			<error>tblFixedAssetAdd.woriginal.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--0=&lt;预计净残值率&lt;=1-->
+		<exec condition="@ValueofDB:tblFixedAssetAdd_planReWorthRate &lt; 0 ||@ValueofDB:tblFixedAssetAdd_planReWorthRate&gt; 1">
+			<error>tblFixedAssetAdd.planReWorthRate.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--预计使用月份&gt;0-->
+		<exec condition="@ValueofDB:tblFixedAssetAdd_planUseMonth &lt;= 0">
+			<error>tblFixedAssetAdd.planMonth.error</error>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<!--已计提月份&gt;=0;-->
+		<exec condition="@ValueofDB:tblFixedAssetAdd_referMonth &lt; 0">
+			<error>tblFixedAssetAdd.referMonth.error</error>
+		</exec>
+		<!--已计提月份不能大于预计使用月份-->
+		<exec condition="@ValueofDB:tblFixedAssetAdd_referMonth &gt;@ValueofDB:tblFixedAssetAdd_planUseMonth">
+			<error>tblFixedAssetAdd.Month.error</error>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<!--预计工作量&gt;=0;（当为工作量法时，要大于0-->
+		<exec condition="@ValueofDB:tblFixedAssetAdd_planWork &lt; 0">
+			<error>tblFixedAssetAdd.planWork.error</error>
+		</exec>
+		<!--已计提工作量不能小于0-->
+		<exec condition="@ValueofDB:tblFixedAssetAdd_referWork &lt; 0">
+			<error>tblFixedAssetAdd.referWork.error</error>
+		</exec>
+		<!--折旧方法为工作量法，预计工作量必须大于0-->
+		<exec condition="@ValueofDB:tblFixedAssetAdd_planWork == 0 &amp;&amp;@ValueofDB:tblFixedAssetAdd_depreciaMonth==2">
+			<error>tblFixedAssetAdd.planWork1.error</error>
+		</exec>
+		<!--已提工作量不能大于预计工作量-->
+		<exec condition="@ValueofDB:tblFixedAssetAdd_planWork &lt;@ValueofDB:tblFixedAssetAdd_referWork">
+			<error>tblFixedAssetAdd.Work.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--资产增加明细表的数量、金额控制-->
+		<condition>
+			<select>select sum(tblFixedAssetAddAType.amount) as allamount from tblFixedAssetAddAType where f_ref=@ValueofDB:tblFixedAssetAdd_id </select>
+			<select>select id as idQty from tblFixedAssetAddDet where f_ref=@ValueofDB:tblFixedAssetAdd_id and Qty&lt;=0</select>
+			<select>select id as idAmount from tblFixedAssetAddDet where f_ref=@ValueofDB:tblFixedAssetAdd_id and Amount&lt;=0</select>
+			<select>select isnull( a.isCatalog,'') AssetAcccat,isnull( b.isCatalog,'') DepreciateAcccat from tblFixedAssetAdd join tblFixedAssetType on  tblFixedAssetAdd.AssetsType=tblFixedAssetType.id left join tblAccTypeInfo a on tblFixedAssetType.AssetAcc=a.accNumber left join tblAccTypeInfo b on tblFixedAssetType.DepreciateAcc=b.accNumber    where tblFixedAssetAdd.id=@ValueofDB:id </select>
+			<select> select count(0) hasComAcc from  tblFixedAssetAddAType where f_ref=@ValueofDB:tblFixedAssetAdd_id  and (tblFixedAssetAddAType.AccCode like '1122%'   or tblFixedAssetAddAType.AccCode like '1123%'   or tblFixedAssetAddAType.AccCode like '2202%'  or tblFixedAssetAddAType.AccCode like '2203%' )</select>
+		</condition>
+		<exec condition=" @ValueofDB:originalWorth != @SqlReturn:allamount ">
+			<error>入帐原值必须等于资产增加方式中的金额之和</error>
+		</exec>
+		<exec condition=" '@SqlReturn:AssetAcccat' != '0' ">
+			<error>固定资产类别对应的资产科目必须选择子级科目，请修改</error>
+		</exec>
+		<exec condition=" '@SqlReturn:DepreciateAcccat' != '0' ">
+			<error>固定资产类别对应的折旧科目必须选择子级科目，请修改</error>
+		</exec>
+		<exec condition=" @SqlReturn:hasComAcc &gt; 0 &amp;&amp; '@ValueofDB:CompanyCode'=='' ">
+			<error>采用往来科目购买资产，必须选择供应商</error>
+		</exec>
+		<!--明细表数量必须大于0-->
+		<exec condition="'@SqlReturn:idQty' != 'null'">
+			<error>tblFixedAssetAdd.idQty.error</error>
+		</exec>
+		<!--明细表金额必须大于0-->
+		<exec condition="'@SqlReturn:idAmount' != 'null'">
+			<error>tblFixedAssetAdd.idAmount.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--更新系统期间-->
+		<condition><select>select AccYear,AccMonth,AccPeriod from tblAccPeriod where AccMonth = Month(@ValueofDB:tblFixedAssetAdd_BillDate) and AccYear=Year(@ValueofDB:tblFixedAssetAdd_BillDate) and SCompanyID=@Sess:SCompanyID</select></condition>
+		<exec condition="@ValueofDB:tblFixedAssetAdd_moduleType==1">
+			<sql> update tblFixedAssetAdd set Period=@SqlReturn:AccPeriod,PeriodYear=@SqlReturn:AccYear,PeriodMonth=@SqlReturn:AccMonth  where id=@ValueofDB:tblFixedAssetAdd_id </sql>
+		</exec>
+		<exec condition="@ValueofDB:tblFixedAssetAdd_moduleType==0">
+			<sql>update tblFixedAssetAdd set Period=-1,PeriodMonth=-1,PeriodYear=-1 where id=@ValueofDB:tblFixedAssetAdd_id</sql>
+		</exec>
+	</sql>	
+	<sql type="condition"><!--当不启用审核流时直接调用define-->
+		<exec condition="'@MEM:tblFixedAssetAdd_IsStatart' == '0'">
+			<sql type="define">tblFixedAssetAdd_Add_One</sql>
+		</exec>
+	</sql>
+</define>
+<!--固定资产增加不启用审核流调用define-->
+<define name="tblFixedAssetAdd_Add_One">
+	<sql type="condition">
+		<condition><select>select moduleType from tblFixedAssetAdd where id=@ValueofDB:tblFixedAssetAdd_id</select></condition>
+		<exec condition="true">
+			<sql>update tblFixedAssetAdd set CertificateNo='' where id=@ValueofDB:tblFixedAssetAdd_id</sql>
+		</exec>
+		<exec condition="@SqlReturn:moduleType==0">
+			<sql type="define">tblFixedAssetAdd_Add_One_a</sql>
+		</exec>
+		<exec condition="@SqlReturn:moduleType==1">
+			<sql type="define">tblFixedAssetAdd_Add_One_b</sql>
+		</exec>
+	</sql>
+</define>
+<!--未开账录入固定资产期初资料-->
+<define name="tblFixedAssetAdd_Add_One_a">
+	<sql type="condition"><!--已经开账-->
+		<condition><select>select statusid,scompanyid,accperiod from tblaccperiod where  statusid='1'  and scompanyID=@Sess:SCompanyID</select></condition>
+		<exec condition="'@SqlReturn:statusid' == '1'">
+			<error>common.msg.RET_BEGINACC_END</error>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition><select>select isnull(originalWorth,0) as originalWorth,tblFixedAssetType.AssetAcc tAssetAcc,totalDeprecia,DepreciateAcc from tblFixedAssetAdd join tblFixedAssetType on tblFixedAssetType.id=tblFixedAssetAdd.AssetsType where tblFixedAssetAdd.id=@ValueofDB:tblFixedAssetAdd_id</select></condition>
+		<!--固定资产更新科目余额及父级科目余额-->
+		<exec condition="true">			 
+			<sql>update tblAccBalance set CurrYIniBase=isnull(CurrYIniBase,0)+@SqlReturn:originalWorth,CurrYIniBalaBase=isnull(CurrYIniBalaBase,0)+@SqlReturn:originalWorth  where SubCode in (select AccNumber from tblAccTypeInfo where (select classCode from tblAccTypeInfo where AccNumber=@SqlReturn:tAssetAcc) like classCode+'%' ) and period=-1</sql>
+		</exec>
+		<!--累计折旧更新科目余额及父级科目余额 --> 
+		<exec condition="@SqlReturn:totalDeprecia!=0">	
+			<sql>update tblAccBalance set CurrYIniBase=isnull(CurrYIniBase,0)+@SqlReturn:totalDeprecia,CurrYIniBalaBase=isnull(CurrYIniBalaBase,0)+@SqlReturn:totalDeprecia  where SubCode in (select AccNumber from tblAccTypeInfo where (select classCode from tblAccTypeInfo where AccNumber=@SqlReturn:DepreciateAcc) like classCode+'%' ) and period=-1</sql>
+		</exec>
+	</sql>
+</define>
+<!--开账后固定资产增加-->
+<define name="tblFixedAssetAdd_Add_One_b">
+	<sql type="condition"><!--系统尚未开账-->
+		<condition><select>select statusid,scompanyid,accperiod from tblaccperiod where  statusid='1'  and scompanyID=@Sess:SCompanyID</select></condition>
+		<exec condition="'@SqlReturn:statusid' == 'null'">
+			<error>common.msg.RET_WBEGINACC</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--不能录入会计期间前数据！-->
+		<condition>
+			<select>select Year(BillDate) as BillYear, Month(BillDate) as BillMonth from tblFixedAssetAdd where id=@ValueofDB:tblFixedAssetAdd_id</select>
+		  <select>SELECT AccYear,AccMonth FROM tblAccPeriod WHERE IsBegin='1'</select>
+		</condition>
+		<exec condition="(@SqlReturn:BillYear &lt; @SqlReturn:AccYear) || (@SqlReturn:BillYear == @SqlReturn:AccYear &amp;&amp; @SqlReturn:BillMonth &lt; @SqlReturn:AccMonth)    ">
+			<error>com.currentaccbefbill</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--本期间已经月结，不可执行此操作！-->
+		<condition>
+			<select>select Year(BillDate) as PeriodYear, Month(BillDate) as Period from tblFixedAssetAdd where id=@ValueofDB:tblFixedAssetAdd_id</select>
+			<select>select statusid from tblAccPeriod where  statusid='2' and AccPeriod=@SqlReturn:Period and AccYear=@SqlReturn:PeriodYear and scompanyID=@Sess:SCompanyID</select>
+		</condition>
+		<exec condition="'@SqlReturn:statusid' != 'null'">
+			<error>common.statusid.RET_WBEGINACC</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--减值准备必须为0-->
+		<exec condition="@ValueofDB:tblFixedAssetAdd_depreciaArrange !=0.0">
+			<error>tblFixedAssetAdd.DevalueAccCode.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--如果启用“自动产生凭证”，则自动插入凭证-->
+		 <exec condition="'@MEM:autoGenerateAcc'=='true'">
+			<sql type="certificate">tblFixedAssetAdd</sql>    
+			<sql> update tblAccDetail set RecordComment='固定资产增加-'+@ValueofDB:GoodsName where tblAccDetail.RefBillID=@ValueofDB:id  </sql>
+		</exec>  
+	</sql>
+</define>
+
+<!--固定资产增加删除操作-->
+<define name="tblFixedAssetAdd_Delete">
+	<sql type="condition"><!--当不启用审核流时直接调用define-->
+		<exec condition="true">
+			<sql type="define">tblFixedAssetAdd_Delete_One</sql>
+		</exec>
+	</sql>
+</define>
+<!--当不启用审核流时直接调用define-->
+<define name="tblFixedAssetAdd_Delete_One">
+	<sql type="condition">
+		<condition><select>select moduleType from tblFixedAssetAdd where id=@ValueofDB:tblFixedAssetAdd_id</select></condition>
+		<exec condition="@SqlReturn:moduleType==0">
+			<sql type="define">tblFixedAssetAdd_Delete_One_a</sql>
+		</exec>
+		<exec condition="@SqlReturn:moduleType==1">
+			<sql type="define">tblFixedAssetAdd_Delete_One_b</sql>
+		</exec>
+	</sql>
+</define>
+<!--固定资产期初录入define-->
+<define name="tblFixedAssetAdd_Delete_One_a">
+	<sql type="condition"><!--已经开账-->
+		<condition><select>select statusid,scompanyid,accperiod from tblaccperiod where  statusid='1'  and scompanyID=@Sess:SCompanyID</select></condition>
+		<exec condition="'@SqlReturn:statusid' == '1'">
+			<error>common.msg.RET_BEGINACC_END</error>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition><select> select isnull(originalWorth,0) as originalWorth,tblFixedAssetType.AssetAcc tAssetAcc,totalDeprecia,DepreciateAcc from tblFixedAssetAdd join tblFixedAssetType on tblFixedAssetType.id=tblFixedAssetAdd.AssetsType where tblFixedAssetAdd.id=@ValueofDB:tblFixedAssetAdd_id</select></condition>
+		<!--固定资产更新科目余额及父级科目余额 --> 
+		<exec condition="true">	
+			<sql>update tblAccBalance set CurrYIniBase=isnull(CurrYIniBase,0)-@SqlReturn:originalWorth,CurrYIniBalaBase=isnull(CurrYIniBalaBase,0)-@SqlReturn:originalWorth  where SubCode in (select AccNumber from tblAccTypeInfo where (select classCode from tblAccTypeInfo where AccNumber=@SqlReturn:tAssetAcc) like classCode+'%' ) and period=-1</sql>
+		</exec>
+		<!--累计折旧更新科目余额及父级科目余额 --> 
+		<exec condition="@SqlReturn:totalDeprecia!=0">	
+			<sql>update tblAccBalance set CurrYIniBase=isnull(CurrYIniBase,0)-@SqlReturn:totalDeprecia,CurrYIniBalaBase=isnull(CurrYIniBalaBase,0)-@SqlReturn:totalDeprecia  where SubCode in (select AccNumber from tblAccTypeInfo where (select classCode from tblAccTypeInfo where AccNumber=@SqlReturn:DepreciateAcc) like classCode+'%' ) and period=-1</sql>
+    </exec>
+	</sql>
+</define>
+<!--开账后固定资产添加当不启用审核流时直接调用 -->
+<define name="tblFixedAssetAdd_Delete_One_b">
+	<sql type="condition"><!--系统尚未开账-->
+		<condition><select>select statusid,scompanyid,accperiod from tblaccperiod where  statusid='1'  and scompanyID=@Sess:SCompanyID</select></condition>
+		<exec condition="'@SqlReturn:statusid' == 'null'">
+			<error>common.msg.RET_WBEGINACC_DEL</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--生成了资产变更之后不允许删除-->
+		<condition>
+			<select>SELECT 'exists' AS Exist FROM tblFixedAssetChange WHERE RefBillID =@ValueofDB:tblFixedAssetAdd_id</select>
+		</condition>
+		<exec condition="'@SqlReturn:Exist'=='exists'">
+			<error>FixedAssetChange.isPro.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--本期间已经月结，不可执行此操作！-->
+		<condition>
+			<select>select Year(BillDate) as PeriodYear, Month(BillDate) as Period from tblFixedAssetAdd where id=@ValueofDB:tblFixedAssetAdd_id</select>
+			<select>select statusid from tblAccPeriod where  statusid='2' and AccPeriod=@SqlReturn:Period and AccYear=@SqlReturn:PeriodYear and scompanyID=@Sess:SCompanyID</select>
+		</condition>
+		<exec condition="'@SqlReturn:statusid' != 'null'">
+			<error>common.statusid.RET_WBEGINACC</error>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition>
+			<select>select tblFixedAssetAdd.id as AssetsAddId1 from tblFixedAssetAdd join tblFixedAssetDepreciate on tblFixedAssetDepreciate.AssetsAddId=tblFixedAssetAdd.id where tblFixedAssetAdd.id=@ValueofDB:tblFixedAssetAdd_id and tblFixedAssetDepreciate.statusId=1</select>
+			<select>select tblFixedAssetAdd.id as AssetsAddId2 from tblFixedAssetAdd join tblFixedAssetClean on tblFixedAssetClean.AssetsAddId=tblFixedAssetAdd.id where tblFixedAssetAdd.id=@ValueofDB:tblFixedAssetAdd_id and  tblFixedAssetClean.workFlowNodeName='finish'</select>
+		</condition>
+		<!--该固定资产已做计提折旧，不可以做删除或修改操作！-->
+		<exec condition="'@SqlReturn:AssetsAddId1' != 'null'">
+			<error>tblFixedAssetAdd.AssetsAddId1.error</error>
+		</exec>
+		<!--该固定资产已做清理，不可以做删除或修改操作！-->
+		<exec condition="'@SqlReturn:AssetsAddId2' != 'null'">
+			<error>tblFixedAssetAdd.AssetsAddId2.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblFixedAssetAdd_id and  workFlowNodeName='finish'</select></condition>
+		<exec condition="'@SqlReturn:OrderNo'!='null'">	
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--如果启用“自动产生凭证”，则删除凭证-->
+		<exec condition="'@MEM:autoGenerateAcc'=='true'">
+			<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblFixedAssetAdd_id,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+</define>
+<!-- ============================================= 固定资产增加 结束  ========================================= -->
+
+<!-- ============================================= 固定资产清理 开始  ========================================= -->
+<define name="tblFixedAssetClean_Add">
+	<sql type="condition">
+		<condition>
+			<select>select count(0) as cou from tblFixedAssetAdd where id=@ValueofDB:tblFixedAssetClean_AssetsAddId  and referDeprecia like '%0%'</select>
+			<select>select tblFixedAssetClean.AssetsAddId as AssetsAddId1 from tblFixedAssetClean join tblFixedAssetDepreciate on tblFixedAssetDepreciate.AssetsAddId=tblFixedAssetClean.AssetsAddId and tblFixedAssetDepreciate.Period=@ValueofDB:tblFixedAssetClean_Period and tblFixedAssetDepreciate.PeriodMonth=@ValueofDB:tblFixedAssetClean_PeriodMonth and tblFixedAssetDepreciate.PeriodYear=@ValueofDB:tblFixedAssetClean_PeriodYear where tblFixedAssetClean.id=@ValueofDB:tblFixedAssetClean_id and tblFixedAssetDepreciate.statusId=1</select>
+		</condition>
+		<exec condition="true">
+			<sql>update tblFixedAssetClean set CertificateNo='' where id=@ValueofDB:tblFixedAssetClean_id</sql>
+		</exec>
+		<exec condition="true">
+			<sql>UPDATE tblFixedAssetClean SET cleanWorth = a.originalWorth-a.totalDeprecia-a.depreciaArrange,originalWorth=a.originalWorth,totalDeprecia=a.totalDeprecia,depreciaArrange=a.depreciaArrange FROM tblFixedAssetAdd a WHERE tblFixedAssetClean.id=@ValueofDB:tblFixedAssetClean_id AND a.id =tblFixedAssetClean.AssetsAddId</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--当不启用审核流时直接调用define-->
+		<exec condition="'@MEM:tblFixedAssetClean_IsStatart' == '0'">
+			<sql type="define">tblFixedAssetClean_Add_One</sql>
+		</exec>
+	</sql>
+</define>
+<!--固定资产清理不启用审核流调用define-->
+<define name="tblFixedAssetClean_Add_One">
+	<sql type="condition"><!--如果启用“自动产生凭证”，则自动插入凭证-->
+		<exec condition="true">
+			<sql>update tblFixedAssetAdd set statusId=1 from tblFixedAssetClean where tblFixedAssetAdd.id=tblFixedAssetClean.AssetsAddId and tblFixedAssetClean.id=@ValueofDB:tblFixedAssetClean_id</sql>
+		</exec>
+		<exec condition="'@MEM:autoGenerateAcc'=='true'">
+			<sql type="define">tblFixedAssetClean_Add_CreateAcc</sql>
+		</exec>
+	</sql>
+</define>
+<define name="tblFixedAssetClean_Add_CreateAcc">
+	<sql type="condition"><!-- 产生凭证：借：减少方式中的所选科目、累计折旧、固定资产减值准备 贷：固定资产-->
+		<exec condition="true">
+			<sql type="certificate">tblFixedAssetClean</sql>
+		  <!--直接过账影响科目余额-->
+  		<!-- <sql type="procedure">{call proc_insertAccAfterRefOper(@MEM:tblAccMain_IsStatart,0@ValueofDB:tblFixedAssetClean_id,@SqlReturn:BillDate,@SqlReturn:createBy,@SqlReturn:createTime,retCode,retVal)}</sql>-->
+		</exec>
+	</sql>
+</define>
+<!--固定资产清理删除操作-->
+<define name="tblFixedAssetClean_Delete">
+	<sql type="condition"><!--当不启用审核流时直接调用define-->
+		<exec condition="'@MEM:tblFixedAssetClean_IsStatart' == '0'">
+			<sql type="define">tblFixedAssetClean_Delete_One</sql>
+		</exec>
+	</sql>
+</define>
+<!-- 当不启用审核流时直接调用 -->
+<define name="tblFixedAssetClean_Delete_One">
+	<sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblFixedAssetClean_id and  workFlowNodeName='finish'</select></condition>
+		<exec condition="'@SqlReturn:OrderNo'!='null'">	
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>
+		</exec>
+	</sql>
+	
+	<sql type="condition"><!--如果启用“自动产生凭证”，则删除凭证-->
+		<exec condition="'@MEM:autoGenerateAcc'=='true'">
+			<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblFixedAssetClean_id,retCode,retVal)}</sql>
+		</exec> 
+	</sql>
+	<sql type="condition"><!--将资产增加表中的状态设置为0-->
+		<exec condition="true">
+			<sql>update tblFixedAssetAdd set statusId=0 from tblFixedAssetClean where tblFixedAssetAdd.id=tblFixedAssetClean.AssetsAddId and tblFixedAssetClean.id=@ValueofDB:tblFixedAssetClean_id</sql>
+		</exec>
+	</sql>
+</define>
+<!-- ============================================= 固定资产清理 结束  ========================================= -->
+
+<!-- ============================================= 固定资产变更 开始  ========================================= -->
+<define name="tblFixedAssetChange_Add">
+	<sql type="condition">
+		<condition>
+			<select>select tblFixedAssetChange.RefBillID as AssetsAddId1 from tblFixedAssetChange join tblFixedAssetDepreciate on tblFixedAssetDepreciate.AssetsAddId=@ValueofDB:tblFixedAssetChange_RefBillID and tblFixedAssetDepreciate.Period=@ValueofDB:tblFixedAssetChange_Period and tblFixedAssetDepreciate.PeriodMonth=@ValueofDB:tblFixedAssetChange_PeriodMonth and tblFixedAssetDepreciate.PeriodYear=@ValueofDB:tblFixedAssetChange_PeriodYear where tblFixedAssetChange.id=@ValueofDB:tblFixedAssetChange_id and tblFixedAssetDepreciate.statusId=1</select>
+			<select>select tblFixedAssetChange.id as Change from tblFixedAssetChange where tblFixedAssetChange.id!=@ValueofDB:tblFixedAssetChange_id and tblFixedAssetChange.RefBillID=@ValueofDB:tblFixedAssetChange_RefBillID and tblFixedAssetChange.Period=@ValueofDB:tblFixedAssetChange_Period and tblFixedAssetChange.PeriodMonth=@ValueofDB:tblFixedAssetChange_PeriodMonth and tblFixedAssetChange.PeriodYear=@ValueofDB:tblFixedAssetChange_PeriodYear and tblFixedAssetChange.workFlowNodeName='finish' </select>
+		</condition>
+		<exec condition="'@SqlReturn:AssetsAddId1' == 'null'">
+			<error>tblFixedAssetChange.AssetsAddId1.error</error>
+		</exec>
+		<exec condition="'@SqlReturn:Change' != 'null'">
+			<error>tblFixedAssetChange.Change.error</error>
+		</exec>
+		<exec condition="@ValueofDB:tblFixedAssetChange_planWork == 0 &amp;&amp;@ValueofDB:tblFixedAssetChange_depreciaMonth==2">
+			<error>tblFixedAssetAdd.planWork1.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!-- 当折旧方法为“双倍余额递减法”，“年数总和法”所输入的预计使用月份必须大于等于24 -->
+		<exec condition="(@ValueofDB:tblFixedAssetChange_depreciaMonth==3||@ValueofDB:tblFixedAssetChange_depreciaMonth==4)&amp;&amp;@ValueofDB:tblFixedAssetChange_planUseMonth&lt;24">
+			<error>tblFixedAssetAdd.planUseMonth3.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!-- 固定资产变更时，入账原值不能小于减值准备和累计折旧之和 -->
+		<exec condition="@ValueofDB:tblFixedAssetChange_originalWorth&lt;@ValueofDB:tblFixedAssetChange_totalDeprecia+@ValueofDB:tblFixedAssetChange_depreciaArrange ">
+			<error>tblFixedAssetAdd.originalWorth.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--0=&lt;预计净残值率&lt;=1-->
+		<exec condition="@ValueofDB:tblFixedAssetChange_planReWorthRate &lt; 0 ||@ValueofDB:tblFixedAssetChange_planReWorthRate&gt; 1">
+			<error>tblFixedAssetAdd.planReWorthRate.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--预计使用月份&gt;0-->
+		<exec condition="@ValueofDB:tblFixedAssetChange_planUseMonth &lt;= 0">
+			<error>tblFixedAssetAdd.planMonth.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--已计提月份&gt;=0;-->
+		<exec condition="@ValueofDB:tblFixedAssetChange_referMonth &lt; 0">
+			<error>tblFixedAssetAdd.referMonth.error</error>
+		</exec>
+		<exec condition="@ValueofDB:tblFixedAssetChange_referMonth &gt;@ValueofDB:tblFixedAssetChange_planUseMonth">
+			<error>tblFixedAssetAdd.Month.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--预计工作量&gt;=0;（当为工作量法时，要大于0-->
+		<!--预计工作量不能小于0-->
+		<exec condition="@ValueofDB:tblFixedAssetChange_planWork &lt; 0">
+			<error>tblFixedAssetAdd.planWork.error</error>
+		</exec>
+		<!--已计提工作量不能小于0-->
+		<exec condition="@ValueofDB:tblFixedAssetChange_referWork &lt; 0">
+			<error>tblFixedAssetAdd.referWork.error</error>
+		</exec>
+		<!--折旧方法为工作量法，预计工作量必须大于0-->
+		<exec condition="@ValueofDB:tblFixedAssetChange_planWork == 0 &amp;&amp;@ValueofDB:tblFixedAssetChange_depreciaMonth==2">
+			<error>tblFixedAssetAdd.planWork1.error</error>
+		</exec>
+		<!--已提工作量不能大于预计工作量-->
+		<exec condition="@ValueofDB:tblFixedAssetChange_planWork &lt;@ValueofDB:tblFixedAssetChange_referWork">
+			<error>tblFixedAssetAdd.Work.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--资产增加明细表的数量、金额控制-->
+	<condition>
+		<select>select id as idQty from tblFixedAssetChangeDet where f_ref=@ValueofDB:tblFixedAssetChange_id and Qty&lt;=0</select>
+		<select>select id as idAmount from tblFixedAssetChangeDet where f_ref=@ValueofDB:tblFixedAssetChange_id and Amount&lt;=0</select>
+	</condition>
+	  <!--明细表数量必须大于0-->
+		<exec condition="'@SqlReturn:idQty' != 'null'">
+			<error>tblFixedAssetAdd.idQty.error</error>
+		</exec>
+		<!--明细表金额必须大于0-->
+		<exec condition="'@SqlReturn:idAmount' != 'null'">
+			<error>tblFixedAssetAdd.idAmount.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--当不启用审核流时直接调用define-->
+		<exec condition="true">
+			<sql>update tblFixedAssetChange set CertificateNo='' where id=@ValueofDB:tblFixedAssetChange_id</sql>
+		</exec>
+		<exec condition="'@MEM:tblFixedAssetChange_IsStatart' == '0'">
+			<sql type="define">tblFixedAssetChange_Add_One</sql>
+		</exec>
+	</sql>
+</define>
+<!--固定资产变更不启用审核流调用define-->
+<define name="tblFixedAssetChange_Add_One">
+	<sql type="condition"><!--如果此资产是第一次做变更，同时向变更表中增加初始值记录-->
+		<condition>
+			<select>select tblFixedAssetChange.id as change from tblFixedAssetChange where tblFixedAssetChange.id!=@ValueofDB:tblFixedAssetChange_id and tblFixedAssetChange.RefBillID=@ValueofDB:tblFixedAssetChange_RefBillID</select>
+			<select>select id, classCode, workFlowNode, workFlowNodeName,checkPersons, GoodsNumber, GoodsName, GoodsSpec, DepartmentCode,StockCode, BillDate, AssetsType, AssetsAccType, referDeprecia,originalWorth, totalDeprecia, depreciaArrange, netWorth,planReWorthRate, planReWorth, depreciaMonth, planUseMonth, referMonth,planWork, referWork, workUnit, monthDeprecRate, monthDeprecAmt,deprecAccCode, DevalueAccCode, createBy, lastUpdateBy, createTime,lastUpdateTime, statusId, SCompanyID, BillNo, workunitDeprecAmt, Period, PeriodMonth, PeriodYear,MonthWork from tblFixedAssetAdd where tblFixedAssetAdd.id=@ValueofDB:tblFixedAssetChange_RefBillID</select>
+		</condition>
+		<exec condition="'@SqlReturn:change' == 'null'">
+			<sql>insert into tblFixedAssetChange(id,classCode,workFlowNode,workFlowNodeName,checkPersons,GoodsNumber,GoodsName,GoodsSpec,DepartmentCode,StockCode,BillDate,Billpate,AssetsType,AssetsAccType,referDeprecia,originalWorth,totalDeprecia,depreciaArrange,netWorth,planReWorthRate,planReWorth,depreciaMonth,planUseMonth,referMonth,planWork,referWork,workUnit,monthDeprecRate,monthDeprecAmt,deprecAccCode,DevalueAccCode,createBy,lastUpdateBy,createTime,lastUpdateTime,statusId,SCompanyID,BillNo,workunitDeprecAmt,Period,PeriodMonth,PeriodYear,RefBillID,MonthWork) values (@SqlReturn:id,@SqlReturn:classCode,@SqlReturn:workFlowNode,@SqlReturn:workFlowNodeName,@SqlReturn:checkPersons,@SqlReturn:GoodsNumber,@SqlReturn:GoodsName,@SqlReturn:GoodsSpec,@SqlReturn:DepartmentCode,@SqlReturn:StockCode,@SqlReturn:BillDate,@SqlReturn:BillDate,@SqlReturn:AssetsType,@SqlReturn:AssetsAccType,@SqlReturn:referDeprecia,@SqlReturn:originalWorth,@SqlReturn:totalDeprecia,@SqlReturn:depreciaArrange,@SqlReturn:netWorth,@SqlReturn:planReWorthRate,@SqlReturn:planReWorth,@SqlReturn:depreciaMonth,@SqlReturn:planUseMonth,@SqlReturn:referMonth,@SqlReturn:planWork,@SqlReturn:referWork,@SqlReturn:workUnit,@SqlReturn:monthDeprecRate,@SqlReturn:monthDeprecAmt,@SqlReturn:deprecAccCode,@SqlReturn:DevalueAccCode,@SqlReturn:createBy,@SqlReturn:lastUpdateBy,@SqlReturn:createTime,@SqlReturn:lastUpdateTime,1,@SqlReturn:SCompanyID,@SqlReturn:BillNo,@SqlReturn:workunitDeprecAmt,@SqlReturn:Period,@SqlReturn:PeriodMonth,@SqlReturn:PeriodYear,@SqlReturn:id,@SqlReturn:MonthWork)</sql>
+			<sql>insert into tblFixedAssetChangeDet(id,f_ref,workFlowNode,workFlowNodeName,checkPersons,GoodsCode,Qty,Amount,Remark,SCompanyID,SourceID) select id,f_ref,workFlowNode,workFlowNodeName,checkPersons,GoodsCode,Qty,Amount,Remark,SCompanyID,id from tblFixedAssetAddDet where tblFixedAssetAddDet.f_ref=@ValueofDB:tblFixedAssetChange_RefBillID</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<exec condition="true">
+			<sql>UPDATE tblFixedAssetChange SET changeWorth = tblFixedAssetChange.originalWorth-a.originalWorth FROM tblFixedAssetAdd a WHERE tblFixedAssetChange.id=@ValueofDB:tblFixedAssetChange_id AND a.id = tblFixedAssetChange.RefBillID</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--如果启用“自动产生凭证”，则自动插入凭证-->
+		<exec condition="'@MEM:autoGenerateAcc'=='true'">
+			<sql type="certificate">tblFixedAssetChange</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<!--修改资产增加表对应资产变更表中信息，保持同步-->
+		<exec condition="true">
+			<sql>delete from tblFixedAssetAddDet where tblFixedAssetAddDet.f_ref=@ValueofDB:tblFixedAssetChange_RefBillID</sql>
+			<sql>update tblFixedAssetAdd set tblFixedAssetAdd.MonthWork= @ValueofDB:tblFixedAssetChange_MonthWork,tblFixedAssetAdd.workunitDeprecAmt= @ValueofDB:tblFixedAssetChange_workunitDeprecAmt,tblFixedAssetAdd.monthDeprecAmt =@ValueofDB:tblFixedAssetChange_monthDeprecAmt,tblFixedAssetAdd.monthDeprecRate =@ValueofDB:tblFixedAssetChange_monthDeprecRate,tblFixedAssetAdd.DepartmentCode =@ValueofDB:tblFixedAssetChange_DepartmentCode,tblFixedAssetAdd.StockCode =@ValueofDB:tblFixedAssetChange_StockCode,tblFixedAssetAdd.AssetsType = @ValueofDB:tblFixedAssetChange_AssetsType,tblFixedAssetAdd.AssetsAccType = @ValueofDB:tblFixedAssetChange_AssetsAccType,tblFixedAssetAdd.referDeprecia = @ValueofDB:tblFixedAssetChange_referDeprecia,tblFixedAssetAdd.originalWorth =@ValueofDB:tblFixedAssetChange_originalWorth,tblFixedAssetAdd.planReWorthRate = @ValueofDB:tblFixedAssetChange_planReWorthRate,tblFixedAssetAdd.netWorth = @ValueofDB:tblFixedAssetChange_netWorth,tblFixedAssetAdd.planReWorth = @ValueofDB:tblFixedAssetChange_planReWorth,tblFixedAssetAdd.depreciaMonth = @ValueofDB:tblFixedAssetChange_depreciaMonth,tblFixedAssetAdd.planUseMonth = @ValueofDB:tblFixedAssetChange_planUseMonth,tblFixedAssetAdd.referMonth = @ValueofDB:tblFixedAssetChange_referMonth,tblFixedAssetAdd.planWork = @ValueofDB:tblFixedAssetChange_planWork,tblFixedAssetAdd.referWork = @ValueofDB:tblFixedAssetChange_referWork,tblFixedAssetAdd.workUnit = @ValueofDB:tblFixedAssetChange_workUnit,tblFixedAssetAdd.deprecAccCode = @ValueofDB:tblFixedAssetChange_deprecAccCode,tblFixedAssetAdd.DevalueAccCode = @ValueofDB:tblFixedAssetChange_DevalueAccCode,tblFixedAssetAdd.ChangeStatus=tblFixedAssetAdd.ChangeStatus+1 from tblFixedAssetChange where tblFixedAssetAdd.id=tblFixedAssetChange.RefBillID and tblFixedAssetChange.id=@ValueofDB:tblFixedAssetChange_id</sql>
+			<sql>insert into tblFixedAssetAddDet(id,f_ref,workFlowNode,workFlowNodeName,checkPersons,GoodsCode,Qty,Amount,Remark,SCompanyID) select id,@ValueofDB:tblFixedAssetChange_RefBillID,workFlowNode,workFlowNodeName,checkPersons,GoodsCode,Qty,Amount,Remark,SCompanyID from tblFixedAssetChangeDet WHERE tblFixedAssetChangeDet.f_ref=@ValueofDB:tblFixedAssetChange_id</sql>
+		</exec>
+	</sql>
+</define>
+<!--固定资产变更删除操作-->
+<define name="tblFixedAssetChange_Delete">
+	<sql type="condition"><!--当不启用审核流时直接调用define-->
+		<exec condition="'@MEM:tblFixedAssetChange_IsStatart' == '0'">
+			<sql type="define">tblFixedAssetChange_Delete_One</sql>
+		</exec>
+	</sql>
+</define>
+<!-- 当不启用审核流时直接调用 -->
+<define name="tblFixedAssetChange_Delete_One">
+	<sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblFixedAssetChange_id and  workFlowNodeName='finish'</select></condition>
+		<exec condition="'@SqlReturn:OrderNo'!='null'">	
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--删除对应的资产增加表中明细表的值-->
+		<exec condition="true">
+			<sql>delete from tblFixedAssetAddDet where tblFixedAssetAddDet.f_ref=(select tblFixedAssetChange.RefBillID from tblFixedAssetChange where tblFixedAssetChange.id=@ValueofDB:tblFixedAssetChange_id)</sql>	
+		</exec>
+	</sql>
+	<sql type="condition"><!--修改资产增加表中的相应字段=此变更记录的前一条变更记录-->
+		<condition>
+			<select>select top 1 id,DepartmentCode,monthDeprecRate,workunitDeprecAmt,monthDeprecAmt,StockCode,AssetsType,AssetsAccType,referDeprecia,originalWorth ,planReWorthRate,planReWorth,depreciaMonth,planUseMonth,netWorth,referMonth,planWork,referWork,workUnit,deprecAccCode,DevalueAccCode from tblFixedAssetChange where tblFixedAssetChange.id !=@ValueofDB:tblFixedAssetChange_id order by tblFixedAssetChange.Period,tblFixedAssetChange.PeriodYear desc</select>
+			<select>select RefBillID as RefBillID1 from tblFixedAssetChange where id=@ValueofDB:tblFixedAssetChange_id</select>
+		</condition>
+		<exec condition="true">
+			<sql>update tblFixedAssetAdd set tblFixedAssetAdd.workunitDeprecAmt =@SqlReturn:workunitDeprecAmt,tblFixedAssetAdd.monthDeprecAmt =@SqlReturn:monthDeprecAmt,tblFixedAssetAdd.monthDeprecRate =@SqlReturn:monthDeprecRate,tblFixedAssetAdd.DepartmentCode =@SqlReturn:DepartmentCode,tblFixedAssetAdd.StockCode =@SqlReturn:StockCode,tblFixedAssetAdd.AssetsType = @SqlReturn:AssetsType,tblFixedAssetAdd.AssetsAccType = @SqlReturn:AssetsAccType,tblFixedAssetAdd.referDeprecia = @SqlReturn:referDeprecia,tblFixedAssetAdd.originalWorth =@SqlReturn:originalWorth,tblFixedAssetAdd.netWorth = @SqlReturn:netWorth,tblFixedAssetAdd.planReWorthRate = @SqlReturn:planReWorthRate,tblFixedAssetAdd.planReWorth = @SqlReturn:planReWorth,tblFixedAssetAdd.depreciaMonth = @SqlReturn:depreciaMonth,tblFixedAssetAdd.planUseMonth = @SqlReturn:planUseMonth,tblFixedAssetAdd.referMonth = @SqlReturn:referMonth,tblFixedAssetAdd.planWork = @SqlReturn:planWork,tblFixedAssetAdd.referWork = @SqlReturn:referWork,tblFixedAssetAdd.workUnit = @SqlReturn:workUnit,tblFixedAssetAdd.deprecAccCode = @SqlReturn:deprecAccCode,tblFixedAssetAdd.DevalueAccCode = @SqlReturn:DevalueAccCode,tblFixedAssetAdd.ChangeStatus=tblFixedAssetAdd.ChangeStatus-1 from tblFixedAssetChange where tblFixedAssetAdd.id=tblFixedAssetChange.RefBillID and tblFixedAssetChange.id=@ValueofDB:tblFixedAssetChange_id</sql>
+			<sql>insert into tblFixedAssetAddDet(id,f_ref,workFlowNode,workFlowNodeName,checkPersons,GoodsCode,Qty,Amount,Remark,SCompanyID) select id,@SqlReturn:RefBillID1,workFlowNode,workFlowNodeName,checkPersons,GoodsCode,Qty,Amount,Remark,SCompanyID from tblFixedAssetChangeDet WHERE tblFixedAssetChangeDet.f_ref=(select top 1 tblFixedAssetChange.id from tblFixedAssetChange where tblFixedAssetChange.RefBillID=(select RefBillID from tblFixedAssetChange where id=@ValueofDB:tblFixedAssetChange_id) and tblFixedAssetChange.id !=@ValueofDB:tblFixedAssetChange_id order by tblFixedAssetChange.Period,tblFixedAssetChange.PeriodYear desc)</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--如果启用“自动产生凭证”，则删除凭证-->
+		<exec condition="'@MEM:autoGenerateAcc'=='true'">
+			<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblTransferSale3_id,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--用户删除变更表中的初始值记录给出提示-->
+		<condition><select>select tblFixedAssetChange.statusId as statusId from tblFixedAssetChange where tblFixedAssetChange.id=@ValueofDB:tblFixedAssetChange_id and tblFixedAssetChange.statusId='1'</select></condition>
+		<!--*用户不能删除初始记录！-->
+		<exec condition="'@SqlReturn:statusId' != 'null'">
+			<error>tblFixedAssetChange.statusId.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--如果此资产是第一次做变更，删除单据时同时删除变更表中的初始值记录-->
+		<condition><select>select tblFixedAssetChange.id as change from tblFixedAssetChange where tblFixedAssetChange.id!=@ValueofDB:tblFixedAssetChange_id and tblFixedAssetChange.RefBillID=@ValueofDB:tblFixedAssetChange_RefBillID</select></condition>
+		<exec condition="'@SqlReturn:change' == 'null'">
+			<sql>delete from tblFixedAssetChange where id=(select RefBillID from tblFixedAssetChange where id = @ValueofDB:tblFixedAssetChange_id)</sql>	
+			<sql>delete from tblFixedAssetChangeDet where f_ref=(select RefBillID from tblFixedAssetChange where id = @ValueofDB:tblFixedAssetChange_id)</sql>
+		</exec>
+	</sql>
+</define>
+<!-- ============================================= 固定资产变更 结束  ========================================= -->
+
+<!-- ============================================= 固定资产类别 开始  ========================================= -->
+<define name="tblFixedAssetType_Add">
+	<sql type="condition"><!-- 不能存在重复的类别名称 -->
+		<condition><select>select 'sameTypeName' as sameTypeName from tblFixedAssetType where TypeName=@ValueofDB:tblFixedAssetType_TypeName group by TypeName having count(TypeName)&gt;1</select></condition>
+		<exec condition="&quot;@SqlReturn:sameTypeName&quot;==&quot;sameTypeName&quot;">
+			<error>common.nameExist.error</error>  
+		</exec>
+	</sql>
+</define>
+<define name="tblFixedAssetType_Delete">
+	<sql type="condition"><!-- 此类别名称被固定资产引用，不能进行删除 -->
+		<condition><select>select count(0) as count from tblFixedAssetAdd where AssetsType=@ValueofDB:tblFixedAssetType_id</select></condition>
+		<exec condition="@SqlReturn:count&gt;0">			
+			<error>common.nameBeUsed.error</error>  
+		</exec>
+	</sql>
+</define>
+<!-- ============================================= 固定资产类别 结束  ========================================= -->
+
+<!-- ============================================= 固定资产增减方式 开始  ========================================= -->
+<define name="tblFixedAssetAccType_Add">
+	<sql type="condition"><!-- 不能存在重复的类别名称 -->
+		<condition><select>select 'sameAccTypeName' as sameAccTypeName from tblFixedAssetAccType where TypeName=@ValueofDB:tblFixedAssetAccType_TypeName group by TypeName having count(TypeName)&gt;1</select></condition>
+		<exec condition="&quot;@SqlReturn:sameAccTypeName&quot;==&quot;sameAccTypeName&quot;">
+			<error>common.nameExist.error</error>  
+		</exec>
+	</sql>
+	<sql type="condition"><!-- 如果方式是固定资产减少 如果不是盘亏”671101“  或也不是固定资产清理“1606” -->
+		<exec condition="&quot;@ValueofDB:Type&quot;==2 &amp;&amp; !(&quot;@ValueofDB:AccCode&quot;==&quot;671101&quot;||&quot;@ValueofDB:AccCode&quot;==&quot;1606&quot;)">
+		 	<error>方式为'固定资产减少'情况下，请选择科目671101或者1606</error>  
+		</exec>
+	</sql>
+</define>
+<define name="tblFixedAssetAccType_Delete">
+	<sql type="condition"><!-- 此类别名称被固定资产引用，不能进行删除 -->
+		<condition><select>select COUNT(0) as count  from (select id from tblFixedAssetAdd where AssetsAccType=@ValueofDB:tblFixedAssetAccType_id union all select id from tblFixedAssetClean where AssetsAccType=@ValueofDB:tblFixedAssetAccType_id) as a</select></condition>
+		<exec condition="@SqlReturn:count&gt;0">			
+			<error>common.nameBeUsed.error</error>  
+		</exec>
+	</sql>
+</define>
+<!-- ============================================= 固定资产增减方式 结束  ========================================= -->
+
+<!-- ============================================= 固定资产减值  开始  ========================================= -->
+<define name="tblFixedAssetDevalue_Add">
+	<sql type="condition"><!-- 减值金额不能等于零，提示错误--> 
+		<exec condition="@ValueofDB:tblFixedAssetDevalue_DevalueAmt == 0">
+			<error>common.Amt.zero.error</error>  
+	    </exec>
+	</sql>
+	<sql type="condition"><!-- 给此固定资产做本月减值时判断本月是否做了折旧，如果没做折旧要提示必须先进行计提折旧。 -->
+		<condition><select>select 'existDepreciate' as existDepreciate from tblFixedAssetDepreciate where AssetsAddId=@ValueofDB:tblFixedAssetDevalue_AssetsAddId  and Period=@ValueofDB:tblFixedAssetDevalue_Period and PeriodYear=@ValueofDB:tblFixedAssetDevalue_PeriodYear and statusId=1</select></condition>
+		<exec condition="'@SqlReturn:existDepreciate'=='null'">
+			<error>tblFixedAssetDevalue.noDepreciate.error</error>  
+		</exec>
+	</sql>
+	<sql type="condition"><!-- 如果本月已经做过减值，不允许做第二次减值 -->
+		<condition><select>select 'sameFixAsset' as sameFixAsset from tblFixedAssetDevalue where Period=@Sess:NowPeriod and PeriodYear=@Sess:NowYear group by AssetsAddId having count(AssetsAddId)&gt;1</select></condition>
+		<exec condition="&quot;@SqlReturn:sameFixAsset&quot;==&quot;sameFixAsset&quot;">
+			<error>tblFixedAssetDevalue.sameFixAsset.error</error>  
+		</exec>
+	</sql>
+	<sql type="condition"><!-- 减值金额不可以大于资产增加表中的（净值（已经更新了本次减值的净值）-净残值） -->
+		<condition><select>select (isnull(originalWorth,0)-isnull(totalDeprecia,0)-(isnull(depreciaArrange,0))-isnull(planReWorth,0)) as Worth from tblFixedAssetAdd where id=@ValueofDB:tblFixedAssetDevalue_AssetsAddId</select></condition>
+		<exec condition="@ValueofDB:tblFixedAssetDevalue_DevalueAmt &gt; @SqlReturn:Worth">
+			<error>tblFixedAssetDevalue.DevalueAmt.error</error>  
+		</exec>
+	</sql>
+	<sql>update tblFixedAssetDevalue set DevalueAccCode=(select DevalueAccCode from tblFixedAssetAdd where id=@ValueofDB:tblFixedAssetDevalue_AssetsAddId),CertificateNo='' where id=@ValueofDB:tblFixedAssetDevalue_id</sql>
+	<sql type="condition"> <!--不启用审核流-->
+		<exec condition="true">
+			<sql type="define">tblFixedAssetDevalue_Add_One</sql>
+		</exec>
+	 </sql>
+</define>
+<define name="tblFixedAssetDevalue_Add_One">
+	<sql type="condition"><!--该固定资产已做清理，不可以做减值操作！-->
+		<condition><select>select tblFixedAssetDevalue.AssetsAddId as AssetsAddId2,tblFixedAssetClean.BillNo from tblFixedAssetDevalue join tblFixedAssetClean on tblFixedAssetClean.AssetsAddId=tblFixedAssetDevalue.AssetsAddId where tblFixedAssetDevalue.id=@ValueofDB:tblFixedAssetDevalue_id and  tblFixedAssetClean.workFlowNodeName='finish'</select></condition>
+		<exec condition="&quot;@SqlReturn:AssetsAddId2&quot; != &quot;null&quot;">
+			<error>tblFixedAssetDevalue.AssetsAddId2.error</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--如果启用“自动产生凭证”，则自动插入凭证-->
+    <exec condition="'@MEM:autoGenerateAcc'=='true'">
+   		<sql type="certificate">tblFixedAssetDevalue</sql>
+    </exec>
+	</sql>
+	<sql type="condition"><!-- 回填 固定资产 更新净值=入账原值-累计折旧-减值准备（更新后的减值准备） | 减值准备= 减值准备 + 减值金额  -->
+		<exec condition="true">
+			<sql>update tblFixedAssetAdd set netWorth=isnull(originalWorth,0)-isnull(totalDeprecia,0)-(isnull(depreciaArrange,0)+@ValueofDB:tblFixedAssetDevalue_DevalueAmt),depreciaArrange=isnull(depreciaArrange,0)+@ValueofDB:tblFixedAssetDevalue_DevalueAmt where id=@ValueofDB:tblFixedAssetDevalue_AssetsAddId</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!-- 回填 固定资产 月折旧率，月折旧额  -->
+		<condition><select>select depreciaMonth from tblFixedAssetAdd where id=@ValueofDB:tblFixedAssetDevalue_AssetsAddId</select></condition>
+		<!--折旧方法 平均年限法:1;工作量法:2;双倍余额递减法:3;年数总和法:4 -->
+		<exec condition="@SqlReturn:depreciaMonth == 1">
+			<sql>update tblFixedAssetAdd set monthDeprecRate=(1-isnull(planReWorthRate,0))/(case when (isnull(planUseMonth,0)-isnull(referMonth,0))=0 THEN 1 ELSE (isnull(planUseMonth,0)-isnull(referMonth,0)) END) where id=@ValueofDB:tblFixedAssetDevalue_AssetsAddId</sql>
+			<sql>update tblFixedAssetAdd set monthDeprecAmt=netWorth * monthDeprecRate where id=@ValueofDB:tblFixedAssetDevalue_AssetsAddId</sql>
+		</exec>
+		<exec condition="@SqlReturn:depreciaMonth == 2">
+			<sql>update tblFixedAssetAdd set workunitDeprecAmt=netWorth*(1-isnull(planReWorthRate,0))/(case when (isnull(planWork,0)-isnull(referWork,0))=0 THEN 1 ELSE (isnull(planWork,0)-isnull(referWork,0)) END)where id=@ValueofDB:tblFixedAssetDevalue_AssetsAddId</sql>
+		</exec>
+		<exec condition="@SqlReturn:depreciaMonth == 3">
+			<sql>update tblFixedAssetAdd set monthDeprecRate=2/(case when (isnull(planWork,0)-isnull(referWork,0))=0 THEN 1 ELSE (isnull(planWork,0)-isnull(referWork,0)) END) where id=@ValueofDB:tblFixedAssetDevalue_AssetsAddId</sql>
+			<sql>update tblFixedAssetAdd set monthDeprecAmt=netWorth*monthDeprecRate where id=@ValueofDB:tblFixedAssetDevalue_AssetsAddId</sql>
+		</exec>
+		<exec condition="@SqlReturn:depreciaMonth == 4">
+			<sql>update tblFixedAssetAdd set monthDeprecRate = (isnull(planUseMonth,0)-isnull(referMonth,0))/(case when isnull(planUseMonth,0)=0 then 1 else planUseMonth end) where id=@ValueofDB:tblFixedAssetDevalue_AssetsAddId</sql>
+			<sql>update tblFixedAssetAdd set monthDeprecAmt = (netWorth-isnull(planReWorth,0))*monthDeprecRate where id=@ValueofDB:tblFixedAssetDevalue_AssetsAddId</sql>
+		</exec>
+	</sql>
+</define>
+<define name="tblFixedAssetDevalue_Add_CreateAcc">
+	<sql type="condition">
+		<!--向凭证主表中插入数据-->
+		<exec condition="true">
+			<sql type="define">tblFixedAssetDevalue</sql>
+      <!--直接过账影响科目余额-->
+			<sql type="procedure">{call proc_insertAccAfterRefOper(@MEM:tblAccMain_IsStatart,0@ValueofDB:tblFixedAssetDevalue_id,@SqlReturn:BillDate,@SqlReturn:createBy,@SqlReturn:createTime,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+</define>
+<define name="tblFixedAssetDevalue_Delete">
+	<sql type="condition"><!-- 不启用审核流 -->
+		<exec condition="&quot;@MEM:tblFixedAssetDevalue_IsStatart&quot; == &quot;0&quot;">
+			<sql type="define">tblFixedAssetDevalue_Del_One</sql>
+		</exec>
+	</sql>
+</define>
+<define name="tblFixedAssetDevalue_Del_One">
+	<sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblFixedAssetAdd_id and  workFlowNodeName='finish'</select></condition>
+		<exec condition="&quot;@SqlReturn:OrderNo&quot;!=&quot;null&quot;">	
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>  
+		</exec>
+	</sql>
+	<sql type="condition"><!--如果启用“自动产生凭证”，则删除凭证-->
+		<exec condition="'@MEM:autoGenerateAcc'=='true'">
+		 	<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblTransferSale2_id,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!-- 回填 固定资产 更新净值=入账原值-累计折旧-减值准备（更新后的减值准备） | 减值准备= 减值准备 - 减值金额 -->
+		<condition><select>select DevalueAmt,AssetsAddId from tblFixedAssetDevalue where id=@ValueofDB:tblFixedAssetDevalue_id</select></condition>
+		<exec condition="true">
+			<sql>update tblFixedAssetAdd set netWorth=isnull(originalWorth,0)-isnull(totalDeprecia,0)-(isnull(depreciaArrange,0)-@SqlReturn:DevalueAmt),depreciaArrange=isnull(depreciaArrange,0)-isnull(@SqlReturn:DevalueAmt,0) where id=@SqlReturn:AssetsAddId</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!-- 回填 固定资产 月折旧率，月折旧额  -->
+		<condition>
+			<select>select AssetsAddId from tblFixedAssetDevalue where id=@ValueofDB:tblFixedAssetDevalue_id</select>
+			<select>select depreciaMonth from tblFixedAssetAdd where id=@SqlReturn:AssetsAddId</select>
+		</condition>
+		<!-- 折旧方法 平均年限法:1;工作量法:2;双倍余额递减法:3;年数总和法:4    -->
+		<exec condition="@SqlReturn:depreciaMonth == 1">
+			<sql>update tblFixedAssetAdd set monthDeprecRate=(1-isnull(planReWorthRate,0))/(case when (isnull(planUseMonth,0)-isnull(referMonth,0))=0 THEN 1 ELSE (isnull(planUseMonth,0)-isnull(referMonth,0)) END) where id=@SqlReturn:AssetsAddId</sql>
+			<sql>update tblFixedAssetAdd set monthDeprecAmt=netWorth * monthDeprecRate where id=@SqlReturn:AssetsAddId</sql>
+		</exec>
+		<exec condition="@SqlReturn:depreciaMonth == 2">
+			<sql>update tblFixedAssetAdd set workunitDeprecAmt=netWorth*(1-isnull(planReWorthRate,0))/(case when (isnull(planWork,0)-isnull(referWork,0))=0 THEN 1 ELSE (isnull(planWork,0)-isnull(referWork,0)) END)where id=@SqlReturn:AssetsAddId</sql>
+		</exec>
+		<exec condition="@SqlReturn:depreciaMonth == 3">
+			<sql>update tblFixedAssetAdd set monthDeprecRate=2/(case when (isnull(planWork,0)-isnull(referWork,0))=0 THEN 1 ELSE (isnull(planWork,0)-isnull(referWork,0)) END) where id=@SqlReturn:AssetsAddId</sql>
+			<sql>update tblFixedAssetAdd set monthDeprecAmt=netWorth*monthDeprecRate where id=@SqlReturn:AssetsAddId</sql>
+		</exec>
+		<exec condition="@SqlReturn:depreciaMonth == 4">
+			<sql>update tblFixedAssetAdd set monthDeprecRate = (isnull(planUseMonth,0)-isnull(referMonth,0))/(case when isnull(planUseMonth,0)=0 then 1 else planUseMonth end) where id=@SqlReturn:AssetsAddId</sql>
+			<sql>update tblFixedAssetAdd set monthDeprecAmt = (netWorth-isnull(planReWorth,0))*monthDeprecRate where id=@SqlReturn:AssetsAddId</sql>
+		</exec>
+	</sql>
+</define>
+<!-- ============================================= 固定资产减值  结束  ========================================= -->
+
+<!-- ============================================= 固定资产 计提折旧  开始  ========================================= -->
+<define name="FixedAsset_Depreciate_Do">	
+	<sql type="condition"><!-- 已折旧状态的记录不以再折旧 -->
+		<condition><select>select statusId from tblFixedAssetDepreciate where id=@ValueofDB:tblFixedAssetDepreciate_id</select></condition>		
+		<exec condition="@SqlReturn:statusId==1">	 		
+			<error>fixedAssetStatus.Depreciate.error</error>  
+		</exec>
+	</sql>
+	<sql type="condition"><!-- 将状态改为 '已折旧' -->
+		<exec condition="true">
+			<sql>update tblFixedAssetDepreciate set statusId=1,CertificateNo='' where id=@ValueofDB:tblFixedAssetDepreciate_id</sql>
+			<sql>UPDATE tblFixedAssetDepreciate SET tblFixedAssetDepreciate.EmployeeID=tblFixedAssetDepreciate.createBy WHERE  tblFixedAssetDepreciate.id=@ValueofDB:tblFixedAssetDepreciate_id</sql>
+			<sql>UPDATE tblFixedAssetDepreciate SET BillDate=CONVERT(VARCHAR(10),PeriodYear)+'-'+right('000'+CONVERT(VARCHAR(10),Period),2)+'-01' WHERE tblFixedAssetDepreciate.id=@ValueofDB:tblFixedAssetDepreciate_id</sql>
+			<sql>UPDATE tblFixedAssetDevalue SET DevalueAccCode=a.DevalueAccCode FROM tblFixedAssetAdd a WHERE tblFixedAssetDevalue.id=@ValueofDB:tblFixedAssetDepreciate_id AND a.id = tblFixedAssetDevalue.AssetsAddId</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--如果启用“自动产生凭证”，则自动插入凭证-->
+		<exec condition="'@MEM:autoGenerateAcc'=='true'">
+		 	<sql type="certificate">tblFixedAssetDepreciate</sql>			
+		</exec>
+	</sql>
+	<!-- 修改摘要 -->
+	<sql type="condition">
+		<condition><select>select GoodsName as depgoodsName from tblFixedAssetAdd join tblFixedAssetDepreciate on tblFixedAssetAdd.id=tblFixedAssetDepreciate.AssetsAddId  where tblFixedAssetDepreciate.id =@ValueofDB:tblFixedAssetDepreciate_id </select></condition>
+		<exec condition="true">
+			<sql>update tblAccDetail set RecordComment=@SqlReturn:depgoodsName+'计提折旧'  where RefBillID=@ValueofDB:tblFixedAssetDepreciate_id and RefBillType='tblFixedAssetDepreciate'</sql>
+		</exec>
+	</sql>
+	<!-- 回填 资产增加表中： 净值=入账原值-累计折旧（更新完本次折旧后拿累计折旧更新）-减值准备 | 累计折旧=累计折旧+本次折旧金额 -->
+	<sql type="condition">
+		<condition><select>select currDeprecAmt as currDeprecAmt_,AssetsAddId as AssetsAddId_ from tblFixedAssetDepreciate where id=@ValueofDB:tblFixedAssetDepreciate_id</select></condition>
+		<exec condition="true">
+			<sql>update tblFixedAssetAdd set netWorth=isnull(originalWorth,0) - (isnull(totalDeprecia,0)+isnull(@SqlReturn:currDeprecAmt_,0))-isnull(depreciaArrange,0),totalDeprecia=isnull(totalDeprecia,0)+isnull(@SqlReturn:currDeprecAmt_,0) where id=@SqlReturn:AssetsAddId_</sql>
+			<sql>update tblFixedAssetAdd set referMonth=referMonth+1,statusId=(case when planUseMonth&lt;=referMonth+1 then 1 else 0 end) where id=@SqlReturn:AssetsAddId_</sql>
+		</exec>
+	</sql>
+</define>
+<define name="FixedAsset_ReDepreciate_Do">
+	<sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+	<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblFixedAssetDepreciate_id and  workFlowNodeName='finish'</select></condition>
+		<exec condition="'@SqlReturn:OrderNo'!='null'">	
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>  
+		</exec>
+  </sql>
+	<sql type="condition"><!-- 已做过清理的资产不允许再反折旧 -->
+		<condition><select>select a.GoodsNumber,a.GoodsName from tblFixedAssetAdd a,tblFixedAssetDepreciate b,tblFixedAssetClean c where a.id=b.AssetsAddId and a.id=c.AssetsAddId and b.id=@ValueofDB:tblFixedAssetDepreciate_id</select></condition>		
+		<exec condition="'@SqlReturn:GoodsNumber'!='null'">	 		
+			<error>fixedAssetStatus.hasClean.error,@SqlReturn:GoodsNumber,@SqlReturn:GoodsName</error>  
+		</exec>
+	</sql>	
+	<sql type="condition"><!-- 已做过变更和减值的资产不允许再反折旧 -->
+		<condition><select>select a.GoodsNumber,a.GoodsName from tblFixedAssetChange a,tblFixedAssetDepreciate b where a.RefBillID=b.AssetsAddId and b.id=@ValueofDB:tblFixedAssetDepreciate_id and b.statusId=1 and a.workflownodename!='draft'</select></condition>		
+	  <condition><select>select c.GoodsNumber as GoodsNumber1,c.GoodsName as GoodsName1 from tblFixedAssetDevalue a inner JOIN  tblFixedAssetDepreciate b  on a.AssetsAddId=b.AssetsAddId and b.id=@ValueofDB:tblFixedAssetDepreciate_id  LEFT JOIN tblFixedAssetAdd c ON c.id=b.AssetsAddId</select></condition>		
+		<exec condition="'@SqlReturn:GoodsNumber'!='null'">	 		
+			<error>fixedAssetStatus.hasChange.error,@SqlReturn:GoodsNumber,@SqlReturn:GoodsName</error>  
+		</exec>
+		<exec condition="'@SqlReturn:GoodsNumber1'!='null'">	 		
+			<error>fixedAssetStatus.hasDevalue.error,@SqlReturn:GoodsNumber1,@SqlReturn:GoodsName1</error>  
+		</exec>
+	</sql>
+	<sql type="condition"><!-- 未折旧状态的记录不能反折旧 -->
+		<condition><select>select statusId from tblFixedAssetDepreciate where id=@ValueofDB:tblFixedAssetDepreciate_id</select></condition>		
+		<exec condition="@SqlReturn:statusId==0">	 		
+			<error>fixedAssetStatus.ReDepreciate.error</error>  
+		</exec>
+	</sql>
+	<sql><!-- 将状态改为 '未折旧' -->
+		<exec condition="true">
+			<sql>update tblFixedAssetDepreciate set statusId=0 where id=@ValueofDB:tblFixedAssetDepreciate_id</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--如果启用“自动产生凭证”，则删除凭证-->
+		<exec condition="'@MEM:autoGenerateAcc'=='true'">
+		   <sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblTransferSale2_id,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!-- 回填 资产增加表中： 净值=入账原值-累计折旧（更新完本次折旧后拿累计折旧更新）-减值准备 | 累计折旧=累计折旧-本次折旧金额 -->
+		<condition><select>select currDeprecAmt as currDeprecAmt_2,AssetsAddId as AssetsAddId_2 from tblFixedAssetDepreciate where id=@ValueofDB:tblFixedAssetDepreciate_id</select></condition>
+		<exec condition="true">
+			<sql>update tblFixedAssetAdd set netWorth=isnull(originalWorth,0) - (isnull(totalDeprecia,0)-isnull(@SqlReturn:currDeprecAmt_2,0))-isnull(depreciaArrange,0),totalDeprecia=isnull(totalDeprecia,0)-isnull(@SqlReturn:currDeprecAmt_2,0) where id=@SqlReturn:AssetsAddId_2</sql>
+			<sql>update tblFixedAssetAdd set referMonth=referMonth-1,statusId=(case when planUseMonth&lt;=referMonth-1 then 1 else 0 end) where id=@SqlReturn:AssetsAddId_2</sql>
+		</exec>
+	</sql>
+</define>
+<!-- ============================================= 固定资产 计提折旧  结束  ========================================= -->
+</defineSqls>

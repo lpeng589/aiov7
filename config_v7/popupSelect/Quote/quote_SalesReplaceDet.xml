@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="quote_SalesReplaceDet">
+     <table>viewSalesOutStock,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      viewSalesOutStock.id f1,
+      tblGoods.GoodsNumber f2,
+      tblGoods.GoodsFullName f3,
+      tblGoods.GoodsSpec f4,
+      tblGoods.GoodsFullNamePYM f5,
+      viewSalesOutStock.BatchNo f6,
+      viewSalesOutStock.Inch f7,
+      viewSalesOutStock.Hue f8,
+      viewSalesOutStock.yearNO f9,
+      viewSalesOutStock.ProDate f10,
+      viewSalesOutStock.Availably f11,
+      viewSalesOutStock.Qty f12,
+      viewSalesOutStock.FactOutQty f13,
+      viewSalesOutStock.BackQty f14
+  from viewSalesOutStock
+				left join tblGoods on viewSalesOutStock.GoodsCode=tblGoods.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>销售换货明细引用销售出库明细</remark>
+     <condition>(viewSalesOutStock.FactOutQty&gt;0) and tblGoods.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.GoodsNumber" width="120"  parentDisplay="false" orderBy="升" />
+          <field name="tblGoods.GoodsFullName" width="150" parentDisplay="false" orderBy="升" />
+          <field name="tblGoods.GoodsSpec" width="150" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100" parentDisplay="false" hiddenInput="true" />
+          <field name="viewSalesOutStock.BatchNo" width="120"  parentDisplay="false" />
+          <field name="viewSalesOutStock.Inch" width="70"  parentDisplay="false" />
+          <field name="viewSalesOutStock.Hue" width="70"  parentDisplay="false" display="viewSalesOutStock.Hue" />
+          <field name="viewSalesOutStock.yearNO" width="70"  parentDisplay="false" display="viewSalesOutStock.yearNO" />
+          <field name="viewSalesOutStock.ProDate" width="70" parentDisplay="false" display="tblSalesReplaceDet.ProDate" />
+          <field name="viewSalesOutStock.Availably" width="70"  parentDisplay="false" display="tblSalesReplaceDet.Availably" />
+          <field name="viewSalesOutStock.Qty" width="100" parentDisplay="false" />
+          <field name="viewSalesOutStock.FactOutQty" width="100" parentDisplay="false" />
+          <field name="viewSalesOutStock.BackQty" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="viewSalesOutStock.id" parentName="@TABLENAME.SourceID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

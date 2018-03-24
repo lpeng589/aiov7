@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectDevalueAccCodecs" type="checkBox">
+     <table>tblAccTypeInfo</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defParentCode>00006</defParentCode>
+     <saveParentFlag>true</saveParentFlag>
+     <defineSQL>select 
+      tblAccTypeInfo.AccNumber f1,
+      tblAccTypeInfo.AccName f2,
+      tblAccTypeInfo.AccFullName f3,
+      tblAccTypeInfo.PyCode f4,
+      tblAccTypeInfo.classCode f5
+  from tblAccTypeInfo
+     </defineSQL>
+     <classCode>tblAccTypeInfo.classCode</classCode>
+     <remark>全部科目,默认显示损益类科目,多选,供资产增加明细、资产变更明细的“减值科目”字段使用</remark>
+     <condition></condition>
+     <changeCond>(tblAccTypeInfo.statusId!='-1')</changeCond>
+     <orderBy>tblAccTypeInfo.AccNumber,tblAccTypeInfo.AccName</orderBy>
+     <displayFields>
+          <field name="tblAccTypeInfo.AccNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblAccTypeInfo.AccName" asName="SelectCompany.ComNumber" width="150" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+          <field name="tblAccTypeInfo.AccFullName" width="200" searchType="match" parentDisplay="false" />
+          <field name="tblAccTypeInfo.PyCode" width="50" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+     </saveFields>
+</select>
+</popupSelect>

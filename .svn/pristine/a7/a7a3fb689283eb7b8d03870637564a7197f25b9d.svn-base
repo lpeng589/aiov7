@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectModelBillRow">
+     <table>ViewModelBillRow</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      ViewModelBillRow.DefRowCount f1,
+      ViewModelBillRow.DetailTableName f2,
+      ViewModelBillRow.classCode f3,
+      ViewModelBillRow.ModelName f4,
+      ViewModelBillRow.DetailName f5
+  from ViewModelBillRow
+     </defineSQL>
+     <classCode>ViewModelBillRow.classCode</classCode>
+     <condition></condition>
+     <changeCond>(ViewModelBillRow.MainModule=0 or ViewModelBillRow.MainModule=@Sess:sysType)</changeCond>
+     <orderBy>ViewModelBillRow.ModelName desc,ViewModelBillRow.DetailName desc</orderBy>
+     <displayFields>
+          <field name="ViewModelBillRow.ModelName" width="100" searchType="match" parentDisplay="false" />
+          <field name="ViewModelBillRow.DetailName" width="150" parentDisplay="true" display="@TABLENAME.ModelCode" />
+          <field name="ViewModelBillRow.DefRowCount" width="60" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="ViewModelBillRow.DefRowCount" parentName="@TABLENAME.RowCountSet" relationKey="false" hidden="true" />
+          <field name="ViewModelBillRow.DetailTableName" parentName="@TABLENAME.NameOfTable" relationKey="false" hidden="true" />
+          <field name="ViewModelBillRow.classCode" parentName="@TABLENAME.ModelCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

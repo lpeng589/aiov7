@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="BuyPayViewSelect"  type="checkBox" > 
+		<orderBy>ViewRefPay.BillDate,ViewRefPay.BillNo</orderBy>
+		<defineSQL>
+from ViewRefPay
+      where 1=1  and (ViewRefPay.CompanyCode='@ValueofDB:CompanyCode' and ViewRefPay.Buymark in (case '@ValueofDB:PaytypeID' when 'Pay' then '1' when 'PrePay' then '5' when 'RetrunPay' then '0' when 'ReturnReceive' then '2' when 'Repair' then '3'  when 'OtherPay' then '4' end))
+		</defineSQL>
+		<changeCond>(ViewRefPay.BillDate &lt;= '@ValueofDB:BillDate' and ViewRefPay.CurNeedPayAmt &gt; 0)</changeCond>
+		<displayFields>
+			<field name="ViewRefPay.BillDate" parentDisplay="false" width="70" searchType="scope" />
+			<field name="ViewRefPay.BillNo" display="@TABLENAME.RefBillNo" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="ViewRefPay.TotalTaxAmount" display="@TABLENAME.BillAmt" parentDisplay="true" width="100" />
+			<field name="ViewRefPay.AlreadyPayAmt" display="@TABLENAME.SettledAmt" parentDisplay="false" width="100" />
+			<field name="ViewRefPay.BackAmount" display="@TABLENAME.BackAmt" parentDisplay="false" width="100" />
+			<field name="ViewRefPay.NeedPayAmt" display="@TABLENAME.WexeBalAmt" parentDisplay="false" width="100" />
+			<field name="ViewRefPay.CurTotalAmount" display="@TABLENAME.CurBillAmt" parentDisplay="false" width="100" />
+			<field name="ViewRefPay.CurAlreadyPayAmt" display="@TABLENAME.CurSettledAmt" parentDisplay="false" width="100" />
+			<field name="ViewRefPay.CurBackAmount" display="@TABLENAME.CurBackAmt" parentDisplay="false" width="100" />
+			<field name="ViewRefPay.CurNeedPayAmt" display="@TABLENAME.CurWexeBalAmt" parentDisplay="false" width="100" />
+			<field name="ViewRefPay.BillName" parentDisplay="false" width="90" />
+			<field name="ViewRefPay.ComFullName" display="tblBuyInStock.CompanyCode" parentDisplay="false" width="200" searchType="match" keySearch="true" />
+		</displayFields>
+		<saveFields>
+			<field name="ViewRefPay.BillDate" parentName="@TABLENAME.RefBillDate" hidden="true" width="0" />
+			<field name="ViewRefPay.BillNo" parentName="@TABLENAME.RefBillNo" relationKey="true" display="@TABLENAME.RefBillNo" width="0" />
+			<field name="ViewRefPay.BillName" parentName="@TABLENAME.BillName" hidden="true" width="0" />
+			<field name="ViewRefPay.TotalTaxAmount" parentName="@TABLENAME.BillAmt" display="@TABLENAME.BillAmt" width="0" />
+			<field name="ViewRefPay.AlreadyPayAmt" parentName="@TABLENAME.SettledAmt" hidden="true" display="@TABLENAME.SettledAmt" width="0" />
+			<field name="ViewRefPay.BackAmount" parentName="@TABLENAME.BackAmt" hidden="true" display="@TABLENAME.BackAmt" width="0" />
+			<field name="ViewRefPay.NeedPayAmt" parentName="@TABLENAME.WexeBalAmt" hidden="true" display="@TABLENAME.WexeBalAmt" width="0" />
+			<field name="ViewRefPay.NeedPayAmt" parentName="@TABLENAME.ExeBalAmt" hidden="true" width="0" />
+			<field name="ViewRefPay.id" parentName="@TABLENAME.RefbillID" hidden="true" width="0" />
+			<field name="ViewRefPay.BuyOrderNo" parentName="@TABLENAME.BuyOrderNo" hidden="true" width="0" />
+			<field name="ViewRefPay.BillType" parentName="@TABLENAME.PayBillType" hidden="true" width="0" />
+			<field name="ViewRefPay.BuyOrderID" parentName="@TABLENAME.BuyOrderID" hidden="true" width="0" />
+			<field name="ViewRefPay.Companycode" parentName="@TABLENAME.CompanyCode" hidden="true" width="0" />
+			<field name="ViewRefPay.Account" parentName="@TABLENAME.Account" hidden="true" width="0" />
+			<field name="ViewRefPay.Currency" parentName="@TABLENAME.Currency" hidden="true" compare="false" width="0" />
+			<field name="ViewRefPay.CurTotalAmount" parentName="@TABLENAME.CurBillAmt" hidden="true" compare="false" width="0" />
+			<field name="ViewRefPay.CurAlreadyPayAmt" parentName="@TABLENAME.CurSettledAmt" hidden="true" compare="false" width="0" />
+			<field name="ViewRefPay.CurBackAmount" parentName="@TABLENAME.CurBackAmt" hidden="true" compare="false" width="0" />
+			<field name="ViewRefPay.CurNeedPayAmt" parentName="@TABLENAME.CurWexeBalAmt" hidden="true" compare="false" width="0" />
+			<field name="ViewRefPay.CurNeedPayAmt" parentName="@TABLENAME.ExeBalFcAmt" hidden="true" compare="false" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

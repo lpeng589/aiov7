@@ -1,0 +1,184 @@
+function goCSPrograme(varPath){
+   		var obj = new ActiveXObject("KoronCom.MACAddress") ;
+    	var isExist = obj.findapp(varPath) ;
+    	if(isExist==1){
+    		obj.runapp(varPath) ;
+    	}else{
+    		alert("$text.get('com.programe.not.exist')") ;
+    	}
+}
+function mdiwin(url,title,alertId){
+	
+	if(url.length > 3){
+		if(url.substr(0,3)=="BS:"){
+			window.open(url.substr(3),"_blank");
+			return;
+		}else if(url.substr(0,3)=="CS:"){
+			goCSPrograme(url.substr(3));
+			return;
+		}
+	}
+	if(url.indexOf("?") >0){
+		url +="&src=menu";
+	}else{
+		url +="?src=menu";
+	}
+	top.showreModule(title,url);
+	if(typeof(alertId)!="undefined"){
+		jQuery.get("UtilServlet?operation=updateAlertStatus&alertId="+alertId) ;
+	}	
+}
+
+function addWins(url,title){
+	mdiwin(url+"&name="+encodeURIComponent(title),title) ;
+}
+var curId ="";
+function popSet(id){
+	curId = id;
+	event.returnValue=false;
+    event.cancelBubble=true;
+	$("#menuSet").css("display","inline");
+	$("#menuSet").css("left",event.clientX-20);
+	$("#menuSet").css("top",event.clientY-20);
+}
+var allIconStr = "";
+function changePic(){
+	x = event.clientX-80;
+	y = event.clientY-15;
+	if(allIconStr != ""){ 
+		$("#changeIcon").css("display","inline");
+		$("#changeIcon").css("left",x);
+		$("#changeIcon").css("top",y);
+		
+		$("#changeIconBg").css("display","inline");
+		$("#changeIconBg").css("left",x);
+		$("#changeIconBg").css("top",y);
+	}else{
+		jQuery.get("/moduleFlow.do?operation=getAllIcon", function(data){ 	
+			
+			kps = data.split(";");
+			
+			for(i=0;i<kps.length;i++){
+				kp = kps[i].split(":");
+				if(kp[0] != "" && kp[1] != ""){
+					allIconStr +="<div><a href='javascript:void(0)' onclick='changeIconSub(\""+kp[0]+"\")'><span><img src='"+kp[0]+"' /></span><div>&nbsp;</div></a></div>";
+				}
+			}
+			allIconStr = "<nobr>"+allIconStr+"</nobr>";
+			$("#changeIconMidCon").html(allIconStr);
+			$("#changeIconMidCon").css("width",kps.length*100);
+			$("#changeIcon").css("display","inline");
+			$("#changeIcon").css("left",x);
+			$("#changeIcon").css("top",y);
+			
+			$("#changeIconBg").css("display","inline");
+			$("#changeIconBg").css("left",x);
+			$("#changeIconBg").css("top",y);
+			
+			fixPng();
+		 });
+	}
+}
+function changeIconMove(left){
+	
+	var v_content = document.getElementById("changeIconMid");
+	var scrollLeft = Number(v_content.scrollLeft);
+	if(left){
+		scrollLeft = scrollLeft  -300;
+	}else{
+		scrollLeft = scrollLeft +300;
+		
+	}
+	v_content.scrollLeft = scrollLeft;
+}
+function changeIconSub(str){
+	jQuery.get("/moduleFlow.do?operation=changePic&id="+curId+"&pic="+encodeURIComponent(str), function(data){ 
+		alert(data); 
+		location.href=	location.href+"&noDefault=true";	
+	 });
+}
+function changeIconClose(){
+	$("#changeIcon").css("display","none");
+	$("#changeIconBg").css("display","none");
+}
+
+function cancelDest(){
+	if(confirm("$text.get("common.msg.confirmDel")")){
+		jQuery.get("/moduleFlow.do?operation=cancelMyDest&id="+curId, function(data){ 	
+			if(data.indexOf("refresh") > -1){
+				alert(data.substr(7));
+				location.reload();	
+			}else{
+				alert(data);
+				$("#D_"+curId).remove();
+			}	
+		 });
+	 }
+}
+function onHideMenu(){		
+	$("#menuSet").css("display","none");
+}
+document.onclick=onHideMenu;
+
+function saveOrder() {
+	var sdata = $("#mainTable li").map(function() { return $(this).attr("id").substr(2); }).get();
+	jQuery.get("/moduleFlow.do?operation=orderMyDest&ids="+sdata.join(","), function(data){
+		if(data == "refresh"){
+        	location.reload();	
+        }	
+	});
+};
+
+function move(isLeft){
+	scrollLeft =  Number(document.getElementById("conter").scrollLeft);
+	if(isLeft){
+		document.getElementById("conter").scrollLeft = scrollLeft-96;
+	}else{
+		document.getElementById("conter").scrollLeft = scrollLeft+96;
+	}
+}
+
+$(document).ready(function() { 
+	$("#mainTable").dragsort({ dragSelector: "a", dragBetween: true, dragEnd: saveOrder, placeHolderTemplate: "<li class='placeHolder'><div></div></li>" });
+	//计算容器的宽高
+	conterWidth = (document.body.scrollWidth-130);	
+	if(typeof(parent.bodyWidth) !='undefined' ){
+		if( parent.bodyWidth == 0){
+			parent.bodyWidth = conterWidth;
+		}else{
+			conterWidth = parent.bodyWidth;
+		}
+	}
+	
+	$("#conter").css("width",conterWidth+"px");
+	
+	//计算主表的宽高
+	count = $("#mainTable").children().length; 
+	mainWidth = parseInt(((count+2)/3))*96;
+	
+	
+	if(mainWidth <= conterWidth){
+		$("#moveLeft").hide();
+		$("#moveRight").hide();
+		mainWidth = conterWidth;
+	}
+	$("#mainTable").css("width",mainWidth+"px");
+	
+	
+	var mouseDown = false;
+	tmouseX = 0;
+	$("#mainTable").mousedown( function(e) { 
+		tmouseX = e.clientX;
+		mouseDown = true; 
+	} ); 
+	$("#mainTable").mousemove( function(e) { 
+		if(mouseDown){
+			document.getElementById("conter").scrollLeft += (e.clientX - tmouseX);
+		}
+	} ); 
+	$("#mainTable").mouseup( function() { mouseDown = false; } ); 
+	
+});
+
+
+	

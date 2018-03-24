@@ -1,0 +1,218 @@
+﻿/* CSS Document */
+body {
+	width:100%;
+	padding:0px;
+	margin:0px;
+	overflow:hidden;
+	font-size:12px;
+}
+ul,li{
+	list-style:none;
+	margin:0px;
+	padding:0px;
+}
+img{
+	border:0px;
+} 
+a{text-decoration:none;	outline:none;}
+
+.bottom{
+	width:100%;
+	height:80px;
+	text-align:center;
+	margin:auto;
+	border-left:1px #5BAED8 solid;
+	border-right:1px #5BAED8 solid;
+	background:url(../images/mobileHome/tab_bg.png);
+	white-space:nowrap;
+}
+.bottom div{
+	width:300px;
+	margin:auto;
+}
+.bottom span{
+	width:64px;
+	height:64px;
+}
+.bottom span a{
+	display:block;
+	float:left;
+	text-align:center;
+}
+.organization a,.organization a:hover{
+	width:63px;
+	height:57px;
+	margin:5px 30px 0px 0px;
+	background:url(../images/mobileHome/organization.png);
+}
+.organization a:hover{
+	background:url(../images/mobileHome/organization_1.png);
+	/*background-position:55px 75px;*/
+}
+.Back a,.Back a:hover{
+	width:63px;
+	height:57px;
+	margin:5px 30px 0px 0px;
+	background:url(../images/mobileHome/back.png);
+}
+.Back a:hover{
+	background:url(../images/mobileHome/back_1.png);
+}
+.logout a,.logout a:hover{
+	width:63px;
+	height:57px;
+	margin:5px 30px 0px 0px;
+	background:url(../images/mobileHome/close.png);
+}
+.logout a:hover{
+	background:url(../images/mobileHome/close_1.png);
+	
+}
+
+
+.top{
+	width:100%;
+	height:30px;
+	border-left:1px #5BAED8 solid;
+	border-right:1px #5BAED8 solid;
+	background:url(../images/mobileHome/tab_bg_mid.png);
+}
+.top div{
+	font-size:14px;
+	line-height:30px;
+	color:#F1F1F1;
+	font-family:"微软雅黑", "Microsoft YaHei";
+}
+.top table{
+	table-layout:fixed;
+	
+}
+.top table td{
+	line-height:180%;
+	height:30px;
+	white-space:nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.top_UserName{
+	float:left;
+	margin:0px 20px 0px 15px;
+}
+.infoDispose{
+	float:right;
+	white-space:nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.infoDispose a{
+	float:left;
+	margin-right:15px;
+	color:#F1F1F1;
+}
+.infoDispose a:hover{
+	color:#FF0000;
+}
+.infoDispose a div{
+	float:left;
+}
+.AdShow{
+	text-align:center;
+	float:left;
+	margin-top:7px;
+}
+.AdShow a{
+	color:#000000;
+	font-weight:bold;
+	font-style:oblique;
+	font-size:12px;
+}
+.AdShow a:hover{
+	color:#0000FF;
+	font-weight:bold;
+	font-style:oblique;
+	font-size:14px;
+}
+
+.PopUp_organization{
+	position:absolute; 
+	top:22px; 
+	right:31px; 
+	width:197px; 
+	height:410px; 
+	cursor:pointer;
+	background:url(../images/mobileHome/organization_bg.png);
+	z-index:1000;
+}
+.PopUp_organization div{
+	float:left;
+	text-align:center;
+}
+
+.tally{
+	color:#adcae5;
+	width:180px;
+	margin:12px 0px 0px 0px;
+	text-align:right;
+	white-space:nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.tally a{
+	color:#70b32b;
+}
+.orgtitle{
+	margin:11px 0 auto 5px;
+	width:155px;
+	float:right;
+	font-weight:700;
+	cursor:hand;
+}
+.close{
+	float:right;
+	width:10px;
+}
+.close a{
+	width:12px;
+	height:12px;
+	font-size:1px;
+	margin:11px 0px 0px 8px;
+	background:url(../images/mobileHome/SmallIcon.gif);
+	background-position:12px 12px;
+}
+.close a:hover{
+	background:url(../images/mobileHome/SmallIcon.gif);
+	background-position:12px 12px
+}
+.organizationBody{
+	margin-top:2px;
+	height:310px;
+	width:167px;
+	margin-left:16px;
+	display:inline;
+	overflow:auto;
+	text-align:left;
+}
+.organizationBody li{
+	text-align:left;
+}
+.organizationBody li span{
+	margin-left:15px;
+}
+.locating{margin:8px 0px 0px 13px;display:inline}
+.locating select{width:170px;}
+.c1 { 
+	padding-left:22px;
+	height:20px;
+	line-height:20px;
+	color:#000;
+	cursor:hand;
+	background:url(../images/mobileHome/uesc_ico.png) no-repeat;
+}
+.c1:hover, c2:hover{ color:red;}
+.c2 {
+	padding-left:20px;
+	height:20px;
+	color:#666;
+	cursor:hand;
+	background:url(../images/mobileHome/uesc_ico2.png) no-repeat 3px 2px;
+} 

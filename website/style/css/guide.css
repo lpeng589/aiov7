@@ -1,0 +1,162 @@
+.upgrade_mtop{
+	margin-top:30px;
+}
+#contentleft {
+	background: url(../images/reg/contentcenter.jpg) repeat-x; width: 745px; height: auto
+}
+#contentright {
+	min-height: 400px; background: url(../images/reg/contentright.jpg) no-repeat right top; float: right; width: 745px
+}
+#contentmain {
+	min-height: 300px; background: url(../images/reg/contentleft.jpg) no-repeat; float: left; width: 731px; padding-top: 0px; height: 300px;
+}
+#contentmain p {
+	padding-right: 30px; padding-left: 30px; line-height: 20px; text-align: left
+}
+#pagetitle {
+	width: 640px; border-bottom: #ccc 1px solid; height: 22px; 
+}
+#pagetitle span {
+	font-weight: bold; font-size: 12px; float: left; color: #5e5e5e; 
+}
+#pagetitle p {
+	margin:0px;
+	padding:0px;
+	line-height:20px;
+}
+#pagetitle div {
+	float: right
+}
+#pagetitle h1 {
+	padding-right: 5px; padding-left: 15px; font-size: 12px; float: left; padding-bottom: 0px; padding-top: 0px
+}
+#pagetitle h2 {
+	padding-right: 5px; padding-left: 15px; font-size: 12px; float: left; padding-bottom: 0px; padding-top: 0px
+}
+.step3 {
+	background: url(../images/reg/arw.jpg) no-repeat; float: left; width: 70px; height: 14px
+}
+.step1 {
+	color: #bc8e6c
+}
+.step21 {
+	color: #ff0000
+}
+.step21 a:link {
+	text-decoration: none;
+	color:#ff0000;
+}
+#content {
+	margin-left: 50px; padding-top: 40px; text-align: left; 
+}
+
+
+#bodyUl {
+	width:650px;padding-bottom:20px!important;padding-bottom:0px;
+	font-size:14px;
+	line-height:25px;
+	color:#666;
+	height:200px;
+	margin-top: 30px; text-align: left;border-bottom: #ccc 1px dotted;
+}
+#bodyUl span {
+	padding-left:5px;
+	padding-right:5px;
+	font-weight: bold; font-size: 12px; color: #ff3333;
+	vertical-align:middle;
+}
+#bodyul ul {
+	margin:0px;
+	padding:0px;
+	list-style-type: none
+}
+#bodyul li {
+	margin-bottom: 10px; width: 650px; height: 25px
+}
+
+#bodyUl2 {
+	width:650px;padding-bottom:20px!important;padding-bottom:0px;
+	font-size:14px;
+	line-height:25px;
+	color:#666;
+	height:181px;
+	margin-top: 30px; text-align: left;border-bottom: #ccc 1px dotted;
+}
+#bodyUl2 span {
+	padding-left:5px;
+	padding-right:5px;
+	font-weight: bold; font-size: 12px; color: #ff3333;
+	vertical-align:middle;
+}
+#bodyul2 ul {
+	margin:0px;
+	padding:0px;
+	list-style-type: none
+}
+#bodyul2 li {
+	margin-bottom: 10px; width: 650px; height: 25px
+}
+
+
+
+.add {
+width:100%;
+text-align:right;
+float:right; color:#FF0000; font-weight:bolder; font-size:12px;}
+.add a:link {
+	text-decoration: none;
+	color:#ff0000;
+}
+.add a:visited {
+	text-decoration: none;
+	color:#ff0000;
+}
+.add a:hover {
+	text-decoration:underline;
+	color:#ff0000
+}
+.add a:active {
+	text-decoration: none;
+	color:#ff0000
+}
+
+#bodyul .item2line {
+	height: 35px
+}
+.txtstyle {
+	border-right: #c0c0c0 1px solid; border-top: #c0c0c0 1px solid; margin-top: 5px; border-left: #c0c0c0 1px solid; width: 200px; border-bottom: #c0c0c0 1px solid
+}
+.itemname {
+	font-size:14px;
+	color:#166492;
+	text-align:right;
+	float: left; width: 170px;
+	line-height: 26px;
+}
+
+.regbut {
+	border:0px;
+	width:134px;
+	height:29px;
+	text-align:center;
+	line-height:29px;
+	background:url(../images/reg/btn_reg.gif) no-repeat;
+}
+#regfoot{
+float:right;
+width:340px;
+margin-right:20px;
+text-align:right;
+}
+#titleDiv {
+	color:#FF0000;
+}
+.intext {
+	height:25px;
+	line-height:22px;
+	border: 1px solid #ccc;
+	background-color: #e7f2fe;
+	width: 200px;
+	vertical-align: middle;
+} 
+.intext_hover {background-color: #FFFACD;}

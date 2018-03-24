@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<!--申请汇总单明细中申请单号弹出框-->
+	<select name="SelectBuyApplicationFirst"  type="checkBox" > 
+		<orderBy>tblBuyApplication.BillDate,tblBuyApplication.BillNo</orderBy>
+		<defineSQL>
+from tblBuyApplication
+ left join tblDepartment on tblDepartment.classCode=tblBuyApplication.DepartmentCode
+ left join tblEmployee on tblEmployee.id=tblBuyApplication.EmployeeID
+
+	      where 1=1  and (tblBuyApplication.workFlowNodeName = 'finish' and tblBuyApplication.BillDate&lt;='@ValueofDB:BillDate')
+		</defineSQL>
+		<displayFields>
+			<field name="tblDepartment.DeptFullName" asName="Department.DeptFullName" display="tblBuyApplicationTotalDet.DepartmentCode" parentDisplay="true" width="80" searchType="equal" keySearch="true" />
+			<field name="tblBuyApplication.BillDate" parentDisplay="false" width="100" searchType="scope" keySearch="true" />
+			<field name="tblBuyApplication.BillNo" display="tblBuyApplicationTotalDet.BuyApplyID" parentDisplay="true" width="120" searchType="match" keySearch="true" />
+			<field name="tblEmployee.EmpFullName" parentDisplay="false" width="100" />
+		</displayFields>
+		<saveFields>
+			<field name="tblBuyApplication.id" parentName="@TABLENAME.BuyApplyID" hidden="true" relationKey="true" width="0" />
+			<field name="tblBuyApplication.DepartmentCode" parentName="@TABLENAME.DepartmentCode" hidden="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

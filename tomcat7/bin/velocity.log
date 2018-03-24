@@ -1,0 +1,193 @@
+2018-03-23 15:38:05,072 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:38:05,072 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:38:05,072 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-03-23 15:38:05,072 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:38:05,072 - Do unicode file recognition:  false
+2018-03-23 15:38:05,072 - FileResourceLoader : adding path 'D:\Project\aio\tomcat7\webapps\ROOT'
+2018-03-23 15:38:05,072 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-03-23 15:38:05,072 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-03-23 15:38:05,072 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-03-23 15:38:05,072 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-03-23 15:38:05,072 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-03-23 15:38:05,072 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-03-23 15:38:05,072 - Created '20' parsers.
+2018-03-23 15:38:05,072 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-03-23 15:38:05,072 - Velocimacro : Default library not found.
+2018-03-23 15:38:05,072 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-03-23 15:38:05,072 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-03-23 15:38:05,072 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-03-23 15:38:05,072 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-03-23 15:38:05,145 - ResourceManager : found /js/login.vjs with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:38:05,159 - Log4JLogChute initialized using file 'velocity.log'
+2018-03-23 15:38:05,159 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-03-23 15:38:05,159 - Default Properties File: org\apache\velocity\runtime\defaults\velocity.properties
+2018-03-23 15:38:05,159 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-03-23 15:38:05,159 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/format/Formatter
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:534)
+	at org.apache.velocity.app.VelocityEngine.init(VelocityEngine.java:144)
+	at com.menyi.web.util.GenJS.js(GenJS.java:44)
+	at com.menyi.web.util.GlobalsTool.js(GlobalsTool.java:5195)
+	at sun.reflect.GeneratedMethodAccessor123.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.invoke(UberspectImpl.java:295)
+	at org.apache.velocity.runtime.parser.node.ASTMethod.execute(ASTMethod.java:245)
+	at org.apache.velocity.runtime.parser.node.ASTReference.execute(ASTReference.java:203)
+	at org.apache.velocity.runtime.parser.node.ASTReference.render(ASTReference.java:294)
+	at org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:318)
+	at org.apache.velocity.Template.merge(Template.java:254)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.performMerge(VelocityViewServlet.java:805)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.mergeTemplate(VelocityViewServlet.java:762)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doRequest(VelocityViewServlet.java:555)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doGet(VelocityViewServlet.java:509)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:748)
+	at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:486)
+	at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:411)
+	at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:338)
+	at org.apache.struts.chain.commands.servlet.PerformForward.handleAsForward(PerformForward.java:113)
+	at org.apache.struts.chain.commands.servlet.PerformForward.perform(PerformForward.java:96)
+	at org.apache.struts.chain.commands.AbstractPerformForward.execute(AbstractPerformForward.java:54)
+	at org.apache.struts.chain.commands.ActionCommandBase.execute(ActionCommandBase.java:51)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.commons.chain.generic.LookupCommand.execute(LookupCommand.java:304)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.struts.chain.ComposableRequestProcessor.process(ComposableRequestProcessor.java:283)
+	at org.apache.struts.action.ActionServlet.process(ActionServlet.java:1913)
+	at org.apache.struts.action.ActionServlet.doGet(ActionServlet.java:449)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at com.menyi.web.util.BaseFilter.doFilter(BaseFilter.java:172)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:504)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:170)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:421)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1074)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.format.Formatter
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1720)
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1571)
+	... 71 more
+2018-03-23 15:38:05,161 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:38:05,161 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:38:05,161 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-03-23 15:38:05,161 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:38:05,162 - Do unicode file recognition:  false
+2018-03-23 15:38:05,162 - FileResourceLoader : adding path 'D:\Project\aio\tomcat7\webapps\ROOT'
+2018-03-23 15:38:05,162 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-03-23 15:38:05,163 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-03-23 15:38:05,163 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-03-23 15:38:05,163 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-03-23 15:38:05,163 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-03-23 15:38:05,163 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-03-23 15:38:05,164 - Created '20' parsers.
+2018-03-23 15:38:05,164 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-03-23 15:38:05,165 - Velocimacro : Default library not found.
+2018-03-23 15:38:05,165 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-03-23 15:38:05,165 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-03-23 15:38:05,165 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-03-23 15:38:05,165 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-03-23 15:38:05,204 - ResourceManager : found /js/body2.vjs with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+rvlet.java:555)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doGet(VelocityViewServlet.java:509)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:748)
+	at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:486)
+	at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:411)
+	at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:338)
+	at org.apache.struts.chain.commands.servlet.PerformForward.handleAsForward(PerformForward.java:113)
+	at org.apache.struts.chain.commands.servlet.PerformForward.perform(PerformForward.java:96)
+	at org.apache.struts.chain.commands.AbstractPerformForward.execute(AbstractPerformForward.java:54)
+	at org.apache.struts.chain.commands.ActionCommandBase.execute(ActionCommandBase.java:51)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.commons.chain.generic.LookupCommand.execute(LookupCommand.java:304)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.struts.chain.ComposableRequestProcessor.process(ComposableRequestProcessor.java:283)
+	at org.apache.struts.action.ActionServlet.process(ActionServlet.java:1913)
+	at org.apache.struts.action.ActionServlet.doGet(ActionServlet.java:449)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at com.menyi.web.util.BaseFilter.doFilter(BaseFilter.java:172)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:504)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:170)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:421)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1074)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.format.Formatter
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1720)
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1571)
+	... 71 more
+2018-03-23 15:38:05,161 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:38:05,161 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:38:05,161 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-03-23 15:38:05,161 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:38:05,162 - Do unicode file recognition:  false
+2018-03-23 15:38:05,162 - FileResourceLoader : adding path 'D:\Project\aio\tomcat7\webapps\ROOT'
+2018-03-23 15:38:05,162 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-03-23 15:38:05,163 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-03-23 15:38:05,163 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-03-23 15:38:05,163 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-03-23 15:38:05,163 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-03-23 15:38:05,163 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-03-23 15:38:05,164 - Created '20' parsers.
+2018-03-23 15:38:05,164 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-03-23 15:38:05,165 - Velocimacro : Default library not found.
+2018-03-23 15:38:05,165 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-03-23 15:38:05,165 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-03-23 15:38:05,165 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-03-23 15:38:05,165 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-03-23 15:38:05,204 - ResourceManager : found /js/body2.vjs with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader

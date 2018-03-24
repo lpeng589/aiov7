@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="quote_tblSalseQuote">
+     <table>tblSalseQuote,tblEmployee,tblDepartment,tblCompany,tblSalseQuoteDet,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblSalseQuote.id f1,
+      tblSalseQuote.BillDate f2,
+      tblSalseQuote.BillNo f3,
+      tblDepartment.DeptFullName f4,
+      tblEmployee.EmpFullName f5,
+      tblCompany.ComFullName f6,
+      tblGoods.GoodsNumber f7,
+      tblGoods.GoodsFullName f8,
+      tblGoods.GoodsSpec f9,
+      tblGoods.GoodsFullNamePYM f10
+  from tblSalseQuote
+		 left join tblEmployee on tblEmployee.id=tblSalseQuote.EmployeeID
+		 left join tblDepartment on tblDepartment.classCode=tblSalseQuote.DepartmentCode
+		 left join tblCompany on tblCompany.classCode=tblSalseQuote.CompanyCode
+		 left join tblSalseQuoteDet on (tblSalseQuote.id=tblSalseQuoteDet.f_ref and tblSalseQuoteDet.id=(select top 1 a.id from tblSalseQuoteDet a where a.f_ref=tblSalseQuote.id and a.GoodsCode in (select classCode from tblGoods where 1=1 and tblGoods.GoodsNumber like '%@condition:tblGoods.GoodsNumber%' and tblGoods.GoodsFullName like '%@condition:tblGoods.GoodsFullName%' and tblGoods.GoodsSpec like '@condition:tblGoods.GoodsSpec%')))
+		 left join tblGoods on tblGoods.classCode=tblSalseQuoteDet.GoodsCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>销售订单引用销售报价</remark>
+     <condition>(tblSalseQuote.CompanyCode='@ValueofDB:CompanyCode' and tblSalseQuote.workFlowNodeName = 'finish')</condition>
+     <changeCond></changeCond>
+     <hasChild>quote_tblSalseQuoteDet</hasChild>
+     <orderBy>tblSalseQuote.BillDate,tblSalseQuote.BillNo</orderBy>
+     <displayFields>
+          <field name="tblSalseQuote.BillDate" width="70" searchType="scope" parentDisplay="false" orderBy="升" />
+          <field name="tblSalseQuote.BillNo" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblDepartment.DeptFullName" width="75" searchType="match" parentDisplay="false" display="@TABLENAME.DepartmentCode" />
+          <field name="tblEmployee.EmpFullName" width="50" searchType="match" parentDisplay="false" display="@TABLENAME.EmployeeID" />
+          <field name="tblCompany.ComFullName" width="200" searchType="match" parentDisplay="false" display="@TABLENAME.CompanyCode" />
+          <field name="tblGoods.GoodsNumber" width="120" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullName" width="150" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsSpec" width="150" searchType="match" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true"/>
+     </displayFields>
+     <saveFields>
+          <field name="tblSalseQuote.id" parentName="@TABLENAME.RefSalseQuoteid" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

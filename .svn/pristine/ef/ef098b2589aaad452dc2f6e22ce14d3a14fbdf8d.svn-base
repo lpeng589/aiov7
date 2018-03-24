@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name = "SelectCertificateUserTransAcc" type="checkBox">
+     <table>tblUserTransAcc</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select tblUserTransAcc.id f1,
+        tblUserTransAcc.BillDate f2,     
+        tblUserTransAcc.BillNo f3,    
+        tblDepartment.DeptFullName f4,     
+        tblEmployee.EmpFullName f5,     
+        tblLanguage.zh_CN f6,     
+        tblUserTransAcc.PayAmt f7,     
+        tblUserTransAcc.FcBillAmt f8       
+from tblUserTransAcc    
+left join tblEmployee on tblUserTransAcc.EmployeeID = tblEmployee.id    
+left join tblDepartment on tblUserTransAcc.DepartmentCode = tblDepartment.classCode    
+left join  tblAccTypeInfo on tblAccTypeInfo.AccNumber=tblUserTransAcc.PayBankID 
+left join tblLanguage on tblLanguage.id=tblAccTypeInfo.AccName   
+  
+     </defineSQL>
+     <condition>len(isnull(tblUserTransAcc.CertificateNo,''))=0 and isNull(tblUserTransAcc.workFlowNodeName,'')!='draft' and isNull(tblUserTransAcc.workFlowNodeName,'')!='print' and (tblAccTypeInfo.SCompanyID = '00001' or len(isnull(tblAccTypeInfo.SCompanyID,''))=0)</condition>
+     <changeCond>     </changeCond>
+     <orderBy>tblUserTransAcc.BillDate,tblUserTransAcc.BillNo</orderBy>
+     <displayFields>
+          <field name="tblUserTransAcc.BillDate" width="80" searchType="scope" parentDisplay="false" />
+          <field name="tblUserTransAcc.BillNo" width="120" searchType="match" parentDisplay="false" />
+          <field name="tblDepartment.DeptFullName" display="tblDepartment.DeptFullName" width="100" searchType="match" parentDisplay="false" />
+          <field name="tblEmployee.EmpFullName" display="tblUserTransAcc.EmployeeID" width="65" parentDisplay="false" />
+          <field name="tblLanguage.zh_CN" display="tblUserTransAcc.PayBankID" width="150" searchType="match" parentDisplay="false" />
+          <field name="tblUserTransAcc.PayAmt" width="100" parentDisplay="false" />
+          <field name="tblUserTransAcc.FcBillAmt" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblUserTransAcc.id" parentName="@TABLENAME.id" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

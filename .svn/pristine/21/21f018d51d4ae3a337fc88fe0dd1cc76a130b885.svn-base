@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>	
+	<Resource name="jdbc/db" 
+				auth="Container" 
+				type="javax.sql.DataSource" 
+				driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+				url="jdbc:sqlserver://localhost:1533;DatabaseName=POSSERVER" 
+				username="sa" 
+				password="bddzc" 
+				maxActive="100"
+				maxIdle="10"
+				maxWait="10000"/>
+	 <Resource name="jdbc/sqlserver" auth="Container"
+         type="javax.sql.DataSource" maxActive="100" maxIdle="10"
+     maxWait="10000" username="sa"  password="123456"
+				 factory = "org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory"
+         driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+    url="jdbc:sqlserver://localhost;SelectMethod=Cursor;DatabaseName=AIOBD"/>
+</Context> 

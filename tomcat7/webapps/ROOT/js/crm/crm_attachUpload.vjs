@@ -1,0 +1,90 @@
+//CRM����޸�ҳ���ϴ�����
+function upload(type){
+		openAttachUpload(type);
+		return;	
+	}
+	
+	var curUploadType = "";
+	function openAttachUpload(type){
+		curUploadType = type;
+		var filter = "";
+		if(type == "PIC"){
+			filter = "Image";
+		}
+		
+		var attachUpload = document.getElementById("attachUpload");
+		if(attachUpload == null){
+			uploadDiv = document.createElement("div"); 
+			uploadDiv.id = "attachUpload" ;
+			uploadDiv.style.cssText = "position:absolute; top:10px;left:30px; width=600px;height:300px; display:block";
+			document.body.appendChild(uploadDiv);
+			attachUpload = document.getElementById("attachUpload");
+		}
+		var clientHeight = document.documentElement.clientHeight;
+		if(clientHeight==0) {
+			clientHeight = document.documentElement.clientHeight ;
+		}
+		attachUpload.style.left=  ((document.documentElement.clientWidth - 500) /2) +"px";
+		attachUpload.style.top=  ((clientHeight - 250) /2) +"px";
+		attachUpload.style.display="block";
+		attachUpload.innerHTML='<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" id="fileUpload" width="500" height="250" codebase="http:/'+'/fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">'+
+				' <param name="movie" value="/flash/FileUpload.swf" /><param name="quality" value="high" /><param name="bgcolor" value="#869ca7" /><param name="flashvars" value="maxSize=$!globals.getSysSetting("defaultAttachSize")&uploadUrl=/UploadServlet;jsessionid=$session.id?path=/temp/@amp;fileType='+type+'&filter='+filter+'" />'+
+				' <param name="allowScriptAccess" value="sameDomain" /><embed src="/flash/FileUpload.swf" quality="high" bgcolor="#869ca7"	width="500" height="250" name="column" align="middle" play="true" loop="false"'+
+				'	flashvars="maxSize=$!globals.getSysSetting("defaultAttachSize")&uploadUrl=/UploadServlet;jsessionid=$session.id?path=/temp/@amp;fileType='+type+'&filter='+filter+'"	quality="high" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="http/'+'/www.adobe.com/go/getflashplayer"></embed></object>';
+	} 
+		
+		
+	function onCompleteUpload(retstr){  
+		retstr = decodeURIComponent(retstr);  
+		if(curUploadType == 'PIC'){
+		   mstrs = retstr.split(";");
+		   for(i=0;i<mstrs.length;i++){
+			   str = mstrs[i];
+			   if(str == "") continue;
+			   var ul=m('picuploadul');
+			   var imgstr = "<li style='background:url();' id='uploadfile_"+str+"'><input type=hidden name=uploadpic value='"+str+"'><div><a href=\"/ReadFile?fileName="+str+"&realName="+encodeURI(str)+"&tempFile=true&type=PIC\" target=\"_blank\"><img src=\"/ReadFile.jpg?fileName="+encodeURI(str)+"&realName="+encodeURI(str)+"&tempFile=true&type=PIC\"  width=\"150\"  border=\"0\"></a></div><div>"+str+"&nbsp;&nbsp;&nbsp;&nbsp;<a style=\"cursor:pointer;\" onclick='deleteupload(\""+str+"\",\"true\",\"$tableName\",\"PIC\");'>$text.get("common.lb.del")</a></div></li>";
+			   ul.innerHTML = ul.innerHTML+imgstr;
+		   }
+		}else if(curUploadType == 'AFFIX'){
+			mstrs = retstr.split(";");
+		    for(i=0;i<mstrs.length;i++){
+			   str = mstrs[i];
+			   if(str == "") continue;
+			   var ul=m('affixuploadul');
+			   var imgstr = "<li style='background:url();' id='uploadfile_"+str+"'><input type=hidden name=uploadaffix value='"+str+"'><div class='showAffix'>"+str+"</div>&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:deleteupload(\""+str+"\",\"true\",\"$tableName\",\"AFFIX\");'>$text.get("common.lb.del")</a>&nbsp;&nbsp;&nbsp;<a href=\"/ReadFile?fileName="+encodeURI(str)+"&realName="+encodeURI(str)+"&tempFile=true&type=AFFIX\" target=_blank>$text.get("common.lb.download")</a></li>";
+			   //var imgstr = "<li style='background:url();' id='uploadfile_"+str+"'><input type=hidden name=uploadaffix value='"+str+"'><div class='showAffix'>"+str+"</div>&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"#\" onclick='javascript:delUpload(\""+str+"\",this);'>$text.get("common.lb.del")</a>&nbsp;&nbsp;&nbsp;<a href=\"/ReadFile?fileName="+encodeURI(str)+"&realName="+encodeURI(str)+"&tempFile=false&type=AFFIX&tableName=CRMClientInfo\" target=_blank>$text.get("common.lb.download")</a></li>";
+			   ul.innerHTML = ul.innerHTML+	imgstr;
+		    }
+		    
+		}    
+	    var attachUpload = document.getElementById("attachUpload");
+		attachUpload.style.display="none";
+	}
+	
+	function m(value){
+		return document.getElementById(value) ;
+	}
+	
+	
+	function deleteupload(fileName,tempFile,tableName,type){
+	//�������ʱ�ļ�������ɾ��Զ���ļ�����ʽ�ļ�������ɾ��
+	if(!confirm('$text.get("common.msg.confirmDel")')){
+		return;
+	}
+	if("true" == tempFile){
+		var str="/UploadDelAction.do?NOTTOKEN=NOTTOKEN&operation=$globals.getOP("OP_DELETE")&fileName="+encodeURIComponent(fileName)+"&tempFile="+tempFile+"&tableName="+tableName+"&type="+type;
+ 	    AjaxRequest(str);
+    	var value = response;    	
+    	if(value=="no response text" && value.length==0){
+    		return;
+    	} 
+	}
+	var li=m('uploadfile_'+fileName);
+	if("false" == tempFile && type == "AFFIX"){
+		li.outerHTML = "<input type=hidden name=uploadDelAffix value='"+fileName+"'>";
+	}else if("false" == tempFile && type == "PIC"){
+		li.outerHTML = "<input type=hidden name=uploadDelPic value='"+fileName+"'>";
+	}else{	
+		li.outerHTML = "";
+	}
+}

@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ReportDataSource>
+	<Report reporteId="" reportName="目标完成分析" />
+	<fieldInfo>
+		<field fieldname="tblDayWorkPlan.BeginDate"
+			AsfieldName="BeginDate_s" groupByFlag="0" displayFlag="0"
+			condition="&gt;=?" conditionJoin="and" orderbyFlag="" display="開始日期≥"
+			fieldType="5" inputType="0" popUpName="" width="0" classCode="1"
+			linkAdd="" order="1" isStat="0" defaultValue="@MEM:defaultTime"
+			fieldSysType="" fixColName="1" isNull="1" planarField="0" subSQL=""
+			repeatNotShow="0" zeroDisplay="0" seriesCol="" seriesNums=""
+			crossField="" groupName="" fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_CN" display="开始日期≥" />
+				<Display localStr="en" display="Period From≥" />
+				<Display localStr="zh_TW" display="開始日期≥" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="tblDayWorkPlan.EndDate"
+			AsfieldName="EndDate_e" groupByFlag="0" displayFlag="0"
+			condition="&lt;=?" conditionJoin="and" orderbyFlag="" display="結束日期≤"
+			fieldType="5" inputType="0" popUpName="" width="0" classCode="1"
+			linkAdd="" order="2" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="1" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_CN" display="结束日期≤" />
+				<Display localStr="en" display="Period To≤" />
+				<Display localStr="zh_TW" display="結束日期≤" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="tblEmployee.EmpFullName"
+			AsfieldName="EmployeeID" groupByFlag="1" displayFlag="1"
+			condition="like '%'+?+'%'" conditionJoin="and" orderbyFlag=""
+			display="Employee" fieldType="2" inputType="2"
+			popUpName="ReportSelectEmployee" width="80" classCode="1" linkAdd=""
+			order="3" isStat="0" defaultValue="" fieldSysType="" fixColName="1"
+			isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="職員" />
+				<Display localStr="zh_CN" display="职员" />
+				<Display localStr="en" display="Employee" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="tblDepartment.DeptFullName"
+			AsfieldName="departmentCode" groupByFlag="1" displayFlag="1"
+			condition="like '%'+?+'%'" conditionJoin="and" orderbyFlag=""
+			display="Department" fieldType="2" inputType="2"
+			popUpName="ReportSelectDepartment" width="80" classCode="1"
+			linkAdd="" order="4" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="1" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="部門" />
+				<Display localStr="zh_CN" display="部门" />
+				<Display localStr="en" display="Department" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="tblDayWorkPlan.PlanType"
+			AsfieldName="PlanType" groupByFlag="1" displayFlag="1" condition="=?"
+			conditionJoin="and" orderbyFlag="" display="Plan Type" fieldType="2"
+			inputType="1" popUpName="WorkPlan" width="80" classCode="1"
+			linkAdd="" order="5" isStat="0" defaultValue="day" fieldSysType=""
+			fixColName="0" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="計劃類型" />
+				<Display localStr="zh_CN" display="计划类型" />
+				<Display localStr="en" display="Plan Type" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="tblDayWorkPlan.BeginDate"
+			AsfieldName="BeginDate" groupByFlag="1" displayFlag="1" condition=""
+			conditionJoin="and" orderbyFlag="" display="Begin date" fieldType="5"
+			inputType="0" popUpName="" width="90" classCode="1" linkAdd=""
+			order="6" isStat="0" defaultValue="" fieldSysType="" fixColName="0"
+			isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="開始日期" />
+				<Display localStr="zh_CN" display="开始日期" />
+				<Display localStr="en" display="Begin date" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="tblDayWorkPlan.EndDate" AsfieldName="EndDate"
+			groupByFlag="1" displayFlag="1" condition="" conditionJoin="and"
+			orderbyFlag="" display="End date" fieldType="5" inputType="0"
+			popUpName="" width="90" classCode="1" linkAdd="" order="7" isStat="0"
+			defaultValue="" fieldSysType="" fixColName="0" isNull="0"
+			planarField="0" subSQL="" repeatNotShow="0" zeroDisplay="0"
+			seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="結束日期" />
+				<Display localStr="zh_CN" display="结束日期" />
+				<Display localStr="en" display="End date" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="tblDayWorkPlan.KPIItem" AsfieldName="KPIItem"
+			groupByFlag="1" displayFlag="1" condition="" conditionJoin=""
+			orderbyFlag="" display="KPI item" fieldType="2" inputType="1"
+			popUpName="TargetName" width="80" classCode="1" linkAdd="" order="8"
+			isStat="0" defaultValue="" fieldSysType="" fixColName="0" isNull="0"
+			planarField="0" subSQL="" repeatNotShow="0" zeroDisplay="0"
+			seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="KPI項目" />
+				<Display localStr="zh_CN" display="KPI项目" />
+				<Display localStr="en" display="KPI item" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="sum(tblDayWorkPlan.KPIAim)"
+			AsfieldName="KPIAim" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="KPI aim" fieldType="1"
+			inputType="0" popUpName="" width="80" classCode="1" linkAdd=""
+			order="9" isStat="0" defaultValue="" fieldSysType="" fixColName="0"
+			isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="KPI目標" />
+				<Display localStr="zh_CN" display="KPI目标" />
+				<Display localStr="en" display="KPI aim" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="sum(tblDayWorkPlan.KPIComplete)"
+			AsfieldName="KPIComplete" groupByFlag="0" displayFlag="1"
+			condition="" conditionJoin="" orderbyFlag="" display="KPI Complete"
+			fieldType="1" inputType="8" popUpName="" width="80" classCode="1"
+			linkAdd="" order="10" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="0" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="KPI 完成" />
+				<Display localStr="zh_CN" display="KPI完成" />
+				<Display localStr="en" display="KPI Complete" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field
+			fieldname="cast(cast((case sum(tblDayWorkPlan.KPIAim) when 0 then 0 else sum(tblDayWorkPlan.KPIComplete)/sum(tblDayWorkPlan.KPIAim) end) as numeric(18,4))*100 as varchar(10))+'%'"
+			AsfieldName="KPIScale" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="KPI Complete scale"
+			fieldType="2" inputType="8" popUpName="" width="100" classCode="1"
+			linkAdd="" order="11" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="0" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_CN" display="KPI完成比例" />
+				<Display localStr="en" display="KPI Complete scale" />
+				<Display localStr="zh_TW" display="KPI完成比例" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="sum(tblDayWorkPlan.ReceiveAmt)"
+			AsfieldName="ReceiveAmt" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="Receive amount"
+			fieldType="1" inputType="0" popUpName="" width="80" classCode="1"
+			linkAdd="" order="12" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="0" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="回款金額" />
+				<Display localStr="zh_CN" display="回款金额" />
+				<Display localStr="en" display="Receive amount" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="sum(tblDayWorkPlan.ReComplete)"
+			AsfieldName="ReComplete" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="Receive Complete"
+			fieldType="1" inputType="0" popUpName="" width="80" classCode="1"
+			linkAdd="" order="13" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="0" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="回款完成" />
+				<Display localStr="zh_CN" display="回款完成" />
+				<Display localStr="en" display="Receive Complete" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field
+			fieldname="cast(cast((case sum(tblDayWorkPlan.ReceiveAmt) when 0 then 0 else sum(tblDayWorkPlan.ReComplete)/sum(tblDayWorkPlan.ReceiveAmt) end) as numeric(18,4))*100 as varchar(10))+'%'"
+			AsfieldName="ReScale" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="Receive Complete Scale"
+			fieldType="2" inputType="0" popUpName="" width="100" classCode="1"
+			linkAdd="" order="14" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="0" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="回款完成比例" />
+				<Display localStr="zh_CN" display="回款完成比例" />
+				<Display localStr="en" display="Receive Complete Scale" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="sum(tblDayWorkPlan.SalesAmt)"
+			AsfieldName="SalesAmt" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="Sales amount" fieldType="1"
+			inputType="6" popUpName="" width="80" classCode="1" linkAdd=""
+			order="15" isStat="0" defaultValue="" fieldSysType="" fixColName="0"
+			isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="銷售金額" />
+				<Display localStr="zh_CN" display="销售金额" />
+				<Display localStr="en" display="Sales amount" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="sum(tblDayWorkPlan.SalesComplete)"
+			AsfieldName="SalesComplete" groupByFlag="0" displayFlag="1"
+			condition="" conditionJoin="" orderbyFlag="" display="Sales Complete"
+			fieldType="1" inputType="6" popUpName="" width="80" classCode="1"
+			linkAdd="" order="16" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="0" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="銷售完成" />
+				<Display localStr="zh_CN" display="销售完成" />
+				<Display localStr="en" display="Sales Complete" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field
+			fieldname="cast(cast((case sum(tblDayWorkPlan.SalesAmt) when 0 then 0 else sum(tblDayWorkPlan.SalesComplete)/sum(tblDayWorkPlan.SalesAmt) end) as numeric(18,4))*100 as varchar(10))+'%'"
+			AsfieldName="SalesScale" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="Sales Complete Scale"
+			fieldType="2" inputType="6" popUpName="" width="120" classCode="1"
+			linkAdd="" order="17" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="0" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="銷售完成比例" />
+				<Display localStr="zh_CN" display="销售完成比例" />
+				<Display localStr="en" display="Sales Complete Scale" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="sum(tblDayWorkPlan.Customers)"
+			AsfieldName="Customers" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="Customers" fieldType="1"
+			inputType="6" popUpName="" width="120" classCode="1" linkAdd=""
+			order="18" isStat="0" defaultValue="" fieldSysType="" fixColName="0"
+			isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="成交客戶數量" />
+				<Display localStr="zh_CN" display="成交客户数量" />
+				<Display localStr="en" display="Customers" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="sum(tblDayWorkPlan.CuComplete)"
+			AsfieldName="CuComplete" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="Customers Complete"
+			fieldType="1" inputType="6" popUpName="" width="120" classCode="1"
+			linkAdd="" order="19" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="0" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="成交客戶完成數" />
+				<Display localStr="zh_CN" display="成交客户完成数" />
+				<Display localStr="en" display="Customers Complete" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field
+			fieldname="cast(cast((case sum(tblDayWorkPlan.Customers) when 0 then 0 else sum(tblDayWorkPlan.CuComplete)/sum(tblDayWorkPlan.Customers) end) as numeric(18,4))*100 as varchar(10))+'%'"
+			AsfieldName="CuScale" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="Customer complete scale"
+			fieldType="2" inputType="6" popUpName="" width="120" classCode="1"
+			linkAdd="" order="20" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="0" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="成交客戶完成比例" />
+				<Display localStr="zh_CN" display="成交客户完成比例" />
+				<Display localStr="en"
+					display="Customer complete scale" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="sum(tblDayWorkPlan.Products)"
+			AsfieldName="Products" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="Product quantity"
+			fieldType="1" inputType="6" popUpName="" width="80" classCode="1"
+			linkAdd="" order="21" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="0" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="產品數量" />
+				<Display localStr="zh_CN" display="产品数量" />
+				<Display localStr="en" display="Product quantity" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="sum(tblDayWorkPlan.ProComplete)"
+			AsfieldName="ProComplete" groupByFlag="0" displayFlag="1"
+			condition="" conditionJoin="" orderbyFlag="" display="Goods Complete"
+			fieldType="1" inputType="6" popUpName="" width="120" classCode="1"
+			linkAdd="" order="22" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="0" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="產品完成數" />
+				<Display localStr="zh_CN" display="产品完成数量" />
+				<Display localStr="en" display="Goods Complete" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field
+			fieldname="cast(cast((case sum(tblDayWorkPlan.Products) when 0 then 0 else sum(tblDayWorkPlan.ProComplete)/sum(tblDayWorkPlan.Products) end) as numeric(18,4))*100 as varchar(10))+'%'"
+			AsfieldName="ProScale" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="Goods Complete Scale"
+			fieldType="2" inputType="6" popUpName="" width="120" classCode="1"
+			linkAdd="" order="23" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="0" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="產品完成比例" />
+				<Display localStr="zh_CN" display="产品完成比例" />
+				<Display localStr="en" display="Goods Complete Scale" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="sum(tblDayWorkPlan.SecondSales)"
+			AsfieldName="SecondSales" groupByFlag="0" displayFlag="1"
+			condition="" conditionJoin="" orderbyFlag=""
+			display="The second sales" fieldType="1" inputType="6" popUpName=""
+			width="80" classCode="1" linkAdd="" order="24" isStat="0"
+			defaultValue="" fieldSysType="" fixColName="0" isNull="0"
+			planarField="0" subSQL="" repeatNotShow="0" zeroDisplay="0"
+			seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="二次銷售" />
+				<Display localStr="zh_CN" display="二次销售" />
+				<Display localStr="en" display="The second sales" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field fieldname="sum(tblDayWorkPlan.SecComplete)"
+			AsfieldName="SecComplete" groupByFlag="0" displayFlag="1"
+			condition="" conditionJoin="" orderbyFlag=""
+			display="Second sales complete" fieldType="1" inputType="6"
+			popUpName="" width="100" classCode="1" linkAdd="" order="25"
+			isStat="0" defaultValue="" fieldSysType="" fixColName="0" isNull="0"
+			planarField="0" subSQL="" repeatNotShow="0" zeroDisplay="0"
+			seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="二次銷售完成" />
+				<Display localStr="zh_CN" display="二次销售完成" />
+				<Display localStr="en" display="Second sales complete" />
+			</Displays>
+			<groupNames />
+		</field>
+		<field
+			fieldname="cast(cast((case sum(tblDayWorkPlan.SecondSales) when 0 then 0 else sum(tblDayWorkPlan.SecComplete)/sum(tblDayWorkPlan.SecondSales) end) as numeric(18,4))*100 as varchar(10))+'%'"
+			AsfieldName="SecScale" groupByFlag="0" displayFlag="1" condition=""
+			conditionJoin="" orderbyFlag="" display="Second sales complete scale"
+			fieldType="2" inputType="6" popUpName="" width="120" classCode="1"
+			linkAdd="" order="26" isStat="0" defaultValue="" fieldSysType=""
+			fixColName="0" isNull="0" planarField="0" subSQL="" repeatNotShow="0"
+			zeroDisplay="0" seriesCol="" seriesNums="" crossField="" groupName=""
+			fieldIdentity="" analysis="0">
+			<Displays>
+				<Display localStr="zh_TW" display="二次銷售完成比例" />
+				<Display localStr="zh_CN" display="二次销售完成比例" />
+				<Display localStr="en"
+					display="Second sales complete scale" />
+			</Displays>
+			<groupNames />
+		</field>
+	</fieldInfo>
+	<SQL
+		text="select vbCrLf    tblEmployee.EmpFullName as EmployeeID,vbCrLf    tblDepartment.DeptFullName as departmentCode,vbCrLf    tblDayWorkPlan.PlanType as PlanType,vbCrLf    tblDayWorkPlan.BeginDate as BeginDate,vbCrLf    tblDayWorkPlan.EndDate as EndDate,vbCrLf    tblDayWorkPlan.KPIItem as KPIItem,vbCrLf    sum(tblDayWorkPlan.KPIAim) as KPIAim,vbCrLf    sum(tblDayWorkPlan.KPIComplete) as KPIComplete,vbCrLf    cast(cast((case sum(tblDayWorkPlan.KPIAim) when 0 then 0 else sum(tblDayWorkPlan.KPIComplete)/sum(tblDayWorkPlan.KPIAim) end) as numeric(18,4))*100 as varchar(10))+'%' as KPIScale,vbCrLf    sum(tblDayWorkPlan.ReceiveAmt) as ReceiveAmt,vbCrLf    sum(tblDayWorkPlan.ReComplete) as ReComplete,vbCrLf    cast(cast((case sum(tblDayWorkPlan.ReceiveAmt) when 0 then 0 else sum(tblDayWorkPlan.ReComplete)/sum(tblDayWorkPlan.ReceiveAmt) end) as numeric(18,4))*100 as varchar(10))+'%' as ReScale,vbCrLf    sum(tblDayWorkPlan.SalesAmt) as SalesAmt,vbCrLf    sum(tblDayWorkPlan.SalesComplete) as SalesComplete,vbCrLf    cast(cast((case sum(tblDayWorkPlan.SalesAmt) when 0 then 0 else sum(tblDayWorkPlan.SalesComplete)/sum(tblDayWorkPlan.SalesAmt) end) as numeric(18,4))*100 as varchar(10))+'%' as SalesScale,vbCrLf    sum(tblDayWorkPlan.Customers) as Customers,vbCrLf    sum(tblDayWorkPlan.CuComplete) as CuComplete,vbCrLf    cast(cast((case sum(tblDayWorkPlan.Customers) when 0 then 0 else sum(tblDayWorkPlan.CuComplete)/sum(tblDayWorkPlan.Customers) end) as numeric(18,4))*100 as varchar(10))+'%' as CuScale,vbCrLf    sum(tblDayWorkPlan.Products) as Products,vbCrLf    sum(tblDayWorkPlan.ProComplete) as ProComplete,vbCrLf    cast(cast((case sum(tblDayWorkPlan.Products) when 0 then 0 else sum(tblDayWorkPlan.ProComplete)/sum(tblDayWorkPlan.Products) end) as numeric(18,4))*100 as varchar(10))+'%' as ProScale,vbCrLf    sum(tblDayWorkPlan.SecondSales) as SecondSales,vbCrLf    sum(tblDayWorkPlan.SecComplete) as SecComplete,vbCrLf    cast(cast((case sum(tblDayWorkPlan.SecondSales) when 0 then 0 else sum(tblDayWorkPlan.SecComplete)/sum(tblDayWorkPlan.SecondSales) end) as numeric(18,4))*100 as varchar(10))+'%' as SecScalevbCrLffrom tblDayWorkPlanvbCrLfleft join tblEmployee on tblEmployee.id=tblDayWorkPlan.createByvbCrLfleft join tblDepartment on tblDepartment.classCode=tblEmployee.DepartmentCodevbCrLfwhere 1=1 vbCrLf      and (tblDayWorkPlan.BeginDate &gt;=?)vbCrLf      and (tblDayWorkPlan.EndDate &lt;=?)vbCrLf      and (tblEmployee.EmpFullName like '%'+?+'%')vbCrLf      and (tblDepartment.DeptFullName like '%'+?+'%')vbCrLf      and (tblDayWorkPlan.PlanType =?)vbCrLfgroup by vbCrLf   tblEmployee.EmpFullName,vbCrLf   tblDepartment.DeptFullName,vbCrLf   tblDayWorkPlan.PlanType,vbCrLf   tblDayWorkPlan.BeginDate,vbCrLf   tblDayWorkPlan.EndDate,vbCrLf   tblDayWorkPlan.KPIItemvbCrLfvbCrLf  vbCrLf" />
+	<charts />
+</ReportDataSource>

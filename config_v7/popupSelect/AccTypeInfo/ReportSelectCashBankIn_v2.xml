@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectCashBankIn_v2" version="2">
+     <table>tblAccTypeInfo</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblAccTypeInfo.classCode f1,
+      tblAccTypeInfo.isCatalog f4,
+      tblAccTypeInfo.AccNumber f2,
+      tblAccTypeInfo.AccName f3
+  from tblAccTypeInfo
+     </defineSQL>
+     <classCode>tblAccTypeInfo.classCode</classCode>
+     <remark>现金与银行,显示名为"转入账户",回填inAccCode,供现金银行转账明细报表使用</remark>
+     <condition>((tblAccTypeInfo.AccNumber like '1001%' or tblAccTypeInfo.AccNumber like '1002%' or tblAccTypeInfo.AccNumber = '10') and tblAccTypeInfo.statusId!='-1')</condition>
+     <changeCond></changeCond>
+     <orderBy>tblAccTypeInfo.AccNumber,tblAccTypeInfo.AccName</orderBy>
+     <displayFields>
+          <field name="tblAccTypeInfo.AccNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblAccTypeInfo.AccName" width="180" searchType="match" keySearch="true" parentDisplay="true" display="tblUserTransAccDet.ReceiveBankNo" orderBy="升" />
+     </displayFields>
+     <saveFields>
+          <field name="tblAccTypeInfo.classCode" parentName="inAccCode" relationKey="false" hidden="true" />
+          <field name="tblAccTypeInfo.isCatalog" parentName="isCatalog" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectUser" belongTableName="tblEmployee">
+     <table>tblEmployee,tblDepartment</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblEmployee.EmpNumber f1,
+      tblEmployee.EmpFullName f2,
+      tblEmployee.TitleID f3,
+      tblDepartment.DeptFullName f4,
+      tblEmployee.EmpFullNamePYM f5,
+      tblDepartment.DeptFullNamePYM f6
+  from tblEmployee left join tblDepartment on tblEmployee.DepartmentCode=tblDepartment.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <condition>(tblEmployee.SCompanyID='@Sess:SCompanyID' and tblEmployee.statusId!='-1'  and tblEmployee.openFlag!=0) and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblEmployee.EmpNumber,tblEmployee.EmpFullName</orderBy>
+     <displayFields>
+          <field name="tblEmployee.EmpNumber" width="70" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblEmployee.EmpFullName" width="65" searchType="match" keySearch="true" parentDisplay="true" />
+          <field name="tblEmployee.TitleID" width="65" searchType="equal" parentDisplay="false" />
+          <field name="tblDepartment.DeptFullName" width="75" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblEmployee.EmpFullNamePYM" width="80" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+          <field name="tblDepartment.DeptFullNamePYM" width="110" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+     </saveFields>
+</select>
+</popupSelect>

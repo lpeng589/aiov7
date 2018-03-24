@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="tblBuyOrderDet_quote_tblSalesOrderDet">
+     <table>viewsalesorder,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      viewsalesorder.id f1,
+      viewsalesorder.GoodsNumber f2,
+      viewsalesorder.GoodsFullName f3,
+      tblGoods.GoodsSpec f4,
+      tblGoods.GoodsFullNamePYM f5,
+      viewsalesorder.BatchNo f6,
+      viewsalesorder.Inch f7,
+      viewsalesorder.Hue f8,
+      viewsalesorder.yearNO f9,
+      viewsalesorder.ProDate f10,
+      viewsalesorder.Availably f11,
+      viewsalesorder.Qty f12,
+      viewsalesorder.Price f13,
+      viewsalesorder.OutQty f14,
+      viewsalesorder.NotOutQty f15
+  from viewsalesorder
+			  left join tblGoods on viewsalesorder.GoodsCode=tblGoods.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>采购订单明细引用销售订单明细</remark>
+     <condition>viewsalesorder.FinishStatus=0 and tblGoods.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>viewsalesorder.GoodsNumber,viewsalesorder.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="viewsalesorder.GoodsNumber" width="120"  parentDisplay="false" orderBy="升" />
+          <field name="viewsalesorder.GoodsFullName" width="150"  parentDisplay="false" orderBy="升" />
+          <field name="tblGoods.GoodsSpec" width="150"  parentDisplay="false" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100"  parentDisplay="false" hiddenInput="true" />
+          <field name="viewsalesorder.BatchNo" width="120"  parentDisplay="false" />
+          <field name="viewsalesorder.Inch" width="70"  parentDisplay="false" />
+          <field name="viewsalesorder.Hue" width="70"  parentDisplay="false" display="tblSalesOrderDet.Hue" />
+          <field name="viewsalesorder.yearNO" width="70"  parentDisplay="false" display="tblSalesOrderDet.yearNO" />
+          <field name="viewsalesorder.ProDate" width="70"  parentDisplay="false" display="tblSalesOrderDet.ProDate"/>
+          <field name="viewsalesorder.Availably" width="70"  parentDisplay="false" display="tblSalesOrderDet.Availably"/>
+          <field name="viewsalesorder.Qty" width="100" parentDisplay="false" />
+          <field name="viewsalesorder.Price" width="100" parentDisplay="false" />
+          <field name="viewsalesorder.OutQty" width="100" parentDisplay="false" />
+          <field name="viewsalesorder.NotOutQty" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="viewsalesorder.id" parentName="@TABLENAME.id" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

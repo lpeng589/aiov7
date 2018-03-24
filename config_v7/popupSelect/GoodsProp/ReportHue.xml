@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportHue" type="checkBox" version="2" >
+     <table>tblStockDet</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>
+     	from (select distinct languageId as Hue from tblGoodsOfProp ,tblGoodsOfPropDet where tblGoodsOfProp.id=tblGoodsOfPropDet.f_ref and moduleType='Hue') as tblStockDet
+     </defineSQL>
+     <classCode></classCode>
+     <condition></condition>
+     <changeCond></changeCond>
+     <orderBy>tblStockDet.Hue</orderBy>
+     <displayFields>
+          <field name="tblStockDet.HuE" display="tblStockDet.Hue" width="120" searchType="match" parentDisplay="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblStockDet.Hue" parentName="Hue" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

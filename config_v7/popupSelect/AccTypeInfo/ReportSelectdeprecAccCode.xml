@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectdeprecAccCode" type="checkBox">
+     <table>tblAccTypeInfo</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag>true</saveParentFlag>
+     <defineSQL>select 
+      tblAccTypeInfo.AccNumber f1,
+      tblAccTypeInfo.AccName f2,
+      tblAccTypeInfo.AccFullName f3,
+      tblAccTypeInfo.PyCode f4,
+      tblAccTypeInfo.classCode f5
+  from tblAccTypeInfo
+     </defineSQL>
+     <classCode>tblAccTypeInfo.classCode</classCode>
+     <remark>全部科目,多选,供资产增加明细、资产变更明细的“折旧科目”字段使用</remark>
+     <condition></condition>
+     <changeCond>(tblAccTypeInfo.statusId!='-1')</changeCond>
+     <orderBy>tblAccTypeInfo.AccNumber,tblAccTypeInfo.AccName</orderBy>
+     <displayFields>
+          <field name="tblAccTypeInfo.AccNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblAccTypeInfo.AccName" width="180" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+          <field name="tblAccTypeInfo.AccFullName" width="200" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblAccTypeInfo.PyCode" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+     </saveFields>
+</select>
+</popupSelect>

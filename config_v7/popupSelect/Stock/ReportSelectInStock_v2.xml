@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectInStock_v2" type="checkBox"  version="2" belongTableName="tblStock">
+     <table>tblStock</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag>true</saveParentFlag>
+     <defineSQL>select 
+      tblStock.classCode f1,
+      tblStock.isCatalog f2,
+      tblStock.StockNumber f3,
+      tblStock.StockFullName f4,
+      tblStock.StockFullNamePYM f5
+  from tblStock noRight
+     </defineSQL>
+     <classCode>tblStock.classCode</classCode>
+     <remark>入库仓库,因回填字段及显示名称特殊而保留</remark>
+     <condition>tblStock.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblStock.StockNumber,tblStock.StockFullName</orderBy>
+     <displayFields>
+          <field name="tblStock.StockNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblStock.StockFullName" asName="tblAllotDet.inStockCode" width="100" searchType="match" keySearch="true" parentDisplay="true" display="tblAllotDet.InStockCode" orderBy="升" />
+          <field name="tblStock.StockFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblStock.classCode" parentName="inStockCode" relationKey="false" hidden="true" />
+          <field name="tblStock.isCatalog" parentName="isCatalog" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

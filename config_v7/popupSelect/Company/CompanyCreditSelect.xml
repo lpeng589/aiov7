@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="CompanyCreditSelect">
+     <table>tblCompany</table>
+     <forwardModel>tblCompany&amp;moduleType=2&amp;ClientFlag=2</forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      tblCompany.ComNumber f1,
+      tblCompany.ComFullName f2,
+      tblCompany.ComName f3,
+      tblCompany.id f4,
+      tblCompanyCredit.classCode f5
+  from tblCompany
+
+     </defineSQL>
+     <classCode>tblCompanyCredit.classCode</classCode>
+     <condition>tblCompany.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblCompany.ComNumber,tblCompany.ComFullName</orderBy>
+     <displayFields>
+          <field name="tblCompany.ComNumber" width="100" searchType="match" keySearch="true" parentDisplay="true" display="tblCompanyCredit.ComNumber" orderBy="升"/>
+          <field name="tblCompany.ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="true" display="tblCompanyCredit.ComFullName" orderBy="升" />
+          <field name="tblCompany.ComName" width="150" searchType="match" parentDisplay="true" display="tblCompanyCredit.ComName" />
+     </displayFields>
+     <saveFields>
+          <field name="tblCompany.ComNumber" parentName="@TABLENAME.ComNumber" display="tblCompanyCredit.ComNumber" relationKey="false" hidden="false" />
+          <field name="tblCompany.ComFullName" parentName="@TABLENAME.ComFullName" display="tblCompanyCredit.ComFullName" relationKey="false" hidden="false" />
+          <field name="tblCompany.ComName" parentName="@TABLENAME.ComName" display="tblCompanyCredit.ComName" relationKey="false" hidden="false" />
+          <field name="tblCompany.id" parentName="@TABLENAME.RefCompanyID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

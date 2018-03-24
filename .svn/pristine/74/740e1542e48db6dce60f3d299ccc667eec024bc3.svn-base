@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectAssetsAddId" type="checkBox">
+     <table>tblFixedAssetAdd,tblFixedAssetType,tblFixedAssetAccType,tblDepartment</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblFixedAssetAdd.GoodsNumber f1,
+      tblFixedAssetAdd.GoodsName f2,
+      tblFixedAssetAdd.GoodsSpec f3,
+      tblDepartment.DeptFullName f4,
+      tblFixedAssetAdd.StockCode f5,
+      tblFixedAssetAdd.BillDate f6,
+      tblFixedAssetType.TypeName f7,
+      tblFixedAssetAccType.TypeName f8
+  from tblFixedAssetAdd
+  left join tblFixedAssetType on tblFixedAssetType.id=tblFixedAssetAdd.AssetsType
+  left join tblFixedAssetAccType on tblFixedAssetAccType.id=tblFixedAssetAdd.AssetsAccType
+  left join tblDepartment on tblDepartment.classCode=tblFixedAssetAdd.DepartmentCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>资产名称,供资产清理列表使用</remark>
+     <condition></condition>
+     <changeCond></changeCond>
+     <orderBy>tblFixedAssetAdd.GoodsNumber,tblFixedAssetAdd.GoodsName,tblFixedAssetAdd.StockCode,tblFixedAssetType.TypeName</orderBy>
+     <displayFields>
+          <field name="tblFixedAssetAdd.GoodsNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblFixedAssetAdd.GoodsName" width="100" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+          <field name="tblFixedAssetAdd.GoodsSpec" width="100" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblDepartment.DeptFullName" width="100" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblFixedAssetAdd.StockCode" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblFixedAssetAdd.BillDate" width="100" searchType="scope" keySearch="true" parentDisplay="false" />
+          <field name="tblFixedAssetType.TypeName" width="100" searchType="match" keySearch="true" parentDisplay="false" display="tblFixedAssetAdd.AssetsType" orderBy="升" />
+          <field name="tblFixedAssetAccType.TypeName" width="100" searchType="match" keySearch="true" parentDisplay="false" display="tblFixedAssetAdd.AssetsAccType" />
+     </displayFields>
+     <saveFields>
+     </saveFields>
+</select>
+</popupSelect>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<!--库存盘点单中使用的商品选择弹出窗口-->
+	<select name = "SelectGoodsStockCheck" type="checkBox" belongTableName="tblGoods">
+	<table>tblStocksCheckGoods</table>
+		<forwardModel>tblGoods</forwardModel>
+		<relation></relation>
+		<defineSQL>
+		from tblGoods left join tblStocksCheckGoods on tblStocksCheckGoods.GoodsCode=tblGoods.classCode and tblStocksCheckGoods.StockCode='@ValueofDB:StockCode' and tblStocksCheckGoods.f_ref='@ValueofDB:PrepareId'
+		left join tblGoodsUnit on tblGoodsUnit.f_ref=tblGoods.id and tblGoodsUnit.DefaultAssit=1
+		</defineSQL>	
+		<condition>tblGoods.workFlowNodeName='finish'</condition>
+		<changeCond>tblGoods.statusid!='-1'</changeCond>
+		<classCode>tblGoods.classCode</classCode>
+		<orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName,tblStocksCheckGoods.ProDate,tblStocksCheckGoods.Availably</orderBy>
+		<displayFields>
+			<field name="tblGoods.[tblGoods]"  width="100" searchType="match" parentDisplay="true" keySearch="true"/>
+			<field name="tblStocksCheckGoods.BatchNo" display="tblStockCheckDet.BatchNo" width="130" searchType="match" parentDisplay="true" />
+			<field name="tblStocksCheckGoods.Inch" display="tblStockCheckDet.Inch" width="50" searchType="match" parentDisplay="true" />
+      <field name="tblStocksCheckGoods.Hue" display="tblStockCheckDet.Hue" width="50" searchType="match" parentDisplay="true" />
+      <field name="tblStocksCheckGoods.yearNO" display="tblStockCheckDet.yearNO" width="50" searchType="match" parentDisplay="true" />
+			<field name="tblStocksCheckGoods.ProDate" display="tblStockCheckDet.ProDate" width="90" searchType="equal" parentDisplay="true" orderBy="升"/>
+			<field name="tblStocksCheckGoods.Availably" display="tblStockCheckDet.Availably" width="90" searchType="equal" parentDisplay="true" orderBy="升"/>
+			<field name="(case tblGoods.isCatalog when 0 then tblStocksCheckGoods.LastQty else -99999999 end)" asName="@TABLENAME.LastQty" display="@TABLENAME.LastQty"  width="90" searchType="more" parentDisplay="true" inputType="checkBox" inputValue="zero" defaultValue="0" />	
+		</displayFields>
+		<saveFields>
+			<field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true"/>
+			<field name="(case tblGoods.isCatalog when 0 then tblStocksCheckGoods.LastQty else -99999999 end)" display="@TABLENAME.LastQty" parentName="@TABLENAME.LastQty" relationKey="false" hidden="false" compare="false"/>
+			<field name="tblStocksCheckGoods.BatchNo" display="tblStockCheckDet.BatchNo" parentName="@TABLENAME.BatchNo" relationKey="false" hidden="false"/>
+			 <field name="tblStocksCheckGoods.Inch" display="tblStockCheckDet.Inch" parentName="@TABLENAME.Inch" relationKey="false" hidden="false"/>
+			<field name="tblStocksCheckGoods.Hue" display="tblStockCheckDet.Hue" parentName="@TABLENAME.Hue" relationKey="false" hidden="false"/>	
+			<field name="tblStocksCheckGoods.yearNO" display="tblStockCheckDet.yearNO" parentName="@TABLENAME.yearNO" relationKey="false" hidden="false"/>
+			<field name="tblStocksCheckGoods.ProDate" display="tblStockCheckDet.ProDate" parentName="@TABLENAME.ProDate" relationKey="false" hidden="false"/>
+			<field name="tblStocksCheckGoods.Availably" display="tblStockCheckDet.Availably" parentName="@TABLENAME.Availably" relationKey="false" hidden="false"/>
+			<field name="tblGoodsUnit.SecUnit" parentName="@TABLENAME.SecUnit" relationKey="false" hidden="false" compare="false"/>
+			<field name="tblGoodsUnit.UnitD" parentName="@TABLENAME.BaseQty" relationKey="false" hidden="false" compare="false"/>
+			<field name="tblGoodsUnit.SecUnitD" parentName="@TABLENAME.SecQty" relationKey="false" hidden="false" compare="false"/>
+		</saveFields>
+	</select>
+	
+	
+	
+	
+	<!--选择颜色-->	
+	<select name = "SelectcolorSalesOutStocksCheck">
+		<table>ViewcolorStockList</table>
+		<condition>(ViewcolorStockList.classCode='@ValueofDB:@TABLENAME_GoodsCode' and ViewcolorStockList.SCompanyID='@Sess:SCompanyID' and ViewcolorStockList.StockCode='@ValueofDB:StockCode' and ViewcolorStockList.StockCode='@ValueofDB:@TABLENAME_StockCode')</condition>
+	 	<changeCond>(ViewcolorStockList.TotalQty !=0 and len(ViewcolorStockList.color) !=0)</changeCond>
+		<displayFields>
+        	<field name="ViewcolorStockList.colorNV" asName="Color.color"  width="120" searchType="match" parentDisplay="true" />
+			<field name="ViewcolorStockList.color" asName="Color.display"  width="60" searchType="match" parentDisplay="true" />
+		</displayFields>
+		<saveFields>
+			<field name="ViewcolorStockList.color" parentName="@TABLENAME.color" relationKey="true" hidden="false"/>
+	  	</saveFields>
+	</select>
+	
+	<!-- 选择颜色 -->
+	<select name="SelectcolorStocksCheck">
+		<table>ViewGoodsProp</table>
+		<relation></relation>
+		<condition>(ViewGoodsProp.GoodsCode='@ValueofDB:@TABLENAME_GoodsCode' and ViewGoodsProp.propName='color' and ViewGoodsProp.PropEisUsed=1)</condition>
+		<displayFields>	
+			<field name="ViewGoodsProp.GoodsNumber" width="100" searchType="match" parentDisplay="false" />		    	  
+			<field name="ViewGoodsProp.GoodsName" width="100" searchType="match" parentDisplay="false" />	  
+			<field name="ViewGoodsProp.PropEName"  width="80"  searchType="match" parentDisplay="true"/>
+			<field name="ViewGoodsProp.enumValue" width="50" searchType="match" parentDisplay="true"/>
+		</displayFields>
+		<saveFields>
+			<field name="ViewGoodsProp.enumValue" parentName="@TABLENAME.color" relationKey="true" hidden="false"/>
+		</saveFields>
+	</select>
+</popupSelect>

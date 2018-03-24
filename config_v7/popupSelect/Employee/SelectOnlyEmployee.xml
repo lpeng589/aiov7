@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectOnlyEmployee" type="checkBox" belongTableName="tblEmployee">
+     <table>tblEmployee,tblDepartment</table>
+     <forwardModel>tblEmployee</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblEmployee.id f1,
+      tblEmployee.EmpNumber f2,
+      tblEmployee.EmpFullName f3,
+      tblEmployee.EmpFullNamePYM f4,
+      tblEmployee.TitleID f5,
+      tblDepartment.DeptFullName f6,
+      tblDepartment.DeptFullNamePYM f7
+from tblEmployee
+left join tblDepartment on tblEmployee.DepartmentCode=tblDepartment.classCode
+
+     </defineSQL>
+     <classCode></classCode>
+     <condition>(tblEmployee.SCompanyID='@Sess:SCompanyID'and tblEmployee.statusId!='-1'or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblEmployee.EmpNumber</orderBy>
+     <displayFields>
+          <field name="tblEmployee.EmpNumber" width="80" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblEmployee.EmpFullName" width="65" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.EmployeeID" />
+          <field name="tblEmployee.EmpFullNamePYM" width="80" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+          <field name="tblEmployee.TitleID" width="65" searchType="equal" keySearch="true" parentDisplay="false" />
+          <field name="tblDepartment.DeptFullName" width="75" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblDepartment.DeptFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

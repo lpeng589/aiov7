@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="tblCheckBuyDetChequeNo">
+     <table>tblChequeNoBuyDet,tblChequeNoBuy,tblBanks</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblChequeNoBuyDet.ChequeNo f1,
+      tblBanks.AccountName f2,
+      tblBanks.CompanyName f3,
+      tblBanks.AccNumber f4
+from tblChequeNoBuyDet
+left join tblChequeNoBuy on tblChequeNoBuy.id=tblChequeNoBuyDet.f_ref,
+left join tblBanks on tblBanks.AccClassCode=tblChequeNoBuy.BankName
+     </defineSQL>
+     <classCode></classCode>
+     <condition></condition>
+     <changeCond>(tblChequeNoBuyDet.DrawState=0 and 1=1)</changeCond>
+     <orderBy></orderBy>
+     <displayFields>
+          <field name="tblChequeNoBuyDet.ChequeNo" width="100" searchType="match" parentDisplay="true" display="@TABLENAME.ChequeNo" />
+          <field name="tblBanks.AccountName" width="150" searchType="match" parentDisplay="true" />
+          <field name="tblBanks.CompanyName" width="150" searchType="match" parentDisplay="true" />
+          <field name="tblBanks.AccNumber" width="170" searchType="match" parentDisplay="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblChequeNoBuyDet.ChequeNo" parentName="@TABLENAME.ChequeNo" display="@TABLENAME.ChequeNo" relationKey="true" hidden="false" />
+     </saveFields>
+</select>
+</popupSelect>

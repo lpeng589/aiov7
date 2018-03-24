@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="EBCerSelectClient">
+     <table>tblCompany</table>
+     <forwardModel>tblCompany&amp;moduleType=2&amp;ClientFlag=2</forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      tblCompany.classCode f1,
+      tblCompany.ComNumber f2,
+      tblCompany.ComFullName f3
+  from tblCompany
+     </defineSQL>
+     <classCode>tblCompany.classCode</classCode>
+     <condition>tblCompany.workFlowNodeName='finish' and tblCompany.StatusId='0'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblCompany.ComNumber desc,tblCompany.ComFullName desc</orderBy>
+     <displayFields>
+          <field name="tblCompany.ComNumber" width="140" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"/>
+          <field name="tblCompany.ComFullName" width="140" searchType="scope" keySearch="true" parentDisplay="true" display="tblEBCertificate.Customer" orderBy="升"/>
+     </displayFields>
+     <saveFields>
+          <field name="tblCompany.classCode" parentName="@TABLENAME.Customer" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

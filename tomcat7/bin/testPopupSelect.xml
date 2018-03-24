@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="selectStock"  desc="多仓库(已作废)"  belongTableName="tblStock " > 
+		<orderBy>tblStock.StockNumber</orderBy>
+		<defineSQL>
+from tblStock where statusId = 0
+		</defineSQL>
+		<displayFields>
+			<field name="tblStock.StockNumber" parentDisplay="false" width="100" searchType="match" keySearch="true" />
+			<field name="tblStock.StockFullName" display="@TABLENAME.StockCode" parentDisplay="false" width="100" searchType="match" keySearch="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblStock.classCode" parentName="@TABLENAME.StockCode" compare="false" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

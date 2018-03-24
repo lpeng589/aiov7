@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SelectSendFirst"  type="checkBox" > 
+		<orderBy>tblSend.BillDate,tblSend.BillNo</orderBy>
+		<defineSQL>
+from tblSend
+  left join tblStock on tblStock.classCode=tblSend.StockCode 
+  left join tblEmployee on tblEmployee.id=tblSend.EmployeeId
+  left join tblDepartment on tblDepartment.classCode=tblSend.DepartmentCode
+      where 1=1  and tblSend.BillDate&lt;='@ValueofDB:BillDate'
+		</defineSQL>
+		<changeCond>tblSend.workFlowNodeName ='finish' and tblSend.statusId=0</changeCond>
+		<displayFields>
+			<field name="tblSend.BillDate" parentDisplay="false" width="70" searchType="scope" keySearch="true" />
+			<field name="tblSend.BillNo" display="@TABLENAME.SendNo" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblEmployee.EmpFullName" parentDisplay="true" width="100" searchType="match" />
+			<field name="tblStock.StockFullName" parentDisplay="true" width="100" searchType="match" />
+			<field name="tblDepartment.DeptFullName" parentDisplay="true" width="100" searchType="match" />
+		</displayFields>
+		<saveFields>
+			<field name="tblSend.id" parentName="@TABLENAME.SendNo" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SelecttblFixedAssetDepreciate"  type="checkBox" > 
+		<orderBy>tblFixedAssetAdd.GoodsNumber,tblFixedAssetAdd.GoodsName</orderBy>
+		<defineSQL>
+from tblFixedAssetDepreciate
+join tblFixedAssetAdd on tblFixedAssetAdd.id=tblFixedAssetDepreciate.AssetsAddId
+join tblFixedAssetType on tblFixedAssetAdd.AssetsType=tblFixedAssetType.id
+      where 1=1  and tblFixedAssetDepreciate.workFlowNodeName = 'finish' and LEN(tblFixedAssetDepreciate.CertificateNo)=0 and tblFixedAssetDepreciate.statusId='1'
+		</defineSQL>
+		<displayFields>
+			<field name="tblFixedAssetDepreciate.BillNo" parentDisplay="false" width="120" searchType="match" keySearch="true" />
+			<field name="tblFixedAssetAdd.GoodsNumber" parentDisplay="false" width="100" searchType="match" keySearch="true" />
+			<field name="tblFixedAssetAdd.GoodsName" parentDisplay="false" width="100" searchType="match" keySearch="true" />
+			<field name="tblFixedAssetAdd.GoodsSpec" parentDisplay="false" width="80" searchType="match" keySearch="true" />
+			<field name="tblFixedAssetType.TypeName" parentDisplay="false" width="120" searchType="match" keySearch="true" />
+			<field name="tblFixedAssetDepreciate.useMonth" parentDisplay="false" width="60" />
+			<field name="tblFixedAssetDepreciate.originalWorth" parentDisplay="false" width="110" />
+			<field name="tblFixedAssetDepreciate.totalDeprecia" parentDisplay="false" width="110" />
+			<field name="tblFixedAssetDepreciate.ReWorthRate" parentDisplay="false" width="110" />
+			<field name="tblFixedAssetDepreciate.ReWorth" parentDisplay="false" width="110" />
+			<field name="tblFixedAssetDepreciate.netWorth" parentDisplay="false" width="110" />
+			<field name="tblFixedAssetDepreciate.currDeprecAmt" parentDisplay="false" width="110" />
+			<field name="tblFixedAssetDepreciate.statusId" parentDisplay="false" width="80" searchType="equal" keySearch="true" inputValue="DepStatus" />
+		</displayFields>
+		<saveFields>
+			<field name="tblFixedAssetDepreciate.id" parentName="ID" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SecUnit">
+     <table>tblGoodsUnit</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblGoodsUnit.SecUnit f1,
+      tblGoodsUnit.UnitD f2,
+      tblGoodsUnit.SecUnitD f3
+	  from tblGoodsUnit
+     </defineSQL>
+     <classCode></classCode>
+     <remark></remark>
+     <condition>tblGoodsUnit.GoodsCode='@ValueofDB:@TABLENAME_GoodsCode'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoodsUnit.SecUnit</orderBy>
+     <displayFields>
+          <field name="tblGoodsUnit.SecUnit" width="80" searchType="match" parentDisplay="true" orderBy="升" />
+          <field name="tblGoodsUnit.UnitD" width="100" parentDisplay="false" />
+          <field name="tblGoodsUnit.SecUnitD" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblGoodsUnit.SecUnit" parentName="@TABLENAME.SecUnit" relationKey="true" hidden="false" orderBy="升"  compare="false"/>
+          <field name="tblGoodsUnit.UnitD" parentName="@TABLENAME.BaseQty" relationKey="false" hidden="true"  compare="false"/>
+          <field name="tblGoodsUnit.SecUnitD" parentName="@TABLENAME.SecQty" relationKey="false" hidden="true"  compare="false"/>
+     </saveFields>
+</select>
+</popupSelect>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="quote_tblOtherIn">
+     <table>tblOtherIn,tblEmployee,tblDepartment,tblCompany,tblBillAccSetup,tblProject</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblOtherIn.id f1,
+      tblOtherIn.BillDate f2,
+      tblOtherIn.BillNo f3,
+      tblDepartment.DeptFullName f4,
+      tblEmployee.EmpFullName f5,
+      tblCompany.ComFullName f6,
+  	  tblBillAccSetup.SubType f7,
+  	  tblOtherIn.BillAmt f8,
+  	  tblProject.ProjectName f9
+  from tblOtherIn
+				left join tblEmployee on tblEmployee.id=tblOtherIn.EmployeeID
+				left join tblDepartment on tblDepartment.classCode=tblOtherIn.DepartmentCode
+				left join tblCompany on tblCompany.classCode=tblOtherIn.CompanyCode
+				left join tblBillAccSetup on tblOtherIn.SubCode=tblBillAccSetup.SubCode and MainType='tblOtherIn'
+				left join tblProject on tblProject.id=tblOtherIn.ProjectCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>其他出库引用其他入库</remark>
+     <condition>(tblOtherIn.statusId=0 and tblOtherIn.CompanyCode='@ValueofDB:CompanyCode' and tblOtherIn.workFlowNodeName = 'finish')</condition>
+     <changeCond></changeCond>
+     <hasChild>quote_tblOtherInDet</hasChild>
+     <orderBy>tblOtherIn.BillDate,tblOtherIn.BillNo</orderBy>
+     <displayFields>
+          <field name="tblOtherIn.BillDate" width="70" searchType="scope" parentDisplay="false" orderBy="升" />
+          <field name="tblOtherIn.BillNo" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblDepartment.DeptFullName" width="75" searchType="match" keySearch="true" parentDisplay="false" display="@TABLENAME.DepartmentCode" />
+          <field name="tblEmployee.EmpFullName" width="50" searchType="match" keySearch="true" parentDisplay="false" display="@TABLENAME.EmployeeID" />
+          <field name="tblCompany.ComFullName" width="120" searchType="match" keySearch="true" parentDisplay="false" display="@TABLENAME.CompanyCode" />
+          <field name="tblBillAccSetup.SubType" width="110" searchType="match" parentDisplay="false" display="tblOtherIn.SubCode" />
+          <field name="tblOtherIn.BillAmt" width="80" parentDisplay="false" />
+          <field name="tblProject.ProjectName" width="100" searchType="match" keySearch="true" parentDisplay="false" display="@TABLENAME.ProjectCode"/>                
+     </displayFields>s
+     <saveFields>
+          <field name="tblOtherIn.id" parentName="@TABLENAME.tblOtherInID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

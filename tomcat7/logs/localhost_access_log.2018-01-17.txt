@@ -1,0 +1,10 @@
+127.0.0.1 - - [17/Jan/2018:22:47:13 +0800] "POST /MobileAjax?op=getSessEmp HTTP/1.1" 200 36
+127.0.0.1 - - [17/Jan/2018:22:47:21 +0800] "POST /MobileAjax?op=LOGIN HTTP/1.1" 200 34
+127.0.0.1 - - [17/Jan/2018:22:47:22 +0800] "POST /MobileAjax?op=getSessEmp HTTP/1.1" 200 101
+127.0.0.1 - - [17/Jan/2018:22:47:22 +0800] "POST /MobileAjax?op=getEnum&enum=duty HTTP/1.1" 200 583
+127.0.0.1 - - [17/Jan/2018:22:47:31 +0800] "POST /MobileAjax?op=getSessEmp HTTP/1.1" 200 36
+127.0.0.1 - - [17/Jan/2018:22:47:42 +0800] "POST /MobileAjax?op=LOGIN HTTP/1.1" 200 34
+127.0.0.1 - - [17/Jan/2018:22:47:43 +0800] "POST /MobileAjax?op=getSessEmp HTTP/1.1" 200 101
+127.0.0.1 - - [17/Jan/2018:22:47:43 +0800] "POST /MobileAjax?op=getEnum&enum=duty HTTP/1.1" 200 583
+127.0.0.1 - - [17/Jan/2018:22:48:51 +0800] "POST /MobileAjax?op=myworkflow HTTP/1.1" 200 3322
+127.0.0.1 - - [17/Jan/2018:22:49:22 +0800] "POST /MobileAjax?op=detail HTTP/1.1" 200 9260

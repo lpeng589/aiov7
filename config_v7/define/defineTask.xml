@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+<!--=========================任务管理事务================================================-->
+	<!--启用任务-->
+<define name="OpenValue_BaseInfo_tblTaskManage">
+    <sql type="condition">
+		<condition>
+		</condition>
+		<exec condition="true">
+			<sql>update tblTaskManage set statusId=0 where id=@ValueofDB:tblTaskManage_id</sql>
+		</exec>
+    </sql>
+</define>
+
+<!--停用任务-->
+<define name="StopValue_BaseInfo_tblTaskManage">
+	<sql type="condition">
+		<condition>
+		</condition>
+		<exec condition="true">
+       <sql>update tblTaskManage set statusId=-1 where id=@ValueofDB:tblTaskManage_id</sql>
+		</exec>
+	</sql>
+</define>
+			<!--闲置客户目标转公共池-->
+<define name="CRMTargetClient_CRMPublicClient">
+<sql type="condition">
+    <condition>
+    	  <select>select Setting from tblSysParameter where SysCode='aimToPublic'</select>
+   	</condition>
+   	<exec condition="&quot;@SqlReturn:Setting&quot;!=&quot;0&quot;">
+      <sql>update CRMClientInfo set status=1,TransferDate=convert(varchar(10),getDate(),21) where DATEADD([day], cast(@SqlReturn:Setting as int), LastContractTime) &lt; GETDATE() and status=2</sql>
+   </exec>
+   </sql>
+	</define>
+		<!--闲置客户意向转目标-->
+<define name="CRMIntentClient_CRMTargetClient">
+	<sql type="condition">
+    <condition>
+    	 <select>select Setting as TrageSet from tblSysParameter where SysCode='willToAim'</select>
+   	</condition>
+   	<exec condition="&quot;@SqlReturn:TrageSet&quot;!=&quot;0&quot;">
+      <sql>update CRMClientInfo set Status=2,TransferDate=convert(varchar(10),getDate(),21) where DATEADD([day], cast(@SqlReturn:TrageSet as int), LastContractTime) &lt; GETDATE() and status=3</sql>
+   </exec>
+   </sql>
+	</define>
+</defineSqls>

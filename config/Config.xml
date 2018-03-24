@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Config>
+	<System>
+		<DefinePath>../../config_v7</DefinePath>
+		<FilePath>../../fileServer_v7</FilePath>
+		<ReportPath>../../report_v7</ReportPath>
+		<UserReportPath>../../user_report_v7</UserReportPath>
+		<ConfigRefresh>10</ConfigRefresh>
+		<StateConfig>../../config_v7/StateConfig.xml</StateConfig>
+		<DefineAlertFile>../../config_v7/Alert.xml</DefineAlertFile>
+		<DefineTimingFile>../../config_v7/TimingMsg.xml</DefineTimingFile>
+		<DefineBillFile>../../config_v7/TimingMsgBill.xml</DefineBillFile>
+		<VersionNumber>1.0.12</VersionNumber>
+		<DefaultStyle>style1</DefaultStyle>
+		<DayStudyNum>85</DayStudyNum>
+	</System>
+	<PopupSelectFile>
+		<File>../../config/OA/popupSelectHR.xml</File>
+		<File>../../config/OA/popupSelectCommon.xml</File>
+		<File>../../config/OA/popupSelectOA.xml</File>
+		<File>../../config/CRM/popupSelectSales.xml</File>
+		<File>../../config/CRM/popupSelectCompany.xml</File>
+		<File>../../config/CRM/popupSelectCRM.xml</File>
+		<File>../../config/Common/popupSelectBudget.xml</File>
+	</PopupSelectFile>
+	<PopupSelectFile_user>	     
+	</PopupSelectFile_user>
+	<DefineSqlFile>
+		<File>../../config/HR/defineHR.xml</File>
+		<File>../../config/CRM/defineCRM.xml</File>
+		<File>../../config/OA/defineOA.xml</File>
+		<File>../../config/Common/defineBudget.xml</File>
+		<File>../../config/Common/defineAcc.xml</File>
+		
+	</DefineSqlFile>
+	<DefineSqlFile_user>
+	<!-- 这里不需要再指定用户自定义文件，而只要建立user_config 目录，并把所有的define文件和弹出窗文件放在该目录即可
+		 系统会自动加载该目录下所有文件包括子目录，且有重名情况会自动覆盖，这样可保证优先加载用户自定义数据，
+		 在不用修改标准define的情况下，仍然优先生效，避免用户自定义必须修改原文件，而导致升级时覆盖问题。
+		  所有define文件以    define开头，所有弹出窗以popup开头， 自定义按扭以Button开头，
+		 DefineAlertFile以Alert开头，DefineTimingFile以TimingMsg开头。
+		 config以及config_v7目录暂时还是采用目前的指定文件，因可能老客户文件冲突导致不必要的错误
+		 -->
+	</DefineSqlFile_user>
+	<buttonFile>
+		<File>../../config_v7/ButtonDefine.xml</File>
+		<File>../../config/ButtonDefine.xml</File>
+	</buttonFile>
+	
+</Config>

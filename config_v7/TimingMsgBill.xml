@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+     <define name="tblGoods">
+	    <sql type="condition" marker="tblGoods.classCode">select classCode,GoodsFullName from tblGoods where SCompanyID=@Sess:SCompanyID</sql>
+		<sql type="template">新增了商品:@SqlReturn:GoodsFullName</sql>
+	 </define>
+
+
+	<define name="tblBuyInStock">
+	    <sql type="condition" marker="tblBuyInStock.BillNo">select BillNo,BillDate,TotalTaxAmount from tblBuyInStock where TotalTaxAmount &gt;= 10000 and SCompanyID=@Sess:SCompanyID</sql>
+		<sql type="template">单据日期为::@SqlReturn:BillDate 的采购入库单:@SqlReturn:BillNo 的采购需要付款的金额为:@SqlReturn:TotalTaxAmount</sql>
+	 </define>
+	 
+	<define name="tblSalesOutStock">
+	    <sql type="condition" marker="tblSalesOutStock.BillNo">select BillNo,BillDate,TotalTaxAmount from tblSalesOutStock where TotalTaxAmount &gt;= 10000 and SCompanyID=@Sess:SCompanyID</sql>
+		<sql type="template">单据日期为::@SqlReturn:BillDate 的销售出库单:@SqlReturn:BillNo 的销售金额为:@SqlReturn:TotalTaxAmount</sql>
+	 </define>	 
+</defineSqls>

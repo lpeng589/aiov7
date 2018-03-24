@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectAssetsAccType" type="checkBox">
+     <table>tblFixedAssetAccType,tblAccTypeInfo</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblFixedAssetAccType.TypeName f1,
+      tblFixedAssetAccType.Type f2,
+      tblAccTypeInfo.AccName f3,
+      tblFixedAssetAccType.Remark f4
+  from tblFixedAssetAccType
+  left join tblAccTypeInfo on tblFixedAssetAccType.AccCode=tblAccTypeInfo.AccNumber
+     </defineSQL>
+     <classCode></classCode>
+     <remark>资产减少(类型标识为2),供资产清理列表使用</remark>
+     <condition>tblFixedAssetAccType.Type='2'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblFixedAssetAccType.TypeName,tblAccTypeInfo.AccName</orderBy>
+     <displayFields>
+          <field name="tblFixedAssetAccType.TypeName" width="100" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+          <field name="tblFixedAssetAccType.Type" width="100" parentDisplay="false" />
+          <field name="tblAccTypeInfo.AccName" width="100" searchType="match" keySearch="true" parentDisplay="false" display="tblFixedAssetAccType.AccCode" orderBy="升" />
+          <field name="tblFixedAssetAccType.Remark" width="100" searchType="match" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+     </saveFields>
+</select>
+</popupSelect>

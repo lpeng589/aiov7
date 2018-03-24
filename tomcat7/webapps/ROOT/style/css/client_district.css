@@ -1,0 +1,189 @@
+/* CSS Document */
+
+/*
+//////////////////////////////
+css v1.0 
+2012-10-17
+/////////////////////////////
+*/
+
+/*css reset*/
+
+body , div,td { font-size: 12px;line-height: 22px; font-family: arial, helvetica,"宋体", sans-serif;}
+body {margin:0px; padding:0px;background-color:#fff; }
+div,form,img,ul,ol,li,dl,dt,dd ,em{margin:0px; padding:0px; border:0px; list-style:none; }
+p,h1,h2,h3,h4,h5,h6 {margin:0px; padding:0px; font-size:12px; font-weight:normal;}
+INPUT { font-size: 12px; font-family: arial, helvetica, sans-serif;padding:2px}
+SELECT {font-size: 12px; font-family:arial, helvetica, sans-serif;padding:2px}
+ul,li {list-style-type: none;} 
+
+input[type=checkbox] { vertical-align: middle;  }
+label { vertical-align: middle; } 
+
+ 
+
+/*全局公共样式*/
+textarea{resize:none;} /*hack for chrome, disable chrome resizes textarea*/
+a { color:#0179bb;text-decoration: none;}
+a:link { color: #0179bb;} 
+a:hover { color: #ff3300; text-decoration: none;} 
+
+
+.cf{zoom:1;}
+.cf:after{content:'.';display:block;visibility:hidden;clear:both;height:0px;}
+
+.clear {clear:both;display:block;height:0;overflow:hidden;margin:0px 6px;} 
+
+/* bg */
+.alldot,.btnbg,#head ,.main_search .col ul li.sel ,.main_search .col .inpsearch,.main_search .col .inpsearch_btn ,.maintablearea .bd .maintop ,.maintablearea .bd li.col_name,.zk ,.pagerightbtn ,
+.op ,.op .a,.op .c,.sbtn,.sbtn .a,.sbtn .c
+{background:transparent url(/style/images/client/bg.gif) no-repeat scroll 1000px 1000px ;}
+.all_icon 
+{background:transparent url(../images/icon.gif) no-repeat scroll 1000px 1000px ;}
+.navtop
+{background:transparent url(../images/bbg.gif) no-repeat scroll 1000px 1000px ;}
+
+/*background-repeat: no-repeat; background-image: url(../images/dot_nav_arrow.gif);
+background-position: right center;*/
+
+/* moduleABC ABC模块的样式 */
+
+#wrapper {}
+
+.area {width:950px ;margin:0px auto;background-color:#fff;clear:both }
+
+.columnl {float:left;width:720px;margin-right:10px;}
+.columnr {float:right;width:210px}
+
+/* -------------- font size ---------------- */
+.bottomline_solid {border-bottom: 1px solid #ddd;}
+.bottomline_dashed {border-bottom: 1px dashed #dddddd;}
+.rightline_d {border-right: 1px dashed #dddddd;}
+
+.line_dashed {border-bottom: 1px dashed #ccc;padding-top:15px;margin-bottom:15px}
+
+/* -------------- link ---------------- */
+.f_l { float: left;}
+.f_r { float: right;}
+
+/* p {text-indent: 25px;line-height: 22px;} */
+.pick {padding:1px;border:1px solid #cccccc}
+
+.bd {padding:8px 10px}
+.mb15 {height:15px; overflow:hidden;clear:both}
+
+.red {color:#f30}
+.org {color:#FF6600}
+/****/
+#head {background-position:0 0;background-repeat: repeat-x;}
+.body_ef {background:#efefef }/*url(../images/bbg.gif) repeat-y scroll right 0 ;*/
+.body_f4 {background:#f4f4f4 }
+
+.winw1200 {margin:0px auto;width:1200px}
+
+/****/
+.pagetitle {margin:8px 0px 5px 55px;height:25px; overflow:hidden}
+.pagetitle h3 {font:bold 14px "宋体";padding-top:5px}
+.pagetitle span {float:left}
+
+/*****/
+.cont {position: relative;clear:both}
+.c_operate_l {position: absolute;top: 150px; left: 0px;width: 60px;z-index: 999;}
+.c_operate_l a{text-indent:-999em;font-size:1px;color:#fff;display:block;width:30px;height:30px;margin:0px 5px 10px 10px}
+.c_main {margin-left:55px;_margin-left:28px;background-color:#fff;border:1px solid #91cffe;padding:8px;position: relative;}
+
+.main_search {margin:0px 5px}
+.main_search .col {padding:6px 0px 6px;border-bottom:1px dashed #ccc;_height:20px; overflow:hidden;clear:both}
+.main_search .col span {float:left;display:block;width:70px;_width:72px;margin-right:8px; font-weight:bold;color:#2862a1 ;height:20px}
+.main_search .col ul {float:left;width:80%;}
+.main_search .col ul li {float:left;width:60px;margin:0px 6px;text-align:center;line-height: 19px;}
+
+.sbtn {float:right;margin:0px 3px;background-position:0 -762px; background-repeat: repeat-x;height:24px;_width:67px}
+.sbtn .a {float:left;width:5px;height:24px; overflow:hidden;background-position:-70px -730px; }
+.sbtn .c {float:right;width:13px;height:24px; overflow:hidden;background-position:-85px -730px; }
+.sbtn a {margin:0px 5px 0px;_margin-top:2px;_width:48px;float:left;overflow:hidden;display:block;text-align:center}
+.sbtn a:link, .sbtn a:visited{color:#333}
+
+.main_search .col ul li.sel {background-position:0px -450px;}
+.main_search .col ul li a:link,.main_search .col ul li a:visited {color:#333;}
+.main_search .col ul li.sel a:link,.main_search .col ul li.sel a:visited {color:#fff;font-weight:bold;}
+.main_search .col a.inpsearch_btn {background-position:right -413px;width:20px;height:20px;display:block;float:left;text-indent:-999em;font-size:1px;color:#fff; overflow:hidden}
+.main_search .col .inpsearch {float:left;background-position:0 -218px;border:1px solid #87c4d7;background-repeat: repeat-x;width:240px;margin-right:10px;}
+.main_search .col .stnn {float:left;}
+.main_search .col .inpsearch input {border:0px;width:205px;_width:195px;float:left}
+.main_search .col_nob {border:0px}
+
+/****/
+.maintablearea {padding-top:10px; overflow:hidden;margin-bottom:30px;clear:both}
+.maintablearea .hd {}
+.maintablearea .m_l {}
+.maintablearea .m_r {width:500px;padding-bottom:2px}
+
+.maintablearea .bd {padding:0px 0px ;clear:both}
+.maintablearea .bd ul {clear:both}
+.maintablearea .bd li {float:left;padding:2px 2px;text-align:center}
+.maintablearea .bd .maintop {height:30px;background-position:0px -78px;background-repeat: repeat-x; overflow:hidden}
+.maintablearea .bd li.col_name {background-position:22px -643px;width:260px;text-align:left; font-weight:bold;color:#2862a1}
+.maintablearea .bd li.col_hy {width:80px}
+.maintablearea .bd li.col_period {width:80px}
+.maintablearea .bd li.col_man {width:80px}
+.maintablearea .bd li.col_time {width:90px}
+.maintablearea .bd li.col_other {width:150px;text-align:left;}
+.maintablearea .bd li.col_name input {margin-right:20px}
+
+.maintablearea .bd ul.maintop li.col_name {background:none; font-weight:normal;color:#333;margin-left:40px;width:220px;_margin-left:20px;}
+
+.maintablearea .minfo {overflow:hidden;background-color:#fff;clear:both;padding:3px 3px 4px 41px;color:#939393;}
+.maintablearea .minfo ul { }
+.maintablearea .minfo ul p {margin-bottom:6px}
+
+.maintablearea .minfo ul li {float:left;width:370px; text-align:left;}
+.maintablearea .minfo ul li span {float:left;width:1px;height:20px;font-size:0px;margin-right:4px;padding-left:16px; overflow:hidden}
+.maintablearea .minfo ul li .t {float:left;width:170px;color:#999}
+
+.moperate {margin-right:0px;height:28px}
+.moperate a { display:block;width:55px;height:24px;margin:3px 3px 8px;float:right}
+.moperate span{ float:left;width:20px;height:20px;font-size:0px;margin-left:3px}
+.moperate a:link,.moperate a:visited {color:#d07b07}
+/**index2*/
+.maintablearea .bd ul.col {overflow:hidden;padding:2px 0px;border-bottom:1px dashed #bbb;_height:28px}
+.maintablearea .bd ul.selcol {background-color:#fbfad0;border-bottom:1px dashed #bbb;overflow:hidden;}
+.maintablearea .bd ul.col:hover {background-color:#f3f3f3}
+/***/
+
+.zk {margin:10px 0px 0px 40px;background-position:0 -367px;width:55px;height:22px;padding-left:12px;color:#d07b07}
+
+.op {float:right;margin:3px;background-position:-2px -304px; background-repeat: repeat-x;height:24px;_width:67px}
+.op .a {float:left;width:5px;height:24px; overflow:hidden;background-position:0px -337px; }
+.op .c {float:right;width:5px;height:24px; overflow:hidden;background-position:-10px -337px; }
+.op a {margin:0px 3px 0px;_margin-top:2px;_width:48px;float:left;overflow:hidden;display:block;text-align:center}
+.op a:link, .op a:visited{color:#333}
+
+.pageflow {position: absolute;z-index: 100;top:0px;right:-35px;width:30px;height:70px;}
+.pageflow a { display:block;width:32px;height:30px;text-indent:-999em;font-size:1px;color:#fff;}
+
+.pageright {position: absolute;z-index: 100;top:300px;right:2px;overflow: hidden; position: fixed;}
+.pagerightbtn {width:70px;height:85px;background-position:0px -813px;}
+/** icon **/
+.i_man {background-position:0px 0px;width:27px;height:24px; text-indent:-999em;font-size:1px;color:#fff;display:block}
+.i_reset {background-position:-2px -32px; }
+.i_edit {background-position:-2px -71px; }
+.i_tel {background-position:-2px -106px; }
+.i_star {background-position:-2px -140px; }
+
+.i_linkman {background-position:0px -376px;}
+.i_linkqq {background-position:-18px -376px;}
+.i_sstar {background-position:0px -258px; }
+.i_sheard {background-position:0px -284px; }
+
+.i_pageup {background-position:0px -182px; }
+.i_pagedown {background-position:0px -208px; }
+
+/** btn **/
+.btn_g {background-position:0px -730px;width:75px;height:27px; text-align:center}
+.close {background-position:-75px -536px;width:18px;height:18px; }
+.btn_green {background-position:0px -902px;width:100px;height:38px; text-align:center}
+.btn_green a {display:block; text-align:center;color:#fff;font:bold 14px "宋体";padding-top:8px}
+.btn_green a:link,.btn_green a:visited {color:#fff;}
+.btn_sorg {background-position:0px -698px;width:55px;height:24px;}
+

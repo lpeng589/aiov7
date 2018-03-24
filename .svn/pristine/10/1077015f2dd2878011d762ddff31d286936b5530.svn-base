@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectOrdertblEBOrderDet" type="checkBox">
+     <table>tblEBGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      tblEBGoods.Sku f1,
+      tblEBGoods.GoodsID f2,
+      tblEBGoods.GoodsName f3
+  from tblEBGoods
+     </defineSQL>
+     <classCode></classCode>
+     <condition></condition>
+     <changeCond></changeCond>
+     <orderBy>tblEBGoods.Sku,tblEBGoods.GoodsID,tblEBGoods.GoodsName</orderBy>
+     <displayFields>
+          <field name="tblEBGoods.Sku" width="150" searchType="match" keySearch="true" parentDisplay="true" orderBy="升"/>
+          <field name="tblEBGoods.GoodsID" width="150" searchType="equal" keySearch="true" parentDisplay="true" orderBy="升"/>
+          <field name="tblEBGoods.GoodsName" width="150" searchType="match" keySearch="true" parentDisplay="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblEBGoods.Sku" parentName="@TABLENAME.Sku" relationKey="true" hidden="false" />
+     </saveFields>
+</select>
+</popupSelect>

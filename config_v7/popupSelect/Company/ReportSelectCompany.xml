@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectCompany" belongTableName="tblCompany">
+     <table>tblCompany,ViewCompanyTotal noRight</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblCompany.ComNumber f1,
+      tblCompany.ComFullName f2,
+      tblCompany.ComFullNamePYM f3,
+      ViewCompanyTotal.ClientFlagDesc f4,
+	  tblCompany.classCode f5
+  from tblCompany 
+  left join ViewCompanyTotal noRight on tblCompany.classCode = ViewCompanyTotal.classCode
+     </defineSQL>
+     <classCode>tblCompany.classCode</classCode>
+     <condition>(tblCompany.statusId!='-1') and tblCompany.workFlowNodeName='finish' and (tblCompany.ClientFlag = (CASE WHEN '@ValueofDB:moduleType'='1' OR '@ValueofDB:moduleType'='3' THEN '1' ELSE '2' END) OR tblCompany.ClientFlag='3')</condition>
+     <changeCond></changeCond>
+     <orderBy>tblCompany.ComNumber,tblCompany.ComFullName</orderBy>
+     <displayFields>
+          <field name="tblCompany.ComNumber" width="120" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblCompany.ComFullName" asName="ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="true" />
+          <field name="tblCompany.ComFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="true" hiddenInput="true" />
+          <field name="ViewCompanyTotal.ClientFlagDesc" width="80" searchType="equal" parentDisplay="false" display="tblCompany.ClientFlag" />
+     </displayFields>
+     <saveFields>
+     </saveFields>
+</select>
+</popupSelect>

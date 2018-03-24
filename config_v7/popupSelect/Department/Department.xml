@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="Department">
+     <table>tblDepartment</table>
+     <forwardModel></forwardModel>
+     <saveParentFlag>true</saveParentFlag>
+     <relation></relation>
+     <defineSQL>select 
+      tblDepartment.classCode f1,
+      tblDepartment.DeptCode f2,
+      tblDepartment.DeptFullName f3,
+      tblDepartment.DeptFullNamePYM f4
+	from tblDepartment
+     </defineSQL>
+     <classCode>tblDepartment.classCode</classCode>
+     <condition></condition>
+     <changeCond>(tblDepartment.statusid!='-1') and tblDepartment.workFlowNodeName='finish'</changeCond>
+     <orderBy>tblDepartment.DeptCode,tblDepartment.DeptFullName</orderBy>
+     <displayFields>
+          <field name="tblDepartment.DeptCode" width="70" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblDepartment.DeptFullName" width="70" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.DepartmentCode" />
+          <field name="tblDepartment.DeptFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblDepartment.classCode" parentName="@TABLENAME.DepartmentCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

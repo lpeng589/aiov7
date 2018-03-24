@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectAssetsType" type="checkBox">
+     <table>tblFixedAssetType</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblFixedAssetType.TypeName f1,
+      tblFixedAssetType.Remark f2
+  from tblFixedAssetType
+     </defineSQL>
+     <classCode></classCode>
+     <remark>资产类别,供资产增加列表、资产变更列表使用</remark>
+     <condition></condition>
+     <changeCond></changeCond>
+     <orderBy>tblFixedAssetType.TypeName,tblFixedAssetType.Remark</orderBy>
+     <displayFields>
+          <field name="tblFixedAssetType.TypeName" width="200" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+          <field name="tblFixedAssetType.Remark" width="200" searchType="match" parentDisplay="false" orderBy="升" />
+     </displayFields>
+     <saveFields>
+     </saveFields>
+</select>
+</popupSelect>

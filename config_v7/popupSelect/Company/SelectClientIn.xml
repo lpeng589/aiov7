@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectClientIn" belongTableName="tblCompany">
+     <table>tblCompany</table>
+     <forwardModel>tblCompany&amp;moduleType=2&amp;ClientFlag=2</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>
+  from tblCompany
+     </defineSQL>
+     <classCode   classSysType="Customer">tblCompany.classCode</classCode>
+     <condition>(tblCompany.ClientFlag=2 or tblCompany.ClientFlag=3)</condition>
+	 <remark>往来转账转入单位</remark>
+     <changeCond>(tblCompany.statusId!='-1')</changeCond>
+     <orderBy>tblCompany.ComNumber</orderBy>
+     <displayFields>
+          <field name="tblCompany.ComNumber" asName="SelectClientIn.ComNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"/>
+          <field name="tblCompany.ComFullName" asName="SelectClientIn.ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.InCompanyCode" />
+          <field name="tblCompany.ComFullNamePYM" asName="SelectClientIn.ComFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+          <field name="case isCatalog when 1 then '-99999999' else tblCompany.PreReceiveTotalRemain end" asName="SelectClientIn.PreReceiveTotalRemain" width="100" searchType="scope" parentDisplay="false" display="ViewCompanyTotal.PreReceiveTotalRemain" />
+          <field name="case isCatalog when 1 then '-99999999' else tblCompany.ReceiveTotalRemain end" asName="SelectClientIn.ReceiveTotalRemain" width="100" searchType="scope" parentDisplay="false" display="ViewCompanyTotal.ReceiveTotalRemain" />
+     </displayFields>
+     <saveFields>
+          <field name="tblCompany.classCode" parentName="@TABLENAME.InCompanyCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

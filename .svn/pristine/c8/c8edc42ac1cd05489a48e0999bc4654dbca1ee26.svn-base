@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectEmpduty" type="checkBox">
+     <table>tblEmployee,tblDepartment</table>
+     <forwardModel>tblEmployee</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblEmployee.TitleID f1,
+      tblDepartment.classCode f2,
+      tblEmployee.id f3,
+      tblEmployee.EmpNumber f4,
+      tblDepartment.DeptFullName f5,
+      tblEmployee.EmpFullName f6,
+      tblEmployee.EmpFullNamePYM f7
+from tblEmployee
+left join tblDepartment on tblDepartment.classCode=tblEmployee.DepartmentCode
+
+     </defineSQL>
+     <classCode></classCode>
+     <condition>tblDepartment.statusid!='-1' and tblEmployee.statusid!='-1' and isnull(tblEmployee.sysName,'')!='' and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy></orderBy>
+     <displayFields>
+          <field name="tblEmployee.EmpNumber" width="60" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblDepartment.DeptFullName" width="75" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.DepartmentCode" />
+          <field name="tblEmployee.TitleID" width="65" searchType="equal" keySearch="true" parentDisplay="true" display="@TABLENAME.duty" />
+          <field name="tblEmployee.EmpFullName" width="65" searchType="match" keySearch="true" parentDisplay="true" />
+          <field name="tblEmployee.EmpFullNamePYM" width="80" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblEmployee.TitleID" parentName="@TABLENAME.duty" display="@TABLENAME.duty" relationKey="false" hidden="false" />
+          <field name="tblDepartment.classCode" parentName="@TABLENAME.DepartmentCode" relationKey="false" hidden="true" />
+          <field name="tblEmployee.id" parentName="@TABLENAME.userID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

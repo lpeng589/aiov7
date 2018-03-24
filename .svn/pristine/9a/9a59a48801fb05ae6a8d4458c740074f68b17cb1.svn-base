@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ProviderCheckBox" type="checkBox">
+     <table>tblCompany</table>
+     <forwardModel>tblCompany&amp;moduleType=1&amp;ClientFlag=1</forwardModel>
+     <relation></relation>
+     <defineSQL>
+  from tblCompany
+     </defineSQL>
+     <classCode   classSysType="Supplier">tblCompany.classCode</classCode>
+     <condition>(tblCompany.ClientFlag=1 or tblCompany.ClientFlag=3)</condition>
+     <changeCond>(tblCompany.statusId!='-1')</changeCond>
+     <orderBy>tblCompany.ComNumber,tblCompany.ComFullName</orderBy>
+     <displayFields>
+          <field name="tblCompany.[tblCompany_1]" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"/>         
+          <field name="tblCompany.PrePayTotalRemain" width="100" parentDisplay="false" hiddenInput="true" />
+          <field name="tblCompany.PayTotalRemain" width="100" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblCompany.classCode" parentName="@TABLENAME.CompanyCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

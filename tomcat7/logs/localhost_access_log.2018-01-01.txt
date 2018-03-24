@@ -1,0 +1,12 @@
+127.0.0.1 - - [01/Jan/2018:00:14:50 +0800] "POST /MobileAjax?op=LOGIN HTTP/1.1" 200 34
+127.0.0.1 - - [01/Jan/2018:00:14:51 +0800] "POST /MobileAjax?op=getSessEmp HTTP/1.1" 200 127
+127.0.0.1 - - [01/Jan/2018:00:14:51 +0800] "POST /MobileAjax?op=getEnum&enum=duty HTTP/1.1" 200 583
+127.0.0.1 - - [01/Jan/2018:00:14:53 +0800] "POST /MobileAjax?op=report&reportNumber=tblVirtualStock HTTP/1.1" 200 5716
+127.0.0.1 - - [01/Jan/2018:00:14:55 +0800] "POST /MobileAjax?op=report&reportNumber=tblVirtualStock HTTP/1.1" 200 5716
+127.0.0.1 - - [01/Jan/2018:00:15:00 +0800] "POST /MobileAjax?op=report&reportNumber=tblVirtualStock HTTP/1.1" 200 2541
+127.0.0.1 - - [01/Jan/2018:00:15:02 +0800] "POST /MobileAjax?op=report&reportNumber=tblVirtualStock HTTP/1.1" 200 5716
+127.0.0.1 - - [01/Jan/2018:00:15:03 +0800] "POST /MobileAjax?op=report&reportNumber=tblVirtualStock HTTP/1.1" 200 2834
+127.0.0.1 - - [01/Jan/2018:00:15:07 +0800] "POST /MobileAjax?op=report&reportNumber=tblVirtualStock HTTP/1.1" 200 2797
+127.0.0.1 - - [01/Jan/2018:00:15:08 +0800] "POST /MobileAjax?op=report&reportNumber=tblVirtualStock HTTP/1.1" 200 5716
+127.0.0.1 - - [01/Jan/2018:00:17:16 +0800] "POST /MobileAjax?op=getSessEmp HTTP/1.1" 200 127
+127.0.0.1 - - [01/Jan/2018:00:17:16 +0800] "POST /MobileAjax?op=getEnum&enum=duty HTTP/1.1" 200 583

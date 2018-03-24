@@ -1,0 +1,908 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN" "http://struts.apache.org/dtds/struts-config_1_2.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="ExcelMappedForm" type="com.menyi.aio.web.tablemapped.excel.ExcelMappedForm" />
+		<form-bean name="BillExportSearchForm" type="com.menyi.aio.web.billExport.BillExportSearchForm" />
+		<form-bean name="GoodsPropSearchForm" type="com.menyi.aio.web.goodsProp.GoodsPropSearchForm" />
+		<form-bean name="BillFlowForm" type="com.menyi.aio.web.billFlow.BillFlowForm" />
+		<form-bean name="BaseSearchForm" type="com.menyi.aio.web.billFlow.BillFlowSearchForm" />
+		<form-bean name="LoginForm" type="com.menyi.aio.web.login.LoginForm" />
+		<form-bean name="enumerationSearchForm" type="com.menyi.aio.web.enumeration.EnumerationSearchForm" />
+		<form-bean name="enumerationForm" type="com.menyi.aio.web.enumeration.EnumerationForm" />
+		<form-bean name="unitForm" type="com.menyi.aio.web.unit.UnitForm" />
+		<form-bean name="unitSearchForm" type="com.menyi.aio.web.unit.UnitSearchForm" />
+		<form-bean name="accTypeForm" type="com.menyi.aio.web.acctype.AccTypeForm" />
+		<form-bean name="accTypeSearchForm" type="com.menyi.aio.web.acctype.AccTypeSearchForm" />
+		<form-bean name="userForm" type="com.menyi.aio.web.usermanage.UserForm" />
+		<form-bean name="userSearchForm" type="com.menyi.aio.web.usermanage.UserSearchForm" />
+		<form-bean name="roleForm" type="com.menyi.aio.web.role.RoleForm" />
+		<form-bean name="roleSearchForm" type="com.menyi.aio.web.role.RoleSearchForm" />
+		<form-bean name="moduleForm" type="com.menyi.aio.web.module.ModuleForm" />
+		<form-bean name="moduleSearchForm" type="com.menyi.aio.web.module.ModuleSearchForm" />
+		<form-bean name="iniCompanyForm" type="com.menyi.aio.web.iniSet.IniCompanyForm" />
+		<form-bean name="iniCompanySearchForm" type="com.menyi.aio.web.iniSet.IniCompanySearchForm" />
+		<form-bean name="iniGoodsSearchForm" type="com.menyi.aio.web.iniSet.IniGoodsSearchForm" />
+		<form-bean name="iniGoodsForm" type="com.menyi.aio.web.iniSet.IniGoodsForm" />
+		<form-bean name="iniAccForm" type="com.menyi.aio.web.iniSet.IniAccForm" />
+		<form-bean name="iniAccSearchForm" type="com.menyi.aio.web.iniSet.IniAccSearchForm" />
+		<form-bean name="uploadForm" type="com.menyi.aio.web.upload.UploadForm" />
+		<form-bean name="TableMappedForm" type="com.menyi.aio.web.tablemapped.TableMappedForm" />
+		<form-bean name="TableMappedSearchForm" type="com.menyi.aio.web.tablemapped.TableMappedSearchForm" />
+		<form-bean name="AlertCenterForm" type="com.menyi.aio.web.alert.AlertCenterForm" />
+		<form-bean name="ReportSetForm" type="com.menyi.aio.web.report.ReportSetForm" />
+		<form-bean name="ReportSetSearchForm" type="com.menyi.aio.web.report.ReportSetSearchForm" />
+		<form-bean name="RegisterForm" type="com.menyi.aio.web.upgrade.RegisterForm" />
+		
+		<form-bean name="clientInfoForm" type="com.menyi.aio.web.call.ClientInfoForm" />
+		<!-- 电子商务 -->
+		<form-bean name="bol88_IssueGoodsSearchForm" type="com.menyi.aio.web.bol88.issuegoods.IssueGoodsSearchForm" />
+		<form-bean name="bol88_MemberForm" type="com.menyi.aio.web.bol88.member.MemberForm" />
+		<!-- 电子商务end -->
+		<form-bean name="LogoSetForm" type="com.menyi.aio.web.logo.LogoSetForm" />
+		<form-bean name="importSearchForm" type="com.menyi.aio.web.importData.ImportSearchForm" />
+		<form-bean name="importForm" type="com.menyi.aio.web.importData.ImportForm" />
+		
+		<form-bean name="MailPoolForm" type="com.menyi.aio.web.bol88.MailPoolForm" />
+		<form-bean name="AdviceForm" type="com.menyi.aio.web.advice.AdviceForm" />
+		<form-bean name="TelSearchForm" type="com.koron.tel.call.TelSearchForm" />
+		<form-bean name="AlertSetForm" type="com.menyi.aio.web.alert.AlertSetForm" />
+		<form-bean name="bomForm" type="com.menyi.aio.web.bom.BomForm" />
+		
+		<form-bean name="LabelForm" type="com.menyi.aio.web.label.LabelForm" />
+		<form-bean name="LabelSearchForm" type="com.menyi.aio.web.label.LabelSearchForm" />
+			
+		<!--单据编号设置 -->
+		<form-bean name="billNoSearchForm" type="com.menyi.aio.web.billNumber.BillNoSearchForm"/>
+		<form-bean name="billNoForm" type="com.menyi.aio.web.billNumber.BillNoForm"/>
+			
+		<!-- 登录日志搜索 -->
+		<form-bean name="LoginlogSearchForm"  type="com.menyi.aio.web.logManage.LoginlogSearchForm" />
+		<!-- 操作日志搜索 -->
+		<form-bean name="LogSearchForm" type="com.menyi.aio.web.logManage.LogSearchForm" />
+		
+		<!-- 凭证form -->
+		<form-bean name="VoucherForm" type="com.menyi.aio.web.finance.voucher.VoucherForm"/>
+		<form-bean name="VoucherSearchForm" type="com.menyi.aio.web.finance.voucher.VoucherSearchForm"/>
+		<!-- 凭证设置 -->
+		<form-bean name="VoucherSettingForm" type="com.menyi.aio.web.finance.voucherSetting.VoucherSettingForm"/>
+			
+		<!-- 财务弹出框 -->
+		<form-bean name="PopupSearchForm"  type="com.menyi.aio.web.finance.popupSelect.PopupSearchForm" />
+	</form-beans>
+	
+	<!-- ========== Global Forward Definitions ============================== -->
+	<global-forwards>
+		<forward name="message" path="/common/alert.jsp" />
+		<forward name="fatalAlert" path="/common/fatalAlert.jsp" />
+		<forward name="indexPage" path="/forwardIndex.jsp" />
+		<forward name="alert" path="/common/alert.jsp" />
+		<forward name="doubleOnline" path="/common/onlineMessage.jsp" />
+		<forward name="lockMessage" path="/common/lockMessage.jsp" />
+		<forward name="showReadingInfo" path="/common/showReadingInfo.jsp" />
+		<forward name="commonMessage" path="/common/message.jsp" />
+		<forward name="blank" path="/blank.jsp" />
+		<forward name="mlogin" path="/mlogin.jsp" />
+	</global-forwards>
+
+	<action-mappings>
+		<!--电话管理-->
+		<action path="/TelAction" type="com.koron.telecom.tel.TelAction"
+			scope="request" parameter="/TelAction.do?operator=$operator">
+			<forward name="callTel" path="/vm/tel/callTel.jsp"  />
+			<forward name="telDetail" path="/vm/tel/telDetail.jsp"  />
+			<forward name="telCard" path="/vm/tel/telCard.jsp"  />
+			<forward name="popTel" path="/vm/tel/popTel.jsp"  />
+			<forward name="meet" path="/vm/tel/meet.jsp"  />
+			<forward name="ccSet" path="/vm/tel/ccSet.jsp"  />
+		</action>
+		<action path="/TelQueryAction" name="TelSearchForm" scope="session"
+			type="com.koron.telecom.tel.TelAction"
+			parameter="/TelQueryAction.do?operator=$operator" >
+			<forward name="telList" path="/vm/tel/telList.jsp"  />
+		</action>
+		
+		<!--短信管理-->
+		<action path="/NoteAction"
+			type="com.menyi.sms.note.NoteAction"
+			parameter="/NoteAction.do?operator=$operator">
+			<forward name="modifyPass" path="/vm/note/modifyPass.jsp"  />
+			<forward name="getBalance" path="/vm/note/getBalance.jsp"  />
+			<forward name="addFund" path="/vm/note/addFund.jsp"  />
+			<forward name="sendSMSList" path="/vm/note/sendSMSList.jsp"  />
+			<forward name="sendSMSDetail" path="/vm/note/sendSMSDetail.jsp"  />
+			<forward name="receivedSMSList" path="/vm/note/receivedSMSList.jsp"  />
+			<forward name="receivedSMSDetail" path="/vm/note/receivedSMSDetail.jsp"  />
+			<forward name="sendSMS" path="/vm/note/sendSMS.jsp"  />
+		</action>
+		<!--短信设置-->
+		<action path="/SMSSetAction"
+			type="com.menyi.sms.setting.SMSsetAction"
+			parameter="/SMSSetAction.do">
+			<forward name="toSMSset" path="/vm/note/smsSet.jsp"  />
+		</action>
+		<action path="/LogoSetAction" name="LogoSetForm"
+			type="com.menyi.aio.web.logo.LogoSetAction"
+			parameter="/LogoSetAction.do">
+			<forward name="logo" path="/vm/upgrade/logoSet.jsp" />
+		</action>
+		<!--商品属性管理-->
+		<action path="/PropAction"
+			type="com.menyi.aio.web.goodsProp.PropAction" scope="session"
+			parameter="/PropQueryAction.do">
+			<forward name="propAdd" path="/vm/goodsProperty/propertyAdd.jsp"  />
+			<forward name="propUpdate" path="/vm/goodsProperty/propertyUpdate.jsp"  />
+			<forward name="propSet" path="/vm/goodsProperty/propertySet.jsp"  />
+		</action>
+		<action path="/PropQueryAction"
+			type="com.menyi.aio.web.goodsProp.PropAction" scope="session"
+			name="GoodsPropSearchForm" parameter="/PropQueryAction.do">
+			<forward name="propList" path="/vm/goodsProperty/propertyList.jsp"  />
+		</action>
+		<!--单据流程操作 -->
+		<action path="/BillFlowAction"
+			type="com.menyi.aio.web.billFlow.BillFlowAction" scope="request"
+			name="BillFlowForm" parameter="/BillFlowAction.do">
+			<forward name="addFlow" path="/vm/billFlow/addFlow.jsp"  />
+			<forward name="updateFlow" path="/vm/billFlow/updateFlow.jsp"  />
+			<forward name="selectFlow" path="/vm/billFlow/selectFlow.jsp"  />
+		</action>
+		<action path="/BillFlowQueryAction"
+			type="com.menyi.aio.web.billFlow.BillFlowAction" scope="session"
+			name="BaseSearchForm" parameter="/BillFlowQueryAction.do">
+			<forward name="FlowList" path="/vm/billFlow/selectFlow.jsp"  />
+			<forward name="selectFlow" path="/vm/billFlow/selectFlow.jsp"  />
+		</action>
+
+		<action path="/CustomQueryAction"
+			type="com.menyi.aio.web.customize.CustomizeAction" scope="session"
+			parameter="/CustomQueryAction.do">
+			<forward name="tableList" path="/vm/tableInfo/tableList.jsp"  />
+		</action>
+		<action path="/CustomAction"
+			type="com.menyi.aio.web.customize.CustomizeAction" scope="request"
+			parameter="/CustomQueryAction.do">
+			<forward name="tableMgt" path="/vm/tableInfo/tableMgt.jsp"  />
+			<forward name="tableAddSimple" path="/vm/oa/workflow/tableAdd.jsp"  />
+			<forward name="tableUpdateSimple" path="/vm/oa/workflow/tableUpdate.jsp"  />
+			<forward name="tableDetail" path="/vm/tableInfo/tableDetail.jsp"  />
+			<forward name="tableView" path="/vm/tableInfo/tableView.jsp"  />
+			<forward name="popupSet" path="/vm/tableInfo/popupSet.jsp"  />
+			<forward name="popupQuery" path="/vm/tableInfo/popupQuery.jsp"  />
+			<forward name="popupUpdate" path="/vm/tableInfo/popupUpdate.jsp"  />
+			<forward name="popupQutoeShow" path="/vm/tableInfo/popupQutoeShow.jsp"  />
+			<forward name="defineOp" path="/vm/tableInfo/defineOp.jsp"  />
+			<forward name="defineUpdate" path="/vm/tableInfo/defineUpdate.jsp"  />
+			<forward name="defineQuery" path="/vm/tableInfo/defineQuery.jsp"  />
+		</action>
+		<action path="/CustomImportAction"
+			type="com.menyi.aio.web.customize.CustomizeAction" name="importForm" scope="request"
+			parameter="/CustomQueryAction.do">
+			<forward name="importTable" path="/vm/tableInfo/importTable.jsp"  />
+			<forward name="importTableConfirm" path="/vm/tableInfo/importTableConfirm.jsp"  />
+		</action>
+		 
+		<action path="/UserFunctionQueryAction"
+			type="com.menyi.aio.web.userFunction.UserFunctionAction"
+			parameter="/UserFunctionQueryAction.do?tableName=$tableName">
+			<forward name="functionAdd" path="/vm/classFunction/functionAdd.jsp"  />
+			<forward name="functionUpdate" path="/vm/classFunction/functionUpdate.jsp"  />
+			<forward name="functionList" path="/vm/classFunction/functionList.jsp"  />
+			<forward name="draftList" path="/vm/classFunction/draftList.jsp"  />
+			<forward name="printActiveX" path="/vm/report/reportPrint.jsp"  />
+			<forward name="check" path="/vm/classFunction/functionCheck.jsp"  />
+			<forward name="functionDetail" path="/vm/classFunction/functionDetail.jsp"  />
+			<forward name="applyGoodsSum" path="/vm/classFunction/applyGoodsSum.jsp"  />
+			<forward name="checkList" path="/vm/classFunction/checkList.jsp"  />
+			<forward name="listConfig" path="/vm/coldisplay/listConfig.jsp"  />
+			<forward name="tabIndex" path="/vm/tabFunction/tabIndex.jsp"  />
+			<forward name="AdvanceQuery" path="/vm/classFunction/advanceQuery.jsp"  />
+			<forward name="layoutAdd" path="/vm/classFunction/layoutAdd.jsp"  />
+			<forward name="layoutUpdate" path="/vm/classFunction/layoutUpdate.jsp"  />
+			<forward name="layoutDetail" path="/vm/classFunction/layoutDetail.jsp"  />
+			<forward name="frameSet" path="/vm/classFunction/frameSet.jsp"  />
+		</action>
+		<action path="/UserFunctionAction"
+			type="com.menyi.aio.web.userFunction.UserFunctionAction"
+			scope="request"
+			parameter="/UserFunctionQueryAction.do?tableName=$tableName">
+			<forward name="functionAdd" path="/vm/classFunction/functionAdd.jsp"  />
+			<forward name="tabIndex" path="/vm/tabFunction/tabIndex.jsp"  />
+			<forward name="functionUpdate" path="/vm/classFunction/functionUpdate.jsp"  />
+			<forward name="functionDetail" path="/vm/classFunction/functionDetail.jsp"  />
+			<forward name="functioninput" path="/vm/classFunction/functionInput.jsp"  />
+			<forward name="selectList" path="/vm/classFunction/selectList.jsp"  />
+			<forward name="selectConfig" path="/vm/coldisplay/selectConfig.jsp"  />
+			<forward name="addSequence" path="/vm/classFunction/addSequence.jsp"  />
+			<forward name="stockSequence" path="/vm/classFunction/stockSequence.jsp"  />
+			<forward name="applyGoodsSum" path="/vm/classFunction/applyGoodsSum.jsp"  />			
+			<!-- 计划删除 -->
+			<forward name="colConfig" path="/vm/coldisplay/colConfig.jsp"  />
+			<forward name="tabFunction" path="/vm/tabFunction/index.jsp"  />
+			<forward name="sendemail" path="/vm/classFunction/sendBill2.jsp"  />
+			<forward name="auditingLogList" path="/vm/classFunction/auditingLogList.jsp"  />
+			<forward name="AdvanceQuery" path="/vm/classFunction/advanceQuery.jsp"  />
+			<forward name="reatailSingle" path="/vm/classFunction/reatailSingle.jsp"  />
+			<forward name="salesSelect" path="/vm/classFunction/salesSelectList.jsp"  />
+			<forward name="layoutAdd" path="/vm/classFunction/layoutAdd.jsp"  />
+			<forward name="layoutUpdate" path="/vm/classFunction/layoutUpdate.jsp"  />
+			<forward name="layoutDetail" path="/vm/classFunction/layoutDetail.jsp"  />
+			<forward name="frameSet" path="/vm/classFunction/frameSet.jsp"  />
+			<forward name="selectPic" path="/vm/classFunction/selectPic.jsp"  />
+		</action>
+		<action path="/TreeAction"
+			type="com.menyi.aio.web.userFunction.TreeAction"
+			scope="request"	parameter="/TreeAction.do"> 
+			<forward name="tree" path="/vm/classFunction/tree.jsp"  />
+		</action>
+		<action path="/ViewConfigAction"
+			type="com.menyi.aio.web.viewconfig.ViewConfigAction"
+			scope="request"
+			parameter="/ViewConfigAction.do?tableName=$tableName">
+			<forward name="viewConfig" path="/vm/viewConfig/viewConfig.jsp"  />
+			<forward name="addCol"
+				path="/vm/viewConfig/addCol.jsp" contextRelative="true" />
+		</action>		
+		<!--CRM-->
+		<action path="/crmUserFunctionAction"
+			type="com.koron.crm.CrmUserFunctionAction" scope="request">
+			<forward name="button" path="/vm/tabFunction/button.jsp"  />
+			<forward name="neighbor" path="/vm/crm/client/Neighborinter.jsp" />
+		</action>
+
+		<action path="/EnumerationAction"
+			type="com.menyi.aio.web.enumeration.EnumerationAction"
+			name="enumerationForm" scope="request"
+			parameter="/EnumerationQueryAction.do">
+			<forward name="add" path="/vm/enumeration/enumerationAdd.jsp"  />
+			<forward name="update" path="/vm/enumeration/enumerationUpdate.jsp"  />
+		</action>
+		<action path="/EnumerationQueryAction" name="enumerationSearchForm" scope="request"
+			type="com.menyi.aio.web.enumeration.EnumerationAction"
+			parameter="/EnumerationQueryAction.do">
+			<forward name="list" path="/vm/enumeration/enumerationList.jsp"  />
+			<forward name="search" path="/vm/enumeration/enumerationSearch.jsp"  />
+		</action>
+		<action path="/loginAction"
+			type="com.menyi.aio.web.login.LoginAction" name="LoginForm" >
+			<forward name="loginSucc" path="/main.jsp"  />
+		</action>
+		<action path="/UnitAction"
+			type="com.menyi.aio.web.unit.UnitAction" name="unitForm"
+			scope="request">
+			<forward name="unitAdminAdd" path="/vm/unitAdmin/unitAdminAdd.jsp"  />
+			<forward name="unitAdminUpdate" path="/vm/unitAdmin/unitAdminUpdate.jsp"  />
+			<forward name="unitAdminDetail" path="/vm/unitAdmin/unitAdminDetail.jsp"  />
+		</action>
+		<action path="/UnitQueryAction"
+			type="com.menyi.aio.web.unit.UnitAction" name="unitSearchForm"
+			scope="session">
+			<forward name="unitAdminList" path="/vm/unitAdmin/unitAdminList.jsp"  />
+		</action>
+
+		<action path="/UserManageAction"
+			type="com.menyi.aio.web.usermanage.UserManageAction" name="userForm"
+			scope="request" parameter="/UserQueryAction.do">
+			<forward name="userAdminAdd" path="/vm/userAdmin/userAdminAdd.jsp"  />
+			<forward name="userAdminUpdate" path="/vm/userAdmin/userAdminUpdate.jsp"  />
+			<forward name="userAdminDetail" path="/vm/userAdmin/userAdminDetail.jsp"  />
+			<forward name="userScopeAdd" path="/vm/userAdmin/userScopeAdd.jsp"  />
+			<forward name="userDiscontrolAdd" path="/vm/userAdmin/userDiscontrolAdd.jsp"  />
+			<forward name="userModuleAdd" path="/vm/userAdmin/userModuleAdd.jsp"  />
+			<forward name="welcome" path="/welcome.jsp"  />
+			<forward name="errorList" path="/vm/userAdmin/userErrorList.jsp"  />
+			<forward name="updatePwd" path="/vm/userAdmin/updatePwd.jsp"  />
+		</action>
+
+		<action path="/UserQueryAction"
+			type="com.menyi.aio.web.usermanage.UserManageAction"
+			name="userSearchForm" scope="session"
+			parameter="/UserQueryAction.do">
+			<forward name="userAdminlist" path="/vm/userAdmin/userAdminList.jsp"  />
+		</action>
+
+		<action path="/UserQueryPassAction"
+			type="com.menyi.aio.web.usermanage.UserManageAction"
+			name="userSearchForm" scope="session"
+			parameter="/UserQueryPassAction.do?type=$type">
+			<forward name="userAdminlist" path="/vm/userAdmin/userAdminList.jsp"  />
+		</action>
+
+		<action path="/UserManagePassAction"
+			type="com.menyi.aio.web.usermanage.UserManageAction" name="userForm"
+			parameter="/UserQueryPassAction.do?type=$type">
+			<forward name="userAdminUpdate" path="/vm/userAdmin/userAdminUpdate.jsp"  />
+		</action>
+
+		<action path="/RoleAction"
+			type="com.menyi.aio.web.role.RoleAction" name="roleForm"
+			scope="request" parameter="/UserQueryAction.do">
+			<forward name="roleAdminUpdate" path="/vm/roleAdmin/roleAdminUpdate.jsp"  />
+			
+			<forward name="roleScopeAdd_Field" path="/vm/roleAdmin/roleScopeAdd_Field.jsp"  />
+			<forward name="roleScopeAdd_FieldValue" path="/vm/roleAdmin/roleScopeAdd_FieldValue.jsp"  />
+			
+			<!-- 新的 -->
+			<forward name="roleScopeDeptMain" path="/vm/roleAdmin/roleScopeDeptMain.jsp"  />
+			<forward name="roleScopePersonMain" path="/vm/roleAdmin/roleScopePersonMain.jsp"  />
+			<forward name="roleScopeClassMain" path="/vm/roleAdmin/roleScopeClassMain.jsp"  />
+			<forward name="roleScopeFieldMain" path="/vm/roleAdmin/roleScopeFieldMain.jsp"  />
+			<forward name="roleScopeFieldValueMain" path="/vm/roleAdmin/roleScopeFieldValueMain.jsp"  />
+			<!-- 用于部门，人员分类资料的添加，修改 -->
+			<forward name="roleScopePubMgt" path="/vm/roleAdmin/roleScopePubMgt.jsp"  />
+			<!-- 以上是本次修改过的 -->
+			
+			<forward name="roleModuleAdd" path="/vm/roleAdmin/roleModuleAdd.jsp"  />
+		</action>
+		<action path="/RoleQueryAction"
+			type="com.menyi.aio.web.role.RoleAction" name="roleSearchForm"
+			scope="session" parameter="/UserQueryAction.do">
+			<forward name="roleAdminlist" path="/vm/roleAdmin/roleAdminList.jsp"  />
+			<forward name="showRoleDesc" path="/vm/roleAdmin/showRoleDesc.jsp"  />
+			<!-- 新的 -->
+			<forward name="showRoleUser" path="/vm/roleAdmin/showRoleUser.jsp"  />
+		</action>
+
+
+		<action path="/IniCompanyAction" name="iniCompanyForm"
+			type="com.menyi.aio.web.iniSet.IniCompanyAction"
+			parameter="/IniCompanyQueryAction.do?type=$type">
+			<forward name="update" path="/vm/iniSet/companyIniUpdate.jsp"  />
+		</action>
+		<action path="/IniCompanyQueryAction"
+			type="com.menyi.aio.web.iniSet.IniCompanyAction" scope="session"
+			name="iniCompanySearchForm"
+			parameter="/IniCompanyQueryAction.do?type=$type">
+			<forward name="list" path="/vm/iniSet/companyIni.jsp"  />
+			<forward name="update" path="/vm/iniSet/companyIniUpdate.jsp"  />
+			<forward name="editIni" path="/vm/iniSet/companyIniEdit.jsp"  />
+		</action>
+
+		<action path="/IniGoodsQueryAction"
+			type="com.menyi.aio.web.iniSet.IniGoodsAction" scope="request"
+			name="iniGoodsForm" parameter="/IniGoodsQueryAction.do">
+			<forward name="list" path="/vm/iniSet/goodsIni.jsp"  />
+			<forward name="update" path="/vm/iniSet/goodsIniUpdate.jsp"  />
+			<forward name="editIni" path="/vm/iniSet/goodsIniEdit.jsp"  />
+		</action>
+
+		<!-- 财务期初 -->
+		 <action path="/IniAccQueryAction"
+			type="com.menyi.aio.web.iniSet.IniAccAction" scope="request"
+			name="iniAccSearchForm" parameter="/IniAccQueryAction.do">
+			<forward name="list" path="/vm/iniSet/accIniList.jsp"  />
+			<forward name="dealIniAcc" path="/vm/iniSet/dealIniAcc.jsp" />
+			<forward name="dealIniAccItem" path="/vm/iniSet/dealIniAccItem.jsp" />
+			<forward name="importHistory" path="/vm/iniSet/importHistory.jsp" />
+			
+		</action>
+		
+		<action path="/IniAccImportAction" 
+			type="com.menyi.aio.web.iniSet.IniAccAction" scope="request"
+			name="importForm" parameter="/IniAccQueryAction.do">
+			<forward name="importIniAcc" path="/vm/iniSet/importIniAcc.jsp" />
+		</action>
+
+		<action path="/MenuQueryAction"
+			type="com.menyi.aio.web.menu.MenuManageAction" scope="session">
+			<forward name="menuList" path="/Body.jsp"  />
+			<forward name="body_new" path="/body2.jsp"  />
+			<forward name="menuListMobile" path="/BodyMobile.jsp"  />
+			<forward name="menuListAjax" path="/blank.jsp"  />
+			<forward name="adviceforward" path="/adviceforward.jsp"  />
+		</action>
+		
+		<action path="/AIO"
+			type="com.menyi.aio.web.menu.MenuManageAction" scope="session">
+			<forward name="body_new" path="/body2.jsp"  />
+		</action>
+		
+		<action path="/OA"
+			type="com.menyi.aio.web.menu.MenuManageAction" scope="session">
+			<forward name="body_new" path="/body2oa.jsp"  />
+		</action>
+		
+		<action path="/UploadAction"
+			type="com.menyi.aio.web.upload.UploadAction" scope="request"
+			name="uploadForm">
+			<forward name="upload" path="/vm/upload/upload.jsp"  />
+			<forward name="uploadSuccess" path="/vm/upload/uploadSuccess.jsp"  />
+		</action>
+		<action path="/UploadDelAction"
+			type="com.menyi.aio.web.upload.UploadAction" scope="request">
+			<forward name="delete" path="/vm/upload/delete.jsp"  />
+			<forward name="deleteSuccess" path="/vm/upload/deleteSuccess.jsp"  />
+		</action>
+
+
+		<action path="/tableMappedAction"
+			type="com.menyi.aio.web.tablemapped.TableMappedAction"
+			scope="request" name="TableMappedForm"
+			parameter="/tableMappedQueryAction.do">
+			<forward name="tableMappedAdd" path="/vm/tablemappedadmin/tableMappedAdd.jsp"  />
+			<forward name="tableMappedUpdate" path="/vm/tablemappedadmin/tableMappedUpdate.jsp"  />
+		</action>
+		<action path="/tableMappedQueryAction" scope="session" name="TableMappedSearchForm"
+			type="com.menyi.aio.web.tablemapped.TableMappedAction"
+			parameter="/tableMappedQueryAction.do">
+			<forward name="tableMappedList" path="/vm/tablemappedadmin/tableMappedList.jsp"  />
+		</action>
+		
+		<action path="/AlertAction"
+			type="com.menyi.aio.web.alert.AlertCenterAction"
+			name="AlertCenterForm" parameter="/AlertAction.do">
+			<forward name="alertCenter" path="/vm/alert/alertCenter.jsp"  />
+			<forward name="bottom" path="/bottom.jsp"  />
+		</action>
+		
+		<action path="/moduleFlow"
+			type="com.menyi.aio.web.moduleFlow.ModuleFlowAction">
+			<forward name="left_menu" path="/vm/moduleFlow/left_menu.jsp"  />
+			<forward name="my_dest" path="/welcomeHome.jsp"  />
+			<forward name="destSet" path="/vm/moduleFlow/destSet.jsp"  />
+			<forward name="classSet" path="/vm/moduleFlow/classSet.jsp"  />
+			<forward name="empList" path="/vm/moduleFlow/empList.jsp"  />
+			<forward name="docFlow" path="/vm/moduleFlow/docFlow.jsp"  />
+			<forward name="blank" path="/blank.jsp"  />
+		</action>
+		
+		<!-- 测试中的菜单导航 -->
+		<action path="/newMenu" type="com.menyi.aio.web.newMenu.NewMenuAction">
+			<forward name="add" path="/vm/newMenu/newMenu.jsp"  />
+			<forward name="showMenu" path="/vm/newMenu/showNewMenu.jsp" />
+		</action>
+		
+		<action path="/ReportSetAction" name="ReportSetForm" scope="request"
+			type="com.menyi.aio.web.report.ReportSetAction"  parameter="/ReportSetQueryAction.do">
+			<forward name="reportSetAdd" path="/vm/report/reportSetAdd.jsp"  />
+			<forward name="reportSetUpdate" path="/vm/report/reportSetUpdate.jsp"  />
+			<forward name="formatSet" path="/vm/report/printFormatSet.jsp"  />
+		</action>
+		<action path="/ReportSetQueryAction" name="ReportSetSearchForm" scope="session"
+			type="com.menyi.aio.web.report.ReportSetAction"
+			parameter="/ReportSetQueryAction.do">
+			<forward name="reportSetList" path="/vm/report/reportSetList.jsp"  />
+			<forward name="showSet" path="/vm/report/showSet.jsp"  />	
+		</action>
+		
+		<action path="/ReportDataAction"
+			type="com.menyi.aio.web.report.ReportDataAction"
+			parameter="/ReportDataAction.do?reportNumber=$reportNumber">
+			<forward name="reportList" path="/vm/report/reportList.jsp"  />
+			<forward name="reportAjax" path="/vm/report/reportAjax.jsp"  />
+			<forward name="listConfig" path="/vm/coldisplay/listConfig.jsp"  />
+			<forward name="printActiveX" path="/vm/report/reportPrint.jsp"  />
+			<forward name="bossReport" path="/vm/report/bossReport.jsp"  />
+			<forward name="tableList" path="/vm/classFunction/functionReportList.jsp"  />
+			<forward name="flexReportList" path="/obj/userFunction/functionList.jsp"  />
+			<forward name="flexReportData" path="/vm/report/flexReportData.jsp"  />
+			<forward name="AdvanceQuery" path="/vm/classFunction/advanceQuery.jsp"  />
+			<forward name="frameSet" path="/vm/classFunction/frameSet.jsp"  />
+			<forward name="advanceCondition" path="/vm/report/advanceCondition.jsp"  />
+			<forward name="advanceUpdateCondition" path="/vm/report/advanceUpdateCondition.jsp"  />
+			<forward name="advanceSort" path="/vm/report/advanceSort.jsp"  />
+			
+		</action>
+		
+		<action path="/SysAccAction"
+			type="com.menyi.aio.web.sysAcc.SysAccAction"
+			parameter="/SysAccAction.do?type=$type">
+			<forward name="openAcc" path="/vm/sysAcc/openAcc.jsp"  />
+			<forward name="reOpenAcc" path="/vm/sysAcc/reOpenAcc.jsp"  />
+			<forward name="settleAcc" path="/vm/sysAcc/closeAcc.jsp"  />
+			<forward name="reCloseAcc" path="/vm/sysAcc/reCloseAcc.jsp"  />
+			<forward name="yearSettleAcc" path="/vm/sysAcc/yearCloseAcc.jsp"  />
+			<forward name="adjustExchange" path="/vm/sysAcc/adjustExchange.jsp"  />
+			<forward name="reCalculate" path="/vm/sysAcc/reCalculate.jsp"  />
+			<forward name="delBill" path="/vm/sysAcc/delBill.jsp"  />
+			<forward name="bakAccount" path="/vm/sysAcc/bakAccount.jsp"  />
+			<forward name="profitLoss" path="/vm/sysAcc/profitLoss.jsp"  />
+		</action>
+		<action path="/UpgradeAction"
+			type="com.menyi.aio.web.upgrade.UpgradeAction"
+			parameter="/UpgradeAction.do?type=$type">
+			<forward name="upgrade" path="/vm/upgrade/upgrade.jsp"  />
+			<forward name="upgradeNext" path="/vm/upgrade/upgradeNext.jsp"  />			
+			<forward name="about" path="/vm/upgrade/about.jsp"  />
+			<forward name="queryAccount" path="/vm/upgrade/queryAccount.jsp"  />	
+			<forward name="language" path="/vm/upgrade/language.jsp"  />
+		</action>
+		<action path="/RegisterAction"
+			type="com.menyi.aio.web.upgrade.RegisterAction"
+			name="RegisterForm" parameter="/RegisterAction.do">
+			<forward name="register" path="/vm/upgrade/register.jsp"  />
+			<forward name="registerTwo" path="/vm/upgrade/registerTwo.jsp"  />	
+			<forward name="offlineregister" path="/vm/upgrade/offlineRegister.jsp"  />
+			
+		</action>
+		
+		<!-- 列配置 -->
+		<action path="/ColConfigAction"
+			type="com.menyi.aio.web.colconfig.ColConfigAction"
+			parameter="/ColConfigAction.do">
+		</action>
+		
+		<!-- 列名显示 -->
+		<action path="/ColDisplayAction"
+			type="com.menyi.aio.web.coldisplay.ColDisplayAction"
+			parameter="/ColDisplayAction.do">
+			<forward name="tableList"
+				path="/vm/coldisplay/colDisplayList.jsp"  />
+			<forward name="colUpdate"
+				path="/vm/coldisplay/colDisplayUpdate.jsp"  />
+		</action>
+
+		
+		<!-- AIO零售单登录 -->
+		<action path="/ReatailSingleAction"
+			type="com.koron.oa.framework.FrameworkAction"
+			parameter="/ReatailSingleAction.do?type=$type">
+			<forward name="reatailSingle" path="/vm/framework/reatailSingle.jsp"  />
+		</action>
+		
+
+		<action path="/AuditingSettingAcion"
+			type="com.menyi.aio.web.AuditingSetting.AuditingSettingAcion"
+			parameter="/AuditingSettingAcion.do">
+			<forward name="auditingSettinglist" path="/vm/consign/assorSettinglist.jsp"  />
+			<forward name="updateauditingSetting" path="/vm/consign/updateauditingSetting.jsp"  />
+			<forward name="addauditingSetting" path="/vm/consign/addauditingSetting.jsp"  />
+			<forward name="doconsignauditingSetting" path="/vm/consign/doconsignauditingSetting.jsp"  />
+		</action>
+
+		<action path="/ERPWorkFlowTempAction" name="OAWorkFlowDesignForm"
+			type="com.koron.oa.workflow.template.OAWorkFlowTempAction"
+			parameter="/ERPWorkFlowTempSearchAction.do?comeType=erp">
+			<forward name="addSel" path="/vm/workflow/OAWorkFlowTempTypeSel.jsp"  />
+			<forward name="add" path="/vm/workflow/OAWorkFlowTempAdd.jsp"  />
+			<forward name="update" path="/vm/workflow/OAWorkFlowTempUpdate.jsp"  />
+			<forward name="uploadResult" path="/vm/workflow/uploadResult.jsp"  />
+			<forward name="openUpload" path="/vm/workflow/OAWorkFlowTempFile.jsp"  />
+			<forward name="list" path="/vm/workflow/OAWorkFlowTempList.jsp"  />
+		</action>
+		<action path="/ERPWorkFlowTempSearchAction"
+			type="com.koron.oa.workflow.template.OAWorkFlowTempAction"
+			name="OAWorkFlowTempSearchForm"
+			parameter="/ERPWorkFlowTempSearchAction.do">
+			<forward name="list" path="/vm/workflow/OAWorkFlowTempList.jsp"  />
+			<forward name="version" path="/vm/oa/workflow/OAWorkFlowTempVersion.jsp"  />
+		</action>
+
+		<action path="/Client"
+			type="com.menyi.aio.web.call.ClientInfoAction"
+			parameter="/Client.do">
+			<forward name="clientInfo" path="/vm/call/clientInfo.jsp"  />
+		</action>
+		<action path="/ReportDataMrpAction"
+			type="com.menyi.aio.web.report.ReportDataAction"
+			parameter="/Mrp.do">
+			<forward name="printActiveX" path="/vm/report/reportPrint.jsp"  />
+		</action>
+
+		<!-- mrp -->
+		<action path="/Mrp" type="com.menyi.aio.web.mrp.MrpAction"
+			parameter="/Mrp.do">
+			
+			<forward name="showMRP" path="/vm/mrp/showMRP.jsp"  />
+			<forward name="showBuyApplication" path="/vm/mrp/showBuyApplication.jsp"  />
+			<forward name="selSalesOrder" path="/vm/mrp/selSalesOrder.jsp"  />
+			<forward name="selGoods" path="/vm/mrp/selGoods.jsp"  />
+			<forward name="selBom" path="/vm/mrp/selBom.jsp"  />
+			<forward name="openBom" path="/vm/mrp/openBom.jsp"  />
+			<forward name="showBom" path="/vm/mrp/showBom.jsp"  /> 
+			<forward name="showWorkOrder" path="/vm/mrp/showWorkOrder.jsp"  /> 
+			<forward name="selSalesOrderForPD" path="/vm/mrp/selSalesOrderForPD.jsp"  /> 
+			<forward name="showSalesOrderLack" path="/vm/mrp/showSalesOrderLack.jsp"  /> 
+			<forward name="showMRPPR" path="/vm/mrp/showMRPPR.jsp"  /> 
+		</action>
+		<!-- lrp -->
+		<action path="/Lrp" type="com.menyi.aio.web.lrp.LrpAction"
+			parameter="/Lrp.do">
+			
+			<forward name="showLRP" path="/vm/lrp/showLRP.jsp"  />
+			<forward name="showLRPProd" path="/vm/lrp/showLRPProd.jsp"  />
+			<forward name="showLRPProdGoods" path="/vm/lrp/showLRPProdGoods.jsp"  />
+			<forward name="showLRPBuy" path="/vm/lrp/showLRPBuy.jsp"  />
+			<forward name="selCompute" path="/vm/lrp/selCompute.jsp"  />
+		</action>
+		<action path="/MrpBP" type="com.menyi.aio.web.mrp.MrpBPAction"
+			parameter="/MrpBP.do">
+			<forward name="mrpManager" path="/vm/mrpBP/mrpManager.jsp"  />
+			<forward name="matereilDemand" path="/vm/mrpBP/matereilDemand.jsp"  />
+			<forward name="matereilDemand2" path="/vm/mrpBP/matereilDemand2.jsp"  />
+			<forward name="matereilAnalyse" path="/vm/mrpBP/matereilAnalyse.jsp"  />
+			<forward name="chooseOrder" path="/vm/mrpBP/chooseOrder.jsp"  />
+			<forward name="doOrder" path="/vm/mrpBP/doOrder.jsp"  />
+			<forward name="simulateOrder" path="/vm/mrpBP/simulateOrder.jsp"  />
+			<forward name="mrpDetSel" path="/vm/mrpBP/mrpDetSel.jsp"  />
+			<forward name="chooseGoods" path="/vm/mrpBP/chooseSOGoods.jsp"  />
+			<forward name="doProduceOrder" path="/vm/mrpBP/doProduceOrder.jsp"  />
+		</action>
+		<!-- mrp end -->
+		<!-- bol88电子商务 -->
+		<!-- 广告 -->
+		<action path="/AIOBOL88Action"
+			type="com.menyi.aio.web.bol88.AIOBOL88Action"
+			parameter="/AIOBOL88Action.do">
+			<forward name="bol88" path="/vm/bol88/aioBol88.jsp"  />
+			<forward name="regPage" path="/vm/bol88/register.jsp"  />
+			<forward name="regInfo" path="/vm/bol88/regInfo.jsp"  />
+		</action>
+		<action path="/AIOBOL88EMailAction"
+			type="com.menyi.aio.web.bol88.AIOBOL88EMailAction" scope="request"
+			name="MailPoolForm" parameter="/AIOBOL88Action.do">
+			<forward name="keyword" path="/vm/bol88/mailKeyword.jsp"  />
+			<forward name="mailInfo" path="/vm/bol88/mailInfo.jsp"  />
+			<forward name="mailWrite" path="/vm/bol88/mailWrite.jsp"  />
+		</action>
+		<!-- 广告end -->
+
+		<!-- 缺省语言设置 -->
+		<action path="/LanguageSetting"
+			type="com.menyi.aio.web.userFunction.LanguageSettingAction"
+			parameter="/LanguageSetting.do">
+			<forward name="languageList" path="/vm/language/languageList.jsp" />
+			<forward name="modifyDefLanguage" path="modifyDefLanguage.jsp" />
+		</action>
+		
+		<action path="/ApplyGoodsBillAction"
+			type="com.menyi.aio.web.customize.ApplyGoodsBillAction"
+			parameter="/CustomQueryAction.do">
+		</action>
+		
+		<!-- 预警设置 -->
+		<action path="/AlertSetAction" name="AlertSetForm" 
+			type="com.menyi.aio.web.alert.AlertSetAction" scope="request"
+			parameter="/AlertSetAction.do">
+			<forward name="alertSetList" path="/vm/alert/alertSetList.jsp" />
+			<forward name="dealAlertSet" path="/vm/alert/dealAlertSet.jsp" />
+			<forward name="detailAlertSet" path="/vm/alert/detailAlertSet.jsp" />
+			<forward name="alertSet" path="/vm/alert/alertSet.jsp" />
+		</action>
+		
+		<!-- 预警汇总表 -->
+		<action path="/AlertTotalAction" scope="request"
+			type="com.menyi.aio.web.alert.AlertTotalAction" parameter="/AlertTotalAction.do">
+			<forward name="alertTotal" path="/vm/alert/alertTotal.jsp" />
+		</action>
+
+		<!-- 数据导入 -->
+		<action path="/importDataAction" name="importForm"
+			type="com.menyi.aio.web.importData.ImportDataAction"
+			parameter="/importDataAction.do">			
+			<forward name="importUpdata" path="/vm/import/importUpdata.jsp"  />
+			<forward name="importProcess" path="/vm/import/importProcess.jsp"  />	
+			<forward name="importComplete" path="/vm/import/importUpdataComp.jsp"  />
+			<forward name="importClient" path="/vm/crm/client/importClient.jsp" />
+			<forward name="importStockCheck" path="/vm/stockcheck/importCheckBill.jsp" />
+		</action>
+		
+		<action path="/importDataQueryAction" name="importSearchForm" scope="session"
+			type="com.menyi.aio.web.importData.ImportDataAction"
+			parameter="/importDataQueryAction.do">
+			<forward name="importList" path="/vm/import/importList.jsp"  />
+		</action>
+		<!-- 定时通知模板 -->
+		<action path="/TimeNoteSetAction"
+			type="com.menyi.aio.web.alert.TimeNoteSetAction"
+			parameter="/TimeNoteSetAction.do">
+			<forward name="timeNoteSetList" path="/vm/alert/timeNoteSetList.jsp"  />
+			<forward name="selectTimeNoteUser" path="/vm/alert/selectTimeNoteUser.jsp"  />
+			<forward name="selectTimeNoteModel" path="/vm/alert/selectTimeNoteModel.jsp"  />
+			<forward name="selectTimeNoteTime" path="/vm/alert/selectTimeNoteTime.jsp"  />
+		</action>
+		
+		<!-- 模块字段名列名设置 -->
+		<action path="/ModuleColAction"
+			type="com.menyi.aio.web.moduleCol.ModuleColAction"
+			parameter="/ModuleColAction.do">
+			<forward name="moduleColList" path="/vm/coldisplay/moduleColList.jsp" />
+			<forward name="moduleColAdd" path="/vm/coldisplay/moduleColAdd.jsp" />
+			<forward name="moduleColUpdate" path="/vm/coldisplay/moduleColUpdate.jsp" />
+		</action>
+
+		<action path="/AdviceAction" parameter="/AdviceAction.do"
+			type="com.menyi.aio.web.advice.AdviceAction" name="AdviceForm" scope="session">
+			<forward name="frame" path="/vm/advice/frame.jsp" />
+			<forward name="tree" path="/vm/advice/tree.jsp" />
+			<forward name="adviceList" path="/vm/advice/adviceList.jsp"  />
+			<forward name="adviceDetail" path="/vm/advice/adviceDetail.jsp"  />
+		  	<forward name="inviteAdvice"  path="/vm/advice/inviteAdvice.jsp" />
+		</action>
+		<action path="/OptimizeAction"
+			type="com.menyi.aio.web.optimize.OptimizeAction">
+			<forward name="optimize" path="/vm/optimize/optimize.jsp"  />
+			<forward name="tableInfo" path="/vm/optimize/tableInfo.jsp"  />	
+		</action>
+		
+		<action path="/AIOShopAction" parameter="/AIOShopAction.do"
+			type="com.menyi.aio.web.aioshop.AIOShopAction">
+			<forward name="shopset" path="/vm/aioshop/aioshopset.jsp" />
+			<forward name="alertset" path="/vm/aioshop/alertset.jsp" />
+		</action>
+		<action path="/VIPAction" parameter="/VIPAction.do"
+			type="com.menyi.aio.web.vip.VIPAction">
+			<forward name="main" path="/vm/VIP/pointRule.jsp" />
+		</action>
+		<action path="/ProcessOldData" parameter="/ProcessOldData.do"
+			type="com.menyi.aio.web.processOldData.ProcessOldDataAction">
+			<forward name="processOldData"
+				path="/vm/processOldData/processOldData.jsp" />
+		</action>
+		
+		<action path="/BomAction"
+			parameter="/BomQueryAction?moduleType=$moduleType"
+			type="com.menyi.aio.web.bom.BomAction" name="bomForm">
+			<forward name="bom" path="/vm/bom/bom.jsp" />
+		</action>
+		<action path="/LabelAction" parameter="/LabelAction.do"
+			type="com.menyi.aio.web.label.LabelAction" name="LabelForm">
+			<forward name="addLabel" path="/vm/label/addLabel.jsp" />
+		</action>
+		<action path="/LabelListAction" parameter="/LabelAction.do"
+			type="com.menyi.aio.web.label.LabelAction" name="LabelSearchForm">
+			<forward name="labelList" path="/vm/label/labelList.jsp" />
+		</action>
+		
+		<!-- 日志管理 -->
+		<action path="/LogManageAction" parameter="/LogManageAction.do" name="LogSearchForm"
+			type="com.menyi.aio.web.logManage.LogManageAction" scope="session">
+			<forward name="logIndex" path="/vm/logManage/logIndex.jsp" />
+			<forward name="logList" path="/vm/logManage/logList.jsp" />
+			<forward name="runList" path="/vm/logManage/runList.jsp" />
+			<forward name="tradeInfo" path="/vm/logManage/tradeInfo.jsp" />
+		</action>
+		<action path="/LogManageQueryAction" parameter="/LogManageAction.do" name="LoginlogSearchForm"
+			type="com.menyi.aio.web.logManage.LogManageAction" scope="session">
+			<forward name="loginlogList" path="/vm/logManage/loginlogList.jsp" />
+		</action>
+		
+		<!-- 生成凭证模板 -->  
+		<action path="/CertTemplateAction"
+			type="com.menyi.aio.web.certTemplate.CertTemplateAction"
+			parameter="/AdvanceAction.do">
+			<forward name="CertTemplate"
+				path="/vm/certTemplate/certTemplate.jsp"  />
+			<forward name="CertTemplateInfo"
+				path="/vm/certTemplate/certTemplateInfo.jsp"  />	
+		</action>
+		<!-- 手工生成凭证 -->
+		<action path="/GenCertificateAction"
+			type="com.menyi.aio.web.certificate.GenCertificateAction"
+			parameter="/GenCertificateAction.do">
+			<forward name="Certificate"
+				path="/vm/certificate/Certificate.jsp"  />
+		</action>
+		
+		<!-- 单据编号设置 -->
+		<action path="/BillNoAction" name="billNoSearchForm" scope="session" 
+			type="com.menyi.aio.web.billNumber.BillNoAction" parameter="/BillNoAction.do">
+			<forward name="billNoList" path="/vm/billNo/billNoList.jsp" />
+		</action>
+		<action path="/BillNo" name="billNoForm" scope="request" 
+			type="com.menyi.aio.web.billNumber.BillNoAction" parameter="/BillNoAction.do">
+			<forward name="dealBillNo" path="/vm/billNo/dealBillNo.jsp" />
+			<forward name="detailBillNo" path="/vm/billNo/detailBillNo.jsp" />
+			<forward name="selectTable" path="/vm/billNo/selectTable.jsp" />
+			<forward name="selectField" path="/vm/billNo/selectField.jsp" />
+		</action>
+		
+		<!-- 凭证 -->
+		<action path="/VoucherManage" name="VoucherForm" scope="request"
+			type="com.menyi.aio.web.finance.voucher.VoucherAction" parameter="/VoucherManageAction.do">
+			<forward name="addVoucher" path="/vm/finance/voucher/addVoucher.jsp"/>
+			<forward name="queryRecord" path="/vm/finance/voucher/queryRecord.jsp"/>
+			<forward name="moduleList" path="/vm/finance/voucher/moduleList.jsp"/>
+			<forward name="approveRemark" path="/vm/finance/voucher/approveRemark.jsp"/>
+			<forward name="binderGuide" path="/vm/finance/voucher/binderGuide.jsp"/>
+			<forward name="AuditeGuide" path="/vm/finance/voucher/AuditeGuide.jsp"/>
+			<forward name="stopCredNoList" path="/vm/finance/voucher/stopCredNoList.jsp"/>
+			<forward name="resetCredNo" path="/vm/finance/voucher/resetCredNo.jsp"/>
+		</action>
+		<action path="/VoucherManageAction" name="VoucherSearchForm" scope="session"
+			type="com.menyi.aio.web.finance.voucher.VoucherAction" parameter="/VoucherManageAction.do">
+			<forward name="voucherList" path="/vm/finance/voucher/voucherList.jsp"></forward>
+			<forward name="updateVoucher" path="/vm/finance/voucher/updateVoucher.jsp"/>
+			<forward name="detailVoucher" path="/vm/finance/voucher/detailVoucher.jsp"/>
+			<forward name="updateVoucherRef" path="/vm/finance/voucher/updateVoucherRef.jsp"/>
+			<forward name="accMainList" path="/vm/finance/voucher/accMainList.jsp"/>
+		</action>
+		
+		<!-- 凭证设置 -->
+		<action path="/VoucherSettingAction" name="VoucherSettingForm" scope="request"
+			type="com.menyi.aio.web.finance.voucherSetting.VoucherSettingAction" parameter="/VoucherSettingAction.do">
+			<forward name="updateVoucherSetting" path="/vm/finance/voucher/updateVoucherSetting.jsp"/>
+		</action>
+		
+		<!-- 期末调汇 -->
+		<action path="/AdjustExchangeAction" scope="request"
+			type="com.menyi.aio.web.finance.adjustExchange.AdjustExchangeAction" parameter="/SysAccAction.do?type=$type">
+			<forward name="dealexchange" path="/vm/finance/adjustexchange/dealexchange.jsp"/>
+		</action>
+		
+		<!-- 财务报表 -->
+		<action path="/FinanceReportAction" scope="request"
+			type="com.menyi.aio.web.finance.report.FinanceReportAction" parameter="/FinanceReportAction.do">
+			<forward name="reportAccBalanceList" path="/vm/finance/report/AccBalanceReport.jsp"/>
+			<forward name="reportAccDetIndex" path="/vm/finance/report/AccDetIndexReport.jsp"/>
+			<forward name="reportAccDetDetail" path="/vm/finance/report/AccDetDetailReport.jsp"/>
+			<forward name="reportAccAllDetList" path="/vm/finance/report/AccAllDetIndexReport.jsp"/>
+			<forward name="reportDesignList" path="/vm/finance/report/AccDetDesignReportList.jsp" />
+			<forward name="reportDesign" path="/vm/finance/report/AccDetDesignReport.jsp"/>
+			<forward name="reporttblAccCalculateIndex" path="/vm/finance/report/AccCalculateIndex.jsp"/>
+			<forward name="reporttblAccCalculateDetail" path="/vm/finance/report/AccCalculateDetail.jsp"/>
+			<forward name="reporttblAccCalculateDetIndex" path="/vm/finance/report/AccCalculateDetIndex.jsp"/>
+			<forward name="reporttblAccCalculateDetDetail" path="/vm/finance/report/AccCalculateDetDetail.jsp"/>
+			<forward name="reporttblTrialBalance" path="/vm/finance/report/AccTrialBalance.jsp"/>
+			<forward name="reportAccTypeInfoBalance" path="/vm/finance/report/AccTypeInfoBalanceReport.jsp"/>
+			<forward name="reportAccTypeInfoDayBalance" path="/vm/finance/report/AccTypeInfoDayReport.jsp"/>
+			<forward name="reportCertificateSum" path="/vm/finance/report/AccCertificateSum.jsp"/>
+			<forward name="reportAccCalculateBalance" path="/vm/finance/report/AccCalculateBalance.jsp"/>
+		</action>
+		
+		<!-- 财务中用到的所有弹出框 -->
+		<action path="/PopupAction" scope="request" name="PopupSearchForm"
+			type="com.menyi.aio.web.finance.popupSelect.PopupAction" parameter="/PopupAction.do">
+			<forward name="indexPop" path="/vm/finance/popselect/indexPop.jsp"/>
+			<forward name="detailPop" path="/vm/finance/popselect/detailPop.jsp"/>
+		</action>
+		<!-- 系统设置 -->
+		<action path="/SystemSetAction" scope="request" 
+			type="com.menyi.aio.web.systemset.SystemSetAction" parameter="/SystemSetAction.do">
+			<forward name="systemSet" path="/vm/systemset/SystemSet.jsp"/>
+		</action>
+		<!-- 系统安全 -->
+		<action path="/SystemSafeAction" scope="request" 
+			type="com.menyi.aio.web.systemSafe.SystemSafeAction" parameter="/SystemSafeAction.do">
+			<forward name="systemSafe" path="/vm/systemSafe/SystemSafe.jsp"/>
+		</action>
+		
+		<!-- 库存商品图片 -->
+		<action path="/StockGoodsAction" scope="session"
+			type="com.menyi.aio.web.stockgoods.StockGoodsAction" parameter="/StockGoodsAction.do">
+			<forward name="stockgoodsList" path="/vm/stockgoods/stockgoodsList.jsp"/>
+			<forward name="moduleList" path="/vm/stockgoods/moduleList.jsp"/>
+			<forward name="dealModule" path="/vm/stockgoods/dealModule.jsp"/>
+		</action>
+		
+		<!-- 高级功能 -->
+		<action path="/AdvanceAction" scope="session"
+			type="com.menyi.aio.web.advance.AdvanceAction" parameter="/AdvanceAction.do">
+			<forward name="clue" path="/vm/advance/clue.jsp"/>
+			<forward name="index" path="/vm/advance/index.jsp"/>
+		</action>
+		
+		<!-- 盘点 -->
+		<action path="/StockCheckAction" scope="session" name="importForm"
+			type="com.menyi.aio.web.stockcheck.StockCheckAction" parameter="/StockCheckAction.do">
+			<forward name="stockCheckList" path="/vm/stockcheck/stockCheckList.jsp" />
+			<forward name="stockCheckBillList" path="/vm/stockcheck/stockCheckBillList.jsp"/>
+			<forward name="importCheckBill" path="/vm/stockcheck/importCheckBill.jsp" />
+			<forward name="dealForm" path="/vm/stockcheck/dealForm.jsp" />
+			<forward name="importResult" path="/vm/stockcheck/importResult.jsp" />
+		</action>
+		<!-- 客服平台 -->
+		<action path="/ServiceAction" scope="request" 
+			type="com.menyi.aio.web.service.ServiceAction" parameter="/ServiceAction.do">
+			<forward name="loginSuccess" path="/service/loginSuccess.jsp" />
+			<forward name="auth" path="/service/auth.jsp" />
+			<forward name="authPass" path="/service/authPass.jsp" />
+			<forward name="service" path="/service/service.jsp" />
+			<forward name="database" path="/service/database.jsp" />
+			<forward name="file" path="/service/file.jsp" />
+			<forward name="fileUpload" path="/service/fileUpload.jsp" />
+			<forward name="logList" path="/service/logList.jsp" />
+		</action>
+		<!--资产负债表公式编辑-->
+		<action path="/FormulaAction"
+			type="com.menyi.aio.web.finance.formulaEdit.FormulaAction" scope="session"
+			parameter="/FormulaAction.do">			
+			<forward name="FormulaEdit" path="/vm/finance/formula/formulaEdit.jsp" />
+			<forward name="FormulaMsg" path="/vm/finance/formula/formulaMsg.jsp"  />				
+		</action>
+	</action-mappings>
+
+	<message-resources parameter="res/StaticResource" />
+	<message-resources parameter="res/DynamicResource" key="res.DynamicResource" />
+	<message-resources parameter="user/StaticResource" key="userResource" />
+</struts-config>

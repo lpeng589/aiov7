@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="ChildPopup"  desc="销售订单多仓库(已作废)"  belongTableName="tblStock " > 
+		<defineSQL>
+from tblStock where statusId = 0
+		</defineSQL>
+		<displayFields>
+			<field name="tblStock.StockNumber" display="仓库编号" parentDisplay="false" width="100" searchType="match" />
+			<field name="tblStock.StockFullName" display="仓库名称" parentDisplay="false" width="100" searchType="match" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+</popupSelect>

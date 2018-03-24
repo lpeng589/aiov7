@@ -1,0 +1,16 @@
+一月 07, 2018 7:15:07 下午 org.apache.catalina.core.ApplicationContext log
+信息: 4 Spring WebApplicationInitializers detected on classpath
+一月 07, 2018 7:15:09 下午 org.apache.catalina.core.ApplicationContext log
+信息: Initializing Spring embedded WebApplicationContext
+一月 07, 2018 7:16:15 下午 org.apache.catalina.core.ApplicationContext log
+信息: 4 Spring WebApplicationInitializers detected on classpath
+一月 07, 2018 7:16:17 下午 org.apache.catalina.core.ApplicationContext log
+信息: Initializing Spring embedded WebApplicationContext
+一月 07, 2018 7:46:12 下午 org.apache.catalina.core.ApplicationContext log
+信息: 4 Spring WebApplicationInitializers detected on classpath
+一月 07, 2018 7:46:25 下午 org.apache.catalina.core.ApplicationContext log
+信息: Initializing Spring embedded WebApplicationContext
+一月 07, 2018 7:46:35 下午 org.apache.catalina.core.ApplicationContext log
+信息: Initializing Spring embedded WebApplicationContext
+一月 07, 2018 7:48:54 下午 org.apache.catalina.core.ApplicationContext log
+信息: Closing Spring root WebApplicationContext

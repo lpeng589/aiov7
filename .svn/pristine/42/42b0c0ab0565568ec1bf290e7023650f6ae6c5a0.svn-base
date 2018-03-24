@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="Goods" type="checkBox">
+     <table>tblGoods</table>
+     <forwardModel>tblGoods</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>
+  from tblGoods
+     </defineSQL>
+     <classCode>tblGoods.classCode</classCode>
+     <remark>商品弹出框取预设进价</remark>
+     <condition></condition>
+     <changeCond>tblGoods.workFlowNodeName='finish' and tblGoods.statusid!='-1'</changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.[tblGoods]" width="120" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+          <field name="tblGoods.PreBuyPrice" width="60" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblGoods.PreBuyPrice" parentName="@TABLENAME.Price" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

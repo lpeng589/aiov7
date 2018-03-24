@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectCompanyClassCode" belongTableName="tblCompany">
+     <table>tblCompany</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      tblCompany.classCode f1,
+      tblCompany.ComNumber f2,
+      tblCompany.ComFullName f3,
+      tblCompany.ComName f4,
+      tblCompany.ComFullNamePYM f5,
+      ViewCompanyTotal.ClientFlag f6
+  from tblCompany
+     </defineSQL>
+     <saveParentFlag>true</saveParentFlag>
+     <classCode>tblCompany.classCode</classCode>
+     <condition>tblCompany.workFlowNodeName='finish'</condition>
+     <changeCond>tblCompany.statusId=0 and tblCompany.ClientFlag !=0</changeCond>
+     <orderBy>tblCompany.ComNumber desc,tblCompany.ComFullName desc</orderBy>
+     <displayFields>
+          <field name="tblCompany.ComNumber" width="100" searchType="match" parentDisplay="false" />
+          <field name="tblCompany.ComFullName" width="150" searchType="match" parentDisplay="false" />
+          <field name="tblCompany.ComName" width="80" parentDisplay="false" hiddenInput="true" />
+          <field name="tblCompany.ComFullNamePYM" width="100" parentDisplay="false" hiddenInput="true" />
+          <field name="tblCompany.ClientFlag"  width="100" searchType="equal" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblCompany.classCode" parentName="@TABLENAME.classCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

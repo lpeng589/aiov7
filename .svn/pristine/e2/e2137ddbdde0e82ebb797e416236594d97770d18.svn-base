@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportInch" type="checkBox" version="2" >
+     <table>tblStockDet</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select tblStockDet.Inch from tblStockDet where len(isnull(Inch,''))&gt;0 group by Inch
+     </defineSQL>
+     <classCode></classCode>
+     <condition></condition>
+     <changeCond></changeCond>
+     <orderBy>Inch</orderBy>
+     <displayFields>
+          <field name="tblStockDet.IncH" display="tblStockDet.Inch" width="120" searchType="match" parentDisplay="true" />
+     </displayFields>
+     <saveFields>
+     		 <field name="tblStockDet.Inch" parentName="Inch" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

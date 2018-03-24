@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectCompany_v2" type="checkBox" version="2" belongTableName="tblCompany">
+     <table>tblCompany,ViewCompanyTotal noRight</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag>true</saveParentFlag>
+     <defineSQL>select 
+      tblCompany.classCode f1,
+      tblCompany.isCatalog f2,
+      tblCompany.ComNumber f3,
+      tblCompany.ComFullName f4,
+      tblCompany.ComFullNamePYM f5,
+      ViewCompanyTotal.ClientFlagDesc f6
+  from tblCompany
+  left join ViewCompanyTotal noRight on tblCompany.classCode = ViewCompanyTotal.classCode
+     </defineSQL>
+     <classCode>tblCompany.classCode</classCode>
+     <condition>(len(tblCompany.ComFullName)!=0) and tblCompany.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblCompany.ComNumber</orderBy>
+     <displayFields>
+          <field name="tblCompany.ComNumber" width="140" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblCompany.ComFullName" width="140" searchType="match" keySearch="true" parentDisplay="true" display="tblCompany.ComFullName" />
+          <field name="tblCompany.ComFullNamePYM" width="60" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+          <field name="ViewCompanyTotal.ClientFlagDesc" width="80" searchType="equal" parentDisplay="false" display="tblCompany.ClientFlag" />
+     </displayFields>
+     <saveFields>
+          <field name="tblCompany.classCode" parentName="CompanyCode" relationKey="false" hidden="true" />
+          <field name="tblCompany.isCatalog" parentName="isCatalog" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

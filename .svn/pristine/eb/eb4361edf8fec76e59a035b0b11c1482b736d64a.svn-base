@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<!--
+displayFields 中的字段全都是会显示在弹出页面的字段
+   parentDisplay为true表示该字段需在主表界面显示，但不一定会保存在主表，由saveFields决定，
+   如果在主表显示，并配有display则主表显示字段对应的标签名取display的字段名，
+   searchType no:不作为查询条件，equal：等于，match：模糊查询,scope：区间查询
+saveFields 中的字段全都是必须在主表保存的字段
+   其中必须有且仅有一个relationKey="true"的字段。该字段表示的是关联字段，关联查询通过这个字段建立
+   关联关系，该关联字段在主表是否显示由hidden属性决定，如果为true表示隐藏，界面不显示，通过隐藏变
+   量传递值。
+   其它非关联字段，在主表必须存在，且可录入。
+
+-->	
+		 
+	  <!--工作变动弹出窗口选择负责人-->	
+	  <select name = "EmpPlaceChange">
+		<table>tblEmployee</table>
+		<relation></relation>
+		<condition> tblEmployee.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblEmployee.EmpNumber"  width="200" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" asName="tblEmployee.WorkEmpFullName" display="@TABLENAME.EmpNumber" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+	       <field name="tblEmployee.id" parentName="HRPlaceChangeManage.EmpNumber" relationKey="true" hidden="true"/>
+		</saveFields>
+	       </select>	
+		
+	
+<!--职位变动部门弹出框-->
+<select name = "HRPlaceChangeDepart">
+		<table>tblEmployee,tblDepartment,HREmpinform</table>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode and HREmpinform.EmpFullName=tblEmployee.id</relation>
+		<condition> tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblEmployee.EmpNumber" display="HRPlaceChangeManage.EmpNumber"  width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" display="HRPlaceChangeManage.EmpName" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+        <field name="tblDepartment.DeptFullName" display="HRPlaceChangeManage.Department" width="100" searchType="match" parentDisplay="true"/>
+		<field name="HREmpinform.Position"  display="HRPlaceChangeManage.Emplyee" width="100" searchType="match" parentDisplay="true"/>
+		</displayFields>
+		<saveFields>
+		  <field name="tblEmployee.id" parentName="HRPlaceChangeManage.EmpName"  hidden="true"/>
+		  <field name="tblEmployee.DepartmentCode" parentName="HRPlaceChangeManage.Department" hidden="true" />
+		  <field name="tblEmployee.EmpNumber" relationKey="true" parentName="HRPlaceChangeManage.EmpNumber" hidden="false" />
+		   <field name="HREmpinform.Position" parentName="HRPlaceChangeManage.Emplyee"  hidden="false"/>		
+		  <field name="HREmpinform.id"  parentName="HRPlaceChangeManage.f_brother" hidden="false" />
+		  </saveFields>
+	</select>
+
+<!--通用型选择部门弹出窗口-->	
+	<select name = "HRPlaceDepart">
+		<table>tblDepartment</table>
+		<relation></relation>
+		<condition> tblDepartment.workFlowNodeName='finish'</condition>
+		<classCode>tblDepartment.classCode</classCode>
+		<saveParentFlag>true</saveParentFlag>
+		<displayFields>
+		<field name="tblDepartment.DeptCode" width="100" asName="tblDepartmentIn.DeptCode" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" asName="tblDepartmentIn.FullName"  display="@TABLENAME.Department" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblDepartment.classCode" parentName="@TABLENAME.Department" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	
+<!--通用型选择部门弹出窗口-->	
+	<select name = "HRPlaceChangeDepart2">
+		<table>tblDepartment</table>
+		<relation></relation>
+		<condition> tblDepartment.workFlowNodeName='finish'</condition>
+		<classCode>tblDepartment.classCode</classCode>
+		<saveParentFlag>true</saveParentFlag>
+		<displayFields>
+		<field name="tblDepartment.DeptCode" width="100" asName="tblDepartmentIn.DeptFULLCode"  searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" asName="tblDepartmentIn.StockFullName"  display="@TABLENAME.ChangeDepart" width="80" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblDepartment.classCode" parentName="@TABLENAME.ChangeDepart" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	
+	
+	
+	
+</popupSelect>	

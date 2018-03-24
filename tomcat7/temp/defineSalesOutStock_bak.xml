@@ -1,0 +1,1164 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+
+<!--===============================================================销售出库单===========================================================-->		
+<define name="SalesOutStock_Add">
+	<!-- 自定义：更新分销订单状态-->
+	<sql type="condition">
+		
+	</sql>
+	<!--如果启用了“销售出库必须引用销售订单”的系统配置，如果没有引用给出错误提示-->
+	<sql type="condition">
+		<condition><select>select count(0) NoQuote from tblSalesOutStockDet a left join tblSalesOrderDet b on isnull(a.SalesOrderID,'')=b.f_ref and a.GoodsCode=b.GoodsCode and (a.BatchNo=b.BatchNo or b.BatchNo='') and (a.Inch=b.Inch or b.Inch='') and (a.Hue=b.Hue or b.Hue='') and (a.yearNo=b.yearNo or b.yearNo='') and (a.ProDate=b.ProDate or isnull(b.ProDate,'')='') and (a.Availably=b.Availably or isnull(b.Availably,'')='') where @MEM:QuoteSalOrder ='true' and a.f_ref=@ValueofDB:tblSalesOutStock_id and b.id is null</select></condition>		
+			<exec condition="@SqlReturn:NoQuote&gt;0">
+				<error>SalesOutStock.quoteOrder.error</error>       
+			</exec>
+	</sql>	
+
+	
+	<sql type="condition">
+		<!--如果本次结算金额小于零，提示错误--> 
+		<exec condition="@ValueofDB:tblSalesOutStock_AccAmt &lt; 0">
+			<error>negtive.Amount.error</error>       
+	  </exec>
+		<!--如果主表优惠后金额为负数 提示错误--> 
+		<exec condition="@ValueofDB:tblSalesOutStock_TotalTaxAmount &lt; 0">
+			<error>common.TotalTaxAmount.negative.error</error>       
+	  </exec>
+		<!--发票类型是“收据凭证”，税率必须等于0,其他类型税率必须大于等于0-->
+		<exec condition="('@ValueofDB:tblSalesOutStock_InVoiceType'=='3'&amp;&amp;@ValueofDB:tblSalesOutStock_Tax!=0)||@ValueofDB:tblSalesOutStock_Tax&lt;0">				
+			<error>common.isReceipt.existsTax.error</error>        
+		</exec>
+		<!--如果代收金额小于零，提示错误--> 
+		<exec condition="@ValueofDB:tblSalesOutStock_deputyReceAmt &lt; 0">
+			<error>sales.deputyAmt.negtive.error</error>       
+	  </exec>
+		<!--代收款为是，则必须选择代收物流公司及代收金额-->
+		<exec condition="'@ValueofDB:tblSalesOutStock_deputyRece'.length&gt;0&amp;&amp;('@ValueofDB:tblSalesOutStock_FreightCom'.length==0||@ValueofDB:tblSalesOutStock_deputyReceAmt==0)">				
+			<error>sales.deputy.noData.error</error>        
+		</exec>
+		<!--有输入代收金额，必须勾选代收款，选择运输公司-->
+		<exec condition="@ValueofDB:tblSalesOutStock_deputyReceAmt!=0&amp;&amp;('@ValueofDB:tblSalesOutStock_deputyRece'.length==0||'@ValueofDB:tblSalesOutStock_FreightCom'.length==0)">				
+			<error>sales.deputyAmt.noData.error</error>        
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表中的条码与商品表的条码复核不同给出提示--> 
+		<condition><select>select c.GoodsNumber as CheckGoods from tblSalesOutStockDet b join tblSalesOutStock a on a.id=b.f_ref join tblGoods c on c.classCode=b.GoodsCode where @MEM:BarcodecheckedSalesOut='true' and a.id=@ValueofDB:tblSalesOutStock_id and c.BarCode!=b.CheckBarCode </select></condition>
+		<exec condition="'@SqlReturn:CheckGoods' != 'null'">					
+			<error>CheckBarCode.diffent.error,@SqlReturn:CheckGoods</error>       
+		</exec>
+	</sql>
+	
+	<sql type="condition"><!--数量小于等于0的商品判断-->
+		<condition><select>select tblGoods.GoodsNumber as GoodsQ from tblSalesOutStockDet,tblGoods where isnull(tblSalesOutStockDet.Qty,0)&lt;=0 and tblGoods.classCode=tblSalesOutStockDet.GoodsCode and f_ref=@ValueofDB:tblSalesOutStock_id</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">			
+			<error>common.qty.negative.error,@SqlReturn:GoodsQ</error>       
+		</exec>
+	</sql>
+	<sql type="condition">
+		<!--如果有引用单据，将引用ID映射到明细表-->			
+		<exec condition="'@ValueofDB:tblSalesOutStock_SalesOrderID'.length&gt;0">  
+			<sql>update tblSalesOutStockDet set SalesOrderID=@ValueofDB:tblSalesOutStock_SalesOrderID where f_ref=@ValueofDB:tblSalesOutStock_id and len(isnull(SalesOrderID,''))=0</sql>
+		</exec>
+		<!--引用销售订单的控制判断-->
+		<exec condition="true">
+			<sql type="define">tblSalesOutStock_Add_QuoteOrder_Validate</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--启用了价格控制，判断非赠品，样品商品单价是否在价格控制范围内-->
+		<exec condition="@MEM:PriceControl==true">			
+			<sql type="define">tblSalesOutStock_Add_PriceControl_Validate</sql>
+		</exec>
+	</sql>	
+	<sql type="condition"><!--折扣不是0到1之间的数值时给出错误提示-->
+		<condition><select>select 'disCountError' as disCountError from tblSalesOutStockDet a where a.f_ref=@ValueofDB:tblSalesOutStock_id and (Discount&lt;=0 or Discount&gt;100)</select></condition>
+		<exec condition="'@SqlReturn:disCountError' != 'null'">				
+			<error>common.Discount.error</error>        
+		</exec>
+	</sql>
+
+	<sql type="condition"><!--赠样品的单价为负数的判断-->
+		<condition><select>select tblGoods.GoodsNumber as GoodsPresent from tblSalesOutStockDet,tblGoods where  f_ref=@ValueofDB:tblSalesOutStock_id and tblGoods.classCode=tblSalesOutStockDet.GoodsCode and tblSalesOutStockDet.PresentPrice&lt;0</select></condition>
+		<exec condition="'@SqlReturn:GoodsPresent' != 'null'">				
+			<error>tblSalesOutStock.Present.PriceOrAmt.error,@SqlReturn:GoodsPresent</error>        
+		</exec>
+	</sql>
+	<!--<sql type="condition">明细表的金额不等于数量*单价  如果是录入的含税金额这里可能会差几分钱
+		<condition><select>select b.GoodsNumber,b.GoodsNumber from tblSalesOutStockDet a,tblGoods b where a.f_ref=@ValueofDB:tblSalesOutStock_id and a.GoodsCode=b.classCode and Amount!=round(Qty*Price,@MEM:DigitsAmount)</select></condition>
+		<exec condition="'@SqlReturn:GoodsNumber'!='null'">			
+			<error>common.AmtPriceQty.NotEqual.error,@SqlReturn:GoodsNumber,@SqlReturn:GoodsFullName</error>                  
+		</exec>
+	</sql>-->
+	<sql type="condition"><!--自定义：主表总金额与明细表不相等-->
+		<condition><select>select isnull(dbo.getDigits('tblSalesOutStockDet','TaxAmount',sum(tblSalesOutStockDet.TaxAmount)+@ValueofDB:tblSalesOutStock_khFreightAmt),'0') as SumDetAmt, dbo.getDigits('tblSalesOutStockDet','TaxAmount',(cast(@ValueofDB:tblSalesOutStock_TotalTaxAmount as numeric(18,8))+cast(@ValueofDB:tblSalesOutStock_DiscountAmount as numeric(18,8)))) as sumMainAmt from tblSalesOutStockDet where  f_ref=@ValueofDB:tblSalesOutStock_id</select></condition>
+		<exec condition="@SqlReturn:SumDetAmt!=@SqlReturn:sumMainAmt">			
+			<error>common.mainDetilAmt.NotEqual.error,@SqlReturn:sumMainAmt,@SqlReturn:SumDetAmt</error>       
+		</exec>
+	</sql>
+	<sql type="condition"><!--启用了多账户，进行多账户的判断提示-->
+		<exec condition="true">
+			<sql type="define">tblSalesOutStock_Add_ManyAccount_Validate</sql>
+		</exec>
+	</sql>	
+	<sql type="condition"><!--启用审核流，保存时要判断是否超过信用额度-->		
+		<exec condition="'@MEM:tblSalesOutStock_IsStatart' == '1'&amp;&amp;@MEM:CustomerCreditLimit==true">
+			<sql type="define">tblSalesOutStock_Add_CustomerCreditLimit_Validate</sql>
+		</exec>
+	</sql>
+
+
+	<!--=====================================外币代码暂不处理=============================================-->
+	<sql type="condition"><!--如果是本位币帐户，不用录入汇率-->	
+     <condition><select>select AccNumber,AccName,IsForCur,Currency as CURD from tblAccTypeInfo where AccNumber=@ValueofDB:tblSalesOutStock_PayAccCode and SCompanyID=@ValueofDB:tblSalesOutStock_SCompanyID</select></condition>
+		 <exec condition="('@ValueofDB:tblSalesOutStock_Currency'.length == 0 &amp;&amp; @ValueofDB:tblSalesOutStock_CurrencyRate&gt;0 &amp;&amp;@ValueofDB:tblSalesOutStock_CurrencyRate!=1)">		
+     			<error>CurrencyRate.putErrors.error</error>       
+		 </exec>
+	</sql>
+	<sql type="condition"><!--如果收款账户的币种和该单据币种不同，给出错误提示-->	
+		<condition><select> select COUNT(0) as CurrencyC from tblSalesRecAccount a,tblAccTypeInfo b where a.f_ref=@ValueofDB:tblSalesOutStock_id and a.Account=b.AccNumber and b.Currency!=@ValueofDB:tblSalesOutStock_Currency</select></condition>
+		<exec condition="@SqlReturn:CurrencyC&gt;0"> 
+				<error>tblAccTypeInfo.ReceSelectCurType.error</error>       
+		</exec>
+	</sql>
+	<!--===================================以上代码：外币代码暂不处理=====================================-->	
+	
+	
+	<sql type="condition"><!--有引用单据，并且启用了控制超订单出库系统配置，判断是否有超订单出库-->
+		<exec condition="'@MEM:OverSalesorder'=='true'">
+			<sql type="define">tblSalesOutStock_Add_OverOrderOut_Validate</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--启用了控制低于最低限售，判断非赠品，样品商品折后单价是否低于最低限售-->
+		<exec condition="@MEM:UnderLimitprice==true">			
+			<sql type="define">tblSalesOutStock_Add_UnderLimitPrice_Validate</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--启用了控制低于成本价，判断非赠品，样品商品折后单价是否低于成本-->
+		<!--没有启用多仓库时将主表的仓库设置到明细表,便于后续查询-->	
+		<exec condition="'@MEM:ManyStockSales'=='false'">			  
+			<sql>update tblSalesOutStockDet set StockCode=@ValueofDB:tblSalesOutStock_StockCode where f_ref=@ValueofDB:tblSalesOutStock_id</sql>
+		</exec>
+		<exec condition="@MEM:UnderCostprice==true">			
+			<sql type="define">tblSalesOutStock_Add_UnderCostPrice_Validate</sql>
+		</exec>
+	</sql>	
+	<sql type="condition"><!--未选择仓库报错-->
+		<condition>
+			<select> select count(0) nostockcode from tblSalesOutStockDet where f_ref=@ValueofDB:tblSalesOutStock_id and len(isnull(stockcode,''))=0  </select>
+		</condition>
+		<exec condition=" @SqlReturn:nostockcode &gt; 0 ">			  
+			<error>仓库不能为空</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--启用了控制对超结算账期未收款客户销售-->
+		<exec condition="@MEM:WithOutSettleCys==true">		
+			<sql type="define">tblSalesOutStock_Add_WithOutSettleCys_Validate</sql>
+		</exec>
+	</sql>	
+	<sql type="condition"><!--如果没有执行到最低限售，成本价销售的确定，取消，执行下面的define-->
+		<exec condition="true">			
+			<sql type="define">tblSalesOutStock_Add_AccBefore</sql>
+		</exec>
+	</sql>
+	
+	<sql type="condition"><!-- 销售金额分摊到明细-->	
+		<!--<condition><select>select ROUND((cast(@ValueofDB:tblSalesOutStock_TotalTaxAmount as float)-cast(@ValueofDB:tblSalesOutStock_BzjTotalAmount as float)-cast(@ValueofDB:tblSalesOutStock_khFreightAmt as float))/1.17,2) as amount,ROUND(CAST(@ValueofDB:tblSalesOutStock_TotalTaxAmount AS float)-cast(@ValueofDB:tblSalesOutStock_FreightAmt as float),2) as salesAmt</select></condition>-->
+		<condition>
+			<!--<select>select Round(cast(@ValueofDB:tblSalesOutStock_TotalTaxAmount as numeric(18,2))+Round(cast(@ValueofDB:tblSalesOutStock_FreightAmt as numeric(18,2))/1.11,2)+Round(cast(@ValueofDB:tblSalesOutStock_FreightAmt as numeric(18,2))/1.11*0.11,2)-(Round((cast(@ValueofDB:tblSalesOutStock_TotalTaxAmount as numeric(18,2))-cast(@ValueofDB:tblSalesOutStock_BzjTotalAmount as numeric(18,2)))/1.11*0.11,2)+cast(@ValueofDB:tblSalesOutStock_BzjTotalAmount as numeric(18,2))+Round(cast(@ValueofDB:tblSalesOutStock_khFreightAmt as numeric(18,2))/1.11,2)+cast(@ValueofDB:tblSalesOutStock_FreightAmt as numeric(18,2))),2) as amount,Round(cast(@ValueofDB:tblSalesOutStock_TotalTaxAmount as numeric(18,2))-cast(@ValueofDB:tblSalesOutStock_FreightAmt as numeric(18,2)),2) as salesAmt</select>-->
+			<select>select Round(cast(@ValueofDB:tblSalesOutStock_TotalTaxAmount as numeric(18,2))
+					+Round(cast(@ValueofDB:tblSalesOutStock_FreightAmt as numeric(18,2))/1.11,2)
+					+Round(cast(@ValueofDB:tblSalesOutStock_FreightAmt as numeric(18,2))/1.11*0.11,2)
+					-(Round((cast(@ValueofDB:tblSalesOutStock_TotalTaxAmount as numeric(18,2))
+					-cast(@ValueofDB:tblSalesOutStock_BzjTotalAmount as numeric(18,2))-cast(@ValueofDB:tblSalesOutStock_khFreightAmt as numeric(18,2)))/1.17*0.17,2)
+					+cast(@ValueofDB:tblSalesOutStock_BzjTotalAmount as numeric(18,2))
+					+Round(cast(@ValueofDB:tblSalesOutStock_khFreightAmt as numeric(18,2)),2)
+					+cast(@ValueofDB:tblSalesOutStock_FreightAmt as numeric(18,2))),2) as amount,	
+					Round(cast(@ValueofDB:tblSalesOutStock_TotalTaxAmount as numeric(18,2))
+					-cast(@ValueofDB:tblSalesOutStock_FreightAmt as numeric(18,2)),2) as salesAmt</select>
+		</condition>
+		<exec condition="true">
+			update tblSalesOutStockDet set contriAmount = 0.0 where PresentSampleType = 1 and f_ref = @ValueofDB:tblSalesOutStock_id	
+		</exec>
+		<exec condition="'@SqlReturn:amount' != 'null' &amp;&amp; @SqlReturn:amount &gt; 0">
+			<sql>
+				update tblSalesOutStockDet set contriAmount = Round((TaxAmount/@SqlReturn:salesAmt)*@SqlReturn:amount,2) where PresentSampleType = 0 and  f_ref = @ValueofDB:tblSalesOutStock_id 	
+			</sql>
+			<sql>
+				update tblSalesOutStockDet set contriAmount += Round(@SqlReturn:amount - (select sum(contriAmount) from tblSalesOutStockDet where f_ref = @ValueofDB:tblSalesOutStock_id),2)
+				where f_ref = @ValueofDB:tblSalesOutStock_id and id in (select top 1 id from tblSalesOutStockDet where PresentSampleType = 0 and f_ref = @ValueofDB:tblSalesOutStock_id order by id desc)
+			</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--低于限售价确定保存时，执行低于成本的控制及过账前操作define-->
+<define name="tblSalesOutStock_Add_AccBefore1">
+		<sql type="condition">
+			<exec condition="@MEM:UnderLimitprice==true"><!--低于最低限售控制-->			
+				<sql type="define">tblSalesOutStock_Add_UnderLimitPrice_Validate</sql>
+			</exec>
+			<exec condition="@MEM:UnderCostprice==true"><!--低于成本价控制-->		
+				<sql type="define">tblSalesOutStock_Add_UnderCostPrice_Validate</sql>
+			</exec>
+			<exec condition="@MEM:WithOutSettleCys==true"><!--启用了控制对超结算账期未收款客户销售-->		
+				<sql type="define">tblSalesOutStock_Add_WithOutSettleCys_Validate</sql>
+			</exec>
+			<exec condition="true"><!--过账前操作-->		
+				<sql type="define">tblSalesOutStock_Add_AccBefore</sql>
+			</exec>
+		</sql>	
+</define>
+<!--低于限售价确定保存时，执行低于成本的控制及过账前操作define-->
+<define name="tblSalesOutStock_Add_AccBefore2">
+	<sql type="condition">
+		<exec condition="@MEM:UnderCostprice==true"><!--低于成本价控制-->			
+			<sql type="define">tblSalesOutStock_Add_UnderCostPrice_Validate</sql>
+		</exec>
+		<exec condition="@MEM:WithOutSettleCys==true"><!--启用了控制对超结算账期未收款客户销售-->		
+			<sql type="define">tblSalesOutStock_Add_WithOutSettleCys_Validate</sql>
+		</exec>
+		<exec condition="true"><!--过账前操作-->		
+			<sql type="define">tblSalesOutStock_Add_AccBefore</sql>
+		</exec>
+	</sql>
+</define>
+<!--低于成本价确定保存时，执行控制对超结算账期未收款客户销售操作define-->
+<define name="tblSalesOutStock_Add_AccBefore3">
+	<sql type="condition">
+		<exec condition="@MEM:WithOutSettleCys==true"><!--启用了控制对超结算账期未收款客户销售-->		
+			<sql type="define">tblSalesOutStock_Add_WithOutSettleCys_Validate</sql>
+		</exec>
+		<exec condition="true"><!--过账前操作-->		
+			<sql type="define">tblSalesOutStock_Add_AccBefore</sql>
+		</exec>
+	</sql>
+</define>
+<!--===========启用了信用额度控制，判断是否超出信用额度=========-->
+<define name="tblSalesOutStock_Add_CustomerCreditLimit_Validate">
+	<sql type="condition">
+		<condition>
+			<!--查询此客户的之前的应收余额-->
+			<select>select sum(isnull(a.ReceiveTotalRemain,0)-isnull(a.PreReceiveTotalRemain,0)-isnull(a.PayTotalRemain,0)+isnull(a.PrePayTotalRemain,0)) as RecRemain from tblCompany a where a.classCode=@ValueofDB:tblSalesOutStock_CompanyCode</select>
+			<!--查询此客户在客户模块设置的额度,本单待收款-->
+			<select>select a.Credit+isnull(b.Credit,0) as cred,cast(dbo.throwZero(a.Credit+isnull(b.Credit,0)-cast(@SqlReturn:RecRemain as numeric(18,8))) as Varchar(50)) as Credit,dbo.getDigits('tblSalesOutStock','TotalTaxAmount',cast(@ValueofDB:tblSalesOutStock_TotalTaxAmount as numeric(18,8))-cast(@ValueofDB:tblSalesOutStock_AlrAccAmt as numeric(18,8))) as CurrBillRece from tblCompany a left join tblTempCreditApply b on a.classCode=b.CompanyCode and b.workFlowNodeName='finish' and @ValueofDB:tblSalesOutStock_BillDate&gt;=StartDate and @ValueofDB:tblSalesOutStock_BillDate&lt;=EndDate where a.classCode=@ValueofDB:tblSalesOutStock_CompanyCode</select>
+		</condition>
+		<!--当本单待收款大于 信用额度-应收余额 给出错误提示-->
+		<exec condition="@SqlReturn:cred&gt;0 &amp;&amp;@SqlReturn:CurrBillRece&gt;@SqlReturn:Credit"> 
+			<error>tblSalesOutStock.CustomerCreditLimit.add.Notice,@SqlReturn:cred</error>       
+		</exec>
+	</sql>
+</define>
+<!--===========启用了多账户，进行多账户的判断提示=========-->
+<define name="tblSalesOutStock_Add_ManyAccount_Validate">
+	<!--选择收款账户-->
+	<sql type="condition">
+		<condition><select>select 'exisAccErr' as exisAccErr from tblSalesRecAccount where tblSalesRecAccount.f_ref=@ValueofDB:tblSalesOutStock_id and (isnull(tblSalesRecAccount.Amount,0)=0)</select></condition>
+		<exec condition="'@SqlReturn:exisAccErr'!='null'">
+			<error>common.AccountAmt.input.error</error>       
+		</exec>
+	</sql>
+	<!--选择了重复的付款账户，给出错误提示-->
+	<sql type="condition">
+		<condition><select>select 'sameAcc' as sameAcc from tblSalesRecAccount where f_ref=@ValueofDB:tblSalesOutStock_id group by Account having count(Account)&gt;1</select></condition>
+		<exec condition="'@SqlReturn:sameAcc'=='sameAcc'">
+			<error>common.recAccount.same.error</error>       
+		</exec>
+	</sql>
+</define>	
+<!--===========启用了“控制低于成本价销售出库”，根据逻辑给出相应提示=========-->
+<define name="tblSalesOutStock_Add_UnderCostPrice_Validate">
+	<sql type="condition">
+		<exec condition="'@MEM:GoodsCostingMethod'=='MONTH'||'@MEM:GoodsCostingMethod'=='FIFO'">
+			<sql type="define">UnderCostPrice_MONTH_Validate</sql>
+		</exec>
+		<exec condition="'@MEM:GoodsCostingMethod'=='MWAM'">
+			<sql type="define">UnderCostPrice_MWAM_Validate</sql>
+		</exec>
+	</sql>
+</define>		
+<!--全月一次平均，先进先出-->
+<define name="UnderCostPrice_MONTH_Validate">
+	<sql type="condition">
+		<condition>
+			<!--查询此用户是否有权限低于成本价销售-->
+			<select>select count(0) as allowCount from tblUserSunCompany a,tblRightType b where ((a.userid=@Sess:UserId and a.roleids like '%'+b.id+';%') or b.id=@Sess:UserId) and rightType='allowLittleCostOut' and hasRight=1</select>
+			<select>select b.GoodsFullName as GoodsFullName,cast(a.DisPrice as numeric(18,4)) as DisPrice,cast(c.lastPrice as numeric(18,4)) as lastPrice from tblSalesOutStockDet a,tblGoods b,tblStocks c where a.f_ref=@ValueofDB:tblSalesOutStock_id and a.goodsCode=b.classCode and a.goodsCode=c.goodsCode and (case when len(a.stockCode)=0 then @ValueofDB:tblSalesOutStock_StockCode else a.stockCode end)=c.stockCode and a.BatchNo=c.BatchNo and a.yearNO=c.yearNO and a.ProDate=c.ProDate and a.Availably=c.Availably and a.Inch=c.Inch and a.Hue=c.Hue and a.PresentSampleType not in ('1','2') and a.DisPrice&lt;c.lastPrice</select>
+			<!--查询此用户是否有查看成本价的权限-->
+			<select>select count(0) as Cost from tblUserSunCompany a,tblRole b where a.userid=@Sess:UserId and a.roleids like '%'+b.id+';%' and b.hiddenField like '%'+'1'+',%'</select>
+		</condition>
+		<!--查询出有低于成本价的商品，并且此用户没有权限低于成本价销售，用户没有查看成本价权限，也不是系统管理员给出错误提示-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;@SqlReturn:allowCount==0&amp;&amp;'@Sess:UserId'!='1'&amp;&amp;@SqlReturn:Cost!=0">
+			<error>商品 @SqlReturn:GoodsFullName 的售价 @SqlReturn:DisPrice 低于其成本价，不允许保存！</error>       
+		</exec>
+		<!--查询出有低于成本价的商品，并且此用户没有权限低于成本价销售，用户有查看成本价权限，也不是系统管理员给出错误提示-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;@SqlReturn:allowCount==0&amp;&amp;'@Sess:UserId'!='1'&amp;&amp;@SqlReturn:Cost==0">
+			<error>tblSalesOutStock.UnderCostPrice.error,@SqlReturn:GoodsFullName,@SqlReturn:DisPrice,@SqlReturn:lastPrice</error>       
+		</exec>
+		<!--查询出有低于成本价的商品，但此用户有权限低于成本价销售或者是系统管理员，用户没有查看成本价权限，给出提示信息-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;@SqlReturn:Cost!=0&amp;&amp;(@SqlReturn:allowCount!=0||'@Sess:UserId'=='1')">
+			<confirm yesDefine="tblSalesOutStock_Add_AccBefore3" noDefine="">tblSalesOutStock.UnderCostPrice.Cost.confirm,@SqlReturn:GoodsFullName,@SqlReturn:DisPrice</confirm>
+		</exec>
+		<!--查询出有低于成本价的商品，但此用户有权限低于成本价销售或者是系统管理员，用户有查看成本价权限，给出提示信息-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;@SqlReturn:Cost==0&amp;&amp;(@SqlReturn:allowCount!=0||'@Sess:UserId'=='1')">
+			<confirm yesDefine="tblSalesOutStock_Add_AccBefore3" noDefine="">tblSalesOutStock.UnderCostPrice.confirm,@SqlReturn:GoodsFullName,@SqlReturn:DisPrice,@SqlReturn:lastPrice</confirm>
+		</exec>
+	</sql>
+</define>		
+
+<!--移动加权-->
+<define name="UnderCostPrice_MWAM_Validate">
+	<sql type="condition"><!--序列号判断-->
+		<condition>
+			<!--查询此用户是否有权限低于成本价销售-->
+			<select>select count(0) as allowCount from tblUserSunCompany a,tblRightType b where ((a.userid=@Sess:UserId and a.roleids like '%'+b.id+';%') or b.id=@Sess:UserId) and rightType='allowLittleCostOut' and hasRight=1</select>
+			<select>select b.GoodsFullName as GoodsFullName,cast(a.DisPrice as numeric(18,4)) as DisPrice,cast(max(c.lastPrice) as numeric(18,4)) as lastPrice from tblSalesOutStockDet a,tblStockDet c,tblGoods b where a.f_ref=@ValueofDB:tblSalesOutStock_id and len(a.Seq)&gt;0 and LEN(c.Seq)&gt;0 and charIndex(c.seq+'~',a.seq)&gt;0 and c.id=(select top 1 id from tblStockDet k where k.goodPropHash=c.goodPropHash and (k.BillDate&lt;@ValueofDB:tblSalesOutStock_BillDate or (k.BillDate=@ValueofDB:tblSalesOutStock_BillDate and (k.createTime&lt;@ValueofDB:tblSalesOutStock_createTime))) order by BillDate desc,createTime desc,itemOrder desc)and a.goodsCode=b.classCode and a.PresentSampleType not in ('1','2') group by a.id,b.GoodsFullName,a.DisPrice having a.DisPrice&lt;max(c.lastPrice)</select>
+			<!--查询此用户是否有查看成本价的权限-->
+			<select>select count(0) as Cost from tblUserSunCompany a,tblRole b where a.userid=@Sess:UserId and a.roleids like '%'+b.id+';%' and b.hiddenField like '%'+'1'+',%'</select>
+		</condition>
+		<!--查询出有低于成本价的商品，并且此用户没有权限低于成本价销售，用户没有查看成本价权限，也不是系统管理员给出错误提示-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;@SqlReturn:allowCount==0&amp;&amp;'@Sess:UserId'!='1'&amp;&amp;@SqlReturn:Cost!=0">
+			<error>商品 @SqlReturn:GoodsFullName 的售价 @SqlReturn:DisPrice 低于其成本价，不允许保存！</error>       
+		</exec>
+		<!--查询出有低于成本价的商品，并且此用户没有权限低于成本价销售，用户有查看成本价权限，也不是系统管理员给出错误提示-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;@SqlReturn:allowCount==0&amp;&amp;'@Sess:UserId'!='1'&amp;&amp;@SqlReturn:Cost==0">
+			<error>tblSalesOutStock.UnderCostPrice.error,@SqlReturn:GoodsFullName,@SqlReturn:DisPrice,@SqlReturn:lastPrice</error>       
+		</exec>
+		<!--查询出有低于成本价的商品，但此用户有权限低于成本价销售或者是系统管理员，用户没有查看成本价权限，给出提示信息-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;@SqlReturn:Cost!=0&amp;&amp;(@SqlReturn:allowCount!=0||'@Sess:UserId'=='1')">
+			<confirm yesDefine="tblSalesOutStock_Add_AccBefore3" noDefine="">tblSalesOutStock.UnderCostPrice.Cost.confirm,@SqlReturn:GoodsFullName,@SqlReturn:DisPrice</confirm>
+		</exec>
+		<!--查询出有低于成本价的商品，但此用户有权限低于成本价销售或者是系统管理员，用户有查看成本价权限，给出提示信息-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;@SqlReturn:Cost==0&amp;&amp;(@SqlReturn:allowCount!=0||'@Sess:UserId'=='1')">
+			<confirm yesDefine="tblSalesOutStock_Add_AccBefore3" noDefine="">tblSalesOutStock.UnderCostPrice.confirm,@SqlReturn:GoodsFullName,@SqlReturn:DisPrice,@SqlReturn:lastPrice</confirm>
+		</exec>
+	</sql>
+	<sql type="condition"><!--非序列号判断-->
+		<condition>
+			<!--查询此用户是否有权限低于成本价销售-->
+			<select>select count(0) as allowCount from tblUserSunCompany a,tblRightType b where ((a.userid=@Sess:UserId and a.roleids like '%'+b.id+';%') or b.id=@Sess:UserId) and rightType='allowLittleCostOut' and hasRight=1</select>
+			<select>select b.GoodsFullName as GoodsFullName,cast(a.DisPrice as numeric(18,4)) as DisPrice,cast(c.lastPrice as numeric(18,4)) as lastPrice from tblSalesOutStockDet a,tblStockDet c,tblGoods b where a.f_ref=@ValueofDB:tblSalesOutStock_id and len(a.Seq)=0 and Hashbytes('md5',Lower(a.GoodsCode+'GoodsCode'+a.StockCode+'StockCode'+a.Availably+'Availably'+a.BatchNo+'BatchNo'+a.Hue+'Hue'+a.Inch+'Inch'+a.ProDate+'ProDate'+'Seq'+a.yearNO+'yearNO'))=c.goodPropHash and c.id=(select top 1 id from tblStockDet k where k.goodPropHash=c.goodPropHash and (k.BillDate&lt;@ValueofDB:tblSalesOutStock_BillDate or (k.BillDate=@ValueofDB:tblSalesOutStock_BillDate and (k.createTime&lt;@ValueofDB:tblSalesOutStock_createTime))) order by BillDate desc,createTime desc,itemOrder desc)and a.goodsCode=b.classCode and a.PresentSampleType not in ('1','2') and a.DisPrice&lt;c.lastPrice</select>
+			<!--查询此用户是否有查看成本价的权限-->
+			<select>select count(0) as Cost from tblUserSunCompany a,tblRole b where a.userid=@Sess:UserId and a.roleids like '%'+b.id+';%' and b.hiddenField like '%'+'1'+',%'</select>
+		</condition>
+		<!--查询出有低于成本价的商品，并且此用户没有权限低于成本价销售，用户没有查看成本价权限，也不是系统管理员给出错误提示-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;@SqlReturn:allowCount==0&amp;&amp;'@Sess:UserId'!='1'&amp;&amp;@SqlReturn:Cost!=0">
+			<error>商品 @SqlReturn:GoodsFullName 的售价 @SqlReturn:DisPrice 低于其成本价，不允许保存！</error>       
+		</exec>
+		<!--查询出有低于成本价的商品，并且此用户没有权限低于成本价销售，用户有查看成本价权限，也不是系统管理员给出错误提示-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;@SqlReturn:allowCount==0&amp;&amp;'@Sess:UserId'!='1'&amp;&amp;@SqlReturn:Cost==0">
+			<error>tblSalesOutStock.UnderCostPrice.error,@SqlReturn:GoodsFullName,@SqlReturn:DisPrice,@SqlReturn:lastPrice</error>       
+		</exec>
+		<!--查询出有低于成本价的商品，但此用户有权限低于成本价销售或者是系统管理员，用户没有查看成本价权限，给出提示信息-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;@SqlReturn:Cost!=0&amp;&amp;(@SqlReturn:allowCount!=0||'@Sess:UserId'=='1')">
+			<confirm yesDefine="tblSalesOutStock_Add_AccBefore3" noDefine="">tblSalesOutStock.UnderCostPrice.Cost.confirm,@SqlReturn:GoodsFullName,@SqlReturn:DisPrice</confirm>
+		</exec>
+		<!--查询出有低于成本价的商品，但此用户有权限低于成本价销售或者是系统管理员，用户有查看成本价权限，给出提示信息-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;@SqlReturn:Cost==0&amp;&amp;(@SqlReturn:allowCount!=0||'@Sess:UserId'=='1')">
+			<confirm yesDefine="tblSalesOutStock_Add_AccBefore3" noDefine="">tblSalesOutStock.UnderCostPrice.confirm,@SqlReturn:GoodsFullName,@SqlReturn:DisPrice,@SqlReturn:lastPrice</confirm>
+		</exec>
+	</sql>
+</define>	
+<!--判断用户是否有权限对超结算账期未收款客户销售-->
+<define name="tblSalesOutStock_Add_WithOutSettleCys_Validate">	
+	<sql type="condition">
+			<condition><select>select count(0) as allowCount from tblUserSunCompany a,tblRightType b where ((a.userid=@Sess:UserId and a.roleids like '%'+b.id+';%') or b.id=@Sess:UserId) and rightType='WithOutSettleCys' and hasRight=1</select>
+							 <select>select tblSalesOutStock.BillNo,convert(int,DATEDIFF(DAY,tblSalesOutStock.AcceptDate,GETDATE())) as exceedtime from tblSalesOutStock join tblCompany on tblCompany.classCode=tblSalesOutStock.CompanyCode where tblSalesOutStock.CompanyCode=(select CompanyCode from tblSalesOutStock where id=@ValueofDB:id) and tblSalesOutStock.NeedReturnAmt&gt;0 and convert(int,DATEDIFF(DAY,(case tblSalesOutStock.AcceptDate when '' then null else tblSalesOutStock.AcceptDate end),GETDATE()))&gt;0</select>
+			</condition>
+		<!--查询出有超结算账期未收款的客户，并且此用户没有权限超结算账期，也不是系统管理员给出错误提示-->
+			<exec condition="'@SqlReturn:BillNo'!='null'&amp;&amp;@SqlReturn:allowCount==0&amp;&amp;'@Sess:UserId'!='1'">
+					<error>tblSalesOutStock.SettleCys.error,@SqlReturn:BillNo</error>       
+			</exec>			
+   <!--查询出有超结算账期未收款的客户，并且此用户有权限超结算账期，或者是系统管理员给出提示-->
+			<exec condition="'@SqlReturn:BillNo'!='null'&amp;&amp;(@SqlReturn:allowCount!=0||'@Sess:UserId'=='1')">
+					<confirm yesDefine="tblSalesOutStock_Add_AccBefore" noDefine="">tblSalesOutStock.SettleCys.confirm,@SqlReturn:BillNo</confirm>
+			</exec>						
+	</sql>
+</define>
+
+		
+<!--===========启用了“控制低于限售价销售出库”，根据逻辑给出相应提示=========-->
+<define name="tblSalesOutStock_Add_UnderLimitPrice_Validate">
+	<sql type="condition">
+		<condition>
+			<!--查询此用户是否有权限低于限售价销售-->
+			<select>select count(0) as allowCount from tblUserSunCompany a,tblRightType b where ((a.userid=@Sess:UserId and a.roleids like '%'+b.id+';%') or b.id=@Sess:UserId) and rightType='UnderLimitprice' and hasRight=1</select>
+			<!--查询是否有折后单价低于其最低限售的商品-->
+			<select>select b.GoodsFullName as GoodsFullName,cast(a.DisPrice as numeric(18,4)) as DisPrice,cast(b.Pricefixing as numeric(18,4)) as Pricefixing from tblSalesOutStockDet a,tblGoods b where a.f_ref=@ValueofDB:tblSalesOutStock_id and a.goodsCode=b.classCode and a.PresentSampleType not in ('1','2') and b.Pricefixing&gt;0 and a.DisPrice&lt;b.Pricefixing</select>
+		</condition>
+		<!--查询出有低于限售价的商品，并且此用户没有权限低于限售价销售，也不是系统管理员给出错误提示-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;@SqlReturn:allowCount==0&amp;&amp;'@Sess:UserId'!='1'">
+			<error>tblSalesOutStock.UnderLimitPrice.error,@SqlReturn:GoodsFullName,@SqlReturn:DisPrice,@SqlReturn:Pricefixing</error>       
+		</exec>
+		<!--查询出有低于限售价的商品，但此用户有权限低于限售价销售或者是系统管理员，给出提示信息-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;(@SqlReturn:allowCount!=0||'@Sess:UserId'=='1')">
+			<confirm yesDefine="tblSalesOutStock_Add_AccBefore2" noDefine="">tblSalesOutStock.UnderLimitPrice.confirm,@SqlReturn:GoodsFullName,@SqlReturn:DisPrice,@SqlReturn:Pricefixing</confirm>
+		</exec>
+	</sql>
+</define>
+<!--===========启用了价格控制，判断商品价格是否在控制范围内的判断提示=========-->
+<define name="tblSalesOutStock_Add_PriceControl_Validate">
+	<!--=======不含税单价的判断=======-->
+	<sql type="condition">
+		<condition><select>select c.GoodsNumber as GoodsLH,cast(isnull(b.LowestPrice,0) as decimal(18,4)) as LowestPrice,cast(isnull(b.HighestPrice,0) as decimal(18,4)) as HighestPrice from tblSalesOutStockDet a,ViewPriceControl b,tblGoods c where a.f_ref=@ValueofDB:tblSalesOutStock_id and UserID=@ValueofDB:tblSalesOutStock_createBy and b.ControlType='Sell' and b.GoodsCode=a.GoodsCode and c.classCode=a.GoodsCode and a.PresentSampleType not in ('1','2') and (a.DisPrice&lt;b.LowestPrice or (b.HighestPrice&gt;0 and a.DisPrice&gt;b.HighestPrice))</select></condition>
+		<!--有录入最低价，最高价时，判断要在此范围内-->
+		<exec condition="'@SqlReturn:GoodsLH'!='null'&amp;&amp;@SqlReturn:LowestPrice&gt;0&amp;&amp;@SqlReturn:HighestPrice&gt;0">	
+			<error>common.priceNotScope.error,@SqlReturn:GoodsLH,@SqlReturn:LowestPrice,@SqlReturn:HighestPrice</error>       
+		</exec>
+		<!--有录入最低价，没有最高价时，判断要大于等于最低价-->
+		<exec condition="'@SqlReturn:GoodsLH'!='null'&amp;&amp;@SqlReturn:LowestPrice&gt;0&amp;&amp;@SqlReturn:HighestPrice==0">	
+			<error>common.priceLessLowest.error,@SqlReturn:GoodsLH,@SqlReturn:LowestPrice</error>       
+		</exec>
+		<!--有录入最高价，没有最低价时，判断要小于等于最高价-->
+		<exec condition="'@SqlReturn:GoodsLH'!='null'&amp;&amp;@SqlReturn:LowestPrice==0&amp;&amp;@SqlReturn:HighestPrice&gt;0">	
+			<error>common.priceMoreHighest.error,@SqlReturn:GoodsLH,@SqlReturn:HighestPrice</error>       
+		</exec>
+	</sql>
+	<!--=======含税单价的判断=======-->
+	<sql type="condition">
+		<condition><select>select c.GoodsNumber as GoodsLH,cast(isnull(b.LowestPrice,0) as decimal(18,4)) as LowestPrice,cast(isnull(b.HighestPrice,0) as decimal(18,4)) as HighestPrice from tblSalesOutStockDet a,ViewPriceControl b,tblGoods c where b.GoodsCode=a.GoodsCode and c.classCode=a.GoodsCode and b.ControlType='SellTax' and UserID=@ValueofDB:tblSalesOutStock_createBy and a.PresentSampleType not in ('1','2') and (a.TaxPrice&lt;b.LowestPrice or (b.HighestPrice&gt;0 and a.TaxPrice&gt;b.HighestPrice)) and a.f_ref=@ValueofDB:tblSalesOutStock_id</select></condition>
+		<!--有录入最低价，最高价时，判断要在此范围内-->
+		<exec condition="'@SqlReturn:GoodsLH'!='null'&amp;&amp;@SqlReturn:LowestPrice&gt;0&amp;&amp;@SqlReturn:HighestPrice&gt;0">	
+			<error>common.TaxPriceNotScope.error,@SqlReturn:GoodsLH,@SqlReturn:LowestPrice,@SqlReturn:HighestPrice</error>       
+		</exec>
+		<!--有录入最低价，没有最高价时，判断要大于等于最低价-->
+		<exec condition="'@SqlReturn:GoodsLH'!='null'&amp;&amp;@SqlReturn:LowestPrice&gt;0&amp;&amp;@SqlReturn:HighestPrice==0">	
+			<error>common.TaxPriceLessLowest.error,@SqlReturn:GoodsLH,@SqlReturn:LowestPrice</error>       
+		</exec>
+		<!--有录入最高价，没有最低价时，判断要小于等于最高价-->
+		<exec condition="'@SqlReturn:GoodsLH'!='null'&amp;&amp;@SqlReturn:LowestPrice==0&amp;&amp;@SqlReturn:HighestPrice&gt;0">	
+			<error>common.TaxPriceMoreHighest.error,@SqlReturn:GoodsLH,@SqlReturn:HighestPrice</error>       
+		</exec>
+	</sql>
+</define>
+<!--===========启用了“控制超订单出库”，需判断是否有超出订单出库=========-->
+<define name="tblSalesOutStock_Add_OverOrderOut_Validate">
+	<sql type="condition">
+		<condition>
+			<!--查询此用户是否有权限超订单出库-->
+			<select>select count(0) as allowCount from tblUserSunCompany a,tblRightType b where ((a.userid=@Sess:UserId and a.roleids like '%'+b.id+';%') or b.id=@Sess:UserId) and rightType='allowMoreOrderOut' and hasRight=1</select>
+			<!--查询是否有超订单入库的商品-->
+			<select>select l.BillNo,k.GoodsFullName,dbo.throwZero((select sum(NotOutQty) from tblSalesOrderDet b where b.f_ref=a.SalesOrderID and a.GoodsCode=b.GoodsCode and a.BatchNo=b.BatchNo and a.Inch=b.Inch and a.Hue=b.Hue and a.yearNO=b.yearNO)) as NotOutQty from tblSalesOutStockDet a,tblGoods k,tblSalesOrder l where a.f_ref=@ValueofDB:tblSalesOutStock_id and LEN(SalesOrderID)&gt;0 and a.SalesOrderID=l.id and a.GoodsCode=k.classCode group by SalesOrderID,l.BillNo,GoodsCode,BatchNo,Inch,Hue,yearNO,k.GoodsFullName having SUM(Qty)&gt;(select sum(NotOutQty) from tblSalesOrderDet b where b.f_ref=a.SalesOrderID and a.GoodsCode=b.GoodsCode and a.BatchNo=b.BatchNo and a.Inch=b.Inch and a.Hue=b.Hue and a.yearNO=b.yearNO)</select>
+		</condition>
+		<!--查询出有超订单出库的商品，并且此用户没有权限超订单出库，也不是系统管理员给出错误提示-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;@SqlReturn:allowCount==0&amp;&amp;'@Sess:UserId'!='1'">
+			<error>tblSalesOutStock.add.OverOrderQty.error,@SqlReturn:BillNo,@SqlReturn:GoodsFullName,@SqlReturn:NotOutQty</error>       
+		</exec>
+		<!--查询出有超订单出库的商品，但此用户有权限超订单出库或者是系统管理员，给出提示信息-->
+		<exec condition="'@SqlReturn:GoodsFullName'!='null'&amp;&amp;(@SqlReturn:allowCount!=0||'@Sess:UserId'=='1')">
+			<confirm yesDefine="tblSalesOutStock_Add_AccBefore1" noDefine="">tblSalesOutStock.add.OverOrderQty.confirm,@SqlReturn:BillNo,@SqlReturn:GoodsFullName,@SqlReturn:NotOutQty</confirm>
+		</exec>
+	</sql>
+</define>
+
+<!--==============引用销售订单的控制判断=================-->
+<define name="tblSalesOutStock_Add_QuoteOrder_Validate">
+	<sql type="condition"><!--判断销售出库的单据日期在引用销售订单前，给出错误提示-->
+		<condition><select>select a.BillNo,billDate as BuyInDate from tblSalesOrder a,tblSalesOutStockDet b where b.f_ref=@ValueofDB:tblSalesOutStock_id and b.SalesOrderID=a.id and a.BillDate&gt;@ValueofDB:tblSalesOutStock_BillDate</select></condition>
+		<exec condition="'@SqlReturn:BillNo'!='null'">			
+			<error>common.QuoteDate.error,@SqlReturn:BillNo,@SqlReturn:BuyInDate</error>       
+		</exec>
+	</sql>
+	<sql type="condition"><!--客户不同，给出错误提示-->
+		<condition><select>select a.BillNo,c.ComFullName from tblSalesOrder a,tblSalesOutStockDet b,tblCompany c where b.f_ref=@ValueofDB:tblSalesOutStock_id and b.SalesOrderID=a.id and a.CompanyCode=c.classCode and a.CompanyCode!=@ValueofDB:tblSalesOutStock_CompanyCode</select></condition>
+		<exec condition="'@SqlReturn:BillNo'!='null'">			
+			<error>common.clientQuote.error,@SqlReturn:BillNo,@SqlReturn:ComFullName</error>       
+		</exec>
+	</sql>
+	<sql type="condition"><!--引用单据发票类型与主表不符-->
+		<condition><select>select tblSalesOrder.BillNo as BuyOrderID from tblSalesOutStock left join tblSalesOutStockDet on tblSalesOutStock.id=tblSalesOutStockDet.f_ref left join tblSalesOrderDet on tblSalesOrderDet.id=tblSalesOutStockDet.SourceID inner join tblSalesOrder on tblSalesOrder.id=tblSalesOrderDet.f_ref where tblSalesOutStockDet.f_ref=@ValueofDB:tblSalesOutStock_id and tblSalesOutStock.InVoiceType!=tblSalesOrder.InVoiceType</select></condition>
+			<exec condition="'@SqlReturn:BuyOrderID'!='null'">			
+				<error>tblSalesOutStock.InvoiceType.error,@SqlReturn:BuyOrderID</error>       
+			</exec>
+	</sql>
+</define>
+<!--=======启用了价格跟踪，向价格管理表中插入数据================-->
+<define name="tblSalesOutStock_Add_PriceTracking">
+	<sql type="condition">
+		<condition>
+			<select>select id as CPID from tblCustomerPrice where CompanyCode=@ValueofDB:tblSalesOutStock_CompanyCode</select>
+			<select>select lower(substring(replace(newid(),'-',''),1,28)) as NCPID</select>
+		</condition>
+		<!--判断如果价格管理表中没有此客户的记录，插入一条主表记录-->
+		<exec condition="'@SqlReturn:CPID'=='null'">
+			<sql>insert into tblCustomerPrice(id,classCode,workFlowNodeName,CompanyCode,createBy,lastUpdateBy,createTime,lastUpdateTime,statusId,SCompanyID) values (@SqlReturn:NCPID,'','finish',@ValueofDB:tblSalesOutStock_CompanyCode,'1','1',@ValueofDB:tblSalesOutStock_createTime,@ValueofDB:tblSalesOutStock_lastUpdateTime,0,@ValueofDB:tblSalesOutStock_SCompanyID)</sql>
+		</exec>
+		<!--查询在价格管理表中存在的商品，并且修改其最近售价，售价折扣-->
+		<exec condition="'@SqlReturn:CPID'!='null'">
+			<sql>update tblCustomerPriceDet set tblCustomerPriceDet.Price=a.Price,tblCustomerPriceDet.OutDiscount=case when (tblCustomerPriceDet.OutDiscount!=1 and @MEM:OutDiscountTracke!='true') then tblCustomerPriceDet.OutDiscount else a.Discount end from(select b.id as CDetID,(case @MEM:OutPriceTrack when 'Price' then a.Price when 'TaxPrice' then a.TaxPrice else a.CurPrice end) as Price,(case when @MEM:OutDiscountTracke='true' then Discount else 100 end) as Discount from tblSalesOutStockDet a,tblCustomerPriceDet b where a.f_ref=@ValueofDB:tblSalesOutStock_id and b.f_ref=@SqlReturn:CPID and a.goodsCode=b.goodsCode and a.Price&gt;0)a where tblCustomerPriceDet.id=a.CDetID</sql>
+		</exec>
+		<!--查询在价格管理表中不存在的商品，并且插入最近进价，进价折扣-->
+		<exec condition="true">
+			<sql>insert into tblCustomerPriceDet(id,f_ref,GoodsCode,Price,SecQty,BaseQty,OutDiscount,SCompanyID)select a.sdid,a.CID,a.GoodsCode,a.Price,a.SecQty,a.BaseQty,a.Discount,a.CSID from(select substring(replace(newid(),'-',''),1,30) as sdid,a.GoodsCode as GoodsCode,(case @MEM:OutPriceTrack when 'Price' then a.Price when 'TaxPrice' then a.TaxPrice else a.CurPrice end) as Price,isnull(a.SecUnit,'') as SecUnit,a.SecQty,a.BaseQty,a.UnitPrice as UnitPrice,(case @SqlReturn:CPID when 'null' then @SqlReturn:NCPID else @SqlReturn:CPID end) as CID,@ValueofDB:tblSalesOutStock_SCompanyID as CSID,(case when @MEM:OutDiscountTracke='true' then Discount else 100 end) as Discount from tblSalesOutStockDet a where a.f_ref=@ValueofDB:tblSalesOutStock_id and a.price&gt;0 and (select count(0) from tblCustomerPriceDet b where b.f_ref=(case @SqlReturn:CPID when null then @SqlReturn:NCPID else @SqlReturn:CPID end) and a.goodsCode=b.goodsCode)=0 and a.detOrderNo=(select top 1 detOrderNo from tblSalesOutStockDet b where b.f_ref=a.f_ref and a.GoodsCode=b.GoodsCode order by b.detOrderNo desc))a</sql>
+		</exec>		
+	</sql>
+</define>
+<!--=====出库数量不能大于可用库存======-->
+<define name="tblSalesOutStock_OutBillUseQty_validate">
+	<sql type="condition">
+		<condition><select>select isnull(c.GoodsFullName,'') as GoodsFullName,isnull(c.GoodsNumber,'') as GoodsNumber,isnull(tblStock.StockFullName,'') as StockFullName,cast(case c.isCatalog when 0 then isnull(b.LastQty+b.inQtyNotAudit+b.SInQtyNotAudit-b.outQtyNotAudit-b.BOutQtyNotAudit,0) else -99999999 end - a.Qty as numeric(18,4)) as Qty from(select GoodsCode,Hue,Inch,Availably,ProDate,StockCode,SUM(Qty) as Qty from tblSalesOutStockDet where f_ref=@ValueofDB:tblSalesOutStock_id group by GoodsCode,Hue,Inch,Availably,ProDate,StockCode)a left join ( select GoodsCode,StockCOde,Hue,Inch,Availably,ProDate , sum(LastQty) LastQty,sum(inQtyNotAudit) inQtyNotAudit,sum(SInQtyNotAudit) SInQtyNotAudit,sum(outQtyNotAudit)outQtyNotAudit,sum(BOutQtyNotAudit) BOutQtyNotAudit from  tblStocks group by GoodsCode,StockCOde,Hue,Inch,Availably,ProDate) b on a.GoodsCode=b.GoodsCode and a.StockCode=b.StockCode  and a.Hue=b.Hue and a.Inch=b.Inch and a.Availably=b.Availably and a.ProDate=b.ProDate left join tblStock on a.StockCode=tblStock.classCode left join tblGoods c on a.GoodsCode=c.classCode  where  a.Qty&gt;(case c.isCatalog when 0 then isnull(b.LastQty+b.inQtyNotAudit+b.SInQtyNotAudit-b.outQtyNotAudit-b.BOutQtyNotAudit,0) else -99999999 end)</select></condition>
+		<exec condition="'@SqlReturn:GoodsFullName' != 'null'">			
+			<error>common.VirtualStock.excess.error,@ValueofDB:tblSalesOutStock_BillNo,@SqlReturn:GoodsNumber @SqlReturn:GoodsFullName,@SqlReturn:Qty,@SqlReturn:StockFullName</error>       
+		</exec>	
+	</sql>	
+</define>
+<!--=======过账前应该执行的操作（如果遇到确定，取消的提示信息，点击“确定”时必须调用一个define,所以将此代码独立出来）===============-->
+<define name="tblSalesOutStock_Add_AccBefore">
+	<sql type="condition">
+		<!--没有启用多仓库时将主表的仓库设置到明细表-->	
+		<exec condition="'@MEM:ManyStockSales'=='false'">			  
+			<sql>update tblSalesOutStockDet set StockCode=@ValueofDB:tblSalesOutStock_StockCode where f_ref=@ValueofDB:tblSalesOutStock_id</sql>
+		</exec>
+		<!--出库数量不能大于可用库存-->
+		<exec condition=" false &amp;&amp; '@MEM:OutBillUseQtyCheck'=='true'">
+			<sql type="define">tblSalesOutStock_OutBillUseQty_validate</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition> <select> select count(0) hasnoScan from tblSalesOutStockScan where f_ref=@ValueofDB:id and SourceId not in (select isnull(FixId,'') from tblSalesOutStockDet where f_ref=@ValueofDB:id) </select> </condition>
+		<!--出库数量不能大于可用库存-->
+		<exec condition="  @SqlReturn:hasnoScan &gt; 0 ">
+			<error>已经扫描的商品不可以再删除</error>
+		</exec>
+	</sql>
+	<sql type="condition">			
+		<condition>
+			<select>
+				SELECT SUM(TaxAmount) AS alltax FROM tblSalesOutStockDet where f_ref=@ValueofDB:tblSalesOutStock_id
+			</select>
+		</condition>
+		<!--如果有引用单据，将引用ID映射到明细表-->
+		<exec condition="'@ValueofDB:tblSalesOutStock_SalesOrderID'.length&gt;0">				  
+			<sql>update tblSalesOutStockDet set SalesOrderID=@ValueofDB:tblSalesOutStock_SalesOrderID where f_ref=@ValueofDB:tblSalesOutStock_id and len(isnull(SalesOrderID,''))=0</sql>
+		</exec>
+		<!--多账户时由于某些情况下，账户金额不能更新主表累计收款金额，导致无法生成凭证等错误-->
+		<exec condition="true">
+			<sql>update tblSalesOutStock set FactIncome=a.Amount,AlrAccAmt=a.Amount,AccAmt=a.Amount from (select isnull(sum(Amount),0) as Amount from tblSalesRecAccount as a where a.f_ref=@ValueofDB:id) as a where tblSalesOutStock.id=@ValueofDB:id</sql>
+		</exec>
+		<exec condition="true">
+			<!--销售出库单优惠金额赋予初值-->
+			<sql>UPDATE b SET b.PreferAmount=case when convert(numeric(18,8),@ValueofDB:tblSalesOutStock_TotalTaxAmount)+convert(numeric(18,8),@ValueofDB:tblSalesOutStock_DiscountAmount)=0 then 0 else round(convert(numeric(28,8),@ValueofDB:tblSalesOutStock_DiscountAmount*TaxAmount)/(convert(numeric(18,8),@ValueofDB:tblSalesOutStock_TotalTaxAmount)+convert(numeric(18,8),@ValueofDB:tblSalesOutStock_DiscountAmount)),@MEM:DigitsAmount) end FROM tblSalesOutStock a, tblSalesOutStockDet b WHERE a.id=b.f_ref and a.id=@ValueofDB:id</sql>
+			<!--通过上述方式将优惠金额分摊到明细表某些情况会产生差额，将差额记录到最后一条记录中-->
+			<sql>update tblSalesOutStockDet set PreferAmount=PreferAmount+@ValueofDB:tblSalesOutStock_DiscountAmount-(select sum(PreferAmount) from tblSalesOutStockDet a where a.f_ref=@ValueofDB:id) where f_ref=@ValueofDB:id and id=(select top 1 id from tblSalesOutStockDet k where k.f_ref=@ValueofDB:id and TaxAmount!=0 order by detOrderNo desc)</sql>
+			<!--修改明细表的实际出库数量=数量 含税金额=待收款金额-->
+			<sql>UPDATE tblSalesOutStockDet SET PreferBackAmount=TaxAmount-PreferAmount,AfterChangeAmt=TaxAmount-PreferAmount,NeedReceiveAmt=TaxAmount,FactOutQty=Qty,BackQty=0,BackAmount=0,NoInvoiceQty=Qty,InvoiceQty=0 where tblSalesOutStockDet.f_ref=@ValueofDB:id</sql>
+			<!--修改主表的未开票金额，开票状态，待付款金额，累计付款金额，已代收金额-->
+			<sql>update tblSalesOutStock set BackAmount=0,CurBackAmount=0,AfterChangeAmt=TotalTaxAmount,InvoiceAmount=0,NoInvoiceAmount=TotalTaxAmount,InvoiceStatus='False',TotalAlrAccAmt=AlrAccAmt,CurTotalAlrAccAmt=CurAlrAccAmt,NeedReturnAmt=TotalTaxAmount-AlrAccAmt,CurNeedReturnAmt=CurTotalAmount-CurAlrAccAmt,hashDeputyReceAmt=0,CertificateNo='' where id=@ValueofDB:tblSalesOutStock_id and 333=333</sql>	
+		</exec>
+		<!-- 应开票金额=明细含税金额/明细含税金额总和*主表优惠后金额  -->
+		<exec condition="@ValueofDB:TotalAmount &gt; 0 &amp;&amp; @SqlReturn:alltax &gt; 0">
+			<sql>UPDATE c SET c.InvoiceAmountH=round(c.TaxAmount/b.alltax*a.TotalTaxAmount,@MEM:DigitsAmount) from tblSalesOutStock a,(SELECT SUM(TaxAmount) AS alltax FROM tblSalesOutStockDet where f_ref=@ValueofDB:tblSalesOutStock_id) b,tblSalesOutStockDet c WHERE a.id=c.f_ref and a.id=@ValueofDB:tblSalesOutStock_id </sql>
+		</exec>
+		<!-- 明细表未开票金额，开票状态赋初始值  未开票金额=应开票金额-已开票金额 开票状态 '未开票'-->
+		<exec condition="true">	
+			<sql>update tblSalesOutStockDet set NoInvoiceAmount=InvoiceAmountH-InvoiceAmount,InvoiceStatus='False' where f_ref=@ValueofDB:tblSalesOutStock_id</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<exec condition="'@MEM:tblSalesOutStock_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSalesOutStockDet.GoodsCode,@StockCode=tblSalesOutStockDet.StockCode,@BillType=tblSalesOutStock,@InstoreQty=0,@OutstoreQty=tblSalesOutStockDet.Qty,@from=tblSalesOutStockDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		
+		<!--如果启用审核流，更新序列号审核库存表-->
+		<exec condition="'@MEM:tblSalesOutStock_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+		<exec condition=" true ">
+			<sql> update tblSalesOutStockDet set FixId=(case when isnull(FixId,'')='' then id else FixId end) where f_ref=@ValueofDB:id </sql>
+		</exec>
+		<exec condition="  '@ValueofDB:FreightOut' !='Yes,'  ">
+			<!-- 更新主表总重,计算运费-->			
+			<sql type="procedure">{call proc_ComputeFreight(@ValueofDB:id,tblSalesOutStock,@ValueofDB:District,@ValueofDB:isShipping,retCode,retVal)}</sql>			
+		</exec>
+		<exec condition=" true ">
+			<sql> update tblSalesOutStockDet set ScanQty=( select count(0) from tblSalesOutStockScan b where tblSalesOutStockDet.f_ref=b.f_ref and tblSalesOutStockDet.FixId=b.SourceId and tblSalesOutStockDet.GoodsCode=b.GoodsCode ) where f_ref=@ValueofDB:id </sql>
+		</exec>
+		
+		<!--销售出库单不启用审核流时，直接执行过账操作。启用审核流时，通过界面点击流程终止调用此define-->
+		<exec condition="'@MEM:tblSalesOutStock_IsStatart' == '0'&amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">SalesOutStock_Add_One</sql>
+		</exec>
+	</sql>
+	<!--销售出库单付款与优惠金额比较回填明细表-->
+	<sql type="condition">
+		<condition>
+			<select>select isnull(sum(Amount),0) as sumAmount from tblSalesRecAccount where f_ref=@ValueofDB:tblSalesOutStock_id
+			</select>
+		</condition>
+		<exec condition="@SqlReturn:sumAmount&gt;=@ValueofDB:tblSalesOutStock_TotalTaxAmount">				
+			<sql>update tblSalesOutStockDet set TotalReceiveAmt=TaxAmount where f_ref=@ValueofDB:tblSalesOutStock_id</sql>
+		</exec>
+		<exec condition="@SqlReturn:sumAmount&lt;@ValueofDB:tblSalesOutStock_TotalTaxAmount">				
+			<sql>update tblSalesOutStockDet set TotalReceiveAmt=case when convert(numeric(28,8),@ValueofDB:tblSalesOutStock_TotalTaxAmount)+convert(numeric(28,8),@ValueofDB:tblSalesOutStock_DiscountAmount)=0 then 0 else round(convert(numeric(28,8),@SqlReturn:sumAmount*TaxAmount)/(convert(numeric(28,8),@ValueofDB:tblSalesOutStock_TotalTaxAmount)+convert(numeric(28,8),@ValueofDB:tblSalesOutStock_DiscountAmount)),@MEM:DigitsAmount) end where f_ref=@ValueofDB:tblSalesOutStock_id
+			</sql>
+		</exec>
+	</sql>
+	<!-- 保证金分配 -->
+	<sql type="condition">
+		<condition><select> select isnull(sum(taxAmount),0) tta from tblSalesOutStockDet where f_ref=@ValueofDB:id and TaxAmount &gt;0 </select></condition>
+		
+		<exec condition=" @ValueofDB:BzjRate &gt;0 ">
+			<!--<sql> update tblSalesOutStock set BzjTotalAmount=round((CAST(@ValueofDB:TotalTaxAmount as numeric(18,8))*CAST(@ValueofDB:BzjRate as numeric(18,8)))/100,2)  where id=@ValueofDB:id </sql>-->
+			<sql> update tblSalesOutStock set BzjTotalAmount=round(((CAST(@ValueofDB:TotalAmount as numeric(18,8))-CAST(@ValueofDB:khFreightAmt as numeric(18,8)))*CAST(@ValueofDB:BzjRate as numeric(18,8)))/100,2)  where id=@ValueofDB:id </sql>
+			<sql> update tblSalesOutStockDet set bzjAmount=round(taxAmount/@SqlReturn:tta * ((CAST(@ValueofDB:TotalTaxAmount as numeric(18,8))*CAST(@ValueofDB:BzjRate as numeric(18,8)))/100),2)  where f_ref=@ValueofDB:id and TaxAmount &gt;0 </sql>
+		</exec>
+		<exec condition=" @ValueofDB:khFreightAmt &gt;0 ">
+			<sql> update tblSalesOutStockDet set yfAmount=round(taxAmount/@SqlReturn:tta * @ValueofDB:khFreightAmt,2)  where f_ref=@ValueofDB:id and TaxAmount &gt;0 </sql>
+		</exec>
+	</sql>
+ 
+ 
+</define>
+<!--=============销售出库单审核过账执行的操作============-->
+<define name="SalesOutStock_Add_One">
+
+	<!-- 自定义：扣减银企直联子账户余额-->
+	
+	<sql type="condition">
+		<condition>
+			<select>select balance from tblSubAccountBalance where subAccountNo = @ValueofDB:subAccount and companyCode =@ValueofDB:CompanyCode </select>
+		</condition>
+		<exec condition=" @SqlReturn:balance &gt;= @ValueofDB:TotalTaxAmount ">
+			
+			<sql>
+			update tblSubAccountBalance set balance = balance - @ValueofDB:TotalTaxAmount where subAccountNo = @ValueofDB:subAccount and companyCode =@ValueofDB:CompanyCode 
+			</sql>
+			
+		</exec>
+	</sql>
+
+
+
+ 
+	<sql type="condition"><!--如果启用审核流，删除已审核完毕的序列号出入明细-->
+		<exec condition="'@MEM:tblSalesOutStock_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,delete,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--如果有引用销售订单。回填订单的相关字段-->
+		<exec condition="true">	
+			<sql type="procedure">{call proc_SalesUpdateOrderQty(@ValueofDB:tblSalesOutStock_id,add,retCode,retVal)}</sql>
+		</exec>
+	</sql>	
+	<sql type="condition"><!--启用了系统配置 信用额度控制，判断是否大于可用额度-->
+		<exec condition="@MEM:CustomerCreditLimit==true">
+			<sql type="define">tblSalesOutStock_Add_CustomerCreditLimit_Validate</sql>
+		</exec>
+	</sql>
+	
+	<sql type="condition">
+	<!--如果启用了价格跟踪，将单价插入到价格管理表中-->	
+		<exec condition="'@MEM:OutPriceTrack'!='PriceNo'">
+			<sql type="define">tblSalesOutStock_Add_PriceTracking</sql>
+		</exec>
+	</sql>	
+	
+	
+	
+	<sql type="condition">
+		<condition><select>select 'isUsed' as isUseSeq from tblGoodsAttribute where propName='Seq' and isUsed=1</select></condition>
+		<!--如果启用审核流，则过账时更新分仓库存-未审核字段-->
+		<exec condition="'@MEM:tblSalesOutStock_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSalesOutStockDet.GoodsCode,@StockCode=tblSalesOutStockDet.StockCode,@BillType=tblSalesOutStock,@InstoreQty=0,@OutstoreQty=-1*tblSalesOutStockDet.Qty,@from=tblSalesOutStockDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		<exec condition="true"><!--非成品出入库明细-->
+			<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:tblSalesOutStock_Period,@PeriodYear=@ValueofDB:tblSalesOutStock_PeriodYear,@PeriodMonth=@ValueofDB:tblSalesOutStock_PeriodMonth,@GoodsCode=tblSalesOutStockDet.GoodsCode,@StockCode=tblSalesOutStockDet.StockCode,@BillID=@ValueofDB:tblSalesOutStock_id,@BillType=tblSalesOutStock,@BillDate=@ValueofDB:tblSalesOutStock_BillDate,@BillNo=@ValueofDB:tblSalesOutStock_BillNo,@OutstoreQty=tblSalesOutStockDet.Qty,@OutstorePrice=tblSalesOutStockDet.CostPrice,@OutstoreAmount=tblSalesOutStockDet.CostAmount,@createBy=@ValueofDB:tblSalesOutStock_createBy,@lastUpdateBy=@ValueofDB:tblSalesOutStock_lastUpdateBy,@createTime=@ValueofDB:tblSalesOutStock_finishTime,@lastUpdateTime=@MEM:sysLongDate,@SCompanyID=@ValueofDB:tblSalesOutStock_SCompanyID,@MRemark=@ValueofDB:tblSalesOutStock_Remark,@DRemark=tblSalesOutStockDet.Remark,@SourceID=tblSalesOutStockDet.id,@CompanyCode=@ValueofDB:tblSalesOutStock_CompanyCode,@EmployeeID=@ValueofDB:tblSalesOutStock_EmployeeID,@DepartmentCode=@ValueofDB:tblSalesOutStock_DepartmentCode,@SalesPrice=case when @ValueofDB:tblSalesOutStock_InVoiceType=2 then tblSalesOutStockDet.DisPrice else tblSalesOutStockDet.TaxPrice end,@SalesAmount=tblSalesOutStockDet.Qty*(case when @ValueofDB:tblSalesOutStock_InVoiceType=2 then tblSalesOutStockDet.DisPrice else tblSalesOutStockDet.TaxPrice end),@SalesQty=tblSalesOutStockDet.Qty,@Amount=tblSalesOutStockDet.Qty*(tblSalesOutStockDet.DisPrice),@Price=tblSalesOutStockDet.DisPrice,@DiscountAmount=tblSalesOutStockDet.PreferAmount,@TrackNo=tblSalesOutStockDet.TrackNo,@AccountingPrice=tblSalesOutStockDet.AccountingPrice,@PresentSampleType=tblSalesOutStockDet.PresentSampleType,@from=tblSalesOutStockDet,@where=f_ref='@ValueofDB:id' and GoodsCode not like '00001%',@retCode=retCode,@retVal=retVal)}</sql>
+			<!-- 成品的出入库明细，因为成品是从扫描入库的要单独处理 -->
+			<sql>
+declare @retCode int 
+declare @retVal  varchar(50) 			
+declare @id varchar(32)
+declare @Seq varchar(8000)
+declare @priceDigits int
+declare @amtDigits int
+declare @CostingMethod varchar(10)
+
+select @priceDigits=Setting from tblSysDeploy where SysCode='DigitsPrice'
+select @amtDigits=Setting from tblSysDeploy where SysCode='DigitsAmount'
+select @CostingMethod=Setting from tblSysDeploy where sysCode='GoodsCostingMethod'
+			
+declare @tempTable table(orderId int,BillID varchar(50),BillDate varchar(10),BillNo varchar(100),BillType varchar(100),Period int,PeriodYear int,PeriodMonth int,CompanyCode varchar(50),EmployeeID varchar(50),DepartmentCode varchar(50),MRemark varchar(8000),SourceID varchar(50),TrackNo varchar(8000),DRemark varchar(8000),GoodsCode varchar(50),StockCode varchar(50),BatchNo varchar(50),Inch varchar(50),Hue varchar(50),yearNO varchar(50),ProDate varchar(10),Availably varchar(10),Seq varchar(8000),statusId int,InstoreQty numeric(18,8),InstorePrice numeric(18,8),InstoreAmount numeric(18,8),OutstoreQty numeric(18,8),OutstorePrice numeric(18,8),OutstoreAmount numeric(18,8),TotalQty numeric(18,8),LastPrice numeric(18,8),TotalAmt numeric(18,8),SalesQty numeric(18,8),SalesPrice numeric(18,8),SalesAmount numeric(18,8),Price numeric(18,8),Amount numeric(18,8),DiscountAmount numeric(18,8),AccountingPrice numeric(18,8),PresentSampleType int,Currency varchar(50),CurrencyRate numeric(18,8),createBy varchar(50),lastUpdateBy varchar(50),createTime varchar(19),lastUpdateTime varchar(19),SCompanyID varchar(50),ComboGoodsCode varchar(50))
+
+delete from @tempTable
+insert into @tempTable select ROW_NUMBER() over(order by tblSalesOutStockDet.id),@ValueofDB:id,@ValueofDB:tblSalesOutStock_BillDate,@ValueofDB:tblSalesOutStock_BillNo,'tblSalesOutStock',@ValueofDB:tblSalesOutStock_Period,@ValueofDB:tblSalesOutStock_PeriodYear,@ValueofDB:tblSalesOutStock_PeriodMonth,@ValueofDB:tblSalesOutStock_CompanyCode,@ValueofDB:tblSalesOutStock_EmployeeID,@ValueofDB:tblSalesOutStock_DepartmentCode,@ValueofDB:tblSalesOutStock_Remark,tblSalesOutStockDet.id,tblSalesOutStockDet.TrackNo,tblSalesOutStockDet.Remark,tblSalesOutStockDet.GoodsCode,tblSalesOutStockDet.StockCode,LTRIM(RTRIM(tblSalesOutStockScan.BatchNo)),LTRIM(RTRIM(Inch)),LTRIM(RTRIM(Hue)),LTRIM(RTRIM(tblSalesOutStockScan.yearNO)),LTRIM(RTRIM(ProDate)),LTRIM(RTRIM(Availably)),tblSalesOutStockScan.Seq,0,0,0,0,tblSalesOutStockDet.Qty,tblSalesOutStockDet.CostPrice,tblSalesOutStockDet.CostAmount,0,0,0,tblSalesOutStockDet.Qty,case when 2=2 then tblSalesOutStockDet.DisPrice else tblSalesOutStockDet.TaxPrice end,tblSalesOutStockDet.Qty*(case when 2=2 then tblSalesOutStockDet.DisPrice else tblSalesOutStockDet.TaxPrice end),tblSalesOutStockDet.DisPrice,tblSalesOutStockDet.Qty*(tblSalesOutStockDet.DisPrice),tblSalesOutStockDet.PreferAmount,tblSalesOutStockDet.AccountingPrice,tblSalesOutStockDet.PresentSampleType,'',0,@ValueofDB:tblSalesOutStock_createBy,@ValueofDB:tblSalesOutStock_lastUpdateBy,@ValueofDB:tblSalesOutStock_finishTime,@MEM:sysLongDate,@ValueofDB:tblSalesOutStock_SCompanyID,ComboGoodsCode from tblSalesOutStockDet join tblSalesOutStockScan on tblSalesOutStockDet.f_ref=tblSalesOutStockScan.f_ref and tblSalesOutStockDet.Fixid=tblSalesOutStockScan.SourceId where tblSalesOutStockDet.f_ref=@ValueofDB:id and tblSalesOutStockDet.GoodsCode  like '00001%' order by tblSalesOutStockDet.id
+
+declare @InstoreQty numeric(18,8),@InstorePrice numeric(18,8),@InstoreAmount numeric(18,8),@OutstoreQty numeric(18,8),@OutstorePrice numeric(18,8),@OutstoreAmount numeric(18,8),@MRemark varchar(1000),@SalesQty numeric(18,8),@SalesPrice numeric(18,8),@Price numeric(18,8),@SalesAmount numeric(18,8),@Amount numeric(18,8)
+
+declare @orderItem int select @orderItem=MAX(orderId) from @tempTable
+declare @index int set @index=1
+print @orderItem
+while(@index&lt;=@orderItem)
+	begin
+		--判断序列号字段是否有值,如果有值，则根据序列号个数循环插入到出入库明细中，否则直接插入数据		
+		select @Seq=isnull(Seq,''),@InstoreQty=InstoreQty,@InstorePrice=InstorePrice,@InstoreAmount=InstoreAmount,@OutstoreQty=OutstoreQty,@OutstorePrice=OutstorePrice,@OutstoreAmount=OutstoreAmount,@MRemark=MRemark,@SalesQty=SalesQty,@SalesPrice=SalesPrice,@Price=Price,@SalesAmount=SalesAmount,@Amount=Amount from @tempTable where orderId=@index 
+		
+		declare @seqItem varchar(50)
+		set @seqItem=@Seq
+		set @id=substring(replace(newid(),'-',''),1,30)
+		if(len(@seqItem)&gt;0)
+			begin
+				if(cast(@InstoreQty as numeric(18,8))&gt;0)
+				begin 
+					set @InstoreQty=1 set @InstoreAmount=round(@InstorePrice,@amtDigits) 
+					insert into AIOFW.dbo.stockRecord(seq,GoodsCode,BatchNo,yearNo,inout,refBillId,refBillNo,refBillType,createTime,CompanyCode)  select @seqItem,GoodsCode,BatchNo,yearNO,1,BillID,BillNo,BillType,createTime,CompanyCode from @tempTable where orderId=@index
+					update a set OutInStock=1,outDateTime=b.createTime,outid=BillID,outOutNo=BillNo,outcompanyCode=b.CompanyCode,outComNumber=c.ComNumber,outComFullName=c.ComFullName,ComboGoodsCode=d.classCode,ComboGoodsNumber=d.GoodsNumber,ComboGoodsFullName=d.GoodsFullName from AIOFW.dbo.stockDetail a join  @tempTable b on  b.orderId=@index  and a.Seq=@seqItem	left join tblCompany c on b.CompanyCode=c.classCode left join tblGoods d on b.ComboGoodsCode=d.classCode 						
+				end
+				if(cast(@OutstoreQty as numeric(18,8))&gt;0)
+				begin 
+					set @OutstoreQty=1 set @OutstoreAmount=round(@OutstorePrice,@amtDigits) 
+					insert into AIOFW.dbo.stockRecord(seq,GoodsCode,BatchNo,yearNo,inout,refBillId,refBillNo,refBillType,createTime,CompanyCode)  select @seqItem,GoodsCode,BatchNo,yearNO,-1,BillID,BillNo,BillType,createTime,CompanyCode from @tempTable where orderId=@index
+					update a set OutInStock=2,outDateTime=b.createTime,outid=BillID,outOutNo=BillNo,outcompanyCode=b.CompanyCode,outComNumber=c.ComNumber,outComFullName=c.ComFullName,ComboGoodsCode=d.classCode,ComboGoodsNumber=d.GoodsNumber,ComboGoodsFullName=d.GoodsFullName from AIOFW.dbo.stockDetail a join  @tempTable b on  b.orderId=@index  and a.Seq=@seqItem	left join tblCompany c on b.CompanyCode=c.classCode left join tblGoods d on b.ComboGoodsCode=d.classCode 								
+				end
+						
+				if(cast(@SalesQty as numeric(18,8))&gt;0)
+					begin				
+						set @SalesQty=1 set @SalesAmount=round(@SalesPrice,@amtDigits) set @Amount=ROUND(@Price,@amtDigits)
+					end
+				else if(cast(@SalesQty as numeric(18,8))&lt;0)
+					begin				
+						set @SalesQty=-1 set @SalesAmount=-1*round(@SalesPrice,@amtDigits) set @Amount=-1*ROUND(@Price,@amtDigits)
+					end
+			end           
+
+		insert into tblStockDet (id,BillID,BillDate,BillNo,BillType,Period,PeriodYear,PeriodMonth,CompanyCode,EmployeeID,DepartmentCode,MRemark,SourceID,TrackNo,DRemark,GoodsCode,StockCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,Seq,goodPropHash,goodPropHashNoSeq,goodPropHashNoStock,InstoreQty,InstorePrice,InstoreAmount,OutstoreQty,OutstorePrice,OutstoreAmount,TotalQty,LastPrice,TotalAmt,SalesQty,SalesPrice,SalesAmount,Price,Amount,DiscountAmount,AccountingPrice,PresentSampleType,Currency,CurrencyRate,createBy,lastUpdateBy,createTime,lastUpdateTime,statusId,ItemNo,SCompanyID) 
+		select @id,BillID,BillDate,BillNo,BillType,Period,PeriodYear,PeriodMonth,CompanyCode,EmployeeID,DepartmentCode,MRemark,SourceID,TrackNo,DRemark,GoodsCode,StockCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,@seqItem,Hashbytes('md5',Lower(GoodsCode+'GoodsCode'+StockCode+'StockCode'+Availably+'Availably'+BatchNo+'BatchNo'+Hue+'Hue'+Inch+'Inch'+ProDate+'ProDate'+@seqItem+'Seq'+yearNO+'yearNO')),Hashbytes('md5',Lower(GoodsCode+'GoodsCode'+StockCode+'StockCode'+Availably+'Availably'+BatchNo+'BatchNo'+Hue+'Hue'+Inch+'Inch'+ProDate+'ProDate'+yearNO+'yearNO')),Hashbytes('md5',Lower(GoodsCode+'GoodsCode'+Availably+'Availably'+BatchNo+'BatchNo'+Hue+'Hue'+Inch+'Inch'+ProDate+'ProDate'+@seqItem+'Seq'+yearNO+'yearNO')),@InstoreQty,InstorePrice,@InstoreAmount,@OutstoreQty,OutstorePrice,@OutstoreAmount,TotalQty,LastPrice,TotalAmt,@SalesQty,SalesPrice,@SalesAmount,Price,@Amount,DiscountAmount,AccountingPrice,PresentSampleType,Currency,CurrencyRate,createBy,lastUpdateBy,createTime,lastUpdateTime,statusId,0,SCompanyID from @tempTable where orderId=@index
+
+		--修改当前商品的最后结存			
+		exec proc_updateLastPrice @id,@CostingMethod,@priceDigits,@amtDigits,@retCode output,@retVal output	
+		
+		if(@retCode &lt;0)
+		begin
+			DECLARE @emsg  VARCHAR(200);
+			set @emsg='执行错误'+@retVal
+			RAISERROR (@emsg, 18,1);
+		end
+		
+		--修改分仓库存
+		exec proc_updateStocks @id,'add',@CostingMethod  
+		
+		set @index=@index+1
+	end
+			</sql>
+		</exec>
+		<!--更新出库单明细未入库数量字段,更新未收款数量-->
+		<exec condition="true">
+			<sql>update tblSalesOutStockDet set NotBuyQty=Qty,NotPayQty=Qty,PayQty=0 where tblSalesOutStockDet.f_ref=@ValueofDB:tblSalesOutStock_id</sql>
+		</exec>
+		
+		<!--出库单在修改后，用户可能删除某些序列号，使其入库，进行序列号判断-->
+		<exec condition="'@Sess:BillOper'=='update'">
+			<sql type="define">validateSameSeq</sql>
+		</exec>
+		<!--负库存判断-->		
+		<exec condition="true">
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+		<!--分摊销售订单订金回填销售订单累积付款-->
+		<exec condition="true">	
+			<sql type="procedure">{call proc_SalesOutReceiveAmort(@ValueofDB:tblSalesOutStock_id,add,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	<!--===========插入凭证，影响科目余额，影响往来===============-->
+	<sql type="condition">
+		<!--发票类型（InVoiceType）分为： 1、普通发票 2、增值税发票 3、收据-->
+		<!--系统变量（accSetting）分为：  1、一般纳税人 2、小规模纳税人  3、收据-->
+		<!--得到本单待收款金额-->
+		<condition><select>select cast(@ValueofDB:tblSalesOutStock_TotalTaxAmount as numeric(18,8))-AlrAccAmt as NeedRec,abs(cast(@ValueofDB:tblSalesOutStock_TotalTaxAmount as numeric(18,8))-AlrAccAmt) as AbsNeedRec,AccAmt,AlrAccAmt,cast(@ValueofDB:tblSalesOutStock_CurTotalAmount as numeric(18,8))-cast(@ValueofDB:tblSalesOutStock_CurAlrAccAmt as numeric(18,8)) as NeedRecCur,abs(cast(@ValueofDB:tblSalesOutStock_CurTotalAmount as numeric(18,8))-cast(@ValueofDB:tblSalesOutStock_CurAlrAccAmt as numeric(18,8))) as AbsNeedRecCur from tblSalesOutStock where id=@ValueofDB:tblSalesOutStock_id</select></condition>
+
+    <!--如果启用“自动产生凭证”，则自动插入凭证-->
+    <exec condition="'@MEM:autoGenerateAcc'=='true'"><sql type="certificate">tblSalesOutStock</sql></exec>
+		<!--========影响往来===========-->
+		<!-- 运费大于0时，运输公司产生应付 -->
+		<exec condition="@ValueofDB:tblSalesOutStock_FreightAmt&gt;0">
+			<sql type="procedure">{call proc_insertComIni(5@ValueofDB:tblSalesOutStock_id,@ValueofDB:tblSalesOutStock_FreightCom,1,@ValueofDB:tblSalesOutStock_BillDate,Period=@ValueofDB:tblSalesOutStock_Period@SPFieldLink:PeriodYear=@ValueofDB:tblSalesOutStock_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblSalesOutStock_PeriodMonth@SPFieldLink:PayTotalDebit=0@SPFieldLink:PayTotalLend=@ValueofDB:tblSalesOutStock_FreightAmt@SPFieldLink:RelationDocID=@ValueofDB:tblSalesOutStock_id@SPFieldLink:Currency=@SPFieldLink:CurrencyRate=1@SPFieldLink:FcPayTotalDebit=0@SPFieldLink:FcPayTotalCredit=@ValueofDB:tblSalesOutStock_FreightAmt@SPFieldLink:createBy=@ValueofDB:tblSalesOutStock_createBy@SPFieldLink:createTime=@ValueofDB:tblSalesOutStock_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblSalesOutStock_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblSalesOutStock_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblSalesOutStock_SCompanyID@SPFieldLink:BillType=tblSalesOutStock@SPFieldLink:BillNo=@ValueofDB:tblSalesOutStock_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblSalesOutStock_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblSalesOutStock_DepartmentCode@SPFieldLink:DiscountAmount=@ValueofDB:tblSalesOutStock_FreightAmt@SPFieldLink:Remark=@ValueofDB:tblSalesOutStock_Remark,retCode,retVal)}</sql>
+		</exec>
+		<!--优惠金额大于0时，插入往来明细 借：应收款（优惠金额）往来单位明细 （1应付 2应收 3预付 4预收）-->
+		<exec condition="@ValueofDB:tblSalesOutStock_TotalTaxAmount&gt;0">
+			<sql type="procedure">{call proc_insertComIni(0@ValueofDB:tblSalesOutStock_id,@ValueofDB:tblSalesOutStock_CompanyCode,2,@ValueofDB:tblSalesOutStock_BillDate,Period=@ValueofDB:tblSalesOutStock_Period@SPFieldLink:PeriodYear=@ValueofDB:tblSalesOutStock_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblSalesOutStock_PeriodMonth@SPFieldLink:ReceiveTotalDebit=@ValueofDB:tblSalesOutStock_TotalTaxAmount@SPFieldLink:ReceiveTotalLend=0@SPFieldLink:RelationDocID=@ValueofDB:tblSalesOutStock_id@SPFieldLink:Currency=@ValueofDB:tblSalesOutStock_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblSalesOutStock_CurrencyRate@SPFieldLink:createBy=@ValueofDB:tblSalesOutStock_createBy@SPFieldLink:createTime=@ValueofDB:tblSalesOutStock_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblSalesOutStock_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblSalesOutStock_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblSalesOutStock_SCompanyID@SPFieldLink:FcRecTotalDebit=@ValueofDB:tblSalesOutStock_CurTotalAmount@SPFieldLink:FcRecTotalCredit=0@SPFieldLink:BillType=tblSalesOutStock@SPFieldLink:BillNo=@ValueofDB:tblSalesOutStock_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblSalesOutStock_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblSalesOutStock_DepartmentCode@SPFieldLink:DiscountAmount=@ValueofDB:tblSalesOutStock_DiscountAmount@SPFieldLink:Remark=@ValueofDB:tblSalesOutStock_Remark,retCode,retVal)}</sql>
+		</exec>
+		<!--本次结算金额大于0，并且小于等于优惠后金额，插入往来明细 贷：应收款（本次结算）-->
+		<exec condition="@SqlReturn:AlrAccAmt&gt;0&amp;&amp;@SqlReturn:NeedRec&gt;=0">
+			<sql type="procedure">{call proc_insertComIni(1@ValueofDB:tblSalesOutStock_id,@ValueofDB:tblSalesOutStock_CompanyCode,2,@ValueofDB:tblSalesOutStock_BillDate,Period=@ValueofDB:tblSalesOutStock_Period@SPFieldLink:PeriodYear=@ValueofDB:tblSalesOutStock_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblSalesOutStock_PeriodMonth@SPFieldLink:ReceiveTotalDebit=0@SPFieldLink:ReceiveTotalLend=@SqlReturn:AlrAccAmt@SPFieldLink:RelationDocID=@ValueofDB:tblSalesOutStock_id@SPFieldLink:Currency=@ValueofDB:tblSalesOutStock_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblSalesOutStock_CurrencyRate@SPFieldLink:createBy=@ValueofDB:tblSalesOutStock_createBy@SPFieldLink:createTime=@ValueofDB:tblSalesOutStock_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblSalesOutStock_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblSalesOutStock_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblSalesOutStock_SCompanyID@SPFieldLink:FcRecTotalDebit=0@SPFieldLink:FcRecTotalCredit=@ValueofDB:tblSalesOutStock_CurAlrAccAmt@SPFieldLink:BillType=tblSalesOutStock@SPFieldLink:BillNo=@ValueofDB:tblSalesOutStock_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblSalesOutStock_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblSalesOutStock_DepartmentCode,retCode,retVal)}</sql>
+		</exec>
+		<!--优惠后金额大于，并且待结算金额小于0，插入往来明细 贷：应收款（优惠后金额）-->
+		<exec condition="'@MEM:prerecvpaymarktoneedrecvpay'=='false' &amp;&amp; @ValueofDB:tblSalesOutStock_TotalTaxAmount&gt;0&amp;&amp;@SqlReturn:NeedRec&lt;0">
+			<sql type="procedure">{call proc_insertComIni(1@ValueofDB:tblSalesOutStock_id,@ValueofDB:tblSalesOutStock_CompanyCode,2,@ValueofDB:tblSalesOutStock_BillDate,Period=@ValueofDB:tblSalesOutStock_Period@SPFieldLink:PeriodYear=@ValueofDB:tblSalesOutStock_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblSalesOutStock_PeriodMonth@SPFieldLink:ReceiveTotalDebit=0@SPFieldLink:ReceiveTotalLend=@ValueofDB:tblSalesOutStock_TotalTaxAmount@ParamNum:@SPFieldLink:RelationDocID=@ValueofDB:tblSalesOutStock_id@SPFieldLink:Currency=@ValueofDB:tblSalesOutStock_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblSalesOutStock_CurrencyRate@ParamNum:@SPFieldLink:createBy=@ValueofDB:tblSalesOutStock_createBy@SPFieldLink:createTime=@ValueofDB:tblSalesOutStock_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblSalesOutStock_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblSalesOutStock_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblSalesOutStock_SCompanyID@SPFieldLink:FcRecTotalDebit=0@SPFieldLink:FcRecTotalCredit=@ValueofDB:tblSalesOutStock_CurTotalAmount@ParamNum:@SPFieldLink:BillType=tblSalesOutStock@SPFieldLink:BillNo=@ValueofDB:tblSalesOutStock_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblSalesOutStock_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblSalesOutStock_DepartmentCode,retCode,retVal)}</sql>
+		</exec>
+		<!--未启用预收预付记应收应付,待结算金额小于0，插入往来明细 贷：预收款（ABS(待结算金额)）-->
+		<exec condition="'@MEM:prerecvpaymarktoneedrecvpay'=='false' &amp;&amp; @SqlReturn:NeedRec&lt;0">
+			<sql type="procedure">{call proc_insertComIni(2@ValueofDB:tblSalesOutStock_id,@ValueofDB:tblSalesOutStock_CompanyCode,4,@ValueofDB:tblSalesOutStock_BillDate,Period=@ValueofDB:tblSalesOutStock_Period@SPFieldLink:PeriodYear=@ValueofDB:tblSalesOutStock_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblSalesOutStock_PeriodMonth@SPFieldLink:PreReceiveTotalDebit=0@SPFieldLink:PreReceiveTotalLend=@SqlReturn:AbsNeedRec@ParamNum:@SPFieldLink:RelationDocID=@ValueofDB:tblSalesOutStock_id@SPFieldLink:Currency=@ValueofDB:tblSalesOutStock_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblSalesOutStock_CurrencyRate@ParamNum:@SPFieldLink:createBy=@ValueofDB:tblSalesOutStock_createBy@SPFieldLink:createTime=@ValueofDB:tblSalesOutStock_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblSalesOutStock_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblSalesOutStock_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblSalesOutStock_SCompanyID@SPFieldLink:FcPreRecTotalCredit=@SqlReturn:AbsNeedRecCur@ParamNum:@SPFieldLink:FcPreRecTotalDebit=0@ParamNum:@SPFieldLink:BillType=tblSalesOutStock@SPFieldLink:BillNo=@ValueofDB:tblSalesOutStock_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblSalesOutStock_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblSalesOutStock_DepartmentCode,retCode,retVal)}</sql>
+		</exec>
+		<!--已启用预收预付记应收应付,待结算金额小于0，插入往来明细 贷：应收款（ABS(待结算金额)）-->
+		<exec condition="'@MEM:prerecvpaymarktoneedrecvpay'=='true' &amp;&amp; @SqlReturn:NeedRec&lt;0">
+			<sql type="procedure">{call proc_insertComIni(2@ValueofDB:tblSalesOutStock_id,@ValueofDB:tblSalesOutStock_CompanyCode,2,@ValueofDB:tblSalesOutStock_BillDate,Period=@ValueofDB:tblSalesOutStock_Period@SPFieldLink:PeriodYear=@ValueofDB:tblSalesOutStock_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblSalesOutStock_PeriodMonth@SPFieldLink:ReceiveTotalDebit=0@SPFieldLink:ReceiveTotalLend=@SqlReturn:AlrAccAmt@ParamNum:@SPFieldLink:RelationDocID=@ValueofDB:tblSalesOutStock_id@SPFieldLink:Currency=@ValueofDB:tblSalesOutStock_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblSalesOutStock_CurrencyRate@ParamNum:@SPFieldLink:createBy=@ValueofDB:tblSalesOutStock_createBy@SPFieldLink:createTime=@ValueofDB:tblSalesOutStock_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblSalesOutStock_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblSalesOutStock_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblSalesOutStock_SCompanyID@SPFieldLink:FcRecTotalCredit=@SqlReturn:AbsNeedRecCur@SPFieldLink:FcRecTotalDebit=0@ParamNum:@SPFieldLink:BillType=tblSalesOutStock@SPFieldLink:BillNo=@ValueofDB:tblSalesOutStock_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblSalesOutStock_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblSalesOutStock_DepartmentCode,retCode,retVal)}</sql>
+		</exec>
+		<!--本次结算金额大于0，产生收款单-->
+		<exec condition="@SqlReturn:AlrAccAmt&gt;0 &amp;&amp; @SqlReturn:AccAmt&gt;0">
+			<sql type="define">SalesOutStock_Add_CreateReceBill</sql>
+		</exec>
+	</sql>
+	
+	
+	<!-- 更新分销经销商ID，明细表分销ID-->
+	<sql>update tblSalesOutStock set fxAgentID=a.fxAgentID from tblCompany a where a.classCode=tblSalesOutStock.CompanyCode and tblSalesOutStock.id=@ValueofDB:id </sql>
+	<sql>update tblSalesOutStockDet set fxBuyOrderID=a.fxBuyOrderID from tblSalesOutStock a where a.id=@ValueofDB:id and a.id=tblSalesOutStockDet.f_ref</sql>
+	<!-- 插入待开发票表-->
+	<sql type="condition"> 	
+		<exec condition="true">  
+			<!-- 新建不存在的数据 运费-->
+			<sql> insert into HFSalesInvoices(id,createby,CompanyCode,GoodsCode,qty,amount,period,periodYear) 
+				select SUBSTRING(CONVERT(varchar(40),newid()),1,30),'1', a.CompanyCode,'',1,0,a.period,a.periodYear from tblSalesOutStock a  left join  HFSalesInvoices c on a.CompanyCode=c.CompanyCode and ''=c.GoodsCode and a.period=c.period and a.periodyear=c.periodyear where  a.id=@ValueofDB:id and isnull(c.CompanyCode,'')='' group by a.CompanyCode,a.period,a.periodYear  </sql>
+			<!-- 修改开发票金额 运费 -->	
+			<sql> update a set a.amount=a.amount+b.needAmount   from HFSalesInvoices a join (  select CompanyCode,period,periodYear,sum(isnull(khFreightAmt,0)) needAmount from  tblSalesOutStock  where   (tblSalesOutStock.InVoiceType=2 or tblSalesOutStock.InVoiceType=1)  and tblSalesOutStock.id=@ValueofDB:id  group by CompanyCode,period,periodYear ) b on a.CompanyCode=b.CompanyCode and a.GoodsCode='' and a.period=b.period and a.periodyear=b.periodyear </sql>
+			<!-- 新建不存在的数据-->
+			<sql> insert into HFSalesInvoices(id,createby,CompanyCode,GoodsCode,qty,amount,period,periodYear) 
+				select SUBSTRING(CONVERT(varchar(40),newid()),1,30),'1', a.CompanyCode,b.GoodsCode,0,0,a.period,a.periodYear from tblSalesOutStock a join tblSalesOutStockDet b on a.id=b.f_ref left join  HFSalesInvoices c on a.CompanyCode=c.CompanyCode and b.GoodsCode=c.GoodsCode and a.period=c.period and a.periodyear=c.periodyear  where  a.id=@ValueofDB:id and isnull(c.CompanyCode,'')='' and b.GoodsCode like '00001%' group by a.CompanyCode,b.GoodsCode,a.period,a.periodYear  </sql>
+			<!-- 修改开发票金额 -->	
+			<sql> update a set a.qty=a.qty+needQty,a.amount=a.amount+b.needAmount   from HFSalesInvoices a join (  select CompanyCode,GoodsCode,period,periodYear,sum(isnull(Qty,0)) needQty,sum(isnull(TaxAmount,0)-isnull(BzjAmount,0)+isnull(YfAmount,0)) needAmount from  tblSalesOutStock join tblSalesOutStockDet  on tblSalesOutStock.id=tblSalesOutStockDet.f_ref  where   (tblSalesOutStock.InVoiceType=2 or tblSalesOutStock.InVoiceType=1) and GoodsCode like '00001%' and tblSalesOutStock.id=@ValueofDB:id  group by CompanyCode,GoodsCode,period,periodYear ) b on a.CompanyCode=b.CompanyCode and a.GoodsCode=b.GoodsCode  and a.period=b.period and a.periodyear=b.periodyear</sql>
+		</exec>
+	</sql>
+	<!-- 推送到电商/分销验收入库单-->	
+	<sql type="condition">
+		<condition>			
+			<select>select ComNumber from tblCompany where classCode = @ValueofDB:CompanyCode  </select>
+				
+		</condition>
+		<!-- 推送分销验收入库单-->
+	
+	</sql>
+	
+	<!--计算门头费-->
+	<!-- 1:门头费-->
+	<!-- 2:公司支付-->
+	<!-- 3:配件支付-->
+	<sql type="condition">
+		<condition>
+			<select> select isnull(SUM(tblSalesOutStockDet.pjAmount),0) as mAmount 
+					from tblSalesOutStockDet
+					inner join tblExpenses on tblSalesOutStockDet.FeeType = tblExpenses.Subclass 
+					where tblExpenses.Parentclass ='1' and  tblSalesOutStockDet.f_ref=@ValueofDB:id
+			</select>
+			<select> select isnull(SUM(tblSalesOutStockDet.pjAmount),0) as gAmount 
+					from tblSalesOutStockDet
+					inner join tblExpenses on tblSalesOutStockDet.FeeType = tblExpenses.Subclass 
+					where tblExpenses.Parentclass ='2' and  tblSalesOutStockDet.f_ref=@ValueofDB:id
+			</select>
+			<select> select isnull(SUM(tblSalesOutStockDet.pjAmount),0) as pAmount 
+					from tblSalesOutStockDet
+					inner join tblExpenses on tblSalesOutStockDet.FeeType = tblExpenses.Subclass 
+					where tblExpenses.Parentclass ='3' and  tblSalesOutStockDet.f_ref=@ValueofDB:id
+			</select>
+			
+			<select>
+				select dbo.getExpensesDesc(tblSalesOutStock.id ,'1') mDesc from tblSalesOutStock where id =@ValueofDB:id 
+			</select>
+			
+			<select>
+				select dbo.getExpensesDesc(tblSalesOutStock.id ,'2') gDesc from tblSalesOutStock where id =@ValueofDB:id 
+			</select>
+			
+			<select>
+				select dbo.getExpensesDesc(tblSalesOutStock.id ,'3') pDesc from tblSalesOutStock where id =@ValueofDB:id 
+			</select>
+			
+		</condition>
+				
+		<exec condition="@SqlReturn:mAmount&gt;0">
+			<sql type="procedure">{call proc_DoorFeeDetails(@a_createBy=@ValueofDB:tblSalesOutStock_createBy,
+												   @a_lastUpdateBy=@ValueofDB:tblSalesOutStock_lastUpdateBy ,
+												   @a_createTime=@ValueofDB:tblSalesOutStock_createTime,
+												   @a_lastUpdateTime=@ValueofDB:tblSalesOutStock_lastUpdateTime,
+												   @a_Companycode=@ValueofDB:tblSalesOutStock_CompanyCode,
+												   @a_ItemType=Advertisement,
+												   @a_InMoney=0,
+												   @a_outMoney=@SqlReturn:mAmount,
+												   @a_billId=@ValueofDB:id,
+												   @a_billType=tblSalesOutStock,
+												   @a_billNo=@ValueofDB:tblSalesOutStock_BillNo,
+												   @a_billDate=@ValueofDB:tblSalesOutStock_BillDate,
+												   @a_Remark=@SqlReturn:mDesc,
+												   @a_opt=add,@retCode=retCode,@retVal=retVal)}
+			</sql>
+		</exec>
+		
+		<exec condition="@SqlReturn:gAmount&gt;0">
+			<sql type="procedure">{call proc_DoorFeeDetails(@a_createBy=@ValueofDB:tblSalesOutStock_createBy,
+												   @a_lastUpdateBy=@ValueofDB:tblSalesOutStock_lastUpdateBy ,
+												   @a_createTime=@ValueofDB:tblSalesOutStock_createTime,
+												   @a_lastUpdateTime=@ValueofDB:tblSalesOutStock_lastUpdateTime,
+												   @a_Companycode=@ValueofDB:tblSalesOutStock_CompanyCode,
+												   @a_ItemType=PaymentProportion,
+												   @a_InMoney=0,
+												   @a_outMoney=@SqlReturn:gAmount,
+												   @a_billId=@ValueofDB:id,
+												   @a_billType=tblSalesOutStock,
+												   @a_billNo=@ValueofDB:tblSalesOutStock_BillNo,
+												   @a_billDate=@ValueofDB:tblSalesOutStock_BillDate,
+												   @a_Remark=@SqlReturn:gDesc,
+												   @a_opt=add,@retCode=retCode,@retVal=retVal)}
+			</sql>
+		</exec>
+		
+		<exec condition="@SqlReturn:pAmount&gt;0">
+			<sql type="procedure">{call proc_DoorFeeDetails(@a_createBy=@ValueofDB:tblSalesOutStock_createBy,
+												   @a_lastUpdateBy=@ValueofDB:tblSalesOutStock_lastUpdateBy ,
+												   @a_createTime=@ValueofDB:tblSalesOutStock_createTime,
+												   @a_lastUpdateTime=@ValueofDB:tblSalesOutStock_lastUpdateTime,
+												   @a_Companycode=@ValueofDB:tblSalesOutStock_CompanyCode,
+												   @a_ItemType=Parts,
+												   @a_InMoney=0,
+												   @a_outMoney=@SqlReturn:pAmount,
+												   @a_billId=@ValueofDB:id,
+												   @a_billType=tblSalesOutStock,
+												   @a_billNo=@ValueofDB:tblSalesOutStock_BillNo,
+												   @a_billDate=@ValueofDB:tblSalesOutStock_BillDate,
+												   @a_Remark=@SqlReturn:pDesc,
+												   @a_opt=add,@retCode=retCode,@retVal=retVal)}
+			</sql>
+		</exec>
+		
+		
+	</sql>
+</define>
+
+<!-- 添加电商入库单-->
+<define name="dsBuyInStock_add">
+	<sql type="condition">
+		<condition>
+			<select>select top 1 b.dsBuyOrderID as dsBuyOrderID from tblSalesOutStockDet a join tblSalesOrder b on a.SalesOrderID = b.id where a.f_ref = @ValueofDB:id</select>
+			
+			
+			<select>select sum(Amount) as totalAmt from tblSalesOutStockDet where f_ref = @ValueofDB:id</select>
+			<select>select dsBuyOrderID from tblSalesOrder WHERE  ID=@ValueofDB:SalesOrderID</select>
+		</condition>
+		
+	</sql>
+</define>
+
+
+<!--=========如果结算账户大于0，生成销售收款单==========-->
+<define name="SalesOutStock_Add_CreateReceBill">
+	<sql type="condition">
+		<condition>
+		  <select>select (TotalTaxAmount-AlrAccAmt) as NeedRec,AlrAccAmt, (case when (TotalTaxAmount-AlrAccAmt)&gt;=0.0 then 'Receive' else (case @MEM:prerecvpaymarktoneedrecvpay when 'true' then 'Receive' else 'PreReceive' end) end) as AcceptType,(AlrAccAmt) as factAmt,(case when '' like '1001%' then 1 else (case @MEM:prerecvpaymarktoneedrecvpay when 'true' then 1 else 3 end) end) as SettleType from tblSalesOutStock where id=@ValueofDB:tblSalesOutStock_id</select>
+		</condition>		
+		<exec condition="true">
+			<sql>insert into tblSaleReceive (id,BillDate,BillNo,ProjectCode,CompanyCode,DepartmentCode,EmployeeID,SettleType,AcceptTypeID,ExeBalAmt,FactIncome,AccAmt,Currency,CurrencyRate,BillFcAmt,PeriodYear,PeriodMonth,Period,createBy,createTime,lastUpdateBy,lastUpdateTime,SCompanyID,AutoBillMarker,workFlowNodeName,workFlowNode,checkPersons,TrackNo) values ('0'+@ValueofDB:tblSalesOutStock_id,@ValueofDB:tblSalesOutStock_BillDate,@CODE:[tblSaleReceive_BillNo],@ValueofDB:tblSalesOutStock_ProjectCode,@ValueofDB:tblSalesOutStock_CompanyCode,@ValueofDB:tblSalesOutStock_DepartmentCode,@ValueofDB:tblSalesOutStock_EmployeeID,@SqlReturn:SettleType,@SqlReturn:AcceptType,@SqlReturn:AlrAccAmt,@SqlReturn:factAmt,@SqlReturn:factAmt,@ValueofDB:tblSalesOutStock_Currency,@ValueofDB:tblSalesOutStock_CurrencyRate,@ValueofDB:tblSalesOutStock_CurAlrAccAmt,@ValueofDB:tblSalesOutStock_PeriodYear,@ValueofDB:tblSalesOutStock_PeriodMonth,@ValueofDB:tblSalesOutStock_Period,@ValueofDB:tblSalesOutStock_createBy,@ValueofDB:tblSalesOutStock_createTime,@ValueofDB:tblSalesOutStock_lastUpdateBy,@ValueofDB:tblSalesOutStock_lastUpdateTime,@ValueofDB:tblSalesOutStock_SCompanyID,1,'finish','-1','',@ValueofDB:tblSalesOutStock_TrackNo)</sql>
+			<sql>insert into tblSaleReceivedet (id,f_ref,BillAmt,CurBillAmt,ExeBalAmt,ExeBalFcAmt,Currency,CurrencyRate,SettledAmt,WexeBalAmt,CurSettledAmt,CurWexeBalAmt,RefBillNo,SalesOrderNo,SalesOrderID,BackAmt,SCompanyID,CurBackAmt,RefbillID,ReceiveBillType) values ('1'+@ValueofDB:tblSalesOutStock_id,'0'+@ValueofDB:tblSalesOutStock_id,@ValueofDB:tblSalesOutStock_TotalTaxAmount,@ValueofDB:tblSalesOutStock_CurTotalAmount,(case when cast(@SqlReturn:NeedRec as numeric(18,8))&gt;=0.0 then @SqlReturn:AlrAccAmt else @ValueofDB:tblSalesOutStock_TotalTaxAmount end),(case when cast(@SqlReturn:NeedRec as numeric(18,8))&gt;=0.0 then @ValueofDB:tblSalesOutStock_CurAlrAccAmt else @ValueofDB:tblSalesOutStock_CurTotalAmount end),@ValueofDB:tblSalesOutStock_Currency,@ValueofDB:tblSalesOutStock_CurrencyRate,0,@ValueofDB:tblSalesOutStock_TotalTaxAmount,0,@ValueofDB:tblSalesOutStock_CurTotalAmount,@ValueofDB:tblSalesOutStock_BillNo,@ValueofDB:tblSalesOutStock_SalesOrderNo,@ValueofDB:tblSalesOutStock_SalesOrderID,0,@ValueofDB:tblBuyInStock_SCompanyID,0,@ValueofDB:tblSalesOutStock_id,'tblSalesOutStock')</sql>
+		</exec>
+		<!--如果启用了多账户，向多账户明细表中插入数据-->
+		<exec condition="true">
+			<sql>insert into tblReceiveAccountDet (id,f_ref,SettleType,Amount,ExeBalFcAmt,Account,SCompanyID,Remark) select id,'0'+@ValueofDB:tblSalesOutStock_id,SettleType,Amount,ExeBalFcAmt,Account,SCompanyID,Remark from tblSalesRecAccount where f_ref=@ValueofDB:tblSalesOutStock_id</sql>
+		</exec>
+		<!--自动生成的单据需更新单据编号连续-->
+		<exec condition="'@MEM:BillNoSequence'=='true'">  
+			<sql>update tblCodeGenerate set curValue=curValue+1 where code='SE'</sql>
+		</exec>	
+	</sql>
+</define>
+
+<!--================点击删除，修改时调用==========-->
+<define name="SalesOutStock_Delete">
+	<sql type="condition">
+
+	<!--如果启用审核流，则删除单据时更新分仓库存-未审核字段-->
+	<exec condition="'@MEM:tblSalesOutStock_IsStatart' != '0'">
+		<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSalesOutStockDet.GoodsCode,@StockCode=tblSalesOutStockDet.StockCode,@BillType=tblSalesOutStock,@InstoreQty=0,@OutstoreQty=-1*tblSalesOutStockDet.Qty,@from=tblSalesOutStockDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+	</exec>
+	<!--删除和修改操作时，更新序列号出入明细-->
+	<exec condition="'@Sess:BillOper' =='delete'||'@Sess:BillOper' =='update'">
+		<sql>delete from tblSeqAuditing where BillID=@ValueofDB:id</sql>
+	</exec>	
+	
+	<!--启用审核后能修改或者删除的说明此单没有审核，不必调用此define. 不启用审核流，执行所有控制及过账操作，启用审核，点击反审核时执行此操作-->
+	<exec condition="'@MEM:tblSalesOutStock_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+		<sql type="define">SalesOutStock_Delete_One</sql>
+	</exec>
+</sql>
+</define>
+
+<define name="SalesOutStock_Delete_One">
+	<!-- 修改待开发票表-->
+	<sql type="condition"> 	
+		<exec condition="true">  
+			<!-- 修改开发票金额 运费 -->	
+			<sql> update a set a.amount=a.amount-b.needAmount   from HFSalesInvoices a join (  select CompanyCode,period,periodyear,sum(isnull(khFreightAmt,0)) needAmount from  tblSalesOutStock  where   (tblSalesOutStock.InVoiceType=2 or tblSalesOutStock.InVoiceType=1)  and tblSalesOutStock.id=@ValueofDB:id  group by CompanyCode,period,periodyear ) b on a.CompanyCode=b.CompanyCode and a.GoodsCode='' and a.period=b.period and a.periodyear=b.periodyear </sql>
+			<!-- 修改开发票金额 -->	
+			<sql> update a set a.qty=a.qty-needQty,a.amount=a.amount-b.needAmount   from HFSalesInvoices a join (  select CompanyCode,GoodsCode,period,periodyear,sum(isnull(Qty,0)) needQty,sum(isnull(TaxAmount,0)-isnull(BzjAmount,0)+isnull(YfAmount,0)) needAmount from  tblSalesOutStock join tblSalesOutStockDet  on tblSalesOutStock.id=tblSalesOutStockDet.f_ref  where   (tblSalesOutStock.InVoiceType=2 or tblSalesOutStock.InVoiceType=1) and GoodsCode like '00001%' and tblSalesOutStock.id=@ValueofDB:id  group by CompanyCode,GoodsCode,period,periodyear ) b on a.CompanyCode=b.CompanyCode and a.GoodsCode=b.GoodsCode and a.period=b.period and a.periodyear=b.periodyear</sql>
+		</exec>
+	</sql>
+	<!-- 自定义：删除相关 电商/分销 采购入库单据-->
+	<sql type="condition">
+		<condition>
+			<select>select ComNumber from tblCompany where classCode = @ValueofDB:CompanyCode </select>
+			
+		</condition>		
+		<!-- 删除分销采购入库单-->
+		
+		<!-- 删除电商采购入库单-->
+		
+	</sql>
+
+	<!-- 自定义：更新分销订单状态-->
+	<sql type="condition">
+		
+	</sql>
+
+<!--===判断如果此单据有如下关联，不允许删除====-->
+	<sql type="condition"><!--被采购入库单引用判断提示-->		
+		<condition><select>select top 1 BillNo from tblBuyInStock left join tblBuyInStockDet on tblBuyInStock.id=tblBuyInStockDet.f_ref where tblBuyInStockDet.SalesOutID=@ValueofDB:tblSalesOutStock_id</select></condition>		
+		<exec condition="'@SqlReturn:BillNo'!='null'">
+			<error>BuyOrderDel.BillNo.error,@SqlReturn:BillNo</error>       
+		</exec>
+	</sql>
+	<sql type="condition"><!--存在关联的销售退货单，不允许此操作-->
+	<condition><select>select BillNo as SalesReturnNo from tblSalesReturnStock a,tblSalesReturnStockDet b where a.id=b.f_ref and b.SalesOutStockID=@ValueofDB:tblSalesOutStock_id and a.workFlowNodeName!='print'</select></condition>
+	<exec condition="'@SqlReturn:SalesReturnNo' != 'null'">	 					
+		<error>SalesBillDel.BillNo.error,@SqlReturn:SalesReturnNo</error>       
+	</exec>
+	</sql>
+	<sql type="condition"><!--存在不是自动产生的销售收款单，不允许此操作-->
+	<condition><select>select a.BillNo as ReBillNo from tblSaleReceive a,tblSaleReceiveDet b where a.id=b.f_ref and a.workFlowNodeName!='print' and a.AutoBillMarker=0 and b.RefbillID=@ValueofDB:tblSalesOutStock_id</select></condition>
+	<exec condition="'@SqlReturn:ReBillNo' != 'null'">	 					
+		<error>DelBill.ReBillNo.error,@SqlReturn:ReBillNo</error>       
+	</exec>
+	</sql>
+	<sql type="condition"><!--自动产生的收款单存在收款退款，不允许此操作-->
+	<condition><select>select a.BillNo as ReRBillNo from tblSaleReceive a,tblSaleReceiveDet b where a.id=b.f_ref and a.workFlowNodeName!='print' and b.RefbillID=(select c.id from tblSaleReceive c,tblSaleReceiveDet d where c.id=d.f_ref and c.AutoBillMarker=1 and d.RefbillID=@ValueofDB:tblSalesOutStock_id)</select></condition>
+	<exec condition="'@SqlReturn:ReRBillNo' != 'null'">	 					
+		<error>tblsalereceive.ReturnBill.error,@SqlReturn:ReRBillNo</error>       
+	</exec>
+	</sql>
+	<sql type="condition"><!--存在关联的销售开票，不允许此操作-->
+	<condition><select>select a.BillNo as InvoiceBillNo from tblSalesInvoiceInfo a,tblSalesInfoDet b where a.id=b.f_ref and b.RefBillID=@ValueofDB:tblSalesOutStock_id and a.workFlowNodeName!='print'</select></condition>
+	<exec condition="'@SqlReturn:InvoiceBillNo' != 'null'">	 					
+		<error>tblSalesInfoDet.BillNo.error,@SqlReturn:InvoiceBillNo</error>       
+	</exec>
+	</sql>
+	<sql type="condition"><!--存在关联的销售换货单，不允许此操作-->
+		<condition><select>select BillNo as SalesReplaceNo from tblSalesReplace where SalesOutStockID=@ValueofDB:tblSalesOutStock_id</select></condition>
+	<exec condition="'@SqlReturn:SalesReplaceNo' != 'null'">	 					
+		<error>SalesReplaceDel.BillNo.error,@SqlReturn:SalesReplaceNo</error>       
+	</exec>
+	</sql>
+	<sql type="condition"><!--存在关联的预收转应收，不允许此操作-->
+	<condition><select>select a.BillNo as TFS1BillNo from tblTransferSale1 a,tblTransferSaleDet1 b where a.id=b.f_ref and a.workFlowNodeName!='print' and b.RefSalesOutID=@ValueofDB:tblSalesOutStock_id</select></condition>
+	<exec condition="'@SqlReturn:TFS1BillNo' != 'null'">	 					
+		 <error>SalesInfoDet.ReTFS1No.error,@SqlReturn:TFS1BillNo</error>       
+	</exec>
+	</sql>
+	<sql type="condition"><!--存在关联的应付转应收，不允许此操作-->
+	<condition><select>select a.BillNo as TFS2BillNo from tblTransferSale2 a,tblTransferSaleDet2 b where a.id=b.f_ref and a.workFlowNodeName!='print' and b.refbillID=(select BillNo from tblSalesOutStock where id=@ValueofDB:tblSalesOutStock_id)</select></condition>
+	<exec condition="'@SqlReturn:TFS2BillNo' != 'null'">	 					
+		 <error>SalesInfoDet.ReTFS2No.error,@SqlReturn:TFS2BillNo</error>       
+	</exec>
+	</sql>
+	<sql type="condition"><!--判断是否存在对应应付转应收-->
+	<condition><select>select tblTransferSale4.BillNo as TFS4No from tblTransferSale4 where RefBillNo=(select BillNo from tblSalesOutStock where id=@ValueofDB:tblSalesOutStock_id) and workFlowNodeName!='print'</select></condition>
+	<exec condition="'@SqlReturn:TFS4No'!='null'">	
+		<error>BuyInvoice.ReTFS4No.error,@SqlReturn:TFS4No</error>                  
+	</exec>
+</sql>
+<sql type="condition"><!--存在关联的应收调账单，不允许此操作-->
+	<condition><select>select a.BillNo as AccBillNo from tblAccAdjust a,tblAccAdjustDet b where a.id=b.f_ref and a.workFlowNodeName!='print' and b.RefBillID=@ValueofDB:tblSalesOutStock_id</select></condition>
+	<exec condition="'@SqlReturn:AccBillNo' != 'null'">	 					
+		<error>SalesAccDel.BillNo.error,@SqlReturn:AccBillNo</error>       
+	</exec>
+</sql>
+<sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+	<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblSalesOutStock_id and workFlowNodeName='finish'</select></condition>
+		<exec condition="'@SqlReturn:OrderNo'!='null'">	
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>       
+		</exec>
+</sql>	
+<sql type="condition">
+<!--如果启用审核流，更新序列号审核库存表-->
+		<exec condition="'@MEM:tblSalesOutStock_IsStatart' != '0'">
+			<sql type="procedure">{call proc_insertSeqOutInDet(@ValueofDB:id,add,retCode,retVal)}</sql>
+		</exec>
+</sql>	
+<sql type="condition">
+<!--如果关联销售订单回填销售订单信息-->
+		<exec condition="true">
+			<sql type="procedure">{call proc_SalesUpdateOrderQty(@ValueofDB:tblSalesOutStock_id,delete,retCode,retVal)}</sql>
+		</exec>	
+</sql>	
+
+	
+<!--=================逻辑操作==============-->
+<!--判断如果启用了序列号，验证出库单删除后是否有1个以上相同的序列号-->
+<sql type="condition">
+	<condition><select>select 'isUsed' as isUseSeq from tblGoodsAttribute where propName='Seq' and isUsed=1</select></condition>
+	<!--如果启用审核流，则过账时更新分仓库存+未审核字段-->
+	<exec condition="'@MEM:tblSalesOutStock_IsStatart' != '0'">
+		<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=tblSalesOutStockDet.GoodsCode,@StockCode=tblSalesOutStockDet.StockCode,@BillType=tblSalesOutStock,@InstoreQty=0,@OutstoreQty=tblSalesOutStockDet.Qty,@from=tblSalesOutStockDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+	</exec>
+	<exec condition="true"><!--删除出入库明细-->
+		<sql type="procedure">{call proc_delStockDet(@ValueofDB:tblSalesOutStock_id,tblSalesOutStock,2,retCode,retVal)}</sql>
+	</exec>
+	
+	<!--出库单在删除，反审核时进行序列号判断，如果是修改操作，要修改后进行判断-->
+	<exec condition="'@Sess:BillOper'!='update'">
+		<sql type="define">validateSameSeq</sql>
+	</exec>
+</sql>
+<sql type="condition">
+	<condition>
+		<select>select BillNo,SalesOrderID,StockCode,AlrAccAmt,CurAlrAccAmt,BillDate from tblSalesOutStock where id=@ValueofDB:tblSalesOutStock_id</select>
+	</condition>
+	<exec condition="true">	<!--分摊销售订单订金回填销售订单累积付款-->
+		<sql type="procedure">{call proc_SalesOutReceiveAmort(@ValueofDB:tblSalesOutStock_id,delete,retCode,retVal)}</sql>
+	</exec>
+	<exec condition="true"> <!--根据是否启用预收预付记应收应付,决定删除往来明细的类型（1应付 2应收 3预付 4预收)-->
+		<sql type="procedure">{call proc_iterateExeProc(select id as IniId@SPFieldLink:case when isnull(ReceiveTotalDebit@RepComma:0)!=0 or isnull(ReceiveTotalLend@RepComma:0)!=0 then 2 when isnull(PreReceiveTotalDebit@RepComma:0)!=0 or isnull(PreReceiveTotalLend@RepComma:0)!=0 then (case when '@MEM:prerecvpaymarktoneedrecvpay'='true' then 2 else 4 end) end as ComType from tblCompanyIni where relationDocID='@ValueofDB:tblSalesOutStock_id',proc_deleteComIni,@IniId@ParamLink:@ComType,retCode,retVal)}</sql>
+	</exec>
+	<exec condition=" '@MEM:autoGenerateAcc'=='true'"><!--启用“自动产生凭证”时，删除凭证审核流或者减少科目余额，删除凭证信息-->
+		<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblSalesOutStock_id,retCode,retVal)}</sql>
+	</exec>
+	<exec condition="@SqlReturn:AlrAccAmt&gt;0"><!--本次结算金额大于0，删除自动产生的应收款-->
+		<sql>delete from tblSaleReceive where id in (select f_ref from tblSaleReceiveDet where RefbillID=@ValueofDB:tblSalesOutStock_id) and AutoBillMarker=1</sql>
+		<sql>delete from tblSalesRecAccount where f_ref=(select top 1 f_ref from tblSaleReceive a,tblSaleReceiveDet b where a.id=b.f_ref and b.RefbillID=@ValueofDB:tblSalesOutStock_id and AutoBillMarker=1)</sql>
+		<sql>delete from tblTrackBill where RelationID in (select f_ref from tblSaleReceiveDet where RefbillID=@ValueofDB:tblSalesOutStock_id)</sql>
+		<sql>delete from tblSaleReceiveDet where RefbillID=@ValueofDB:tblSalesOutStock_id and (select AutoBillMarker from tblSaleReceive where id=tblSaleReceiveDet.f_ref)=1</sql>
+	</exec>
+</sql>
+	<sql type="condition">
+		<condition>
+			<select>select ComNumber from tblCompany where classCode = @ValueofDB:CompanyCode</select>
+			
+		</condition>
+		<exec condition="'@SqlReturn:ComNumber' !='HF01' &amp;&amp; '@SqlReturn:fx_workFlowNode'!='null' &amp;&amp; '@SqlReturn:fx_workFlowNode'!='' &amp;&amp; '@SqlReturn:fx_workFlowNode'=='-1'">
+			<error>经销商已验收入库，不支持此操作。</error>
+		</exec>
+		<exec condition="'@SqlReturn:ComNumber' =='HF01' &amp;&amp; '@SqlReturn:ds_workFlowNode'!='null' &amp;&amp; '@SqlReturn:ds_workFlowNode'!='' &amp;&amp; '@SqlReturn:ds_workFlowNode'=='-1'">
+			<error>电商已验收入库，不支持此操作。</error>
+		</exec>
+	</sql>
+	
+	<!-- 删除门头费-->
+	<sql type="condition">
+		<exec condition="true">
+			<sql type="procedure">{call proc_DoorFeeDetails(@a_billId=@ValueofDB:id,@a_billType=tblSalesOutStock,@a_opt=del,@retCode=retCode,@retVal=retVal)}
+			</sql>
+		</exec>
+	</sql>
+</define>
+<!--=========手工删除凭证============-->
+<define name="tblSalesOutStock_deleteAcc_hand">
+	<sql type="condition"><!--如果此单据没有生成凭证，则不用删除凭证-->
+		<condition><select>select BillNo from tblSalesOutStock where id=@ValueofDB:tblSalesOutStock_id and IsCreateAcc='0'</select></condition>
+		<exec condition="'@SqlReturn:BillNo'!='null'">	
+			<error>common.NotCreateAcc.Del.Error,@SqlReturn:BillNo</error>       
+		</exec>
+	</sql>
+	<sql type="condition"><!--当前单据凭证所在期间已经月结，则不能删除此凭证-->
+		<condition><select>select c.BillNo,b.statusId,a.CredTypeID,a.OrderNo from tblAccMain a,tblAccPeriod b,tblSalesOutStock c where a.RefBillID=@ValueofDB:tblSalesOutStock_id and c.id=@ValueofDB:tblSalesOutStock_id and a.CredYear=b.AccYear and a.Period=b.AccPeriod</select></condition>
+		<exec condition="'@SqlReturn:statusId'!='null'&amp;&amp;'@SqlReturn:statusId'=='2'">	
+			<error>common.AccPeriodSettle.error,@SqlReturn:BillNo,@SqlReturn:CredTypeID,@SqlReturn:OrderNo</error>       
+		</exec>
+	</sql>
+	<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,delete,@ValueofDB:tblSalesOutStock_id,retCode,retVal)}</sql>
+	<sql>update tblSalesOutStock set IsCreateAcc='0' where id=@ValueofDB:tblSalesOutStock_id</sql>
+</define>
+
+<!--===============================================以上代码：销售出库单===================================================================-->
+
+</defineSqls>

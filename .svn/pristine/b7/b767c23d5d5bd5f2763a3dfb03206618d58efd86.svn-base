@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<!--销售单据列表客户弹出框-->
+	<select name="SelectCompanySales"  belongTableName="tblCompany" > 
+		<classCode classSysType="Customer">tblCompany.classCode</classCode>
+		<orderBy>tblCompany.ComNumber,tblCompany.ComFullName</orderBy>
+		<defineSQL>
+from tblCompany
+      where 1=1  and tblCompany.statusid!='-1' and tblCompany.workFlowNodeName='finish' and (tblCompany.ClientFlag=2 or tblCompany.ClientFlag=3)
+		</defineSQL>
+		<displayFields>
+			<field name="tblCompany.ComNumber" parentDisplay="false" width="150" searchType="match" keySearch="true" />
+			<field name="tblCompany.ComFullName" display="tblSalesOrder.CompanyCode" parentDisplay="true" width="200" searchType="match" keySearch="true" />
+			<field name="tblCompany.ComFullNamePYM" parentDisplay="false" width="100" searchType="match" keySearch="true" hiddenInput="true" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+</popupSelect>

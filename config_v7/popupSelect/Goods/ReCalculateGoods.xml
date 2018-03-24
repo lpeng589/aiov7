@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReCalculateGoods" belongTableName="tblGoods">
+     <table>tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag>true</saveParentFlag>
+     <defineSQL>select 
+      tblGoods.classCode f1,
+      tblGoods.isCatalog f2,
+      tblGoods.GoodsNumber f3,
+      tblGoods.GoodsFullName f4,
+      tblGoods.GoodsFullNamePYM f5,
+      tblGoods.GoodsSpec f6,
+      tblGoods.Spec1 f7,
+      tblGoods.Spec2 f8,
+      tblGoods.Spec3 f9,
+      tblGoods.BarCode f10,
+      tblGoods.statusId f11
+  from tblGoods
+     </defineSQL>
+     <classCode>tblGoods.classCode</classCode>
+     <remark></remark>
+     <condition>tblGoods.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.[tblGoods]" width="120" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+     </displayFields>
+     <saveFields>
+          <field name="tblGoods.classCode" parentName="GoodsCode" relationKey="false" hidden="true" />
+          <field name="tblGoods.isCatalog" parentName="isCatalog" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

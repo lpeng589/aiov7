@@ -1,0 +1,133 @@
+body,html
+{
+	font:12px Microsoft YaHei; color:#333;
+	padding:0;
+	margin:0;
+	background:#efefef url(/style/images/body/top-bg.gif) center top repeat-x;
+}
+*{ margin:0 auto; padding:0;}
+ul,ol{ overflow:hidden; list-style:none; }
+input{ font:11px Tahoma; }
+img  { border:0; display:block; display:inline;}
+.both{clear:both; overflow:hidden; height:0px;}
+.b{ font-weight:bold;}
+.pt8{ padding-top:8px;}
+.pt10{ padding-top:10px;}
+.pr20{ padding-right:20px;}
+
+.divTop{width:99%; height:61px; background:url(/style/images/body/bg_logo.gif) right top no-repeat;}
+
+.divTop p{ display:block; float:left;}
+.divTop .lefticon{ padding:40px 0 0 7px;}
+.divTop .menuicon{ padding:26px 4px 0 6px;}
+
+.divTop .icons{ display:block; width:300px; height:35px;}
+.divTop .icons li{ width:46px; height:35px; float:right;cursor:pointer;}
+.divTop .icons li span{display:block; width:25px; height:21px; line-height:21px; margin:2px 0 0 18px;text-align:center; font-size:10px; background:url(/style/images/body/shu.png) no-repeat; color: #FFF; }
+
+.menuTab{display:block;float:left;width:89%;height:23px; margin-top:35px;}
+
+.tab_close{width:15px; height:15px;cursor:pointer;display:block; float:left; margin-top:4px; background:url(/style/images/body/i_006.gif) center no-repeat;}
+.tab_close:hover{ background:url(/style/images/body/i_007.gif) center no-repeat;}
+.close_all{width:14px; height:14px; display:block; float:left;margin-left:4px;margin-top:7px;background: url("/style/images/body/close_all.gif") center no-repeat;}
+
+.jericho_tabs  span{ width:90px; float:left; display:block; color: #353535;text-align:center;font-family:'宋体'}
+.jericho_tabs  .img{ float:right; display:block;}
+
+.tab_selected{
+	width:94px; height:27px; background:url(/style/images/body/menu_bg1.gif) no-repeat; line-height:27px;margin-left:-1px;margin-right:1px;
+}
+
+.tab_unselect{
+	float:left;background:url(/style/images/body/menu_bg2.gif) no-repeat;height:23px; line-height:23px;cursor: pointer;margin-top:3px;
+}
+
+.tab_selected span{color: #353535;}
+
+.advice{z-index:1000;position:absolute;display:none;right:50px;top:35px;overflow: hidden;width:323px;max-height:230px;float:left; background:#dbf2ff;padding:5px;min-height:100px;}
+.interior{float:left;border:1px solid #b6e3ff;width:100%;height:100%; background:#fff;}
+.interior_top{float:left;width:100%; font-weight:bold; height:30px; line-height:30px;}
+.interior_top img{vertical-align:middle;}
+.interior_top div{ float:left;margin-left:5px;}
+.interior_top span{ float:right;margin-right:10px;}
+.interior_c{ float:left; width:312px; height:100%; overflow:auto;max-height:195px;min-height:100px;padding:5px;padding-top:0px;}
+.interior_c a{text-decoration:none;color:#333}
+.interior_c img{cursor:pointer;}
+.interior_c table{ width:100%; background:#f7f7f7;}
+.interior_c table td{ height:29px; line-height:20px; padding:0px 5px 0px 5px;}
+.interior_c td a{float:left;width:260px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;display:block;}
+.interior_c table tbody{ overflow:auto; overflow-y:auto}
+.noAdvice{background:#f7f7f7;height:100px;line-height:100px;}
+
+.message{cursor:default; position:absolute; right:270px; top:35px;width:1px;height:1px;display:none;}
+.msgpoup_top,.msgpoup_middle,.msgpoup_bottom{background:url(/style/images/body/msgbg.png);width:80px;}
+.msgpoup_top{background-position:0px -2px; height:11px; float:left; font-size:1px;}
+.msgpoup_middle{background-position:-80px 0px; height:auto; float:left;margin-left:1px;}
+.msgpoup_bottom{background-position:0px -14px; height:17px; float:left; font-size:1px;}
+.message a{color:#000000;font-size:13px;display:block;white-space:nowrap;width:50px;margin:8px;text-decoration:none;}
+
+.menuBody{position:absolute;display:none;margin-left:15px;left:0;width:395px;height:475px;padding:0;background:url(/style/images/body/menu_bg3.png) no-repeat 0px 5px;}
+.menuBody .left{ background:url(/style/images/body/menu_bg5.png) no-repeat; width:237px; height:442px; float:left;}
+.menuBody .left .name{ height:76px; width:236px; padding:9px 0 0 9px; display:block; text-align:left;}
+.menuBody .left .name p{ float:left; width:88px; display:block;}
+.menuBody .left .name span{float:left;display:block; width:132px; line-height:30px;}
+
+.menuBody .dh{ width:220px; height:23px; padding-left:13px; font-size:11px;}
+.menuBody .dh li{ background:url(/style/images/body/bg_01.gif) no-repeat; width:42px; height:14px; line-height:14px; float:left; margin:0 5px;text-align: center;cursor:pointer;}
+.menuBody .dh .li{ background:url(/style/images/body/bg_02.gif) no-repeat; color:#c78a13;}
+
+.menuBody .menu{width:220px; height:290px;}
+
+.menuBody .menu li{ height:37px; width:220px;}
+.menuBody .menu li a{ display:block; height:37px; line-height:37px; width:155px; padding-left:65px; font-size:14px; text-align:left; text-decoration:none; color:#000;}
+.menuBody .menu li a:hover{ background:url(/style/images/body/i_016.gif) 200px 10px no-repeat; color:#900;}
+.menuBody .input_k{ background:url(/style/images/body/bg_input_search.gif) no-repeat; border:0px; width:180px; height:24px; line-height:24px; float:left; padding-left:10px; font-size:11px;color:#6d6d6d;}
+.menuBody .imput_img{ float:left; }
+
+.menuBody .right{ width:150px; float:left;}
+.menuBody .right .menuli{ height:330px; padding-top:10px;}
+.menuBody .right .menuli li{ width:150px;  text-align:left; height:38px; }
+.menuBody .right .menuli li a{ font-size:12px; color:#FFF; font-weight:bold; padding-left:27px; line-height:35px; padding-bottom:5px; text-decoration:none; display:block;}
+.menuBody .right .menuli li a:hover{ background:url(/style/images/body/menu_bg4.png) 1px 1px no-repeat;}
+.menuBody .right .helpcontrol li{ height:24px; text-align:left; padding-left:49px;}
+.menuBody .right .helpcontrol li a{ font-size:12px; color:#FFF; text-decoration:none;}
+.menuBody .right .helpcontrol li a:hover{ color:#9F0;}
+
+.jericho_tab{width: 100%;}
+.jericho_tab .tab_pages{width: 100%;float: left;clear: both;background: url(../images/jerichotab/tabline.gif) left bottom repeat-x;}
+.jericho_tab .tab_pages .tabs{height:26px;overflow :hidden;display:block;position:relative;float:left;}
+.jericho_tab .tab_pages div{float: left;}
+.jericho_tab .tab_pages ul, .jericho_tab .tab_pages li{padding: 0;list-style-type: none;}
+.jericho_tab .tab_pages ul{position:relative;display:block;}
+.jericho_tab .tab_pages ul li {float:left;}
+.jericho_tab .tab_pages .tab_unselect div{height: 24px;line-height: 24px;}
+.jericho_tab .tab_pages .tab_selected div{height: 27px;line-height: 30px;}
+.jericho_tab .tab_pages .jericho_tabs div.tab_left{width: 145px;}
+.jericho_tab .tab_pages .jericho_tabs div.tab_right{width: 5px;}
+.jericho_tab .tab_pages .tab_unselect{cursor: pointer;}
+.jericho_tab .tab_pages .tab_unselect .tab_left{margin-top: 3px;background: url(../images/jerichotab/jerichotab.gif) no-repeat left 0px;}
+.jericho_tab .tab_pages .tab_unselect .tab_right{margin-top: 3px;background: url(../images/jerichotab/jerichotab.gif) no-repeat right -24px;}
+.jericho_tab .tab_pages .tab_unselect_h .tab_left{margin-top: 3px;background: url(../images/jerichotab/jerichotab.gif) no-repeat left -104px;}
+.jericho_tab .tab_pages .tab_unselect_h .tab_right{margin-top: 3px;background: url(../images/jerichotab/jerichotab.gif) no-repeat right -128px;}
+.jericho_tab .tab_pages .tab_selected div.tab_left{background: url(../images/jerichotab/jerichotab.gif) no-repeat left -48px;}
+.jericho_tab .tab_pages .tab_selected div.tab_right{background: url(../images/jerichotab/jerichotab.gif) no-repeat right -76px;}
+.jericho_tab .tab_pages .jericho_tabs .tab_left .tab_icon{width: 25px;text-align: right;background-repeat: no-repeat;}
+.jericho_tab .tab_pages .tab_selected .tab_left .tab_icon{background-position: right 7px;	}
+.jericho_tab .tab_pages .tab_unselect .tab_left .tab_icon{background-position: right center;	}
+.jericho_tab .tab_pages .jericho_tabs .tab_left .tab_text{font-family: Calibri;font-size: 12px;text-indent: 2px;width: 100px;}
+.jericho_tab .tab_pages .jericho_sliders{width: 10px;height: 23px;margin:0;margin-top: 7px;cursor: pointer;float:left;margin-left:5px;}
+.jericho_tab .tab_pages .jericho_sliderleft_enable{background: url(/style/images/body/i_left.gif) no-repeat;}
+.jericho_tab .tab_pages .jericho_sliderleft_disable{background: url(/style/images/body/i_left.gif) no-repeat;}
+.jericho_tab .tab_pages .jericho_sliderright_enable{background: url(/style/images/body/i_right.gif) no-repeat;}
+.jericho_tab .tab_pages .jericho_sliderright_disable{background: url(/style/images/body/i_right.gif) no-repeat;}
+.jericho_tab .tab_content{border: solid 1px red;border-top: solid 6px #CEDDFA;float: left;clear: both;width: 100%;background-color:#fff;}
+.jericho_tab .tab_content div.content{font-family: Calibri;font-size: 12px;padding: 10px;position:relative;overflow:hidden;display:block;}
+.jericho_tab .tab_content div.content .righttag{position:relative;top:0px;width:80px;height:20px;line-height:20px;background:#EEF3F7 url(../images/jerichotab/smallloader.gif) no-repeat 8px center;border:1px solid #A5B6C8;padding-left:30px;font-family:10px;}
+
+.telDiv{cursor:default; position:absolute; right:5px; bottom:5px;width:400px;height:65px; border:1px solid #b6cadf;} 
+.telDiv_title{height:28px;line-height:28px;vertical-align:middle;border-top:1px solid #fff;border-left:1px solid #fff;border-right:1px solid #fff;border-bottom:1px solid #57a7ff;background-color:#acd3fe;}
+.telDiv_bt{height:28px;line-height:28px;vertical-align:middle;padding:5px;border-left:1px solid #fff;border-right:1px solid #fff;text-align:center;background-color:#acd3fe;}
+.inputDiv_bt{height:28px;line-height:28px;vertical-align:middle;padding:5px;text-align:center;background-color:#acd3fe;}
+.telDiv_bt button,.inputDiv_bt button{margin:0px;border:0;border:1px solid #1CA4FC;text-align:center;margin-right:5px;height:22px;line-height:16px;vertical-align:middle;font-size:12px;cursor:pointer;color:#02428A;width:0;width:auto;padding:2px 3px 0 3px;overflow:visible;background:url(../images/aiobg.gif) repeat-x left top;}
+.inputDiv{cursor:default; position:absolute; right:20px; bottom:50px;width:150px;height:50px; border:1px solid #b6cadf;} 
+.inputDiv{height:28px;line-height:28px;vertical-align:middle;border-top:1px solid #fff;border-left:1px solid #fff;border-right:1px solid #fff;border-bottom:1px solid #57a7ff;background-color:#acd3fe;}

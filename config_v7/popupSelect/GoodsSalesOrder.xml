@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="GoodsSalesOrder"  type="checkBox"  desc="无批号销售订单" > 
+		<classCode>tblGoods.classCode</classCode>
+		<orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName,tblStocks.ProDate,tblStocks.Availably</orderBy>
+		<forwardModel>tblGoods</forwardModel>
+		<defineSQL>
+from tblGoods left join (select GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably,sum(LastQty) as LastQty,sum(tblStocks.LastQty+tblStocks.inQtyNotAudit+tblStocks.SInQtyNotAudit-tblStocks.outQtyNotAudit-tblStocks.BOutQtyNotAudit) as UseQty from tblStocks where 2=2 and tblStocks.StockCode='@ValueofDB:StockCode' and tblStocks.StockCode='@ValueofDB:@TABLENAME_StockCode' and BatchNo='@ValueofDB:@TABLENAME_BatchNo' and Inch='@ValueofDB:@TABLENAME_Inch' and Hue='@ValueofDB:@TABLENAME_Hue' and yearNO='@ValueofDB:@TABLENAME_yearNO' and ProDate='@ValueofDB:@TABLENAME_ProDate' and Availably='@ValueofDB:@TABLENAME_Availably' and tblStocks.LastQty&gt;0 GROUP BY GoodsCode,BatchNo,Inch,Hue,yearNO,ProDate,Availably) as tblStocks on tblStocks.GoodsCode=tblGoods.classCode 
+  left join tblGoodsUnit with(index(IX_tblGoodsUnit_refdefault)) on tblGoodsUnit.f_ref=tblGoods.id and tblGoodsUnit.DefaultAssit=1
+  left join tblCustomerPriceDet on tblGoods.classcode = tblCustomerPriceDet.GoodsCode and tblCustomerPriceDet.f_ref=(select id from tblCustomerPrice where companyCode='@ValueofDB:CompanyCode')
+  left join tblCompany noRight on tblCompany.classCode='@ValueofDB:CompanyCode'
+		</defineSQL>
+		<changeCond>tblGoods.workFlowNodeName='finish' and tblGoods.statusid!='-1'</changeCond>
+		<displayFields>
+			<field name="tblGoods.[tblGoods]" parentDisplay="true" width="120" searchType="match" keySearch="true" />
+			<field name="tblStocks.Inch" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblStocks.Hue" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblStocks.yearNO" parentDisplay="true" width="70" searchType="match" />
+			<field name="tblStocks.ProDate" parentDisplay="true" width="80" searchType="equal" />
+			<field name="tblStocks.Availably" parentDisplay="true" width="80" searchType="equal" />
+			<field name="(case tblGoods.isCatalog when 0 then tblStocks.lastQty else -99999999 end)" asName="tblStocks.lastQty" display="tblStocks.lastQty" parentDisplay="true" width="90" searchType="more" defaultValue="0" inputType="checkBox" inputValue="moreZero" />
+			<field name="(case tblGoods.isCatalog when 0 then tblStocks.UseQty else -99999999 end)" asName="ViewVirtualStock.UseQty" display="ViewVirtualStock.UseQty" parentDisplay="true" width="90" searchType="more" defaultValue="0" inputType="checkBox" inputValue="moreZero" />
+			<field name="(case when (isnull(tblCustomerPriceDet.Price,0) = 0 or '@MEM:OutPriceTrack'='PriceNo') then (case tblCompany.ComSalesType when 'FacePrice' then tblGoods.FacePrice when 'ProSalesPrice' then tblGoods.ProSalesPrice when 'ProSalesPrice2' then tblGoods.ProSalesPrice2 when 'ProSalesPrice3' then tblGoods.ProSalesPrice3 when 'ProSalesPrice4' then tblGoods.ProSalesPrice4 when 'ProjectPrice' then tblGoods.ProjectPrice  when 'ProSalesPrice5' then tblGoods.ProSalesPrice5 when 'ProSalesPrice6' then tblGoods.ProSalesPrice6 when 'ProSalesPrice7' then tblGoods.ProSalesPrice7 when 'ProSalesPrice8' then tblGoods.ProSalesPrice8 when 'ProSalesPrice9' then tblGoods.ProSalesPrice9 end) else tblCustomerPriceDet.Price end)" asName="tblCustomerPriceDet.Price" display="tblCustomerPriceDet.Price" parentDisplay="true" width="90" />
+			<field name="(case when '@MEM:OutDiscountTracke'='true' then isnull(tblCustomerPriceDet.OutDiscount,100) else 100 end)" asName="tblCustomerPriceDet.OutDiscount" display="tblCustomerPriceDet.OutDiscount" parentDisplay="true" width="90" />
+		</displayFields>
+		<saveFields>
+			<field name="tblStocks.Inch" parentName="@TABLENAME.Inch" width="0" />
+			<field name="tblStocks.Hue" parentName="@TABLENAME.Hue" width="0" />
+			<field name="tblStocks.yearNO" parentName="@TABLENAME.yearNO" width="0" />
+			<field name="tblStocks.ProDate" parentName="@TABLENAME.ProDate" width="0" />
+			<field name="tblStocks.Availably" parentName="@TABLENAME.Availably" width="0" />
+			<field name="(case when (isnull(tblCustomerPriceDet.Price,0) = 0 or '@MEM:OutPriceTrack'='PriceNo') then (case tblCompany.ComSalesType when 'FacePrice' then tblGoods.FacePrice when 'ProSalesPrice' then tblGoods.ProSalesPrice when 'ProSalesPrice2' then tblGoods.ProSalesPrice2 when 'ProSalesPrice3' then tblGoods.ProSalesPrice3 when 'ProSalesPrice4' then tblGoods.ProSalesPrice4 when 'ProjectPrice' then tblGoods.ProjectPrice  when 'ProSalesPrice5' then tblGoods.ProSalesPrice5 when 'ProSalesPrice6' then tblGoods.ProSalesPrice6 when 'ProSalesPrice7' then tblGoods.ProSalesPrice7 when 'ProSalesPrice8' then tblGoods.ProSalesPrice8 when 'ProSalesPrice9' then tblGoods.ProSalesPrice9 end) else tblCustomerPriceDet.Price end)" parentName="@TABLENAME.Price" compare="false" display="tblCustomerPriceDet.Price" width="0" />
+			<field name="(case when '@MEM:OutDiscountTracke'='true' then isnull(tblCustomerPriceDet.OutDiscount,100) else 100 end)" parentName="@TABLENAME.Discount" compare="false" display="tblCustomerPriceDet.OutDiscount" width="0" />
+			<field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" hidden="true" relationKey="true" width="0" />
+			<field name="tblGoodsUnit.SecUnit" parentName="@TABLENAME.SecUnit" hidden="true" compare="false" width="0" />
+			<field name="tblGoodsUnit.UnitD" parentName="@TABLENAME.BaseQty" compare="false" width="0" />
+			<field name="tblGoodsUnit.SecUnitD" parentName="@TABLENAME.SecQty" compare="false" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

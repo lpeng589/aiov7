@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SaleOrser_quote_CRMsaleconcract">
+     <table>CRMClientInfo</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+	      CRMSaleContract.id f1,
+	      CRMClientInfo.ClientName f2,
+	      CRMSaleContract.ContractNo f3,
+	      CRMSaleContract.SignUpDate f4,
+	      CRMSaleContract.DeliveryDate f5
+			  from CRMSaleContract
+				left join CRMClientInfo on CRMSaleContract.f_brother=CRMClientInfo.id
+     </defineSQL>
+     <classCode></classCode>
+     <remark>销售订单引用客户合同</remark>
+     <condition>(CRMSaleContract.workFlowNodeName='finish')</condition>
+     <changeCond>CRMClientInfo.statusid!=-1</changeCond>
+     <orderBy>CRMClientInfo.ClientName,CRMSaleContract.ContractNo</orderBy>
+     <displayFields>
+          <field name="CRMClientInfo.ClientName" width="200" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="CRMSaleContract.ContractNo" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="CRMSaleContract.SignUpDate" width="70" searchType="equal" parentDisplay="false" />
+          <field name="CRMSaleContract.DeliveryDate" width="70" searchType="equal" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="CRMSaleContract.id" parentName="@TABLENAME.CRMpactID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

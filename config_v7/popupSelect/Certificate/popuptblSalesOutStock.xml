@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="popuptblSalesOutStock" type="checkBox">
+     <table>tblSalesOutStock,tblCompany,tblDepartment,tblEmployee</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblSalesOutStock.id f1,
+      tblSalesOutStock.BillDate f2,
+      tblSalesOutStock.BillNo f3,
+      tblCompany.ComFullName f4,
+      tblDepartment.DeptFullName f5,
+      tblEmployee.EmpFullName f6,
+      tblSalesOutStock.TotalTaxAmount f7,
+      tblSalesOutStock.CurTotalAmount f8,
+      tblSalesOutStock.NeedReturnAmt f9,
+      tblSalesOutStock.BackAmount f10,
+      tblSalesOutStock.TotalAlrAccAmt f11,
+	  tblSalesOutStock.InVoiceType f12
+  from tblSalesOutStock 
+  left join tblCompany on tblSalesOutStock.CompanyCode=tblCompany.classCode
+  left join tblDepartment on tblSalesOutStock.DepartmentCode=tblDepartment.classCode
+  left join tblEmployee on tblSalesOutStock.EmployeeID=tblEmployee.id
+     </defineSQL>
+     <classCode></classCode>
+     <condition>tblSalesOutStock.workFlowNodeName ='finish' and LEN(ISNULL(CertificateNo,''))=0 and (DiscountAmount!=0 or TotalTaxAmount!=0 or AlrAccAmt!=0)</condition>
+     <changeCond></changeCond>
+     <orderBy>tblSalesOutStock.BillDate,tblSalesOutStock.BillNo </orderBy>
+     <displayFields>
+          <field name="tblSalesOutStock.BillDate" width="90" searchType="scope" parentDisplay="false" orderBy="升"/>
+          <field name="tblSalesOutStock.BillNo" width="120" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"/>
+          <field name="tblCompany.ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="false" display="tblSalesOutStock.CompanyCode"/>
+          <field name="tblDepartment.DeptFullName" width="80" searchType="match" keySearch="true" parentDisplay="false" display="tblSalesOutStock.DepartmentCode"/>
+          <field name="tblEmployee.EmpFullName" width="80" searchType="match" keySearch="true" parentDisplay="false" display="tblSalesOutStock.EmployeeID"/>
+          <field name="tblSalesOutStock.TotalTaxAmount" width="80" parentDisplay="false" />
+          <field name="tblSalesOutStock.CurTotalAmount" width="80" parentDisplay="false" />
+          <field name="tblSalesOutStock.NeedReturnAmt" width="80" parentDisplay="false" />
+          <field name="tblSalesOutStock.BackAmount" width="80" parentDisplay="false" />
+          <field name="tblSalesOutStock.TotalAlrAccAmt" width="80" parentDisplay="false" />
+		  <field name="tblSalesOutStock.InVoiceType" width="75" searchType="equal" parentDisplay="false" inputType="1" inputValue="InvoiceType"/>
+     </displayFields>
+     <saveFields>
+          <field name="tblSalesOutStock.id" parentName="ID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

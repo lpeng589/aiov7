@@ -1,0 +1,7 @@
+.asyncbox_btn{
+	margin:0 0 0 10px;padding:0;display:inline-block;border:none;text-decoration:none;height:22px;cursor:pointer;
+	background:url(../images/asyncbox_bg.png) no-repeat -55px -33px
+}
+.asyncbox_btn span{background:url(../images/asyncbox_bg.png) no-repeat 100% -33px;color:#09d;padding:3px 11px 3px 0;margin-left:12px;float:left;height:16px}
+.asyncbox_btn:hover{background-position:-55px -56px;text-decoration:none}
+.asyncbox_btn:hover span{color:#069;background-position:100% -56px}

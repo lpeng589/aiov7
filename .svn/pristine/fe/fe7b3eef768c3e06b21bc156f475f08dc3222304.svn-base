@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<!--采购单据列表供应商弹出框-->
+<select name="SelectCompanyBuy" belongTableName="tblCompany">
+     <table>tblCompany</table>
+     <forwardModel></forwardModel>
+     <saveParentFlag>false</saveParentFlag>
+     <relation></relation>
+     <defineSQL>select 
+      tblCompany.ComNumber f1,
+      tblCompany.ComFullName f2,
+      tblCompany.ComFullNamePYM f3,
+      tblCompany.classCode f4
+  from tblCompany
+     </defineSQL>
+     <classCode   classSysType="Supplier">tblCompany.classCode</classCode>
+     <condition>tblCompany.statusid!='-1' and tblCompany.workFlowNodeName='finish' and (tblCompany.ClientFlag=1 or tblCompany.ClientFlag=3) </condition>
+     <changeCond></changeCond>
+     <orderBy>tblCompany.ComNumber,tblCompany.ComFullName</orderBy>
+     <displayFields>
+          <field name="tblCompany.ComNumber" width="150" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblCompany.ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="true" display="tblBuyOrder.CompanyCode" />
+          <field name="tblCompany.ComFullNamePYM" width="100" searchType="match" parentDisplay="false" hiddenInput="true" keySearch="true"/>
+     </displayFields>
+     <saveFields>
+     </saveFields>
+</select>
+</popupSelect>

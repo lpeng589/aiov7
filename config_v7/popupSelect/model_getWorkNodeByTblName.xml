@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="model_getWorkNodeByTblName"  desc="根据表名获取单据流程节点"  belongTableName="OAWorkFlowNode " > 
+		<defineSQL>
+from OAWorkFlowNode 
+left join OAWorkFlowTemplate on OAWorkFlowNode.flowId = OAWorkFlowTemplate.id
+where OAWorkFlowTemplate.templateFile = '@ValueofDB:tableName' and statusId = 0
+		</defineSQL>
+		<displayFields>
+			<field name="OAWorkFlowNode.keyId" asName="value" display="value" parentDisplay="false" width="100" />
+			<field name="OAWorkFlowNode.display" asName="label" display="label" parentDisplay="false" width="100" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+</popupSelect>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectCertificateOtherIn_Acc" type="checkBox">
+     <table>tblOtherIn,tblCompany,tblEmployee,tblDepartment</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      tblOtherIn.id f1,
+      tblOtherIn.BillDate f2,
+      tblOtherIn.BillNo f3,
+      tblBillAccSetup.SubType f4,
+      tblCompany.ComFullName f5,
+      tblEmployee.EmpFullName f6,
+      tblDepartment.DeptFullName f7,
+      tblOtherIn.BillAmt f8
+  from tblOtherIn 
+left join tblCompany on tblOtherIn.CompanyCode = tblCompany.classCode 
+left join tblEmployee on tblEmployee.id= tblOtherIn.employeeid
+left join tblDepartment on tblDepartment.classcode=tblOtherIn.departmentcode
+join tblBillAccSetup on tblBillAccSetup.SubCode=tblOtherIn.SubCode and tblBillAccSetup.MainType='tblOtherIn'
+     </defineSQL>
+     <classCode></classCode>
+     <condition>tblOtherIn.workFlowNodeName = 'finish' and LEN(CertificateNo)=0 and BillAmt!=0</condition>
+     <changeCond></changeCond>
+     <orderBy>tblOtherIn.BillDate,tblOtherIn.BillNo</orderBy>
+     <displayFields>
+          <field name="tblOtherIn.BillDate" width="100" searchType="scope" keySearch="true" parentDisplay="false" />
+          <field name="tblOtherIn.BillNo" width="120" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblBillAccSetup.SubType" width="150" searchType="match" keySearch="true" parentDisplay="false" display="tblOtherIn.SubCode" />
+          <field name="tblCompany.ComFullName" width="150" searchType="match" parentDisplay="false" display="tblOtherIn.CompanyCode"/>
+          <field name="tblEmployee.EmpFullName" width="85" searchType="match" parentDisplay="false" display="tblOtherIn.EmployeeID"/>
+          <field name="tblDepartment.DeptFullName" width="85" searchType="match" parentDisplay="false" display="tblOtherIn.DepartmentCode"/>
+          <field name="tblOtherIn.BillAmt" width="90" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblOtherIn.id" parentName="@TABLENAME.id" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

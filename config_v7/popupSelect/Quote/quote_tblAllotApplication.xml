@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="quote_tblAllotApplication">
+     <table>tblAllotApplication,tblEmployee,tblDepartment,tblAllotApplicationDet,tblStock,tblGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblAllotApplication.id f1,
+      tblAllotApplication.BillDate f2,
+      tblAllotApplication.BillNo f3,
+      tblDepartment.DeptFullName f4,
+      tblEmployee.EmpFullName f5,
+      tblStock.StockFullName f6,
+      tblGoods.GoodsNumber f7,
+      tblGoods.GoodsFullName f8,
+      tblGoods.GoodsSpec f9,
+      tblGoods.GoodsFullNamePYM f10
+  from tblAllotApplication
+left join tblEmployee on tblEmployee.id=tblAllotApplication.EmployeeID
+left join tblDepartment on tblDepartment.classCode=tblAllotApplication.DepartmentCode
+left join tblAllotApplicationDet on (tblAllotApplication.id=tblAllotApplicationDet.f_ref and tblAllotApplicationDet.id=(select top 1 a.id from tblAllotApplicationDet a where a.f_ref=tblAllotApplication.id and a.GoodsCode in (select classCode from tblGoods as k where 2=2 and k.GoodsNumber like '%@condition:tblGoods.GoodsNumber%' and k.GoodsFullName like '%@condition:tblGoods.GoodsFullName%' and k.GoodsSpec like '@condition:tblGoods.GoodsSpec%')@condsent_tblStock.StockFullName:[ and a.StockCode in (select classCode from tblStock as k where 1=1 and k.StockFullName like '%@condition:tblStock.StockFullName%')]))
+left join tblStock on tblStock.classCode=tblAllotApplicationDet.StockCode
+left join tblGoods on tblGoods.classCode=tblAllotApplicationDet.GoodsCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>同价调拨引用调拨申请</remark>
+     <condition>(tblAllotApplication.statusId=0 and tblAllotApplication.workFlowNodeName = 'finish')</condition>
+     <changeCond></changeCond>
+     <hasChild>quote_tblAllotApplicationDet</hasChild>
+     <orderBy>tblAllotApplication.BillDate,tblAllotApplication.BillNo</orderBy>
+     <displayFields>
+          <field name="tblAllotApplication.BillDate" width="70" searchType="scope" parentDisplay="false" orderBy="升" />
+          <field name="tblAllotApplication.BillNo" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblDepartment.DeptFullName" width="75" searchType="match" parentDisplay="false" display="@TABLENAME.DepartmentCode" />
+          <field name="tblEmployee.EmpFullName" width="50" searchType="match" parentDisplay="false" display="@TABLENAME.EmployeeID" />
+          <field name="tblStock.StockFullName" width="75" searchType="match" parentDisplay="false" display="tblAllotApplication.StockCode" />
+          <field name="tblGoods.GoodsNumber" width="120" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullName" width="150" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsSpec" width="150" searchType="match" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblAllotApplication.id" parentName="@TABLENAME.AppId" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

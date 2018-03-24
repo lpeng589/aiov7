@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="GoodsBuyTaxPrice" type="checkBox">
+     <table>tblGoods,tblGoodsUnit,tblCustomerPriceDet</table>
+     <forwardModel>tblGoods</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>
+  from tblGoods left join tblGoodsUnit with(index(IX_tblGoodsUnit_refdefault)) on tblGoodsUnit.f_ref=tblGoods.id and tblGoodsUnit.DefaultAssit=1
+  left join tblCustomerPriceDet on tblGoods.classcode = tblCustomerPriceDet.GoodsCode and tblCustomerPriceDet.f_ref=(select id from tblCustomerPrice where companyCode='@ValueofDB:CompanyCode')
+     </defineSQL>
+     <classCode>tblGoods.classCode</classCode>
+     <remark>回填最近进价和进价折扣</remark>
+     <condition></condition>
+     <changeCond>1=1 @condsent_tblBuyInStockDet_BuyOrderID:[ and tblGoods.classCode in (select goodsCode from tblBuyOrderDet where 1=1 and f_ref='@ValueofDB:tblBuyInStockDet_BuyOrderID')]@condsent_tblBuyInStockDet_BuyAskPriceID:[ and tblGoods.classCode in (select goodsCode from tblBuyAskPriceDet where 1=1 and f_ref='@ValueofDB:tblBuyInStockDet_BuyAskPriceID')]@condsent_tblBuyOrderDet_BuyApplyID:[ and tblGoods.classCode in (select goodsCode from tblBuyApplicationDet where 1=1 and f_ref='@ValueofDB:tblBuyOrderDet_BuyApplyID')] and tblGoods.workFlowNodeName='finish' and tblGoods.statusid!='-1'</changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.[tblGoods]" width="120" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+          <field name="(case when '@MEM:InPriceTrack'='TaxPrice' and isnull(tblCustomerPriceDet.BuyPrice,0)!=0 then tblCustomerPriceDet.BuyPrice else tblGoods.PreBuyPrice end)" asName="tblCustomerPriceDet.BuyPrice" width="80" parentDisplay="false" display="tblCustomerPriceDet.BuyPrice" />
+          <field name="(case when '@MEM:InDiscountTracke'='true' then isnull(tblCustomerPriceDet.InDiscount,100) else 100 end)" asName="tblCustomerPriceDet.InDiscount" width="80" parentDisplay="false" display="tblCustomerPriceDet.InDiscount" sysType="BillDiscount" />
+     </displayFields>
+     <saveFields>
+          <field name="(case when '@MEM:InPriceTrack'='TaxPrice' and isnull(tblCustomerPriceDet.BuyPrice,0)!=0 then tblCustomerPriceDet.BuyPrice else tblGoods.PreBuyPrice end)" parentName="@TABLENAME.TaxPrice" display="tblCustomerPriceDet.BuyPrice" relationKey="false" hidden="false"  compare="false"/>
+          <field name="(case when '@MEM:InDiscountTracke'='true' then isnull(tblCustomerPriceDet.InDiscount,100) else 100 end)" parentName="@TABLENAME.Discount" display="tblCustomerPriceDet.InDiscount" sysType="BillDiscount" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true" />
+          <field name="tblGoodsUnit.UnitD" parentName="@TABLENAME.BaseQty" relationKey="false" compare="false" hidden="false" />
+          <field name="tblGoodsUnit.SecUnit" parentName="@TABLENAME.SecUnit" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblGoodsUnit.SecUnitD" parentName="@TABLENAME.SecQty" relationKey="false"  compare="false" hidden="false" />
+     </saveFields>
+</select>
+</popupSelect>

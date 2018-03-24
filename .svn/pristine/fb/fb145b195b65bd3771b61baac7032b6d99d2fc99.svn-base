@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="ProviderInVoiceWithPayDate" > 
+		<classCode classSysType="Supplier">tblCompany.classCode</classCode>
+		<orderBy>tblCompany.ComNumber,tblCompany.ComFullName</orderBy>
+		<forwardModel>tblCompany&amp;moduleType=1&amp;ClientFlag=1</forwardModel>
+		<defineSQL>
+from tblCompany
+  left join tblEmployee on tblCompany.EmployeeID=tblEmployee.id
+  left join tblDepartment on tblCompany.DepartmentCode=tblDepartment.classCode
+      where 1=1  and (tblCompany.ClientFlag=1 or tblCompany.ClientFlag=3)
+		</defineSQL>
+		<changeCond>(tblCompany.statusId!='-1')</changeCond>
+		<displayFields>
+			<field name="tblCompany.[tblCompany_1]" parentDisplay="false" width="100" searchType="match" keySearch="true" />
+			<field name="case when len(tblCompany.DepartmentCode)&gt;0 then tblDepartment.DeptFullName else '@Sess:DepartmentName' end" asName="Department.DeptFullName" display="tblCompany.DepartmentCode" parentDisplay="false" width="80" />
+			<field name="case when len(tblCompany.EmployeeID)&gt;0 then tblEmployee.EmpFullName else '@Sess:UserName' end" asName="Employee.EmpFullName" display="tblCompany.EmployeeID" parentDisplay="false" width="80" />
+			<field name="CONVERT(varchar(10),dateadd(Day,case tblCompany.SettleCys when 0 then null else tblCompany.SettleCys end,'@ValueofDB:BillDate'),121)" asName="@TABLENAME.PayDate" display="@TABLENAME.PayDate" parentDisplay="false" width="70" />
+		</displayFields>
+		<saveFields>
+			<field name="tblCompany.classCode" parentName="@TABLENAME.CompanyCode" hidden="true" relationKey="true" width="0" />
+			<field name="tblCompany.InVoiceType" parentName="@TABLENAME.InVoiceType" hidden="true" width="0" />
+			<field name="(case when isnull(tblCompany.Discount,0)=0 then 100 else isnull(tblCompany.Discount,0) end)" parentName="@TABLENAME.Discount" display="@TABLENAME.Discount" width="0" />
+			<field name="case when len(tblCompany.DepartmentCode)&gt;0 then tblCompany.DepartmentCode else '@Sess:DepartmentCode' end" parentName="@TABLENAME.DepartmentCode" hidden="true" display="@TABLENAME.DepartmentCode" width="0" />
+			<field name="case when len(tblCompany.DepartmentCode)&gt;0 then tblDepartment.DeptFullName else '@Sess:DepartmentName' end" parentName="@TABLENAME.tblDepartment_DeptFullName" hidden="true" display="tblCompany.DepartmentCode" width="0" />
+			<field name="case when len(tblCompany.EmployeeID)&gt;0 then tblCompany.EmployeeID else '@Sess:UserId' end" parentName="@TABLENAME.EmployeeID" hidden="true" display="@TABLENAME.EmployeeID" width="0" />
+			<field name="case when len(tblCompany.EmployeeID)&gt;0 then tblEmployee.EmpFullName else '@Sess:UserName' end" parentName="@TABLENAME.tblEmployee_EmpFullName" hidden="true" display="tblCompany.EmployeeID" width="0" />
+			<field name="CONVERT(varchar(10),dateadd(Day,case tblCompany.SettleCys when 0 then null else tblCompany.SettleCys end,'@ValueofDB:BillDate'),121)" parentName="@TABLENAME.PayDate" display="@TABLENAME.PayDate" width="0" />
+			<field name="case tblCompany.InVoiceType when 1 then '@MEM:Commoninvoice' when 2 then '@MEM:VATinvoice' else '0' end" parentName="@TABLENAME.Tax" keySearch="true" />
+		</saveFields>
+	</select>
+</popupSelect>

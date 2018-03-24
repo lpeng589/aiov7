@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+	<define name="getPendingWorkflow">
+		<sql type="condition">
+			<condition>
+				<select>
+					select count(*) as pendingCount
+					from ( 
+					    select distinct a.id,a.keyId,t.designType,applyDate,applyBy,department,applyType,templateName,a.tableName,applyContent,currentNode,nextNodeIds,a.checkPerson,departmentCode,a.createBy,substring(a.createTime,12,5) as createTime,flowDepict,lastNodeId,lastCheckPerson ,substring(a.lastUpdateTime,0,11) as lastUpdateTime,substring(a.lastUpdateTime,12,5) as times,a.flowDepictTitle,a.allApprovePerson,t.parentTableName,a.lastUpdateTime oldLastUpdateTime
+					    from OAMyWorkFlow a 
+					    join OAWorkFlowTemplate t  on t.id=a.applyType  
+					    join OAMyWorkFlowPerson p on p.keyId=a.keyId and p.tableName=a.tableName   
+					    where t.templateStatus=1 and a.statusId=0  
+					    and (a.currentNode!='0'
+						   and p.curApprover=1  and p.checkPerson= @Sess:UserId )
+						   and a.currentNode!='-1' ) k
+				</select>
+				<select>
+					select COUNT(*) consignatedCount
+					from (
+						select distinct a.id,a.keyId,t.designType,applyDate,applyBy,department,applyType,templateName,a.tableName,applyContent,currentNode,nextNodeIds,a.checkPerson,departmentCode,a.createBy,substring(a.createTime,12,5) as createTime,flowDepict,lastNodeId,lastCheckPerson ,substring(a.lastUpdateTime,0,11) as lastUpdateTime,substring(a.lastUpdateTime,12,5) as times,a.flowDepictTitle,a.allApprovePerson,t.parentTableName,a.lastUpdateTime oldLastUpdateTime 
+						from OAMyWorkFlow a 
+						join OAWorkFlowTemplate t  on t.id=a.applyType  
+						join OAMyWorkFlowPerson p on p.keyId=a.keyId and p.tableName=a.tableName   
+						where t.templateStatus=1 and a.statusId=0  
+						and exists(select id from OAWorkConsignation where state=1 and CongignUserID =  @Sess:UserId and CHARINDEX(';'+userId+';',a.checkPerson)&gt;0 and (CHARINDEX((select sameFlow+';' from OAWorkFlowTemplate where id=a.applyType),flowName)&gt;0 or len(ISNULL(flowName,''))=0) 
+						and substring(convert(varchar,GETDATE(),120),0,11)&gt;=beginTime  and substring(convert(varchar,GETDATE(),120),0,11)&lt;=endTime ) 
+					) k
+				</select>				
+			</condition>
+			<exec condition="true">
+				<error>data:@SqlReturn:pendingCount,@SqlReturn:consignatedCount</error>						
+			</exec>		
+		</sql>
+	</define>
+	
+	<!-- 考勤签入后-->
+	<define name="attendenceSignIn">
+		<sql type="condition">
+			<condition>
+				<select>
+					select DirectBoss from tblEmployee  where id = @ValueofDB:createBy
+				</select>
+			</condition>
+			<exec condition="true">
+				<sql type="class"> com.menyi.aio.web.mobile.AttendanceNotice.signNotice(@SqlReturn:DirectBoss, &quot;&quot;, @Sess:UserName 有考勤信息抄送给您, @ValueofDB:id)</sql>
+			</exec>
+		</sql>
+	</define>
+
+     <!-- 考勤签出后-->	
+	<define name="attendenceSignOut">
+		<sql type="condition">
+			<condition>
+				<select>
+					select DirectBoss from tblEmployee  where id = @ValueofDB:createBy
+				</select>
+			</condition>
+			<exec condition="true">
+				<sql type="class"> com.menyi.aio.web.mobile.AttendanceNotice.signNotice(@SqlReturn:DirectBoss,&quot;&quot;, @Sess:UserName 抄送给您的考勤信息有更新, @ValueofDB:id)</sql>
+			</exec>
+		</sql>
+	</define>
+		
+</defineSqls>

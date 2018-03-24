@@ -1,0 +1,1025 @@
+2018-03-23 15:06:01,727 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:01,727 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:01,727 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-03-23 15:06:01,727 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:06:01,727 - Do unicode file recognition:  false
+2018-03-23 15:06:01,727 - FileResourceLoader : adding path 'D:\Project\aio\tomcat7\webapps\ROOT'
+2018-03-23 15:06:01,727 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-03-23 15:06:01,728 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-03-23 15:06:01,728 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-03-23 15:06:01,728 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-03-23 15:06:01,728 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-03-23 15:06:01,728 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-03-23 15:06:01,730 - Created '20' parsers.
+2018-03-23 15:06:01,730 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-03-23 15:06:01,730 - Velocimacro : Default library not found.
+2018-03-23 15:06:01,730 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-03-23 15:06:01,730 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-03-23 15:06:01,730 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-03-23 15:06:01,730 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-03-23 15:06:01,779 - ResourceManager : found /js/body2.vjs with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:06:09,802 - Log4JLogChute initialized using file 'velocity.log'
+2018-03-23 15:06:09,804 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-03-23 15:06:09,804 - Default Properties File: org\apache\velocity\runtime\defaults\velocity.properties
+2018-03-23 15:06:09,804 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-03-23 15:06:09,804 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/format/Formatter
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:534)
+	at org.apache.velocity.app.VelocityEngine.init(VelocityEngine.java:144)
+	at com.menyi.web.util.GenJS.js(GenJS.java:44)
+	at com.menyi.web.util.GlobalsTool.js(GlobalsTool.java:5195)
+	at sun.reflect.GeneratedMethodAccessor123.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.invoke(UberspectImpl.java:295)
+	at org.apache.velocity.runtime.parser.node.ASTMethod.execute(ASTMethod.java:245)
+	at org.apache.velocity.runtime.parser.node.ASTReference.execute(ASTReference.java:203)
+	at org.apache.velocity.runtime.parser.node.ASTReference.render(ASTReference.java:294)
+	at org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:318)
+	at org.apache.velocity.Template.merge(Template.java:254)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.performMerge(VelocityViewServlet.java:805)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.mergeTemplate(VelocityViewServlet.java:762)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doRequest(VelocityViewServlet.java:555)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doGet(VelocityViewServlet.java:509)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:748)
+	at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:486)
+	at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:411)
+	at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:338)
+	at org.apache.struts.chain.commands.servlet.PerformForward.handleAsForward(PerformForward.java:113)
+	at org.apache.struts.chain.commands.servlet.PerformForward.perform(PerformForward.java:96)
+	at org.apache.struts.chain.commands.AbstractPerformForward.execute(AbstractPerformForward.java:54)
+	at org.apache.struts.chain.commands.ActionCommandBase.execute(ActionCommandBase.java:51)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.commons.chain.generic.LookupCommand.execute(LookupCommand.java:304)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.struts.chain.ComposableRequestProcessor.process(ComposableRequestProcessor.java:283)
+	at org.apache.struts.action.ActionServlet.process(ActionServlet.java:1913)
+	at org.apache.struts.action.ActionServlet.doGet(ActionServlet.java:449)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at com.menyi.web.util.BaseFilter.doFilter(BaseFilter.java:172)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:504)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:170)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:421)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1074)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.format.Formatter
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1720)
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1571)
+	... 71 more
+2018-03-23 15:06:09,806 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:09,806 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:09,807 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-03-23 15:06:09,807 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:06:09,807 - Do unicode file recognition:  false
+2018-03-23 15:06:09,807 - FileResourceLoader : adding path 'D:\Project\aio\tomcat7\webapps\ROOT'
+2018-03-23 15:06:09,807 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-03-23 15:06:09,808 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-03-23 15:06:09,808 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-03-23 15:06:09,808 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-03-23 15:06:09,808 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-03-23 15:06:09,809 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-03-23 15:06:09,810 - Created '20' parsers.
+2018-03-23 15:06:09,810 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-03-23 15:06:09,810 - Velocimacro : Default library not found.
+2018-03-23 15:06:09,810 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-03-23 15:06:09,810 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-03-23 15:06:09,811 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-03-23 15:06:09,811 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-03-23 15:06:10,278 - ResourceManager : found /js/validate.vjs with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:06:10,294 - Log4JLogChute initialized using file 'velocity.log'
+2018-03-23 15:06:10,294 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-03-23 15:06:10,294 - Default Properties File: org\apache\velocity\runtime\defaults\velocity.properties
+2018-03-23 15:06:10,294 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-03-23 15:06:10,294 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/format/Formatter
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:534)
+	at org.apache.velocity.app.VelocityEngine.init(VelocityEngine.java:144)
+	at com.menyi.web.util.GenJS.js(GenJS.java:44)
+	at com.menyi.web.util.GlobalsTool.js(GlobalsTool.java:5195)
+	at sun.reflect.GeneratedMethodAccessor123.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.invoke(UberspectImpl.java:295)
+	at org.apache.velocity.runtime.parser.node.ASTMethod.execute(ASTMethod.java:245)
+	at org.apache.velocity.runtime.parser.node.ASTReference.execute(ASTReference.java:203)
+	at org.apache.velocity.runtime.parser.node.ASTReference.render(ASTReference.java:294)
+	at org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:318)
+	at org.apache.velocity.Template.merge(Template.java:254)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.performMerge(VelocityViewServlet.java:805)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.mergeTemplate(VelocityViewServlet.java:762)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doRequest(VelocityViewServlet.java:555)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doGet(VelocityViewServlet.java:509)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:748)
+	at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:486)
+	at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:411)
+	at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:338)
+	at org.apache.struts.chain.commands.servlet.PerformForward.handleAsForward(PerformForward.java:113)
+	at org.apache.struts.chain.commands.servlet.PerformForward.perform(PerformForward.java:96)
+	at org.apache.struts.chain.commands.AbstractPerformForward.execute(AbstractPerformForward.java:54)
+	at org.apache.struts.chain.commands.ActionCommandBase.execute(ActionCommandBase.java:51)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.commons.chain.generic.LookupCommand.execute(LookupCommand.java:304)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.struts.chain.ComposableRequestProcessor.process(ComposableRequestProcessor.java:283)
+	at org.apache.struts.action.ActionServlet.process(ActionServlet.java:1913)
+	at org.apache.struts.action.ActionServlet.doGet(ActionServlet.java:449)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at com.menyi.web.util.BaseFilter.doFilter(BaseFilter.java:172)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:504)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:170)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:421)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1074)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.format.Formatter
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1720)
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1571)
+	... 71 more
+2018-03-23 15:06:10,294 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:10,294 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:10,294 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-03-23 15:06:10,294 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:06:10,294 - Do unicode file recognition:  false
+2018-03-23 15:06:10,294 - FileResourceLoader : adding path 'D:\Project\aio\tomcat7\webapps\ROOT'
+2018-03-23 15:06:10,294 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-03-23 15:06:10,306 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-03-23 15:06:10,306 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-03-23 15:06:10,306 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-03-23 15:06:10,307 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-03-23 15:06:10,307 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-03-23 15:06:10,310 - Created '20' parsers.
+2018-03-23 15:06:10,311 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-03-23 15:06:10,311 - Velocimacro : Default library not found.
+2018-03-23 15:06:10,311 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-03-23 15:06:10,311 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-03-23 15:06:10,311 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-03-23 15:06:10,312 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-03-23 15:06:10,879 - ResourceManager : found /js/defineList.vjs with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+.java:318)
+	at org.apache.velocity.Template.merge(Template.java:254)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.performMerge(VelocityViewServlet.java:805)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.mergeTemplate(VelocityViewServlet.java:762)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doRequest(VelocityViewServlet.java:555)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doGet(VelocityViewServlet.java:509)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:748)
+	at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:486)
+	at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:411)
+	at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:338)
+	at org.apache.struts.chain.commands.servlet.PerformForward.handleAsForward(PerformForward.java:113)
+	at org.apache.struts.chain.commands.servlet.PerformForward.perform(PerformForward.java:96)
+	at org.apache.struts.chain.commands.AbstractPerformForward.execute(AbstractPerformForward.java:54)
+	at org.apache.struts.chain.commands.ActionCommandBase.execute(ActionCommandBase.java:51)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.commons.chain.generic.LookupCommand.execute(LookupCommand.java:304)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.struts.chain.ComposableRequestProcessor.process(ComposableRequestProcessor.java:283)
+	at org.apache.struts.action.ActionServlet.process(ActionServlet.java:1913)
+	at org.apache.struts.action.ActionServlet.doGet(ActionServlet.java:449)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at com.menyi.web.util.BaseFilter.doFilter(BaseFilter.java:172)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:504)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:170)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:421)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1074)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.format.Formatter
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1720)
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1571)
+	... 71 more
+2018-03-23 15:06:10,294 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/format/Formatter
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:534)
+	at org.apache.velocity.app.VelocityEngine.init(VelocityEngine.java:144)
+	at com.menyi.web.util.GenJS.js(GenJS.java:44)
+	at com.menyi.web.util.GlobalsTool.js(GlobalsTool.java:5195)
+	at sun.reflect.GeneratedMethodAccessor123.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.invoke(UberspectImpl.java:295)
+	at org.apache.velocity.runtime.parser.node.ASTMethod.execute(ASTMethod.java:245)
+	at org.apache.velocity.runtime.parser.node.ASTReference.execute(ASTReference.java:203)
+	at org.apache.velocity.runtime.parser.node.ASTReference.render(ASTReference.java:294)
+	at org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:318)
+	at org.apache.velocity.Template.merge(Template.java:254)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.performMerge(VelocityViewServlet.java:805)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.mergeTemplate(VelocityViewServlet.java:762)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doRequest(VelocityViewServlet.java:555)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doGet(VelocityViewServlet.java:509)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:748)
+	at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:486)
+	at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:411)
+	at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:338)
+	at org.apache.struts.chain.commands.servlet.PerformForward.handleAsForward(PerformForward.java:113)
+	at org.apache.struts.chain.commands.servlet.PerformForward.perform(PerformForward.java:96)
+	at org.apache.struts.chain.commands.AbstractPerformForward.execute(AbstractPerformForward.java:54)
+	at org.apache.struts.chain.commands.ActionCommandBase.execute(ActionCommandBase.java:51)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.commons.chain.generic.LookupCommand.execute(LookupCommand.java:304)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.struts.chain.ComposableRequestProcessor.process(ComposableRequestProcessor.java:283)
+	at org.apache.struts.action.ActionServlet.process(ActionServlet.java:1913)
+	at org.apache.struts.action.ActionServlet.doGet(ActionServlet.java:449)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at com.menyi.web.util.BaseFilter.doFilter(BaseFilter.java:172)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:504)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:170)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:421)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1074)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.format.Formatter
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1720)
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1571)
+	... 71 more
+2018-03-23 15:06:10,294 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:10,294 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:10,294 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:10,294 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:10,294 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-03-23 15:06:10,294 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-03-23 15:06:10,294 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:06:10,294 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:06:10,294 - Do unicode file recognition:  false
+2018-03-23 15:06:10,294 - Do unicode file recognition:  false
+2018-03-23 15:06:10,294 - FileResourceLoader : adding path 'D:\Project\aio\tomcat7\webapps\ROOT'
+2018-03-23 15:06:10,294 - FileResourceLoader : adding path 'D:\Project\aio\tomcat7\webapps\ROOT'
+2018-03-23 15:06:10,294 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-03-23 15:06:10,294 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-03-23 15:06:10,306 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-03-23 15:06:10,306 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-03-23 15:06:10,306 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-03-23 15:06:10,306 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-03-23 15:06:10,306 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-03-23 15:06:10,306 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-03-23 15:06:10,307 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-03-23 15:06:10,307 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-03-23 15:06:10,307 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-03-23 15:06:10,307 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-03-23 15:06:10,310 - Created '20' parsers.
+2018-03-23 15:06:10,310 - Created '20' parsers.
+2018-03-23 15:06:10,311 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-03-23 15:06:10,311 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-03-23 15:06:10,311 - Velocimacro : Default library not found.
+2018-03-23 15:06:10,311 - Velocimacro : Default library not found.
+2018-03-23 15:06:10,311 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-03-23 15:06:10,311 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-03-23 15:06:10,311 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-03-23 15:06:10,311 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-03-23 15:06:10,311 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-03-23 15:06:10,311 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-03-23 15:06:10,312 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-03-23 15:06:10,312 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-03-23 15:06:10,879 - ResourceManager : found /js/defineList.vjs with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:06:10,879 - ResourceManager : found /js/defineList.vjs with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:06:13,387 - Log4JLogChute initialized using file 'velocity.log'
+2018-03-23 15:06:13,388 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-03-23 15:06:13,388 - Default Properties File: org\apache\velocity\runtime\defaults\velocity.properties
+2018-03-23 15:06:13,388 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-03-23 15:06:13,388 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/format/Formatter
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:534)
+	at org.apache.velocity.app.VelocityEngine.init(VelocityEngine.java:144)
+	at com.menyi.web.util.GenJS.js(GenJS.java:44)
+	at com.menyi.web.util.GlobalsTool.js(GlobalsTool.java:5195)
+	at sun.reflect.GeneratedMethodAccessor123.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.invoke(UberspectImpl.java:295)
+	at org.apache.velocity.runtime.parser.node.ASTMethod.execute(ASTMethod.java:245)
+	at org.apache.velocity.runtime.parser.node.ASTReference.execute(ASTReference.java:203)
+	at org.apache.velocity.runtime.parser.node.ASTReference.render(ASTReference.java:294)
+	at org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:318)
+	at org.apache.velocity.Template.merge(Template.java:254)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.performMerge(VelocityViewServlet.java:805)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.mergeTemplate(VelocityViewServlet.java:762)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doRequest(VelocityViewServlet.java:555)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doGet(VelocityViewServlet.java:509)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:748)
+	at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:486)
+	at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:411)
+	at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:338)
+	at org.apache.struts.chain.commands.servlet.PerformForward.handleAsForward(PerformForward.java:113)
+	at org.apache.struts.chain.commands.servlet.PerformForward.perform(PerformForward.java:96)
+	at org.apache.struts.chain.commands.AbstractPerformForward.execute(AbstractPerformForward.java:54)
+	at org.apache.struts.chain.commands.ActionCommandBase.execute(ActionCommandBase.java:51)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.commons.chain.generic.LookupCommand.execute(LookupCommand.java:304)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.struts.chain.ComposableRequestProcessor.process(ComposableRequestProcessor.java:283)
+	at org.apache.struts.action.ActionServlet.process(ActionServlet.java:1913)
+	at org.apache.struts.action.ActionServlet.doGet(ActionServlet.java:449)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at com.menyi.web.util.BaseFilter.doFilter(BaseFilter.java:172)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:504)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:170)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:421)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1074)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.format.Formatter
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1720)
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1571)
+	... 71 more
+2018-03-23 15:06:13,390 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:13,390 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:13,391 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-03-23 15:06:13,391 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:06:13,391 - Do unicode file recognition:  false
+2018-03-23 15:06:13,391 - FileResourceLoader : adding path 'D:\Project\aio\tomcat7\webapps\ROOT'
+2018-03-23 15:06:13,391 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-03-23 15:06:13,392 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-03-23 15:06:13,392 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-03-23 15:06:13,392 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-03-23 15:06:13,393 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-03-23 15:06:13,393 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-03-23 15:06:13,394 - Created '20' parsers.
+2018-03-23 15:06:13,395 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-03-23 15:06:13,395 - Velocimacro : Default library not found.
+2018-03-23 15:06:13,395 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-03-23 15:06:13,395 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-03-23 15:06:13,395 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-03-23 15:06:13,395 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-03-23 15:06:13,403 - ResourceManager : found /js/editPage.vjs with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:06:13,414 - Log4JLogChute initialized using file 'velocity.log'
+2018-03-23 15:06:13,414 - Log4JLogChute initialized using file 'velocity.log'
+2018-03-23 15:06:13,414 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-03-23 15:06:13,414 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-03-23 15:06:13,414 - Default Properties File: org\apache\velocity\runtime\defaults\velocity.properties
+2018-03-23 15:06:13,414 - Default Properties File: org\apache\velocity\runtime\defaults\velocity.properties
+2018-03-23 15:06:13,414 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-03-23 15:06:13,414 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-03-23 15:06:13,414 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/format/Formatter
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:534)
+	at org.apache.velocity.app.VelocityEngine.init(VelocityEngine.java:144)
+	at com.menyi.web.util.GenJS.js(GenJS.java:44)
+	at com.menyi.web.util.GlobalsTool.js(GlobalsTool.java:5195)
+	at sun.reflect.GeneratedMethodAccessor123.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.invoke(UberspectImpl.java:295)
+	at org.apache.velocity.runtime.parser.node.ASTMethod.execute(ASTMethod.java:245)
+	at org.apache.velocity.runtime.parser.node.ASTReference.execute(ASTReference.java:203)
+	at org.apache.velocity.runtime.parser.node.ASTReference.render(ASTReference.java:294)
+	at org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:318)
+	at org.apache.velocity.Template.merge(Template.java:254)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.performMerge(VelocityViewServlet.java:805)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.mergeTemplate(VelocityViewServlet.java:762)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doRequest(VelocityViewServlet.java:555)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doGet(VelocityViewServlet.java:509)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:748)
+	at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:486)
+	at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:411)
+	at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:338)
+	at org.apache.struts.chain.commands.servlet.PerformForward.handleAsForward(PerformForward.java:113)
+	at org.apache.struts.chain.commands.servlet.PerformForward.perform(PerformForward.java:96)
+	at org.apache.struts.chain.commands.AbstractPerformForward.execute(AbstractPerformForward.java:54)
+	at org.apache.struts.chain.commands.ActionCommandBase.execute(ActionCommandBase.java:51)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.commons.chain.generic.LookupCommand.execute(LookupCommand.java:304)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.struts.chain.ComposableRequestProcessor.process(ComposableRequestProcessor.java:283)
+	at org.apache.struts.action.ActionServlet.process(ActionServlet.java:1913)
+	at org.apache.struts.action.ActionServlet.doGet(ActionServlet.java:449)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at com.menyi.web.util.BaseFilter.doFilter(BaseFilter.java:172)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:504)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:170)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:421)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1074)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.format.Formatter
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1720)
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1571)
+	... 71 more
+2018-03-23 15:06:13,414 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/format/Formatter
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:534)
+	at org.apache.velocity.app.VelocityEngine.init(VelocityEngine.java:144)
+	at com.menyi.web.util.GenJS.js(GenJS.java:44)
+	at com.menyi.web.util.GlobalsTool.js(GlobalsTool.java:5195)
+	at sun.reflect.GeneratedMethodAccessor123.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.invoke(UberspectImpl.java:295)
+	at org.apache.velocity.runtime.parser.node.ASTMethod.execute(ASTMethod.java:245)
+	at org.apache.velocity.runtime.parser.node.ASTReference.execute(ASTReference.java:203)
+	at org.apache.velocity.runtime.parser.node.ASTReference.render(ASTReference.java:294)
+	at org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:318)
+	at org.apache.velocity.Template.merge(Template.java:254)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.performMerge(VelocityViewServlet.java:805)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.mergeTemplate(VelocityViewServlet.java:762)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doRequest(VelocityViewServlet.java:555)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doGet(VelocityViewServlet.java:509)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:748)
+	at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:486)
+	at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:411)
+	at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:338)
+	at org.apache.struts.chain.commands.servlet.PerformForward.handleAsForward(PerformForward.java:113)
+	at org.apache.struts.chain.commands.servlet.PerformForward.perform(PerformForward.java:96)
+	at org.apache.struts.chain.commands.AbstractPerformForward.execute(AbstractPerformForward.java:54)
+	at org.apache.struts.chain.commands.ActionCommandBase.execute(ActionCommandBase.java:51)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.commons.chain.generic.LookupCommand.execute(LookupCommand.java:304)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.struts.chain.ComposableRequestProcessor.process(ComposableRequestProcessor.java:283)
+	at org.apache.struts.action.ActionServlet.process(ActionServlet.java:1913)
+	at org.apache.struts.action.ActionServlet.doGet(ActionServlet.java:449)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at com.menyi.web.util.BaseFilter.doFilter(BaseFilter.java:172)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:504)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:170)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:421)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1074)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.format.Formatter
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1720)
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1571)
+	... 71 more
+2018-03-23 15:06:13,416 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:13,416 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:13,416 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:13,416 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:06:13,416 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-03-23 15:06:13,416 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-03-23 15:06:13,416 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:06:13,416 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:06:13,416 - Do unicode file recognition:  false
+2018-03-23 15:06:13,416 - Do unicode file recognition:  false
+2018-03-23 15:06:13,416 - FileResourceLoader : adding path 'D:\Project\aio\tomcat7\webapps\ROOT'
+2018-03-23 15:06:13,416 - FileResourceLoader : adding path 'D:\Project\aio\tomcat7\webapps\ROOT'
+2018-03-23 15:06:13,416 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-03-23 15:06:13,416 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-03-23 15:06:13,417 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-03-23 15:06:13,417 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-03-23 15:06:13,417 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-03-23 15:06:13,417 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-03-23 15:06:13,418 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-03-23 15:06:13,418 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-03-23 15:06:13,418 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-03-23 15:06:13,418 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-03-23 15:06:13,418 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-03-23 15:06:13,418 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-03-23 15:06:13,419 - Created '20' parsers.
+2018-03-23 15:06:13,419 - Created '20' parsers.
+2018-03-23 15:06:13,419 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-03-23 15:06:13,419 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-03-23 15:06:13,419 - Velocimacro : Default library not found.
+2018-03-23 15:06:13,419 - Velocimacro : Default library not found.
+2018-03-23 15:06:13,419 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-03-23 15:06:13,419 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-03-23 15:06:13,419 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-03-23 15:06:13,419 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-03-23 15:06:13,419 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-03-23 15:06:13,419 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-03-23 15:06:13,420 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-03-23 15:06:13,420 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-03-23 15:06:18,068 - ResourceManager : found /js/define.vjs with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:06:18,068 - ResourceManager : found /js/define.vjs with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:06:18,077 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1899, column 49]
+2018-03-23 15:06:18,077 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1899, column 49]
+2018-03-23 15:06:18,078 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1899, column 49]
+2018-03-23 15:06:18,078 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1899, column 49]
+2018-03-23 15:06:18,110 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,110 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,111 - Left side ($srow.display.length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2789, column 85]
+2018-03-23 15:06:18,111 - Left side ($srow.display.length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2789, column 85]
+2018-03-23 15:06:18,111 - Left side ($srow.display.length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2799, column 85]
+2018-03-23 15:06:18,111 - Left side ($srow.display.length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2799, column 85]
+2018-03-23 15:06:18,112 - Left side ($!values.get("$disField").length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2814, column 96]
+2018-03-23 15:06:18,112 - Left side ($!values.get("$disField").length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2814, column 96]
+2018-03-23 15:06:18,112 - Left side ($!values.get("$disField").length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2814, column 96]
+2018-03-23 15:06:18,112 - Left side ($!values.get("$disField").length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2814, column 96]
+2018-03-23 15:06:18,112 - Left side ($srow.display.length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2789, column 85]
+2018-03-23 15:06:18,112 - Left side ($srow.display.length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2789, column 85]
+2018-03-23 15:06:18,112 - Left side ($srow.display.length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2799, column 85]
+2018-03-23 15:06:18,112 - Left side ($srow.display.length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2799, column 85]
+2018-03-23 15:06:18,112 - Left side ($!values.get("$disField").length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2814, column 96]
+2018-03-23 15:06:18,112 - Left side ($!values.get("$disField").length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2814, column 96]
+2018-03-23 15:06:18,112 - Left side ($srow.display.length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2789, column 85]
+2018-03-23 15:06:18,112 - Left side ($srow.display.length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2789, column 85]
+2018-03-23 15:06:18,113 - Left side ($srow.display.length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2799, column 85]
+2018-03-23 15:06:18,113 - Left side ($srow.display.length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2799, column 85]
+2018-03-23 15:06:18,113 - Left side ($!values.get("$disField").length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2814, column 96]
+2018-03-23 15:06:18,113 - Left side ($!values.get("$disField").length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2814, column 96]
+2018-03-23 15:06:18,113 - Left side ($!values.get("$disField").length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2814, column 96]
+2018-03-23 15:06:18,113 - Left side ($!values.get("$disField").length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2814, column 96]
+2018-03-23 15:06:18,113 - Left side ($!values.get("$disField").length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2814, column 96]
+2018-03-23 15:06:18,113 - Left side ($!values.get("$disField").length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2814, column 96]
+2018-03-23 15:06:18,113 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,113 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,114 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,114 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,114 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,114 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,114 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,114 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,114 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,114 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,114 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,114 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,114 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,114 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,115 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,115 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,115 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,115 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,115 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,115 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,115 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,115 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,115 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,115 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,115 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,115 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,116 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,116 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,116 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,116 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,116 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,116 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,116 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,116 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,116 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,116 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,116 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,116 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,117 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,117 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,117 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,117 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,117 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,117 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,117 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,117 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,117 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,117 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,117 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,117 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,118 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,118 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,118 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,118 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,118 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,118 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,118 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,118 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,118 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:06:18,118 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:27:19,887 - Log4JLogChute initialized using file 'velocity.log'
+2018-03-23 15:27:19,887 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-03-23 15:27:19,888 - Default Properties File: org\apache\velocity\runtime\defaults\velocity.properties
+2018-03-23 15:27:19,888 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-03-23 15:27:19,888 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/format/Formatter
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:534)
+	at org.apache.velocity.app.VelocityEngine.init(VelocityEngine.java:144)
+	at com.menyi.web.util.GenJS.js(GenJS.java:44)
+	at com.menyi.web.util.GlobalsTool.js(GlobalsTool.java:5195)
+	at sun.reflect.GeneratedMethodAccessor123.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.invoke(UberspectImpl.java:295)
+	at org.apache.velocity.runtime.parser.node.ASTMethod.execute(ASTMethod.java:245)
+	at org.apache.velocity.runtime.parser.node.ASTReference.execute(ASTReference.java:203)
+	at org.apache.velocity.runtime.parser.node.ASTReference.render(ASTReference.java:294)
+	at org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:318)
+	at org.apache.velocity.Template.merge(Template.java:254)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.performMerge(VelocityViewServlet.java:805)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.mergeTemplate(VelocityViewServlet.java:762)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doRequest(VelocityViewServlet.java:555)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doGet(VelocityViewServlet.java:509)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:748)
+	at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:486)
+	at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:411)
+	at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:338)
+	at org.apache.struts.chain.commands.servlet.PerformForward.handleAsForward(PerformForward.java:113)
+	at org.apache.struts.chain.commands.servlet.PerformForward.perform(PerformForward.java:96)
+	at org.apache.struts.chain.commands.AbstractPerformForward.execute(AbstractPerformForward.java:54)
+	at org.apache.struts.chain.commands.ActionCommandBase.execute(ActionCommandBase.java:51)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.commons.chain.generic.LookupCommand.execute(LookupCommand.java:304)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.struts.chain.ComposableRequestProcessor.process(ComposableRequestProcessor.java:283)
+	at org.apache.struts.action.ActionServlet.process(ActionServlet.java:1913)
+	at org.apache.struts.action.ActionServlet.doGet(ActionServlet.java:449)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at com.menyi.web.util.BaseFilter.doFilter(BaseFilter.java:172)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:504)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:170)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:421)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1074)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.format.Formatter
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1720)
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1571)
+	... 71 more
+2018-03-23 15:27:19,889 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:27:19,890 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-03-23 15:27:19,890 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-03-23 15:27:19,890 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:27:19,890 - Do unicode file recognition:  false
+2018-03-23 15:27:19,890 - FileResourceLoader : adding path 'D:\Project\aio\tomcat7\webapps\ROOT'
+2018-03-23 15:27:19,890 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-03-23 15:27:19,891 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-03-23 15:27:19,891 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-03-23 15:27:19,891 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-03-23 15:27:19,891 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-03-23 15:27:19,891 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-03-23 15:27:19,893 - Created '20' parsers.
+2018-03-23 15:27:19,893 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-03-23 15:27:19,893 - Velocimacro : Default library not found.
+2018-03-23 15:27:19,893 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-03-23 15:27:19,893 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-03-23 15:27:19,893 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-03-23 15:27:19,893 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-03-23 15:27:24,249 - ResourceManager : found /js/define.vjs with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-03-23 15:27:24,251 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 439, column 47]
+2018-03-23 15:27:24,251 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 439, column 47]
+2018-03-23 15:27:24,251 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 439, column 47]
+2018-03-23 15:27:24,252 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 439, column 47]
+2018-03-23 15:27:24,252 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 439, column 47]
+2018-03-23 15:27:24,252 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 450, column 47]
+2018-03-23 15:27:24,252 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 450, column 47]
+2018-03-23 15:27:24,252 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 450, column 47]
+2018-03-23 15:27:24,252 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 450, column 47]
+2018-03-23 15:27:24,252 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 450, column 47]
+2018-03-23 15:27:24,252 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 450, column 47]
+2018-03-23 15:27:24,252 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 450, column 47]
+2018-03-23 15:27:24,253 - Left side ($!row.copyType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 909, column 38]
+2018-03-23 15:27:24,253 - Left side ($!row.copyType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 909, column 66]
+2018-03-23 15:27:24,253 - Left side ($!row.copyType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 909, column 38]
+2018-03-23 15:27:24,253 - Left side ($!row.copyType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 909, column 66]
+2018-03-23 15:27:24,253 - Left side ($!row.copyType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 964, column 46]
+2018-03-23 15:27:24,253 - Left side ($!row.copyType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 964, column 74]
+2018-03-23 15:27:24,253 - Left side ($!row.copyType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 964, column 46]
+2018-03-23 15:27:24,253 - Left side ($!row.copyType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 964, column 74]
+2018-03-23 15:27:24,254 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 1428, column 31]
+2018-03-23 15:27:24,254 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 1428, column 31]
+2018-03-23 15:27:24,254 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 1428, column 31]
+2018-03-23 15:27:24,254 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 1428, column 31]
+2018-03-23 15:27:24,254 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 1428, column 31]
+2018-03-23 15:27:24,254 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 1428, column 31]
+2018-03-23 15:27:24,254 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 1428, column 31]
+2018-03-23 15:27:24,256 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1899, column 49]
+2018-03-23 15:27:24,256 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1899, column 49]
+2018-03-23 15:27:24,256 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1899, column 49]
+2018-03-23 15:27:24,256 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1899, column 49]
+2018-03-23 15:27:24,256 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1899, column 49]
+2018-03-23 15:27:24,256 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1909, column 47]
+2018-03-23 15:27:24,256 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1909, column 47]
+2018-03-23 15:27:24,256 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1909, column 47]
+2018-03-23 15:27:24,256 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1909, column 47]
+2018-03-23 15:27:24,256 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1909, column 47]
+2018-03-23 15:27:24,256 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1909, column 47]
+2018-03-23 15:27:24,256 - Left side ($!row.fieldSysType) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /js/define.vjs [line 1909, column 47]
+2018-03-23 15:27:24,256 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 2367, column 31]
+2018-03-23 15:27:24,256 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 2367, column 31]
+2018-03-23 15:27:24,256 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 2367, column 31]
+2018-03-23 15:27:24,256 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 2367, column 31]
+2018-03-23 15:27:24,256 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 2367, column 31]
+2018-03-23 15:27:24,257 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 2397, column 31]
+2018-03-23 15:27:24,257 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 2397, column 31]
+2018-03-23 15:27:24,257 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 2397, column 31]
+2018-03-23 15:27:24,257 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 2397, column 31]
+2018-03-23 15:27:24,257 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 2397, column 31]
+2018-03-23 15:27:24,258 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 2397, column 31]
+2018-03-23 15:27:24,258 - Left side ($!row.calculate) of '!=' operation has null value. Operation not possible. /js/define.vjs [line 2397, column 31]
+2018-03-23 15:27:24,258 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:27:24,259 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:27:24,259 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:27:24,259 - Left side ($!values.get($fname).length()) of '>' operation has null value. Operation not possible. /js/define.vjs [line 2713, column 67]
+2018-03-23 15:38:05,072 - Log4JLogChute initialized using file 'velocity.log'
+2018-03-23 15:38:05,072 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-03-23 15:38:05,072 - Default Properties File: org\apache\velocity\runtime\defaults\velocity.properties
+2018-03-23 15:38:05,072 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-03-23 15:38:05,072 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/format/Formatter
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:534)
+	at org.apache.velocity.app.VelocityEngine.init(VelocityEngine.java:144)
+	at com.menyi.web.util.GenJS.js(GenJS.java:44)
+	at com.menyi.web.util.GlobalsTool.js(GlobalsTool.java:5195)
+	at sun.reflect.GeneratedMethodAccessor123.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.invoke(UberspectImpl.java:295)
+	at org.apache.velocity.runtime.parser.node.ASTMethod.execute(ASTMethod.java:245)
+	at org.apache.velocity.runtime.parser.node.ASTReference.execute(ASTReference.java:203)
+	at org.apache.velocity.runtime.parser.node.ASTReference.render(ASTReference.java:294)
+	at org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:318)
+	at org.apache.velocity.Template.merge(Template.java:254)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.performMerge(VelocityViewServlet.java:805)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.mergeTemplate(VelocityViewServlet.java:762)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doRequest(VelocityViewServlet.java:555)
+	at org.apache.velocity.tools.view.servlet.VelocityViewServlet.doGet(VelocityViewServlet.java:509)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:748)
+	at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:486)
+	at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:411)
+	at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:338)
+	at org.apache.struts.chain.commands.servlet.PerformForward.handleAsForward(PerformForward.java:113)
+	at org.apache.struts.chain.commands.servlet.PerformForward.perform(PerformForward.java:96)
+	at org.apache.struts.chain.commands.AbstractPerformForward.execute(AbstractPerformForward.java:54)
+	at org.apache.struts.chain.commands.ActionCommandBase.execute(ActionCommandBase.java:51)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.commons.chain.generic.LookupCommand.execute(LookupCommand.java:304)
+	at org.apache.commons.chain.impl.ChainBase.execute(ChainBase.java:190)
+	at org.apache.struts.chain.ComposableRequestProcessor.process(ComposableRequestProcessor.java:283)
+	at org.apache.struts.action.ActionServlet.process(ActionServlet.java:1913)
+	at org.apache.struts.action.ActionServlet.doGet(ActionServlet.java:449)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:620)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at com.menyi.web.util.BaseFilter.doFilter(BaseFilter.java:172)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:504)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:170)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:421)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1074)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.format.Formatter
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1720)
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1571)
+	... 71 more

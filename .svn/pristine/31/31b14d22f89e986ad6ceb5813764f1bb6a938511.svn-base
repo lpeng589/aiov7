@@ -1,0 +1,149 @@
+@CHARSET "UTF-8";
+
+.Calendar {
+	
+	font-family:Verdana;
+	font-size:14px;
+	text-align:center;
+	width:95%;
+	height:100%;
+	padding:5px;
+}
+.Calendar a{
+	color:#33CC00;
+}
+
+.Calendar table{
+	width:100%;
+	text-align:center;
+	border-right:1px solid #CCCCCC;
+}
+
+.Calendar table thead{
+
+	color:#006699;
+}
+
+.Calendar table td {
+	border-bottom:1px solid #d2d2d2;
+	border-left:1px solid #D2D2D2;
+	border-top:0px;
+	height:13.5%;
+	padding:5px;
+	text-align:center;
+	white-space:nowrap;
+	font-size: 14px;
+	padding:1px;
+}
+.Calendarbg {
+	border-left:1px solid #D2D2D2;
+	border-right:1px solid #D2D2D2;
+	border-top:1px solid #D2D2D2;
+	background:url(/style6/images/LableBack.gif) repeat-x;
+}
+#idCalendarPre{
+	cursor:pointer;
+	float:left;
+	padding-right:5px;
+}
+#idCalendarNext{
+	cursor:pointer;
+	float:right;
+	padding-right:5px;
+}
+#idCalendar td.onToday {
+	font-weight:bold;
+	color:#C60;
+}
+#idCalendar td.onSelect {
+	font-weight:bold;
+}
+BODY {
+	FONT: 12px/1.8 arial
+}
+A {
+	COLOR: #3366cc; TEXT-DECORATION: none
+}
+A:visited {
+	COLOR: #3366cc; TEXT-DECORATION: none
+}
+A:hover {
+	COLOR: #f60; TEXT-DECORATION: underline
+}
+.tip {
+	BORDER-RIGHT: #ddd 2px solid; PADDING-RIGHT: 8px; BORDER-TOP: #ddd 2px solid; PADDING-LEFT: 8px; BACKGROUND: #f1f1f1; PADDING-BOTTOM: 8px; BORDER-LEFT: #ddd 2px solid; WIDTH: 190px; COLOR:#333399; PADDING-TOP: 8px; BORDER-BOTTOM: #ddd 2px solid
+}
+IMG {
+	BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-BOTTOM-STYLE: none
+}
+.tiatle {
+	margin-left:3px;
+	width:380px;
+	float:left;
+	height:277.25px;
+	overflow:auto;
+	overflow-y:auto;
+	margin-top:2px;
+}
+.div {
+	height: 50%;
+}
+.empDiv{
+	margin-left:3px;
+	padding-left:0px;
+	margin-right:15px;
+	width:200px;
+	float:left;
+	height:277.25px;
+	overflow:auto;
+	overflow-y:auto;
+	margin-top:2px;
+}
+.empUl{
+	float:left;
+	height:auto;
+	margin-top:3px;
+	margin-left:0px;
+	text-align:left;
+	padding:2px 0px 2px 0;
+	background: #FFFFFF url(../images/listRange_bg.gif) repeat-x;
+	border:1px solid #E0E0E0;	
+}
+
+ 
+.listRange_my{
+ 	float:left;
+	height:auto;
+	width:99%;
+	margin-top:3px;
+	margin-left:3px;
+	text-align:left;
+	padding:2px 0px 2px 0;
+	background: #FFFFFF url(../images/listRange_bg.gif) repeat-x;
+	border:1px solid #E0E0E0;	
+}
+ 
+.listRange_my li{
+	width:224px;
+	float:left;
+	height:18px;
+	line-height:18px;
+}
+
+.listRange_my img {
+	cursor:pointer;
+}
+
+.listRange_my li span{
+	float:left;
+	width:80px;
+	margin-top:5px;
+	text-align:right;
+}
+
+.listRange_my input{
+	border:0;
+	width: 80px;
+	border: 1px solid #42789C;	
+	text-align:left;
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectUser" belongTableName="tblEmployee">
+     <table>tblEmployee,tblDepartment</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <defineSQL>select 
+      tblEmployee.id f1,
+      tblEmployee.EmpNumber f2,
+      tblEmployee.EmpFullName f3,
+      tblDepartment.DeptFullName f4
+  from tblEmployee
+left join tblDepartment on tblDepartment.classCode=tblEmployee.DepartmentCode
+     </defineSQL>
+     <classCode></classCode>
+     <condition>tblEmployee.sysName is not null and tblEmployee.statusId!='-1' and openflag=1 and tblEmployee.workFlowNodeName='finish' and tblDepartment.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblEmployee.EmpNumber,tblEmployee.EmpFullName</orderBy>
+     <displayFields>
+          <field name="tblEmployee.EmpNumber" width="100" searchType="match" keySearch="true" parentDisplay="true" />
+          <field name="tblEmployee.EmpFullName" width="100" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.UserID" />
+          <field name="tblDepartment.DeptFullName" width="80" searchType="match" keySearch="true" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblEmployee.id" parentName="@TABLENAME.UserID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

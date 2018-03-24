@@ -1,0 +1,5 @@
+[DEBUG] 2017-11-18 09:17:42,521 Line:83 开始启动KK消息中心,端口6333
+ [DEBUG] 2017-11-18 09:17:42,693 Line:100 MSGConnectCenter.init MSGConnectServer Successfull
+ [DEBUG] 2017-11-18 09:17:42,710 Line:110 MSGConnectCenter.init(common) SessionClearThread Successfull
+ [DEBUG] 2017-11-18 09:17:42,710 Line:118 MSGConnectCenter.init(file) SessionClearThread Successfull
+ 

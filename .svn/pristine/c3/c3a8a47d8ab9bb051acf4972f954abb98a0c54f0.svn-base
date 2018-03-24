@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="popuptblSaleReceive" type="checkBox">
+     <table>tblSaleReceive,tblCompany,tblDepartment,tblEmployee</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblSaleReceive.id f1,
+      tblSaleReceive.BillDate f2,
+      tblSaleReceive.BillNo f3,
+      isnull(tblCompany.ComFullName,tblFreightCom.ComFullName) f4,
+      tblDepartment.DeptFullName f5,
+      tblEmployee.EmpFullName f6,
+      case tblSaleReceive.AcceptTypeID when 'RetrunReceive' then (-1)*tblSaleReceive.ExeBalAmt when 'ReturnPay' then (-1)*tblSaleReceive.ExeBalAmt else tblSaleReceive.ExeBalAmt end f7,
+      tblSaleReceive.FactIncome f8,
+	  tblSaleReceive.AcceptTypeID f9
+  from tblSaleReceive 
+  left join tblCompany on tblSaleReceive.CompanyCode=tblCompany.classCode
+  left join tblDepartment on tblSaleReceive.DepartmentCode=tblDepartment.classCode
+  left join tblEmployee on tblSaleReceive.EmployeeID=tblEmployee.id
+  left join tblFreightCom on tblSaleReceive.CompanyCode=tblFreightCom.id
+     </defineSQL>
+     <classCode></classCode>
+     <condition>tblSaleReceive.workFlowNodeName='finish' and LEN(ISNULL(CertificateNo,''))=0</condition>
+     <changeCond></changeCond>
+     <orderBy>tblSaleReceive.BillDate,tblSaleReceive.BillNo</orderBy>
+     <displayFields>
+          <field name="tblSaleReceive.BillDate" width="90" searchType="scope" parentDisplay="false" orderBy="升"/>
+          <field name="tblSaleReceive.BillNo" width="120" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"/>
+          <field name="isnull(tblCompany.ComFullName,tblFreightCom.ComFullName)" width="200" searchType="match" keySearch="true" parentDisplay="false" asName="tblSaleReceive.CompanyCode" display="tblSaleReceive.CompanyCode" />
+          <field name="tblDepartment.DeptFullName" width="80" searchType="match" keySearch="true" parentDisplay="false" display="tblSaleReceive.DepartmentCode" />
+          <field name="tblEmployee.EmpFullName" width="80" searchType="match" keySearch="true" parentDisplay="false" display="tblSaleReceive.EmployeeID" />
+          <field name="case tblSaleReceive.AcceptTypeID when 'RetrunReceive' then (-1)*tblSaleReceive.ExeBalAmt when 'ReturnPay' then (-1)*tblSaleReceive.ExeBalAmt else tblSaleReceive.ExeBalAmt end" width="100" parentDisplay="false" asName="tblSaleReceive.ExeBalAmt" display="tblSaleReceive.ExeBalAmt" />
+          <field name="tblSaleReceive.FactIncome" width="110" parentDisplay="false" />
+		  <field name="tblSaleReceive.AcceptTypeID" width="75" searchType="equal" parentDisplay="false" inputType="1" inputValue="AcceptType"/>
+     </displayFields>
+     <saveFields>
+          <field name="tblSaleReceive.id" parentName="ID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

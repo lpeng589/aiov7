@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectSendReturnBySeq" belongTableName="tblGoods">     
+	<table>tblGoods,tblStock,tblStockDet</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblGoods.GoodsNumber f1,
+      tblGoods.GoodsFullName f2,
+      tblGoods.GoodsSpec f3,
+      tblGoods.Validity f4,
+      tblGoods.BaseUnit f5,
+      tblSendcheckDet.BatchNo f6,
+      tblSendcheckDet.Inch f7,
+      tblSendcheckDet.Hue f8,
+      tblSendcheckDet.yearNO f9,
+      tblSendcheckDet.ProDate f10,
+      tblSendcheckDet.Availably f11,
+      tblStockDet.Seq f12,
+      tblSendcheckDet.NotReturnQty f13,
+      tblSendcheck.BillNo f14,
+      tblSendcheckDet.id f15,
+      tblSendcheck.id f16,
+      tblSendcheckDet.GoodsCode f17,
+      tblSendcheckDet.Price f18,
+      tblSendcheckDet.SecQty f19,
+      tblSendcheckDet.BaseQty f20,
+      tblSendcheckDet.SecUnit f21,
+      tblStockDet.StockCode f22,
+      tblStock.StockFullName f23,
+      tblGoods.GoodsFullNamePYM f24,
+      tblGoods.Spec1 f25,
+      tblGoods.Spec2 f26,
+      tblGoods.Spec3 f27,
+      tblGoods.BarCode f28
+  from tblStockDet 
+  join tblSendcheckDet on tblStockDet.SourceID=tblSendcheckDet.id
+  join tblSendcheck on tblSendcheck.id=tblSendcheckDet.f_ref
+  left join tblGoods on tblSendcheckDet.GoodsCode=tblGoods.classCode
+  left join tblStock on tblSendcheckDet.StockCode=tblStock.classCode
+  
+     </defineSQL>
+     <classCode></classCode>
+     <remark>配送退货多单引用配送验收</remark>
+     <condition>tblGoods.workFlowNodeName='finish' and tblSendcheck.DepartmentCode='@ValueofDB:DepartmentCode' and tblSendcheckDet.StockCode='@ValueofDB:StockCode' and tblSendcheck.BillDate&lt;='@ValueofDB:BillDate' and  tblSendcheck.BillNo='@ValueofDB:@TABLENAME_tblSendcheck_BillNo'</condition>
+    <changeCond>tblSendcheck.workFlowNodeName ='finish' and tblStockDet.Seq in (select seq from tblAllStockSeq where seq like '%@ValueofDB:@TABLENAME_Seq%') and tblSendcheckDet.NotReturnQty &gt;0</changeCond>
+     <orderBy>tblGoods.GoodsNumber</orderBy>
+     <displayFields>
+          <field name="tblGoods.[tblGoods]"  width="120" parentDisplay="true" orderBy="升" />
+          <field name="tblSendcheckDet.BatchNo" width="120" parentDisplay="true" />
+          <field name="tblSendcheckDet.Inch" width="70" parentDisplay="true" />
+          <field name="tblSendcheckDet.Hue" width="70" parentDisplay="true" />
+          <field name="tblSendcheckDet.yearNO" width="70" parentDisplay="true" />
+          <field name="tblSendcheckDet.ProDate" width="70" parentDisplay="true" />
+          <field name="tblSendcheckDet.Availably" width="70" parentDisplay="true" />
+          <field name="tblStockDet.Seq" width="100" searchType="match" keySearch="true" parentDisplay="true" />
+          <field name="tblSendcheckDet.NotReturnQty" width="100" parentDisplay="true" display="tblSendcheckDet.NotReturnQty" />
+     </displayFields>
+     <saveFields>
+          <field name="tblGoods.[tblGoods]" parentName="@TABLENAME.tblGoods_GoodsNumber" relationKey="false" hidden="false" orderBy="升" />
+          <field name="tblSendcheckDet.BatchNo" parentName="@TABLENAME.BatchNo" relationKey="false" hidden="false" />
+          <field name="tblSendcheckDet.Inch" parentName="@TABLENAME.Inch" relationKey="false" hidden="false" />
+          <field name="tblSendcheckDet.Hue" parentName="@TABLENAME.Hue" relationKey="false" hidden="false" />
+          <field name="tblSendcheckDet.yearNO" parentName="@TABLENAME.yearNO" relationKey="false" hidden="false" />
+          <field name="tblSendcheckDet.ProDate" parentName="@TABLENAME.ProDate" relationKey="false" hidden="false" />
+          <field name="tblSendcheckDet.Availably" parentName="@TABLENAME.Availably" relationKey="false" hidden="false" />
+          <field name="tblStockDet.Seq" parentName="@TABLENAME.Seq" relationKey="true" hidden="false" />
+          <field name="tblSendcheckDet.NotReturnQty" parentName="@TABLENAME.Qty" display="tblSendcheckDet.NotReturnQty" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblSendcheck.BillNo" parentName="@TABLENAME.tblSendcheck_BillNo" display="@TABLENAME.SendcheckID" relationKey="false" hidden="false" orderBy="  " />
+          <field name="tblSendcheckDet.id" parentName="@TABLENAME.SourceID" relationKey="false" hidden="true" />
+          <field name="tblSendcheck.id" parentName="@TABLENAME.SendcheckID" relationKey="false" hidden="true" />
+          <field name="tblSendcheckDet.GoodsCode" parentName="@TABLENAME.GoodsCode" relationKey="false" hidden="false" />
+          <field name="tblSendcheckDet.Price" parentName="@TABLENAME.Price" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblSendcheckDet.SecQty" parentName="@TABLENAME.SecQty" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblSendcheckDet.BaseQty" parentName="@TABLENAME.BaseQty" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblSendcheckDet.SecUnit" parentName="@TABLENAME.SecUnit" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblStockDet.StockCode" sysType="ManyStockStore" parentName="@TABLENAME.StockCode" relationKey="false" hidden="false" />
+          <field name="tblStock.StockFullName" sysType="ManyStockStore" parentName="@TABLENAME.tblStock_StockFullName" relationKey="false" hidden="false" />
+     </saveFields>
+</select>
+</popupSelect>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectSendBySeq" belongTableName="tblGoods">     
+		<table>tblStockDet,tblBuyApplicationTotal,tblDepartment,tblGoodsUnit</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblGoods.GoodsNumber f1,
+      tblGoods.GoodsFullName f2,
+      tblGoods.GoodsSpec f3,
+      tblGoods.Spec1 f4,
+      tblGoods.Spec2 f5,
+      tblGoods.Spec3 f6,
+      tblGoods.GoodsFullNamePYM f7,
+      tblGoods.Validity f8,
+      tblGoods.BarCode f9,
+      tblGoods.BaseUnit f10,
+      tblStockDet.BatchNo f11,
+      tblStockDet.Inch f12,
+      tblStockDet.Hue f13,
+      tblStockDet.yearNO f14,
+      tblStockDet.ProDate f15,
+      tblStockDet.Availably f16,
+      tblStockDet.Seq f17,
+      1 f18,
+      1 f19,
+      tblGoods.classCode f20,
+      tblStockDet.LastPrice f21,
+      tblGoodsUnit.UnitD f22,
+      tblGoodsUnit.SecUnitD f23,
+      tblGoodsUnit.SecUnit f24,
+      tblBuyApplicationTotal.BillNo f25,
+      tblBuyApplicationTotal.id f26,
+      tblDepartment.DeptFullName f27,
+      tblBuyApplicationTotalDet.DepartmentCode f28,
+      tblBuyApplicationTotalDet.id f29,
+      tblStockDet.StockCode f30,
+      tblStock.StockFullName f31,
+      tblStockDet.TotalQty f32
+  from tblStockDet
+		join tblGoods on tblStockDet.GoodsCode=tblGoods.classCode and tblStockDet.StockCode='@ValueofDB:StockCode' 
+        left join tblStock on tblStock.classCode=tblStockDet.StockCode
+		join tblBuyApplicationTotalDet on tblBuyApplicationTotalDet.GoodsCode=tblGoods.classCode
+		left join tblBuyApplicationTotal on tblBuyApplicationTotal.id=tblBuyApplicationTotalDet.f_ref 
+		left join tblDepartment on tblBuyApplicationTotalDet.DepartmentCode=tblDepartment.classCode 
+		left join tblGoodsUnit with(index(IX_tblGoodsUnit_refdefault)) on tblGoodsUnit.f_ref=tblGoods.id and tblGoodsUnit.DefaultAssit=1
+     </defineSQL>
+     <classCode></classCode>
+     <remark>配送单序列号弹出框</remark>
+     <condition>tblStockDet.Seq  in (select seq from tblAllStockSeq where seq like '%@ValueofDB:@TABLENAME_Seq%') and tblGoods.workFlowNodeName='finish' and tblBuyApplicationTotal.BillNo='@ValueofDB:@TABLENAME_tblBuyApplicationTotal_BillNo'</condition>
+     <changeCond>tblBuyApplicationTotal.BillDate&lt;='@ValueofDB:BillDate' and (tblBuyApplicationTotal.SendStatus=0 and (tblBuyApplicationTotalDet.planQty-tblBuyApplicationTotalDet.AllotQty+tblBuyApplicationTotalDet.ReturnQty)&gt;0 and tblBuyApplicationTotal.workFlowNodeName='finish') and tblGoods.statusid!='-1'  and tblStockDet.TotalQty&gt;0 and tblStockDet.itemorder=(select top 1 itemorder from tblstockDet a
+where tblstockDet.goodPropHash=a.goodPropHash order by billdate desc,createtime desc,itemorder desc) and len(seq)&gt;0</changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName,tblStockDet.ProDate,tblStockDet.Availably</orderBy>
+     <displayFields>
+          <field name="tblGoods.[tblGoods]"  width="120" parentDisplay="true" orderBy="升" />
+          <field name="tblStockDet.BatchNo" width="120" parentDisplay="true" />
+          <field name="tblStockDet.Inch" width="70" parentDisplay="true" />
+          <field name="tblStockDet.Hue" width="70" parentDisplay="true" />
+          <field name="tblStockDet.yearNO" width="70" parentDisplay="true" />
+          <field name="tblStockDet.ProDate" asName="tblStocks.SeqProDate" width="70" parentDisplay="true" orderBy="升" />
+          <field name="tblStockDet.Availably" asName="tblStocks.SeqAvailably" width="70" parentDisplay="true" orderBy="升" />
+          <field name="tblStockDet.Seq" width="100" searchType="match" keySearch="true" parentDisplay="true" />
+          <field name="tblStockDet.TotalQty" asName="tblStocks.SeqlastQty" width="100" parentDisplay="false" display="@TABLENAME.Qty" />
+          <field name="1" width="100" parentDisplay="false" display="tblStocks.lastQty" />
+          <field name="1" width="100" parentDisplay="false" display="ViewVirtualStock.UseQty" />
+     </displayFields>
+     <saveFields>
+          <field name="tblGoods.[tblGoods]" parentName="@TABLENAME.tblGoods_GoodsNumber" relationKey="false" hidden="false" orderBy="升" />
+          <field name="tblStockDet.BatchNo" parentName="@TABLENAME.BatchNo" relationKey="false" hidden="false" />
+          <field name="tblStockDet.Inch" parentName="@TABLENAME.Inch" relationKey="false" hidden="false" />
+          <field name="tblStockDet.Hue" parentName="@TABLENAME.Hue" relationKey="false" hidden="false" />
+          <field name="tblStockDet.yearNO" parentName="@TABLENAME.yearNO" relationKey="false" hidden="false" />
+          <field name="tblStockDet.ProDate" parentName="@TABLENAME.ProDate" relationKey="false" hidden="false" orderBy="升" />
+          <field name="tblStockDet.Availably" parentName="@TABLENAME.Availably" relationKey="false" hidden="false" orderBy="升" />
+          <field name="tblStockDet.Seq" parentName="@TABLENAME.Seq" relationKey="true" hidden="false" />
+          <field name="tblStockDet.TotalQty" parentName="@TABLENAME.Qty" relationKey="false" hidden="false" compare="false"/>
+          <field name="1" parentName="@TABLENAME.tblStocks_lastQty" display="tblStocks.lastQty" relationKey="false" hidden="true"  compare="false"/>
+          <field name="1" parentName="@TABLENAME.ViewVirtualStock_UseQty" display="ViewVirtualStock.UseQty" relationKey="false" hidden="true"  compare="false"/>
+          <field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="false" hidden="true" compare="false"/>
+          <field name="tblStockDet.LastPrice" parentName="@TABLENAME.Price" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblGoodsUnit.UnitD" parentName="@TABLENAME.BaseQty" display="tblGoodsUnit.SecUnit" relationKey="false" hidden="true"  compare="false"/>
+          <field name="tblGoodsUnit.SecUnitD" parentName="@TABLENAME.SecQty" display="tblGoodsUnit.SecUnit" relationKey="false" hidden="true"  compare="false"/>
+          <field name="tblGoodsUnit.SecUnit" parentName="@TABLENAME.SecUnit" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblBuyApplicationTotal.BillNo" parentName="@TABLENAME.tblBuyApplicationTotal_BillNo" relationKey="false" hidden="true" compare="false"/>
+          <field name="tblBuyApplicationTotal.id" parentName="@TABLENAME.BuyAppTotalID" relationKey="false" hidden="true" compare="false"/>
+          <field name="tblDepartment.DeptFullName" parentName="@TABLENAME.tblDepartment_DeptFullName" relationKey="false" hidden="true" compare="false"/>
+          <field name="tblBuyApplicationTotalDet.DepartmentCode" parentName="@TABLENAME.DepartmentCode" relationKey="false" hidden="true" compare="false"/>
+          <field name="tblBuyApplicationTotalDet.id" parentName="@TABLENAME.SourceID" relationKey="false" hidden="true" compare="false"/>
+          <field name="tblStockDet.StockCode" sysType="ManyStockStore" parentName="@TABLENAME.StockCode" relationKey="false" hidden="false" compare="false"/>
+          <field name="tblStock.StockFullName" sysType="ManyStockStore" parentName="@TABLENAME.tblStock_StockFullName1" relationKey="false" hidden="false" compare="false"/>
+     </saveFields>
+</select>
+</popupSelect>

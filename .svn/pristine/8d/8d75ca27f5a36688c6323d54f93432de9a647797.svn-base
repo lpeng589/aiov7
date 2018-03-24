@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="TranSaleDet2OutStockSelect" type="checkBox">
+     <table>tblCompany</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblSalesOutStock.BillNo f1,
+      tblSalesOutStock.TotalTaxAmount f2,
+      tblSalesOutStock.TotalAlrAccAmt f3,
+      tblSalesOutStock.NeedReturnAmt f4,
+      tblCompany.ComFullName f5
+  from tblSalesOutStock
+  left join tblCompany on tblSalesOutStock.CompanyCode = tblCompany.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>应付转应收明细</remark>
+     <condition>tblSalesOutStock.workFlowNodeName = 'finish' and tblSalesOutStock.BillDate&lt;='@ValueofDB:BillDate' and tblCompany.classCode='@ValueofDB:InCompanyCode' and tblSalesOutStock.NeedReturnAmt &gt; 0</condition>
+     <changeCond></changeCond>
+     <orderBy>tblSalesOutStock.BillNo,tblCompany.ComFullName</orderBy>
+     <displayFields>
+          <field name="tblSalesOutStock.BillNo" width="100" searchType="match" keySearch="true" parentDisplay="true" display="tblTransferSaleDet2.RefbillID" orderBy="升" />
+          <field name="tblCompany.ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblSalesOutStock.TotalTaxAmount" width="100" parentDisplay="true" display="tblTransferSaleDet2.BillAmt" />
+          <field name="tblSalesOutStock.TotalAlrAccAmt" width="100" parentDisplay="false" display="tblTransferSaleDet2.SettledAmt" />
+          <field name="tblSalesOutStock.NeedReturnAmt" width="100" parentDisplay="false" display="tblTransferSaleDet2.WexeBalAmt" />
+     </displayFields>
+     <saveFields>
+          <field name="tblSalesOutStock.BillNo" parentName="tblTransferSaleDet2.RefbillID" display="tblTransferSaleDet2.RefbillID" relationKey="true" hidden="false" orderBy="升" />
+          <field name="tblSalesOutStock.TotalTaxAmount" parentName="tblTransferSaleDet2.BillAmt" display="tblTransferSaleDet2.BillAmt" relationKey="false" hidden="false" />
+          <field name="tblSalesOutStock.TotalAlrAccAmt" parentName="tblTransferSaleDet2.SettledAmt" display="tblTransferSaleDet2.SettledAmt" relationKey="false" hidden="true" />
+          <field name="tblSalesOutStock.NeedReturnAmt" parentName="tblTransferSaleDet2.WexeBalAmt" display="tblTransferSaleDet2.WexeBalAmt" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SalesOutGoods"  type="checkBox" > 
+		<orderBy>tblSalesOutStock.BillDate,tblSalesOutStock.BillNo,tblGoods.GoodsNumber</orderBy>
+		<topPopup>SalesOutGoodsFirst</topPopup>
+		<defineSQL>
+from tblSalesOutStock
+ left join tblSalesOutStockDet on tblSalesOutStock.id=tblSalesOutStockDet.f_ref and tblSalesOutStock.workFlowNodeName ='finish'  
+ left join tblGoods on tblGoods.classCode=tblSalesOutStockDet.GoodsCode
+      where 1=1  and (tblSalesOutStockDet.NotBuyQty&gt;0 and tblSalesOutStock.BillDate&lt;='@ValueofDB:BillDate')  and tblSalesOutStock.id='@TOPID'
+		</defineSQL>
+		<displayFields>
+			<field name="tblSalesOutStock.BillDate" parentDisplay="false" width="70" searchType="scope" keySearch="true" />
+			<field name="tblSalesOutStock.BillNo" display="tblBuyInStockDet.SalesOutID" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblGoods.[tblGoods]" parentDisplay="true" width="120" />
+			<field name="tblSalesOutStockDet.BatchNo" parentDisplay="false" width="120" searchType="match" />
+			<field name="tblSalesOutStockDet.Inch" parentDisplay="false" width="70" searchType="match" />
+			<field name="tblSalesOutStockDet.Hue" parentDisplay="false" width="70" searchType="match" />
+			<field name="tblSalesOutStockDet.yearNO" parentDisplay="false" width="70" searchType="match" />
+			<field name="tblSalesOutStockDet.Availably" parentDisplay="false" width="70" searchType="equal" />
+			<field name="tblSalesOutStockDet.ProDate" parentDisplay="false" width="70" searchType="equal" />
+			<field name="tblSalesOutStockDet.NotBuyQty" display="tblSalesOutStockDet.Qty" parentDisplay="false" width="100" />
+			<field name="tblSalesOutStockDet.Price" parentDisplay="true" width="100" />
+			<field name="tblSalesOutStockDet.PresentSampleType" parentDisplay="false" width="70" />
+		</displayFields>
+		<saveFields>
+			<field name="tblGoods.[tblGoods]" parentName="@TABLENAME.tblGoods_GoodsNumber" width="0" />
+			<field name="tblSalesOutStockDet.BatchNo" parentName="@TABLENAME.BatchNo" hidden="true" width="0" />
+			<field name="tblSalesOutStockDet.Inch" parentName="@TABLENAME.Inch" hidden="true" width="0" />
+			<field name="tblSalesOutStockDet.Hue" parentName="@TABLENAME.Hue" hidden="true" width="0" />
+			<field name="tblSalesOutStockDet.yearNO" parentName="@TABLENAME.yearNO" hidden="true" width="0" />
+			<field name="tblSalesOutStockDet.Availably" parentName="@TABLENAME.Availably" hidden="true" width="0" />
+			<field name="tblSalesOutStockDet.ProDate" parentName="@TABLENAME.ProDate" hidden="true" width="0" />
+			<field name="tblSalesOutStockDet.NotBuyQty" parentName="@TABLENAME.Qty" hidden="true" display="tblSalesOutStockDet.Qty" width="0" />
+			<field name="tblSalesOutStockDet.Price" parentName="@TABLENAME.Price" width="0" />
+			<field name="tblSalesOutStockDet.PresentSampleType" parentName="@TABLENAME.PresentSampleType" hidden="true" width="0" />
+			<field name="tblSalesOutStock.id" parentName="@TABLENAME.SalesOutID" hidden="true" relationKey="true" width="0" />
+			<field name="tblSalesOutStockDet.SecUnit" parentName="@TABLENAME.SecUnit" hidden="true" width="0" />
+			<field name="tblSalesOutStockDet.id" parentName="@TABLENAME.SourceID" hidden="true" width="0" />
+			<field name="tblSalesOutStockDet.StockCode" parentName="@TABLENAME.StockCode" hidden="true" width="0" />
+			<field name="tblSalesOutStockDet.GoodsCode" parentName="@TABLENAME.GoodsCode" hidden="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

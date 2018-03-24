@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="SelectGoodsClassCode"  belongTableName="tblGoods" > 
+		<saveParentFlag>true</saveParentFlag>
+		<classCode>tblGoods.classCode</classCode>
+		<orderBy>tblGoods.GoodsNumber desc</orderBy>
+		<defineSQL>
+from tblGoods
+
+      where 1=1
+		</defineSQL>
+		<displayFields>
+			<field name="tblGoods.GoodsNumber" parentDisplay="false" width="100" searchType="match" />
+			<field name="tblGoods.GoodsFullName" parentDisplay="false" width="150" searchType="match" />
+			<field name="tblGoods.GoodsSpec" parentDisplay="false" width="100" searchType="match" />
+			<field name="tblGoods.GoodsFullNamePYM" parentDisplay="false" width="100" hiddenInput="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblGoods.classCode" parentName="classCode" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

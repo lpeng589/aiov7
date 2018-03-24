@@ -1,0 +1,12 @@
+body {FONT-SIZE: 14px;}
+ol li {margin: 8px}
+#con {FONT-SIZE: 12px;margin:2px 0 0 10px;width:90%;}
+#tags {padding-right: 0px;padding-left: 0px;padding-bottom: 0px;margin: 0px 0px 0px 10px;width: 100%;padding-top: 0px;height: 23px}
+.theERP{width:99.5%;margin-top:5px;margin-left:3px;test-align:left;padding:2px 2px 2px 0;background: #FFFFFF url(../images/aiobg.gif) repeat-x left -221px;border:1px solid #A2CEF5;height: 32px;}
+#tags LI {float: left;border:1px #bbb solid;background:#eee;background-image:-webkit-linear-gradient(top,#f9f9f9,#f2f2f2);background-image:linear-gradient(top,#f9f9f9,#e1e1e1);margin-right: 1px;LIST-STYLE-TYPE: none;height: 23px;}
+#tags LI A {padding-right: 10px;padding-left: 10px;float: left;padding-bottom: 0px;color: #000;;line-height: 23px;padding-top: 0px;height: 23px;test-decoration: none}
+#tags LI.emptyTag {background: none transparent scroll repeat 0% 0%;width: 4px}
+#tags LI.selectTag {background-position: left top;margin-bottom: -2px;position: relative;height: 25px}
+#tags LI.selectTag A {background-position: right top;color: #000;line-height: 25px;height: 25px}
+#tagContent {border-right: #aecbd4 1px solid;padding-right: 1px;border-top: #aecbd4 1px solid;padding-left: 1px;padding-bottom: 1px;border-left: #aecbd4 1px solid;;padding-top: 1px;border-bottom: #aecbd4 1px solid;background-color: #fff;float:left; width:100%; overflow:hidden;height:380px;}
+#tagContent DIV.selectTag {display: block;}

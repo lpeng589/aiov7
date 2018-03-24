@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dwr PUBLIC
+    "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN"
+    "http://getahead.org/dwr/dwr20.dtd">
+
+<dwr>
+<allow>
+	<create javascript="DwrClass" creator="new">
+		<param name="class" value="com.menyi.aio.web.oa.wakeup.WakeUpMsg"/>
+	</create>
+	<create javascript="CalendarDwr" creator="new">
+		<param name="class" value="com.menyi.aio.web.oa.calendar.OAMyCalendarMgt"/>
+	</create>
+	<convert converter="bean" match="com.menyi.aio.bean.oa.WakeUp" />
+	<convert converter="bean" match="com.menyi.aio.bean.oa.OAMyCalendar"/>
+</allow>
+</dwr>

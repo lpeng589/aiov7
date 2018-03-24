@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+	<define name="HFImport_Add">
+
+	</define>
+	<define name="HFImport_Delete">
+
+	</define>
+	
+	<define name="HFImport_Add_One">
+		<sql type="condition">
+			<condition>
+				<select> select id WorkOrderId from PDWorkOrder where billNo=@ValueofDB:WorkOrderNo </select>
+			</condition>
+			
+			<exec condition=" '@SqlReturn:WorkOrderId' == 'null' &amp;&amp; '@ValueofDB:WorkOrderNo'!='期初' ">
+				<error> 工令单不存在 </error>
+			</exec>
+			<exec condition=" '@ValueofDB:WorkOrderNo'=='期初' ">
+				<sql type="class">hf.HFData.importSeq(conn,@ValueofDB:SCode,'期初',@Sess:UserId,tableParamMap,@ValueofDB:BillDate)</sql>
+			</exec>
+			<exec condition=" true ">
+				<sql type="class">hf.HFData.importSeq(conn,@ValueofDB:SCode,@SqlReturn:WorkOrderId,@Sess:UserId,tableParamMap,@ValueofDB:BillDate)</sql>
+			</exec>
+		</sql>
+		
+	</define>
+	<define name="HFImport_Delete_One">
+		<sql type="condition">
+			<exec condition=" true ">
+				<error> 本单不允许反审核 </error>
+			</exec>
+		</sql>
+	</define>
+</defineSqls>

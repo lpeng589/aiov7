@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectOrderGoodsWithPriceStock" type="checkBox" belongTableName="tblGoods">
+     <table>tblGoods,tblGoodsUnit,tblCustomerPriceDet,tblCompany</table>
+     <forwardModel>tblGoods</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      
+      (case tblGoods.isCatalog when 0 then (select sum(lastQty) as lastQty from tblStocks where tblStocks.GoodsCode=tblGoods.classCode and tblStocks.StockCode='@ValueofDB:StockCode' and tblStocks.StockCode='@ValueofDB:@TABLENAME_StockCode' and SCompanyID='@Sess:SCompanyID') else -99999999 end) f2,
+      tblGoods.classCode f3,
+      tblGoodsUnit.SecUnit f4,
+      tblGoods.AccountingPrice f5,
+      tblGoodsUnit.UnitD f6,
+      tblGoodsUnit.SecUnitD f7,
+      tblGoods.BarCode f8,
+      tblGoods.GoodsNumber f9,
+      tblGoods.GoodsFullName f10,
+      tblGoods.GoodsSpec f11,
+      tblGoods.Spec1 f12,
+      tblGoods.Spec2 f13,
+      tblGoods.Spec3 f14,
+      tblGoods.GoodsFullNamePYM f15,
+      tblGoods.Validity f16,
+      tblGoods.BaseUnit f1,
+      ViewVirtualStock.UseQty f17,
+      ViewVirtualStock.orderQty f18
+  from tblGoods  
+		left join tblGoodsUnit with(index(IX_tblGoodsUnit_refdefault)) on tblGoodsUnit.f_ref=tblGoods.id and tblGoodsUnit.DefaultAssit=1
+		left join tblCustomerPriceDet on tblGoods.classcode = tblCustomerPriceDet.GoodsCode
+			and tblCustomerPriceDet.f_ref=(select id from tblCustomerPrice where companyCode='@ValueofDB:CompanyCode')
+		left join (select goodsCode,sum(lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit+buyOrderQty-salesOrderQty) as orderQty,sum(lastQty+inQtyNotAudit+SInQtyNotAudit-outQtyNotAudit-BOutQtyNotAudit) as UseQty from ViewVirtualStock where 2=2 and ViewVirtualStock.stockCode='@ValueofDB:StockCode' and ViewVirtualStock.stockCode='@ValueofDB:@TABLENAME_StockCode' GROUP BY goodsCode) as ViewVirtualStock on tblGoods.classCode=ViewVirtualStock.goodsCode
+		left join tblCompany on (1=1 and tblCompany.classCode='@ValueofDB:CompanyCode')
+     </defineSQL>
+     <classCode>tblGoods.classCode</classCode>
+     <remark></remark>
+     <condition>tblGoods.workFlowNodeName='finish'</condition>
+     <changeCond>tblGoods.statusid!='-1'</changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.[tblGoods]" width="120" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />          
+          <field name="(case tblGoods.isCatalog when 0 then (select sum(lastQty) as lastQty from tblStocks where tblStocks.GoodsCode=tblGoods.classCode and tblStocks.StockCode='@ValueofDB:StockCode' and tblStocks.StockCode='@ValueofDB:@TABLENAME_StockCode' and SCompanyID='@Sess:SCompanyID') else -99999999 end)" asName="tblStocks.lastQty" width="90" searchType="scope" parentDisplay="true" display="tblSalesOrderDet.ViewTotalQty" />
+          <field name="ViewVirtualStock.UseQty" width="90" searchType="scope" parentDisplay="true" />
+          <field name="ViewVirtualStock.orderQty" width="90" searchType="scope" parentDisplay="true" />
+     </displayFields>
+     <saveFields>
+          <field name="(case tblGoods.isCatalog when 0 then (select sum(lastQty) as lastQty from tblStocks where tblStocks.GoodsCode=tblGoods.classCode and tblStocks.StockCode='@ValueofDB:StockCode' and tblStocks.StockCode='@ValueofDB:@TABLENAME_StockCode' and SCompanyID='@Sess:SCompanyID') else -99999999 end)" parentName="@TABLENAME.ViewTotalQty" display="tblSalesOrderDet.ViewTotalQty" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblGoods.classCode" parentName="@TABLENAME.GoodsCode" relationKey="true" hidden="true" />
+          <field name="tblGoodsUnit.SecUnit" parentName="@TABLENAME.SecUnit" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblGoods.AccountingPrice" parentName="@TABLENAME.AccountingPrice" relationKey="false" hidden="false"  compare="false"/>
+          <field name="tblGoodsUnit.UnitD" parentName="@TABLENAME.BaseQty" relationKey="false" hidden="true"  compare="false"/>
+          <field name="tblGoodsUnit.SecUnitD" parentName="@TABLENAME.SecQty" relationKey="false" hidden="true"  compare="false"/>
+     </saveFields>
+</select>
+</popupSelect>

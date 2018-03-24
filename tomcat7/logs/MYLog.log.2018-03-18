@@ -1,0 +1,688 @@
+[DEBUG] 2018-03-18 07:49:52,957 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 07:52:02,404 Line:549 ReportDataMgt.getReportData SQL=select      tblSalesOutStock.BillDate as BillDate,     tblSalesOutStock.BillNo as BillNo,     tblProject.ProjectName as ProjectName,     tblStock.classCode as StockCode,     tblGoods.classCode as GoodsCode,     tblCompany.ComFullName as ComFullName,     tblCompany.ComNumber as ComNumber,     tblDepartment.DeptFullName as DeptFullName,     tblEmployee.EmpFullName as EmpFullName,     tblEmployee2.EmpFullName as createBy,     tblStock.StockFullName as StockFullName,     tblGoods.GoodsNumber as GoodsNumber,     tblGoods.GoodsFullName as GoodsFullName,     tblGoods.GoodsSpec as GoodsSpec,     tblGoods.BaseUnit as BaseUnit,     tblSalesOutStockDet.BatchNo as BatchNo,     tblSalesOutStockDet.Inch as Inch,     tblSalesOutStockDet.Hue as Hue,     tblSalesOutStockDet.yearNO as yearNO,     tblSalesOutStockDet.ProDate as ProDate,     tblSalesOutStockDet.Availably as Availably,     tblSalesOutStockDet.Qty as Qty,     tblSalesOutStockDet.Price as Price,     tblSalesOutStockDet.Amount as Amount,     tblSalesOutStockDet.SecUnit as SecName,     tblSalesOutStockDet.UnitIntQty as SecUnitQty,     tblSalesOutStockDet.UnitBaseQty as SecBaseQty,     tblSalesOutStockDet.UnitQty as SecQty,     tblSalesOutStockDet.UnitPrice as SecPrice,     tblSalesOutStockDet.Discount as Discount,     tblSalesOutStockDet.DisPrice as DisPrice,     tblSalesOutStockDet.DisBackAmt as DisBackAmt,     tblSalesOutStockDet.DisAmount as DisAmount,     tblSalesOutStock.Tax as Tax,     tblSalesOutStockDet.TaxPrice as TaxPrice,     tblSalesOutStockDet.TaxAmount as TaxAmount,     tblSalesOutStockDet.CoTaxAmt as CoTaxAmt,     tblCurrency.CurrencyName as CurrencyName,     tblSalesOutStock.CurrencyRate as CurrencyRate,     tblSalesOutStockDet.CurPrice as CurPrice,     tblSalesOutStockDet.CurAmount as CurTaxAmount,     tblSalesOutStockDet.AccountingPrice as AccountingPrice,     tblSalesOutStockDet.PreferAmount as DiscountAmount,     tblSalesOutStock.id as id,     tblSalesOutStockDet.BackQty as BackQty,     tblSalesOutStockDet.FactOutQty as FactOutQty,     tblSalesOutStock.SCompanyID as SCompanyID,     tblSalesOutStockDet.InvoiceQty as InvoiceQty,     tblSalesOutStockDet.NoInvoiceQty as NoInvoiceQty,     tblSalesOutStockDet.BuyQty as BuyQty,     tblSalesOutStockDet.NotBuyQty as NotBuyQty,     tblSalesOrder.BillNo as SalesOrderNo,     tblSalesOutStockDet.PresentSampleType as PresentSampleType,     tblSalesOutStockDet.PresentPrice as PresentPrice,     tblSalesOutStockDet.PresentAmt as PresentAmt,     case when len(isnull(tblSalesOutStockDet.Seq,''))=0 then '' else (select top 1 languageId from tblDBEnumerationItem where enumValue='seq') end as Seq,     tblSalesOutStock.Remark as Remark,     tblSalesOutStockDet.Remark as ReRemark,     tblSalesOutStockDet.SalesOrderID as SalesOrderID,     tblSalesOutStockDet.NeedReceiveAmt as NeedReceiveAmt,     tblStock.classCode+';'+CAST(tblStock.isCatalog as varchar(2))+';;' as hideStockCode,     tblGoods.classCode+';'+CAST(tblGoods.isCatalog as varchar(2))+';;' as hideGoodsCode,     tblSalesOutStock.workFlowNodeName as workFlowNodeName,     tblSalesOutStock.AcceptDate as AcceptDate,     REPLACE(Seq,'~',',') as SeqCond from tblSalesOutStockDet    left join tblSalesOrder noRight on tblSalesOutStockDet.SalesOrderID=tblSalesOrder.id   join tblGoods on tblGoods.ClassCode=tblSalesOutStockDet.GoodsCode   join tblSalesOutStock on tblSalesOutStockDet.f_ref=tblSalesOutStock.id   left join tblStock on tblStock.classCode=tblSalesOutStockDet.StockCode   left join tblCurrency on tblCurrency.id=tblSalesOutStock.Currency   join tblEmployee on tblEmployee.id = tblSalesOutStock.EmployeeID   join tblEmployee as tblEmployee2 on tblEmployee2.id = tblSalesOutStock.createBy   join tblCompany on tblCompany.classCode = tblSalesOutStock.CompanyCode   left join tblDepartment on tblDepartment.classCode = tblSalesOutStock.DepartmentCode   left join tblProject on tblSalesOutStock.ProjectCode=tblProject.id  where 1=1        and (tblSalesOutStock.BillDate >= '2018-03-01')                                                                                                                              and (tblSalesOutStock.SCompanyID like '00001'+'%' escape '!')                                          and (tblSalesOutStock.NeedReturnAmt>0 AND len(tblSalesOutStock.AcceptDate)>0 AND tblSalesOutStock.AcceptDate<GETDATE()+1 AND CAST(tblSalesOutStock.AcceptDate AS DATETIME)>(GETDATE()-CAST((SELECT MIN(tmp.days) FROM (SELECT ? AS days UNION SELECT 5000 AS days) AS tmp) AS INT)-1))       and (tblSalesOutStock.workFlowNodeName ='finish')         
+ [DEBUG] 2018-03-18 07:52:02,404 Line:582 ReportDataMgt.getReportData 参数1:2
+ [ERROR] 2018-03-18 07:52:02,482 Line:1394 ReportDataMgt.getReportData() Error:
+ com.microsoft.sqlserver.jdbc.SQLServerException: 无法绑定由多个部分组成的标识符 "tblSalesOrder.id"。
+	at com.microsoft.sqlserver.jdbc.SQLServerException.makeFromDatabaseError(SQLServerException.java:197)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.getNextResult(SQLServerStatement.java:1493)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.doExecutePreparedStatement(SQLServerPreparedStatement.java:390)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement$PrepStmtExecCmd.doExecute(SQLServerPreparedStatement.java:340)
+	at com.microsoft.sqlserver.jdbc.TDSCommand.execute(IOBuffer.java:4575)
+	at com.microsoft.sqlserver.jdbc.SQLServerConnection.executeCommand(SQLServerConnection.java:1400)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeCommand(SQLServerStatement.java:179)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeStatement(SQLServerStatement.java:154)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.executeQuery(SQLServerPreparedStatement.java:283)
+	at org.apache.tomcat.dbcp.dbcp.DelegatingPreparedStatement.executeQuery(DelegatingPreparedStatement.java:96)
+	at org.apache.tomcat.dbcp.dbcp.DelegatingPreparedStatement.executeQuery(DelegatingPreparedStatement.java:96)
+	at com.menyi.aio.web.report.ReportDataMgt$12$1.execute(ReportDataMgt.java:584)
+	at org.hibernate.impl.SessionImpl.doWork(SessionImpl.java:1850)
+	at com.menyi.aio.web.report.ReportDataMgt$12.exec(ReportDataMgt.java:553)
+	at com.dbfactory.hibernate.DBUtil.execute(DBUtil.java:364)
+	at com.menyi.aio.web.report.ReportDataMgt.getReportData(ReportDataMgt.java:551)
+	at com.menyi.aio.web.alert.AlertCenterMgt.showData(AlertCenterMgt.java:933)
+	at com.menyi.aio.web.alert.AlertCenterMgt.queryAlertTotals(AlertCenterMgt.java:177)
+	at com.menyi.web.util.TimingMsgThread.run(TimingMsgThread.java:44)
+[DEBUG] 2018-03-18 08:12:47,894 Line:135 BaseAction.execute 请求地址：/AIO.do
+ [DEBUG] 2018-03-18 08:12:47,894 Line:146 BaseAction.execute 操作人:;请求数据：
+ [DEBUG] 2018-03-18 08:12:47,906 Line:59 MenuManager.doAuth() ---------- loginBean is null
+ [DEBUG] 2018-03-18 08:12:48,050 Line:88 CommonServlet.service 请求地址：/CommonServlet?operation=qrcodeDownload
+ [DEBUG] 2018-03-18 08:12:48,051 Line:99 CommonServlet.service 操作人:;请求数据：operation=[qrcodeDownload,];
+ [DEBUG] 2018-03-18 08:12:48,112 Line:135 BaseAction.execute 请求地址：/loginAction.do?operation=15
+ [DEBUG] 2018-03-18 08:12:48,112 Line:146 BaseAction.execute 操作人:;请求数据：operation=[15,];
+ [DEBUG] 2018-03-18 08:12:48,276 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=valpwd&time=1521331968273
+ [DEBUG] 2018-03-18 08:12:48,277 Line:163 UtilServlet.service 操作人:;请求数据：operation=[valpwd,];time=[1521331968273,];
+ [DEBUG] 2018-03-18 08:12:49,617 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=getUserInfo&name=admin&time=1521331969617
+ [DEBUG] 2018-03-18 08:12:49,617 Line:163 UtilServlet.service 操作人:;请求数据：operation=[getUserInfo,];name=[admin,];time=[1521331969617,];
+ [DEBUG] 2018-03-18 08:12:49,625 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=sunCompany&name=admin&time=1521331969625
+ [DEBUG] 2018-03-18 08:12:49,625 Line:163 UtilServlet.service 操作人:;请求数据：operation=[sunCompany,];name=[admin,];time=[1521331969625,];
+ [DEBUG] 2018-03-18 08:12:49,640 Line:135 BaseAction.execute 请求地址：/loginAction.do
+ [DEBUG] 2018-03-18 08:12:49,640 Line:146 BaseAction.execute 操作人:;请求数据：org.apache.struts.taglib.html.TOKEN=[,];NOTTOKEN=[true,];operation=[10,];ukId=[,];strM1=[,];strM2=[,];clientKey=[,];random=[,];screenWidth=[1218,];sunCompany=[1,];style=[style1,];system=[new,];loc=[zh_CN,];name=[admin,];password=[0192023A7BBD73250516F069DF18B500,];
+ [DEBUG] 2018-03-18 08:12:49,693 Line:2987 select count(*) from tblSunCompanys a where a.classCode like '00001_____%'
+ [DEBUG] 2018-03-18 08:12:49,698 Line:530 select AccYear,AccOverYear from  tblAccPeriod group by Accyear,AccOverYear
+ [DEBUG] 2018-03-18 08:12:49,756 Line:135 BaseAction.execute 请求地址：/AIO.do
+ [DEBUG] 2018-03-18 08:12:49,757 Line:146 BaseAction.execute 操作人:admin;请求数据：
+ [DEBUG] 2018-03-18 08:12:49,757 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-18 08:12:49,894 Line:135 BaseAction.execute 请求地址：/newMenu.do?keyId=fca2035a_0910281034230930020&name=%E6%88%91%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8F%B0&operation=0&winCurIndex=0
+ [DEBUG] 2018-03-18 08:12:49,894 Line:146 BaseAction.execute 操作人:admin;请求数据：keyId=[fca2035a_0910281034230930020,];name=[???????·??????°,];operation=[0,];winCurIndex=[0,];
+ [DEBUG] 2018-03-18 08:12:49,914 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=1&loadMenu=true
+ [DEBUG] 2018-03-18 08:12:49,914 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[1,];loadMenu=[true,];
+ [DEBUG] 2018-03-18 08:12:49,916 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-18 08:12:49,929 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=2&loadMenu=true
+ [DEBUG] 2018-03-18 08:12:49,930 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[2,];loadMenu=[true,];
+ [DEBUG] 2018-03-18 08:12:49,930 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-18 08:12:49,940 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=3&loadMenu=true
+ [DEBUG] 2018-03-18 08:12:49,940 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[3,];loadMenu=[true,];
+ [DEBUG] 2018-03-18 08:12:49,941 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-18 08:12:49,951 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=0&loadMenu=true
+ [DEBUG] 2018-03-18 08:12:49,952 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[0,];loadMenu=[true,];
+ [DEBUG] 2018-03-18 08:12:49,953 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-18 08:12:53,510 Line:135 BaseAction.execute 请求地址：/IniAccQueryAction.do?src=menu&winCurIndex=1
+ [DEBUG] 2018-03-18 08:12:53,510 Line:146 BaseAction.execute 操作人:admin;请求数据：src=[menu,];winCurIndex=[1,];
+ [DEBUG] 2018-03-18 08:12:53,511 Line:215 ---------->SET Page 1 DEFAULT URL = /IniAccQueryAction.do
+ [DEBUG] 2018-03-18 08:12:53,511 Line:1579 select min(len(b.classCode)) from tblAccBalance accBanlance left join tblAccTypeInfo b on accBanlance.SubCode=b.AccNumber left join tblLanguage l on l.id=b.AccName where accBanlance.Period=-1 and accBanlance.SCompanyID='00001' and b.SCompanyID='00001' and isnull(accBanlance.departmentCode,'')=''
+ [DEBUG] 2018-03-18 08:12:53,610 Line:143 IniAccMgt sql = select accBanlance.id, b.classCode,b.AccNumber,case isnull(l.zh_CN,'') when '' then b.AccName else isnull(l.zh_CN,'') end as AccName,accBanlance.CurrYIniBase,accBanlance.CurrYIniDebitSumBase,accBanlance.CurrYIniCreditSumBase,accBanlance.CurrYIniBalaBase,accBanlance.CurrYIniBala,accBanlance.curRate,b.isCatalog as count,b.JdFlag,case when IsDept=1 then 1 when IsPersonal=1 then 1 when IsClient=1 then 1 when IsProvider=1 then 1 when isStock=1 then 1 when IsProject=1 then 1 when IsForCur=1 then 1 else 0 end as ischeck,isnull(b.isCalculate,'') as isCalculate,row_number() over(order by accBanlance.subCode) as row_id from tblAccBalance accBanlance left join tblAccTypeInfo b on accBanlance.SubCode=b.AccNumber left join tblLanguage l on l.id=b.AccName where accBanlance.Period=-1 and accBanlance.SCompanyID='00001' and b.SCompanyID='00001' and isnull(accBanlance.departmentCode,'')='' and len(b.classCode)=5 
+ [DEBUG] 2018-03-18 08:12:57,654 Line:135 BaseAction.execute 请求地址：/IniAccQueryAction.do?accCode=00001&accNumber=10&type=next&winCurIndex=1&department=
+ [DEBUG] 2018-03-18 08:12:57,655 Line:146 BaseAction.execute 操作人:admin;请求数据：accCode=[00001,];accNumber=[10,];type=[next,];winCurIndex=[1,];department=[,];
+ [DEBUG] 2018-03-18 08:12:57,655 Line:143 IniAccMgt sql = select accBanlance.id, b.classCode,b.AccNumber,case isnull(l.zh_CN,'') when '' then b.AccName else isnull(l.zh_CN,'') end as AccName,accBanlance.CurrYIniBase,accBanlance.CurrYIniDebitSumBase,accBanlance.CurrYIniCreditSumBase,accBanlance.CurrYIniBalaBase,accBanlance.CurrYIniBala,accBanlance.curRate,b.isCatalog as count,b.JdFlag,case when IsDept=1 then 1 when IsPersonal=1 then 1 when IsClient=1 then 1 when IsProvider=1 then 1 when isStock=1 then 1 when IsProject=1 then 1 when IsForCur=1 then 1 else 0 end as ischeck,isnull(b.isCalculate,'') as isCalculate,row_number() over(order by accBanlance.subCode) as row_id from tblAccBalance accBanlance left join tblAccTypeInfo b on accBanlance.SubCode=b.AccNumber left join tblLanguage l on l.id=b.AccName where accBanlance.Period=-1 and accBanlance.SCompanyID='00001' and b.SCompanyID='00001' and isnull(accBanlance.departmentCode,'')='' and b.classCode like '00001_____' 
+ [DEBUG] 2018-03-18 08:12:59,762 Line:135 BaseAction.execute 请求地址：/IniAccQueryAction.do?accCode=0000100006&accNumber=1122&keyid=C1B377CC-C84C-479D-A108-188790&operation=7&popWinName=IniDiv
+ [DEBUG] 2018-03-18 08:12:59,762 Line:146 BaseAction.execute 操作人:admin;请求数据：accCode=[0000100006,];accNumber=[1122,];keyid=[C1B377CC-C84C-479D-A108-188790,];operation=[7,];popWinName=[IniDiv,];
+ [DEBUG] 2018-03-18 08:13:02,276 Line:135 BaseAction.execute 请求地址：/IniAccQueryAction.do?operation=7&accCode=0000100006&accNumber=1122&opType=updateIniItemPre&keyId=b4bf6649_1803172139077530038&popWinName=PopMainOpdiv
+ [DEBUG] 2018-03-18 08:13:02,277 Line:146 BaseAction.execute 操作人:admin;请求数据：operation=[7,];accCode=[0000100006,];accNumber=[1122,];opType=[updateIniItemPre,];keyId=[b4bf6649_1803172139077530038,];popWinName=[PopMainOpdiv,];
+ [DEBUG] 2018-03-18 08:13:05,451 Line:135 BaseAction.execute 请求地址：/IniAccQueryAction.do
+ [DEBUG] 2018-03-18 08:13:05,452 Line:146 BaseAction.execute 操作人:admin;请求数据：conver=[,];operation=[7,];org.apache.struts.taglib.html.TOKEN=[,];opType=[updateIniItem,];id=[b4bf6649_1803172139077530038,];impId=[,];accCode=[0000100006,];accNumber=[1122,];accName=[应收账款,];popWinName=[PopMainOpdiv,];CompanyCode=[0000600001000090002J,];CompanyCodeName=[贝梅珠,];BeginAmount=[8,];TotalDebit=[0,];TotalLend=[0,];TotalRemain=[8,];Remark=[,];
+ [DEBUG] 2018-03-18 08:13:05,457 Line:1614 IniAccMgt updateAccBalanceIni : {call proc_updateAccBalanceIni(@accNumber=?,@period=?,@Nyear=?,@Nmonth=?,@currency=?,@curRate=?,@CurrYIniBase=?,@CurrYIniDebitSumBase=?,@CurrYIniCreditSumBase=?,@CurrYIniBalaBase=?,@CurrYIni=?,@CurrYIniDebitSum=?,@CurrYIniCreditSum=?,@CurrYIniBala=?,@DepartmentCode=?,@sunCompany=?,@retCode=?,@retVal=?)}
+ [DEBUG] 2018-03-18 08:13:05,457 Line:1615 IniAccMgt updateAccBalanceIni : 参数：112201282
+ [DEBUG] 2018-03-18 08:13:05,457 Line:1616 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:13:05,458 Line:1617 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:13:05,458 Line:1618 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:13:05,459 Line:1620 IniAccMgt updateAccBalanceIni : 参数：
+ [DEBUG] 2018-03-18 08:13:05,459 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:13:05,459 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-7.00000000
+ [DEBUG] 2018-03-18 08:13:05,459 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:13:05,459 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:13:05,460 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-7.00000000
+ [DEBUG] 2018-03-18 08:13:05,460 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:13:05,460 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:13:05,460 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:13:05,460 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:13:05,461 Line:1634 IniAccMgt updateAccBalanceIni : 参数：
+ [DEBUG] 2018-03-18 08:13:05,461 Line:1635 IniAccMgt updateAccBalanceIni : 参数：00001
+ [DEBUG] 2018-03-18 08:13:05,496 Line:921 自定义执行的语句显示： IniAcc_Update :select id as IniId,ReceiveTotalDebit,ReceiveTotalRemain from tblCompanyIni where CompanyCode = ?
+ [DEBUG] 2018-03-18 08:13:05,497 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:13:05,498 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:13:05,501 Line:1025 query condition columnName:IniId----value:9E185531A5AC4C9BA31E9334A1FE11
+ [DEBUG] 2018-03-18 08:13:05,502 Line:1023 query condition columnName:ReceiveTotalDebit----value:7.00000000
+ [DEBUG] 2018-03-18 08:13:05,502 Line:1023 query condition columnName:ReceiveTotalRemain----value:7.00000000
+ [DEBUG] 2018-03-18 08:13:05,502 Line:1043 ---上述语句时间---6
+ [DEBUG] 2018-03-18 08:13:05,502 Line:921 自定义执行的语句显示： IniAcc_Update :select top 1 id as AccDetId, BeginAmount,TotalRemain from tblIniAccDet where CompanyCode = ? order by createTime desc
+ [DEBUG] 2018-03-18 08:13:05,503 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:13:05,503 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:13:05,513 Line:1025 query condition columnName:AccDetId----value:604587BB8C3B4832A68492E6FBD00B
+ [DEBUG] 2018-03-18 08:13:05,513 Line:1023 query condition columnName:BeginAmount----value:200.00000000
+ [DEBUG] 2018-03-18 08:13:05,514 Line:1023 query condition columnName:TotalRemain----value:200.00000000
+ [DEBUG] 2018-03-18 08:13:05,514 Line:1043 ---上述语句时间---12
+ [DEBUG] 2018-03-18 08:13:05,515 Line:921 自定义执行的语句显示： IniAcc_Update :select id as TotalId, ReceiveTotalDebit,ReceiveTotalRemain from tblCompanyTotal where CompanyCode = ?
+ [DEBUG] 2018-03-18 08:13:05,515 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:13:05,515 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:13:05,522 Line:1025 query condition columnName:TotalId----value:BE337358914E4F9986CECB88ABC5DC
+ [DEBUG] 2018-03-18 08:13:05,523 Line:1023 query condition columnName:ReceiveTotalDebit----value:7.00000000
+ [DEBUG] 2018-03-18 08:13:05,523 Line:1023 query condition columnName:ReceiveTotalRemain----value:7.00000000
+ [DEBUG] 2018-03-18 08:13:05,523 Line:1043 ---上述语句时间---8
+ [DEBUG] 2018-03-18 08:13:05,523 Line:313 exeCondition:IniAcc_Update :'1122'=='2202'
+ [DEBUG] 2018-03-18 08:13:05,532 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:13:05,533 Line:313 exeCondition:IniAcc_Update :'1122'=='1122'
+ [DEBUG] 2018-03-18 08:13:05,534 Line:321 flag:true
+ [DEBUG] 2018-03-18 08:13:05,535 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_iterateExeProc(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:13:05,535 Line:1270 select id as IniId@SPFieldLink:2 as ComType from tblCompanyIni where PeriodYear=-1 and (ReceiveTotalDebit!=0 or FcRecTotalDebit!=0)
+ [DEBUG] 2018-03-18 08:13:05,535 Line:1270 proc_deleteComIni
+ [DEBUG] 2018-03-18 08:13:05,536 Line:1270 @IniId@ParamLink:@ComType
+ [DEBUG] 2018-03-18 08:13:05,579 Line:1292 存储过程内部信息： declare @IniId varchar(500) declare @ComType varchar(500)  declare @param1 varchar(5000)  declare @param2 varchar(5000)  declare iterCursor cursor for select id as IniId,2 as ComType from tblCompanyIni where PeriodYear=-1 and (ReceiveTotalDebit!=0 or FcRecTotalDebit!=0)
+open iterCursor
+fetch next from iterCursor into @IniId,@ComType
+
+declare @retCode int
+declare @retVal  varchar(100)
+
+while(@@fetch_status=0)
+     begin	 set @param1=@IniId set @param2=@ComType exec proc_deleteComIni @param1,@param2, @retCode output,@retVal output  fetch next from iterCursor into @IniId,@ComType    end	
+
+deallocate iterCursor
+ [DEBUG] 2018-03-18 08:13:05,580 Line:425 ************上述语句执行时间：45
+ [DEBUG] 2018-03-18 08:13:05,580 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_iterateExeProc(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:13:05,580 Line:1270 select substring(replace(newid()@SPFieldLink:'-'@SPFieldLink:'')@SPFieldLink:1@SPFieldLink:30) as id@SPFieldLink:CompanyCode as CompanyCode@SPFieldLink:SCompanyID as SCompanyID@SPFieldLink:sum(TotalRemain) as TotalRemain@SPFieldLink:isnull(Currency@SPFieldLink:'') as Currency@SPFieldLink:isnull(CurrencyRate@SPFieldLink:0) as CurrencyRate@SPFieldLink:isnull(sum(CurTotalRemain)@SPFieldLink:0) as CurTotalRemain from tblIniAccDet where accCode like '1122%' and CompanyCode = '0000600001000090002J' group by CompanyCode@SPFieldLink:Currency@SPFieldLink:CurrencyRate@SPFieldLink:SCompanyID
+ [DEBUG] 2018-03-18 08:13:05,581 Line:1270 proc_insertComIni
+ [DEBUG] 2018-03-18 08:13:05,581 Line:1270 @id@ParamLink:@CompanyCode@ParamLink:2@ParamLink:-1@ParamLink:'ReceiveTotalDebit='+@TotalRemain+'@SPFieldLink:Currency='+@Currency+'@SPFieldLink:CurrencyRate='+@CurrencyRate+'@SPFieldLink:FcRecTotalDebit='+@CurTotalRemain+'@SPFieldLink:Period=-1@SPFieldLink:PeriodYear=-1@SPFieldLink:PeriodMonth=-1@SPFieldLink:RelationDocID=b4bf6649_1803172139077530038@SPFieldLink:createBy=@SPFieldLink:createTime=2018-03-17 21:39:07@SPFieldLink:lastUpdateBy=@SPFieldLink:lastUpdateTime=@SPFieldLink:BillType=tblCompanybeginning@SPFieldLink:BillNo=@SPFieldLink:EmployeeID=@SPFieldLink:DepartmentCode=@SPFieldLink:SCompanyID='+@SCompanyID+'@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark='
+ [DEBUG] 2018-03-18 08:13:05,592 Line:1292 存储过程内部信息： declare @id varchar(500) declare @CompanyCode varchar(500) declare @SCompanyID varchar(500) declare @TotalRemain varchar(500) declare @Currency varchar(500) declare @CurrencyRate varchar(500) declare @CurTotalRemain varchar(500)  declare @param1 varchar(5000)  declare @param2 varchar(5000)  declare @param3 varchar(5000)  declare @param4 varchar(5000)  declare @param5 varchar(5000)  declare iterCursor cursor for select substring(replace(newid(),'-',''),1,30) as id,CompanyCode as CompanyCode,SCompanyID as SCompanyID,sum(TotalRemain) as TotalRemain,isnull(Currency,'') as Currency,isnull(CurrencyRate,0) as CurrencyRate,isnull(sum(CurTotalRemain),0) as CurTotalRemain from tblIniAccDet where accCode like '1122%' and CompanyCode = '0000600001000090002J' group by CompanyCode,Currency,CurrencyRate,SCompanyID
+open iterCursor
+fetch next from iterCursor into @id,@CompanyCode,@SCompanyID,@TotalRemain,@Currency,@CurrencyRate,@CurTotalRemain
+
+declare @retCode int
+declare @retVal  varchar(100)
+
+while(@@fetch_status=0)
+     begin	 set @param1=@id set @param2=@CompanyCode set @param3=2 set @param4=-1 set @param5='ReceiveTotalDebit='+@TotalRemain+'@SPFieldLink:Currency='+@Currency+'@SPFieldLink:CurrencyRate='+@CurrencyRate+'@SPFieldLink:FcRecTotalDebit='+@CurTotalRemain+'@SPFieldLink:Period=-1@SPFieldLink:PeriodYear=-1@SPFieldLink:PeriodMonth=-1@SPFieldLink:RelationDocID=b4bf6649_1803172139077530038@SPFieldLink:createBy=@SPFieldLink:createTime=2018-03-17 21:39:07@SPFieldLink:lastUpdateBy=@SPFieldLink:lastUpdateTime=@SPFieldLink:BillType=tblCompanybeginning@SPFieldLink:BillNo=@SPFieldLink:EmployeeID=@SPFieldLink:DepartmentCode=@SPFieldLink:SCompanyID='+@SCompanyID+'@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark=' exec proc_insertComIni @param1,@param2,@param3,@param4,@param5, @retCode output,@retVal output  fetch next from iterCursor into @id,@CompanyCode,@SCompanyID,@TotalRemain,@Currency,@CurrencyRate,@CurTotalRemain    end	
+
+deallocate iterCursor
+ [DEBUG] 2018-03-18 08:13:05,592 Line:425 ************上述语句执行时间：12
+ [DEBUG] 2018-03-18 08:13:05,593 Line:313 exeCondition:IniAcc_Update :'1122'=='1123'
+ [DEBUG] 2018-03-18 08:13:05,594 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:13:05,595 Line:313 exeCondition:IniAcc_Update :'1122'=='2203'
+ [DEBUG] 2018-03-18 08:13:05,597 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:13:05,621 Line:1614 IniAccMgt updateAccBalanceIni : {call proc_updateAccBalanceIni(@accNumber=?,@period=?,@Nyear=?,@Nmonth=?,@currency=?,@curRate=?,@CurrYIniBase=?,@CurrYIniDebitSumBase=?,@CurrYIniCreditSumBase=?,@CurrYIniBalaBase=?,@CurrYIni=?,@CurrYIniDebitSum=?,@CurrYIniCreditSum=?,@CurrYIniBala=?,@DepartmentCode=?,@sunCompany=?,@retCode=?,@retVal=?)}
+ [DEBUG] 2018-03-18 08:13:05,621 Line:1615 IniAccMgt updateAccBalanceIni : 参数：112201282
+ [DEBUG] 2018-03-18 08:13:05,622 Line:1616 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:13:05,622 Line:1617 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:13:05,622 Line:1618 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:13:05,622 Line:1620 IniAccMgt updateAccBalanceIni : 参数：
+ [DEBUG] 2018-03-18 08:13:05,622 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:13:05,623 Line:1629 IniAccMgt updateAccBalanceIni : 参数：8
+ [DEBUG] 2018-03-18 08:13:05,623 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:13:05,623 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:13:05,623 Line:1629 IniAccMgt updateAccBalanceIni : 参数：8
+ [DEBUG] 2018-03-18 08:13:05,624 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:13:05,624 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:13:05,624 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:13:05,624 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:13:05,624 Line:1634 IniAccMgt updateAccBalanceIni : 参数：
+ [DEBUG] 2018-03-18 08:13:05,625 Line:1635 IniAccMgt updateAccBalanceIni : 参数：00001
+ [DEBUG] 2018-03-18 08:13:05,646 Line:921 自定义执行的语句显示： IniAcc_Update :select id as IniId,ReceiveTotalDebit,ReceiveTotalRemain from tblCompanyIni where CompanyCode = ?
+ [DEBUG] 2018-03-18 08:13:05,647 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:13:05,647 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:13:05,648 Line:1043 ---上述语句时间---2
+ [DEBUG] 2018-03-18 08:13:05,648 Line:921 自定义执行的语句显示： IniAcc_Update :select top 1 id as AccDetId, BeginAmount,TotalRemain from tblIniAccDet where CompanyCode = ? order by createTime desc
+ [DEBUG] 2018-03-18 08:13:05,649 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:13:05,649 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:13:05,657 Line:1025 query condition columnName:AccDetId----value:b4bf6649_1803180813056090041
+ [DEBUG] 2018-03-18 08:13:05,657 Line:1023 query condition columnName:BeginAmount----value:8.00000000
+ [DEBUG] 2018-03-18 08:13:05,657 Line:1023 query condition columnName:TotalRemain----value:8.00000000
+ [DEBUG] 2018-03-18 08:13:05,658 Line:1043 ---上述语句时间---10
+ [DEBUG] 2018-03-18 08:13:05,658 Line:921 自定义执行的语句显示： IniAcc_Update :select id as TotalId, ReceiveTotalDebit,ReceiveTotalRemain from tblCompanyTotal where CompanyCode = ?
+ [DEBUG] 2018-03-18 08:13:05,658 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:13:05,658 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:13:05,663 Line:1025 query condition columnName:TotalId----value:BE337358914E4F9986CECB88ABC5DC
+ [DEBUG] 2018-03-18 08:13:05,663 Line:1023 query condition columnName:ReceiveTotalDebit----value:0E-8
+ [DEBUG] 2018-03-18 08:13:05,663 Line:1023 query condition columnName:ReceiveTotalRemain----value:0E-8
+ [DEBUG] 2018-03-18 08:13:05,664 Line:1043 ---上述语句时间---6
+ [DEBUG] 2018-03-18 08:13:05,664 Line:313 exeCondition:IniAcc_Update :'1122'=='2202'
+ [DEBUG] 2018-03-18 08:13:05,665 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:13:05,665 Line:313 exeCondition:IniAcc_Update :'1122'=='1122'
+ [DEBUG] 2018-03-18 08:13:05,667 Line:321 flag:true
+ [DEBUG] 2018-03-18 08:13:05,667 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_iterateExeProc(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:13:05,668 Line:1270 select id as IniId@SPFieldLink:2 as ComType from tblCompanyIni where PeriodYear=-1 and (ReceiveTotalDebit!=0 or FcRecTotalDebit!=0)
+ [DEBUG] 2018-03-18 08:13:05,668 Line:1270 proc_deleteComIni
+ [DEBUG] 2018-03-18 08:13:05,668 Line:1270 @IniId@ParamLink:@ComType
+ [DEBUG] 2018-03-18 08:13:05,696 Line:1292 存储过程内部信息： declare @IniId varchar(500) declare @ComType varchar(500)  declare @param1 varchar(5000)  declare @param2 varchar(5000)  declare iterCursor cursor for select id as IniId,2 as ComType from tblCompanyIni where PeriodYear=-1 and (ReceiveTotalDebit!=0 or FcRecTotalDebit!=0)
+open iterCursor
+fetch next from iterCursor into @IniId,@ComType
+
+declare @retCode int
+declare @retVal  varchar(100)
+
+while(@@fetch_status=0)
+     begin	 set @param1=@IniId set @param2=@ComType exec proc_deleteComIni @param1,@param2, @retCode output,@retVal output  fetch next from iterCursor into @IniId,@ComType    end	
+
+deallocate iterCursor
+ [DEBUG] 2018-03-18 08:13:05,696 Line:425 ************上述语句执行时间：29
+ [DEBUG] 2018-03-18 08:13:05,697 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_iterateExeProc(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:13:05,698 Line:1270 select substring(replace(newid()@SPFieldLink:'-'@SPFieldLink:'')@SPFieldLink:1@SPFieldLink:30) as id@SPFieldLink:CompanyCode as CompanyCode@SPFieldLink:SCompanyID as SCompanyID@SPFieldLink:sum(TotalRemain) as TotalRemain@SPFieldLink:isnull(Currency@SPFieldLink:'') as Currency@SPFieldLink:isnull(CurrencyRate@SPFieldLink:0) as CurrencyRate@SPFieldLink:isnull(sum(CurTotalRemain)@SPFieldLink:0) as CurTotalRemain from tblIniAccDet where accCode like '1122%' and CompanyCode = '0000600001000090002J' group by CompanyCode@SPFieldLink:Currency@SPFieldLink:CurrencyRate@SPFieldLink:SCompanyID
+ [DEBUG] 2018-03-18 08:13:05,698 Line:1270 proc_insertComIni
+ [DEBUG] 2018-03-18 08:13:05,698 Line:1270 @id@ParamLink:@CompanyCode@ParamLink:2@ParamLink:-1@ParamLink:'ReceiveTotalDebit='+@TotalRemain+'@SPFieldLink:Currency='+@Currency+'@SPFieldLink:CurrencyRate='+@CurrencyRate+'@SPFieldLink:FcRecTotalDebit='+@CurTotalRemain+'@SPFieldLink:Period=-1@SPFieldLink:PeriodYear=-1@SPFieldLink:PeriodMonth=-1@SPFieldLink:RelationDocID=b4bf6649_1803180813056090041@SPFieldLink:createBy=@SPFieldLink:createTime=@SPFieldLink:lastUpdateBy=@SPFieldLink:lastUpdateTime=@SPFieldLink:BillType=tblCompanybeginning@SPFieldLink:BillNo=@SPFieldLink:EmployeeID=@SPFieldLink:DepartmentCode=@SPFieldLink:SCompanyID='+@SCompanyID+'@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark='
+ [DEBUG] 2018-03-18 08:13:05,733 Line:1292 存储过程内部信息： declare @id varchar(500) declare @CompanyCode varchar(500) declare @SCompanyID varchar(500) declare @TotalRemain varchar(500) declare @Currency varchar(500) declare @CurrencyRate varchar(500) declare @CurTotalRemain varchar(500)  declare @param1 varchar(5000)  declare @param2 varchar(5000)  declare @param3 varchar(5000)  declare @param4 varchar(5000)  declare @param5 varchar(5000)  declare iterCursor cursor for select substring(replace(newid(),'-',''),1,30) as id,CompanyCode as CompanyCode,SCompanyID as SCompanyID,sum(TotalRemain) as TotalRemain,isnull(Currency,'') as Currency,isnull(CurrencyRate,0) as CurrencyRate,isnull(sum(CurTotalRemain),0) as CurTotalRemain from tblIniAccDet where accCode like '1122%' and CompanyCode = '0000600001000090002J' group by CompanyCode,Currency,CurrencyRate,SCompanyID
+open iterCursor
+fetch next from iterCursor into @id,@CompanyCode,@SCompanyID,@TotalRemain,@Currency,@CurrencyRate,@CurTotalRemain
+
+declare @retCode int
+declare @retVal  varchar(100)
+
+while(@@fetch_status=0)
+     begin	 set @param1=@id set @param2=@CompanyCode set @param3=2 set @param4=-1 set @param5='ReceiveTotalDebit='+@TotalRemain+'@SPFieldLink:Currency='+@Currency+'@SPFieldLink:CurrencyRate='+@CurrencyRate+'@SPFieldLink:FcRecTotalDebit='+@CurTotalRemain+'@SPFieldLink:Period=-1@SPFieldLink:PeriodYear=-1@SPFieldLink:PeriodMonth=-1@SPFieldLink:RelationDocID=b4bf6649_1803180813056090041@SPFieldLink:createBy=@SPFieldLink:createTime=@SPFieldLink:lastUpdateBy=@SPFieldLink:lastUpdateTime=@SPFieldLink:BillType=tblCompanybeginning@SPFieldLink:BillNo=@SPFieldLink:EmployeeID=@SPFieldLink:DepartmentCode=@SPFieldLink:SCompanyID='+@SCompanyID+'@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark=' exec proc_insertComIni @param1,@param2,@param3,@param4,@param5, @retCode output,@retVal output  fetch next from iterCursor into @id,@CompanyCode,@SCompanyID,@TotalRemain,@Currency,@CurrencyRate,@CurTotalRemain    end	
+
+deallocate iterCursor
+ [DEBUG] 2018-03-18 08:13:05,734 Line:1292 存储过程内部信息： insert into tblCompanyIni (id,ItemNo,CompanyCode,BillDate,ReceiveTotalDebit,Currency,CurrencyRate,FcRecTotalDebit,Period,PeriodYear,PeriodMonth,RelationDocID,createBy,createTime,lastUpdateBy,lastUpdateTime,BillType,BillNo,EmployeeID,DepartmentCode,SCompanyID,DiscountAmount,Remark) values('35158784B5404D9B972E940CC0F0FB',1,'0000600001000090002J','-1','8.00000000','','0.00000000','0.00000000','-1','-1','-1','b4bf6649_1803180813056090041','','','','','tblCompanybeginning','','','','00001','0','')
+ [DEBUG] 2018-03-18 08:13:05,734 Line:425 ************上述语句执行时间：37
+ [DEBUG] 2018-03-18 08:13:05,735 Line:313 exeCondition:IniAcc_Update :'1122'=='1123'
+ [DEBUG] 2018-03-18 08:13:05,736 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:13:05,737 Line:313 exeCondition:IniAcc_Update :'1122'=='2203'
+ [DEBUG] 2018-03-18 08:13:05,738 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:13:07,257 Line:135 BaseAction.execute 请求地址：/IniAccQueryAction.do
+ [DEBUG] 2018-03-18 08:13:07,258 Line:146 BaseAction.execute 操作人:admin;请求数据：id=[C1B377CC-C84C-479D-A108-188790,];accCode=[0000100006,];accNumber=[1122,];oldaccName=[应收账款,];popWinName=[,];opType=[,];operation=[7,];isItems=[,];conCompanyCode=[,];conCompanyCodeName=[,];order=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,];Remark=[,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,];pageSize=[100,];pageNo=[1,];
+ [DEBUG] 2018-03-18 08:13:54,389 Line:133 ReportServlet.service 请求地址：/ReportServlet?operation=saveDefineFile&fileName=config_v7\define\define.xml&SESSION=3BFF1B45A7D95785284AF28CD35A5BCEC20FD3A19A5B14D23182127E5C1F094CD50AC1F501AE8C7872754392E8B2F37D1A9149AA833C7396
+ [ERROR] 2018-03-18 08:13:54,547 Line:119 ------保存成功
+ [DEBUG] 2018-03-18 08:14:02,335 Line:135 BaseAction.execute 请求地址：/IniAccQueryAction.do?operation=7&accCode=0000100006&accNumber=1122&opType=updateIniItemPre&keyId=b4bf6649_1803180813056090041&popWinName=PopMainOpdiv
+ [DEBUG] 2018-03-18 08:14:02,337 Line:146 BaseAction.execute 操作人:admin;请求数据：operation=[7,];accCode=[0000100006,];accNumber=[1122,];opType=[updateIniItemPre,];keyId=[b4bf6649_1803180813056090041,];popWinName=[PopMainOpdiv,];
+ [DEBUG] 2018-03-18 08:14:06,680 Line:135 BaseAction.execute 请求地址：/IniAccQueryAction.do
+ [DEBUG] 2018-03-18 08:14:06,681 Line:146 BaseAction.execute 操作人:admin;请求数据：conver=[,];operation=[7,];org.apache.struts.taglib.html.TOKEN=[,];opType=[updateIniItem,];id=[b4bf6649_1803180813056090041,];impId=[,];accCode=[0000100006,];accNumber=[1122,];accName=[应收账款,];popWinName=[PopMainOpdiv,];CompanyCode=[0000600001000090002J,];CompanyCodeName=[贝梅珠,];BeginAmount=[9,];TotalDebit=[0,];TotalLend=[0,];TotalRemain=[9,];Remark=[,];
+ [DEBUG] 2018-03-18 08:14:06,684 Line:1614 IniAccMgt updateAccBalanceIni : {call proc_updateAccBalanceIni(@accNumber=?,@period=?,@Nyear=?,@Nmonth=?,@currency=?,@curRate=?,@CurrYIniBase=?,@CurrYIniDebitSumBase=?,@CurrYIniCreditSumBase=?,@CurrYIniBalaBase=?,@CurrYIni=?,@CurrYIniDebitSum=?,@CurrYIniCreditSum=?,@CurrYIniBala=?,@DepartmentCode=?,@sunCompany=?,@retCode=?,@retVal=?)}
+ [DEBUG] 2018-03-18 08:14:06,685 Line:1615 IniAccMgt updateAccBalanceIni : 参数：112201282
+ [DEBUG] 2018-03-18 08:14:06,685 Line:1616 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:14:06,686 Line:1617 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:14:06,686 Line:1618 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:14:06,686 Line:1620 IniAccMgt updateAccBalanceIni : 参数：
+ [DEBUG] 2018-03-18 08:14:06,687 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:14:06,687 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-8.00000000
+ [DEBUG] 2018-03-18 08:14:06,688 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:14:06,688 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:14:06,689 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-8.00000000
+ [DEBUG] 2018-03-18 08:14:06,689 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:14:06,689 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:14:06,690 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:14:06,691 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:14:06,692 Line:1634 IniAccMgt updateAccBalanceIni : 参数：
+ [DEBUG] 2018-03-18 08:14:06,692 Line:1635 IniAccMgt updateAccBalanceIni : 参数：00001
+ [DEBUG] 2018-03-18 08:14:06,751 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_updateParentBalance(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:14:06,752 Line:1270 1122
+ [DEBUG] 2018-03-18 08:14:06,753 Line:1270 -1
+ [DEBUG] 2018-03-18 08:14:06,754 Line:1270 -1
+ [DEBUG] 2018-03-18 08:14:09,852 Line:239 ************上述语句执行时间：3101
+ [DEBUG] 2018-03-18 08:14:09,853 Line:921 自定义执行的语句显示： IniAcc_Update :select id as IniId,ReceiveTotalDebit,ReceiveTotalRemain from tblCompanyIni where CompanyCode = ?
+ [DEBUG] 2018-03-18 08:14:09,853 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:14:09,854 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:14:09,856 Line:1025 query condition columnName:IniId----value:35158784B5404D9B972E940CC0F0FB
+ [DEBUG] 2018-03-18 08:14:09,856 Line:1023 query condition columnName:ReceiveTotalDebit----value:8.00000000
+ [DEBUG] 2018-03-18 08:14:09,857 Line:1023 query condition columnName:ReceiveTotalRemain----value:8.00000000
+ [DEBUG] 2018-03-18 08:14:09,857 Line:1043 ---上述语句时间---4
+ [DEBUG] 2018-03-18 08:14:09,858 Line:921 自定义执行的语句显示： IniAcc_Update :select top 1 id as AccDetId, BeginAmount,TotalRemain from tblIniAccDet where CompanyCode = ? order by createTime desc
+ [DEBUG] 2018-03-18 08:14:09,859 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:14:09,859 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:14:09,876 Line:1025 query condition columnName:AccDetId----value:604587BB8C3B4832A68492E6FBD00B
+ [DEBUG] 2018-03-18 08:14:09,877 Line:1023 query condition columnName:BeginAmount----value:200.00000000
+ [DEBUG] 2018-03-18 08:14:09,878 Line:1023 query condition columnName:TotalRemain----value:200.00000000
+ [DEBUG] 2018-03-18 08:14:09,879 Line:1043 ---上述语句时间---21
+ [DEBUG] 2018-03-18 08:14:09,880 Line:921 自定义执行的语句显示： IniAcc_Update :select id as TotalId, ReceiveTotalDebit,ReceiveTotalRemain from tblCompanyTotal where CompanyCode = ?
+ [DEBUG] 2018-03-18 08:14:09,880 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:14:09,881 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:14:09,889 Line:1025 query condition columnName:TotalId----value:BE337358914E4F9986CECB88ABC5DC
+ [DEBUG] 2018-03-18 08:14:09,890 Line:1023 query condition columnName:ReceiveTotalDebit----value:8.00000000
+ [DEBUG] 2018-03-18 08:14:09,890 Line:1023 query condition columnName:ReceiveTotalRemain----value:8.00000000
+ [DEBUG] 2018-03-18 08:14:09,891 Line:1043 ---上述语句时间---12
+ [DEBUG] 2018-03-18 08:14:09,891 Line:313 exeCondition:IniAcc_Update :'1122'=='2202'
+ [DEBUG] 2018-03-18 08:14:09,894 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:14:09,895 Line:313 exeCondition:IniAcc_Update :'1122'=='1122'
+ [DEBUG] 2018-03-18 08:14:09,896 Line:321 flag:true
+ [DEBUG] 2018-03-18 08:14:09,896 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_iterateExeProc(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:14:09,896 Line:1270 select id as IniId@SPFieldLink:2 as ComType from tblCompanyIni where PeriodYear=-1 and (ReceiveTotalDebit!=0 or FcRecTotalDebit!=0)
+ [DEBUG] 2018-03-18 08:14:09,896 Line:1270 proc_deleteComIni
+ [DEBUG] 2018-03-18 08:14:09,896 Line:1270 @IniId@ParamLink:@ComType
+ [DEBUG] 2018-03-18 08:14:09,963 Line:1292 存储过程内部信息： declare @IniId varchar(500) declare @ComType varchar(500)  declare @param1 varchar(5000)  declare @param2 varchar(5000)  declare iterCursor cursor for select id as IniId,2 as ComType from tblCompanyIni where PeriodYear=-1 and (ReceiveTotalDebit!=0 or FcRecTotalDebit!=0)
+open iterCursor
+fetch next from iterCursor into @IniId,@ComType
+
+declare @retCode int
+declare @retVal  varchar(100)
+
+while(@@fetch_status=0)
+     begin	 set @param1=@IniId set @param2=@ComType exec proc_deleteComIni @param1,@param2, @retCode output,@retVal output  fetch next from iterCursor into @IniId,@ComType    end	
+
+deallocate iterCursor
+ [DEBUG] 2018-03-18 08:14:09,964 Line:425 ************上述语句执行时间：68
+ [DEBUG] 2018-03-18 08:14:09,965 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_iterateExeProc(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:14:09,967 Line:1270 select substring(replace(newid()@SPFieldLink:'-'@SPFieldLink:'')@SPFieldLink:1@SPFieldLink:30) as id@SPFieldLink:CompanyCode as CompanyCode@SPFieldLink:SCompanyID as SCompanyID@SPFieldLink:sum(TotalRemain) as TotalRemain@SPFieldLink:isnull(Currency@SPFieldLink:'') as Currency@SPFieldLink:isnull(CurrencyRate@SPFieldLink:0) as CurrencyRate@SPFieldLink:isnull(sum(CurTotalRemain)@SPFieldLink:0) as CurTotalRemain from tblIniAccDet where accCode like '1122%' and CompanyCode = '0000600001000090002J' group by CompanyCode@SPFieldLink:Currency@SPFieldLink:CurrencyRate@SPFieldLink:SCompanyID
+ [DEBUG] 2018-03-18 08:14:09,967 Line:1270 proc_insertComIni
+ [DEBUG] 2018-03-18 08:14:09,968 Line:1270 @id@ParamLink:@CompanyCode@ParamLink:2@ParamLink:-1@ParamLink:'ReceiveTotalDebit='+@TotalRemain+'@SPFieldLink:Currency='+@Currency+'@SPFieldLink:CurrencyRate='+@CurrencyRate+'@SPFieldLink:FcRecTotalDebit='+@CurTotalRemain+'@SPFieldLink:Period=-1@SPFieldLink:PeriodYear=-1@SPFieldLink:PeriodMonth=-1@SPFieldLink:RelationDocID=b4bf6649_1803180813056090041@SPFieldLink:createBy=@SPFieldLink:createTime=2018-03-18 08:13:05@SPFieldLink:lastUpdateBy=@SPFieldLink:lastUpdateTime=@SPFieldLink:BillType=tblCompanybeginning@SPFieldLink:BillNo=@SPFieldLink:EmployeeID=@SPFieldLink:DepartmentCode=@SPFieldLink:SCompanyID='+@SCompanyID+'@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark='
+ [DEBUG] 2018-03-18 08:14:09,991 Line:1292 存储过程内部信息： declare @id varchar(500) declare @CompanyCode varchar(500) declare @SCompanyID varchar(500) declare @TotalRemain varchar(500) declare @Currency varchar(500) declare @CurrencyRate varchar(500) declare @CurTotalRemain varchar(500)  declare @param1 varchar(5000)  declare @param2 varchar(5000)  declare @param3 varchar(5000)  declare @param4 varchar(5000)  declare @param5 varchar(5000)  declare iterCursor cursor for select substring(replace(newid(),'-',''),1,30) as id,CompanyCode as CompanyCode,SCompanyID as SCompanyID,sum(TotalRemain) as TotalRemain,isnull(Currency,'') as Currency,isnull(CurrencyRate,0) as CurrencyRate,isnull(sum(CurTotalRemain),0) as CurTotalRemain from tblIniAccDet where accCode like '1122%' and CompanyCode = '0000600001000090002J' group by CompanyCode,Currency,CurrencyRate,SCompanyID
+open iterCursor
+fetch next from iterCursor into @id,@CompanyCode,@SCompanyID,@TotalRemain,@Currency,@CurrencyRate,@CurTotalRemain
+
+declare @retCode int
+declare @retVal  varchar(100)
+
+while(@@fetch_status=0)
+     begin	 set @param1=@id set @param2=@CompanyCode set @param3=2 set @param4=-1 set @param5='ReceiveTotalDebit='+@TotalRemain+'@SPFieldLink:Currency='+@Currency+'@SPFieldLink:CurrencyRate='+@CurrencyRate+'@SPFieldLink:FcRecTotalDebit='+@CurTotalRemain+'@SPFieldLink:Period=-1@SPFieldLink:PeriodYear=-1@SPFieldLink:PeriodMonth=-1@SPFieldLink:RelationDocID=b4bf6649_1803180813056090041@SPFieldLink:createBy=@SPFieldLink:createTime=2018-03-18 08:13:05@SPFieldLink:lastUpdateBy=@SPFieldLink:lastUpdateTime=@SPFieldLink:BillType=tblCompanybeginning@SPFieldLink:BillNo=@SPFieldLink:EmployeeID=@SPFieldLink:DepartmentCode=@SPFieldLink:SCompanyID='+@SCompanyID+'@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark=' exec proc_insertComIni @param1,@param2,@param3,@param4,@param5, @retCode output,@retVal output  fetch next from iterCursor into @id,@CompanyCode,@SCompanyID,@TotalRemain,@Currency,@CurrencyRate,@CurTotalRemain    end	
+
+deallocate iterCursor
+ [DEBUG] 2018-03-18 08:14:09,992 Line:425 ************上述语句执行时间：28
+ [DEBUG] 2018-03-18 08:14:09,993 Line:313 exeCondition:IniAcc_Update :'1122'=='1123'
+ [DEBUG] 2018-03-18 08:14:09,996 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:14:09,998 Line:313 exeCondition:IniAcc_Update :'1122'=='2203'
+ [DEBUG] 2018-03-18 08:14:10,002 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:14:10,044 Line:1614 IniAccMgt updateAccBalanceIni : {call proc_updateAccBalanceIni(@accNumber=?,@period=?,@Nyear=?,@Nmonth=?,@currency=?,@curRate=?,@CurrYIniBase=?,@CurrYIniDebitSumBase=?,@CurrYIniCreditSumBase=?,@CurrYIniBalaBase=?,@CurrYIni=?,@CurrYIniDebitSum=?,@CurrYIniCreditSum=?,@CurrYIniBala=?,@DepartmentCode=?,@sunCompany=?,@retCode=?,@retVal=?)}
+ [DEBUG] 2018-03-18 08:14:10,045 Line:1615 IniAccMgt updateAccBalanceIni : 参数：112201282
+ [DEBUG] 2018-03-18 08:14:10,046 Line:1616 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:14:10,046 Line:1617 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:14:10,047 Line:1618 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:14:10,049 Line:1620 IniAccMgt updateAccBalanceIni : 参数：
+ [DEBUG] 2018-03-18 08:14:10,049 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:14:10,050 Line:1629 IniAccMgt updateAccBalanceIni : 参数：9
+ [DEBUG] 2018-03-18 08:14:10,051 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:14:10,051 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:14:10,052 Line:1629 IniAccMgt updateAccBalanceIni : 参数：9
+ [DEBUG] 2018-03-18 08:14:10,053 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:14:10,053 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:14:10,054 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:14:10,055 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:14:10,056 Line:1634 IniAccMgt updateAccBalanceIni : 参数：
+ [DEBUG] 2018-03-18 08:14:10,056 Line:1635 IniAccMgt updateAccBalanceIni : 参数：00001
+ [DEBUG] 2018-03-18 08:14:10,116 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_updateParentBalance(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:14:10,117 Line:1270 1122
+ [DEBUG] 2018-03-18 08:14:10,118 Line:1270 -1
+ [DEBUG] 2018-03-18 08:14:10,118 Line:1270 -1
+ [DEBUG] 2018-03-18 08:14:12,573 Line:239 ************上述语句执行时间：2457
+ [DEBUG] 2018-03-18 08:14:12,574 Line:921 自定义执行的语句显示： IniAcc_Update :select id as IniId,ReceiveTotalDebit,ReceiveTotalRemain from tblCompanyIni where CompanyCode = ?
+ [DEBUG] 2018-03-18 08:14:12,575 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:14:12,575 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:14:12,577 Line:1043 ---上述语句时间---3
+ [DEBUG] 2018-03-18 08:14:12,578 Line:921 自定义执行的语句显示： IniAcc_Update :select top 1 id as AccDetId, BeginAmount,TotalRemain from tblIniAccDet where CompanyCode = ? order by createTime desc
+ [DEBUG] 2018-03-18 08:14:12,579 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:14:12,580 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:14:12,601 Line:1025 query condition columnName:AccDetId----value:b4bf6649_1803180814100280044
+ [DEBUG] 2018-03-18 08:14:12,601 Line:1023 query condition columnName:BeginAmount----value:9.00000000
+ [DEBUG] 2018-03-18 08:14:12,602 Line:1023 query condition columnName:TotalRemain----value:9.00000000
+ [DEBUG] 2018-03-18 08:14:12,602 Line:1043 ---上述语句时间---24
+ [DEBUG] 2018-03-18 08:14:12,603 Line:921 自定义执行的语句显示： IniAcc_Update :select id as TotalId, ReceiveTotalDebit,ReceiveTotalRemain from tblCompanyTotal where CompanyCode = ?
+ [DEBUG] 2018-03-18 08:14:12,603 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:14:12,604 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:14:12,611 Line:1025 query condition columnName:TotalId----value:BE337358914E4F9986CECB88ABC5DC
+ [DEBUG] 2018-03-18 08:14:12,612 Line:1023 query condition columnName:ReceiveTotalDebit----value:0E-8
+ [DEBUG] 2018-03-18 08:14:12,612 Line:1023 query condition columnName:ReceiveTotalRemain----value:0E-8
+ [DEBUG] 2018-03-18 08:14:12,613 Line:1043 ---上述语句时间---10
+ [DEBUG] 2018-03-18 08:14:12,613 Line:313 exeCondition:IniAcc_Update :'1122'=='2202'
+ [DEBUG] 2018-03-18 08:14:12,616 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:14:12,617 Line:313 exeCondition:IniAcc_Update :'1122'=='1122'
+ [DEBUG] 2018-03-18 08:14:12,620 Line:321 flag:true
+ [DEBUG] 2018-03-18 08:14:12,621 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_iterateExeProc(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:14:12,622 Line:1270 select id as IniId@SPFieldLink:2 as ComType from tblCompanyIni where PeriodYear=-1 and (ReceiveTotalDebit!=0 or FcRecTotalDebit!=0)
+ [DEBUG] 2018-03-18 08:14:12,622 Line:1270 proc_deleteComIni
+ [DEBUG] 2018-03-18 08:14:12,623 Line:1270 @IniId@ParamLink:@ComType
+ [DEBUG] 2018-03-18 08:14:12,661 Line:1292 存储过程内部信息： declare @IniId varchar(500) declare @ComType varchar(500)  declare @param1 varchar(5000)  declare @param2 varchar(5000)  declare iterCursor cursor for select id as IniId,2 as ComType from tblCompanyIni where PeriodYear=-1 and (ReceiveTotalDebit!=0 or FcRecTotalDebit!=0)
+open iterCursor
+fetch next from iterCursor into @IniId,@ComType
+
+declare @retCode int
+declare @retVal  varchar(100)
+
+while(@@fetch_status=0)
+     begin	 set @param1=@IniId set @param2=@ComType exec proc_deleteComIni @param1,@param2, @retCode output,@retVal output  fetch next from iterCursor into @IniId,@ComType    end	
+
+deallocate iterCursor
+ [DEBUG] 2018-03-18 08:14:12,661 Line:425 ************上述语句执行时间：40
+ [DEBUG] 2018-03-18 08:14:12,661 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_iterateExeProc(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:14:12,661 Line:1270 select substring(replace(newid()@SPFieldLink:'-'@SPFieldLink:'')@SPFieldLink:1@SPFieldLink:30) as id@SPFieldLink:CompanyCode as CompanyCode@SPFieldLink:SCompanyID as SCompanyID@SPFieldLink:sum(TotalRemain) as TotalRemain@SPFieldLink:isnull(Currency@SPFieldLink:'') as Currency@SPFieldLink:isnull(CurrencyRate@SPFieldLink:0) as CurrencyRate@SPFieldLink:isnull(sum(CurTotalRemain)@SPFieldLink:0) as CurTotalRemain from tblIniAccDet where accCode like '1122%' and CompanyCode = '0000600001000090002J' group by CompanyCode@SPFieldLink:Currency@SPFieldLink:CurrencyRate@SPFieldLink:SCompanyID
+ [DEBUG] 2018-03-18 08:14:12,661 Line:1270 proc_insertComIni
+ [DEBUG] 2018-03-18 08:14:12,661 Line:1270 @id@ParamLink:@CompanyCode@ParamLink:2@ParamLink:-1@ParamLink:'ReceiveTotalDebit='+@TotalRemain+'@SPFieldLink:Currency='+@Currency+'@SPFieldLink:CurrencyRate='+@CurrencyRate+'@SPFieldLink:FcRecTotalDebit='+@CurTotalRemain+'@SPFieldLink:Period=-1@SPFieldLink:PeriodYear=-1@SPFieldLink:PeriodMonth=-1@SPFieldLink:RelationDocID=b4bf6649_1803180814100280044@SPFieldLink:createBy=@SPFieldLink:createTime=@SPFieldLink:lastUpdateBy=@SPFieldLink:lastUpdateTime=@SPFieldLink:BillType=tblCompanybeginning@SPFieldLink:BillNo=@SPFieldLink:EmployeeID=@SPFieldLink:DepartmentCode=@SPFieldLink:SCompanyID='+@SCompanyID+'@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark='
+ [DEBUG] 2018-03-18 08:14:12,722 Line:1292 存储过程内部信息： declare @id varchar(500) declare @CompanyCode varchar(500) declare @SCompanyID varchar(500) declare @TotalRemain varchar(500) declare @Currency varchar(500) declare @CurrencyRate varchar(500) declare @CurTotalRemain varchar(500)  declare @param1 varchar(5000)  declare @param2 varchar(5000)  declare @param3 varchar(5000)  declare @param4 varchar(5000)  declare @param5 varchar(5000)  declare iterCursor cursor for select substring(replace(newid(),'-',''),1,30) as id,CompanyCode as CompanyCode,SCompanyID as SCompanyID,sum(TotalRemain) as TotalRemain,isnull(Currency,'') as Currency,isnull(CurrencyRate,0) as CurrencyRate,isnull(sum(CurTotalRemain),0) as CurTotalRemain from tblIniAccDet where accCode like '1122%' and CompanyCode = '0000600001000090002J' group by CompanyCode,Currency,CurrencyRate,SCompanyID
+open iterCursor
+fetch next from iterCursor into @id,@CompanyCode,@SCompanyID,@TotalRemain,@Currency,@CurrencyRate,@CurTotalRemain
+
+declare @retCode int
+declare @retVal  varchar(100)
+
+while(@@fetch_status=0)
+     begin	 set @param1=@id set @param2=@CompanyCode set @param3=2 set @param4=-1 set @param5='ReceiveTotalDebit='+@TotalRemain+'@SPFieldLink:Currency='+@Currency+'@SPFieldLink:CurrencyRate='+@CurrencyRate+'@SPFieldLink:FcRecTotalDebit='+@CurTotalRemain+'@SPFieldLink:Period=-1@SPFieldLink:PeriodYear=-1@SPFieldLink:PeriodMonth=-1@SPFieldLink:RelationDocID=b4bf6649_1803180814100280044@SPFieldLink:createBy=@SPFieldLink:createTime=@SPFieldLink:lastUpdateBy=@SPFieldLink:lastUpdateTime=@SPFieldLink:BillType=tblCompanybeginning@SPFieldLink:BillNo=@SPFieldLink:EmployeeID=@SPFieldLink:DepartmentCode=@SPFieldLink:SCompanyID='+@SCompanyID+'@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark=' exec proc_insertComIni @param1,@param2,@param3,@param4,@param5, @retCode output,@retVal output  fetch next from iterCursor into @id,@CompanyCode,@SCompanyID,@TotalRemain,@Currency,@CurrencyRate,@CurTotalRemain    end	
+
+deallocate iterCursor
+ [DEBUG] 2018-03-18 08:14:12,723 Line:1292 存储过程内部信息： insert into tblCompanyIni (id,ItemNo,CompanyCode,BillDate,ReceiveTotalDebit,Currency,CurrencyRate,FcRecTotalDebit,Period,PeriodYear,PeriodMonth,RelationDocID,createBy,createTime,lastUpdateBy,lastUpdateTime,BillType,BillNo,EmployeeID,DepartmentCode,SCompanyID,DiscountAmount,Remark) values('6C953AA9862F46539672EC43EF7020',1,'0000600001000090002J','-1','9.00000000','','0.00000000','0.00000000','-1','-1','-1','b4bf6649_1803180814100280044','','','','','tblCompanybeginning','','','','00001','0','')
+ [DEBUG] 2018-03-18 08:14:12,723 Line:425 ************上述语句执行时间：62
+ [DEBUG] 2018-03-18 08:14:12,724 Line:313 exeCondition:IniAcc_Update :'1122'=='1123'
+ [DEBUG] 2018-03-18 08:14:12,727 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:14:12,728 Line:313 exeCondition:IniAcc_Update :'1122'=='2203'
+ [DEBUG] 2018-03-18 08:14:12,730 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:14:14,295 Line:135 BaseAction.execute 请求地址：/IniAccQueryAction.do
+ [DEBUG] 2018-03-18 08:14:14,297 Line:146 BaseAction.execute 操作人:admin;请求数据：id=[C1B377CC-C84C-479D-A108-188790,];accCode=[0000100006,];accNumber=[1122,];oldaccName=[应收账款,];popWinName=[,];opType=[,];operation=[7,];isItems=[,];conCompanyCode=[,];conCompanyCodeName=[,];order=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,];Remark=[,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,];pageSize=[100,];pageNo=[1,];
+ [DEBUG] 2018-03-18 08:16:33,028 Line:135 BaseAction.execute 请求地址：/IniAccQueryAction.do?accCode=0000100006&accNumber=1122&keyid=C1B377CC-C84C-479D-A108-188790&operation=7&popWinName=IniDiv
+ [DEBUG] 2018-03-18 08:16:33,031 Line:146 BaseAction.execute 操作人:admin;请求数据：accCode=[0000100006,];accNumber=[1122,];keyid=[C1B377CC-C84C-479D-A108-188790,];operation=[7,];popWinName=[IniDiv,];
+ [DEBUG] 2018-03-18 08:16:35,684 Line:135 BaseAction.execute 请求地址：/IniAccQueryAction.do?operation=7&accCode=0000100006&accNumber=1122&opType=updateIniItemPre&keyId=b4bf6649_1803180814100280044&popWinName=PopMainOpdiv
+ [DEBUG] 2018-03-18 08:16:35,685 Line:146 BaseAction.execute 操作人:admin;请求数据：operation=[7,];accCode=[0000100006,];accNumber=[1122,];opType=[updateIniItemPre,];keyId=[b4bf6649_1803180814100280044,];popWinName=[PopMainOpdiv,];
+ [DEBUG] 2018-03-18 08:16:37,266 Line:135 BaseAction.execute 请求地址：/IniAccQueryAction.do
+ [DEBUG] 2018-03-18 08:16:37,266 Line:146 BaseAction.execute 操作人:admin;请求数据：conver=[,];operation=[7,];org.apache.struts.taglib.html.TOKEN=[,];opType=[updateIniItem,];id=[b4bf6649_1803180814100280044,];impId=[,];accCode=[0000100006,];accNumber=[1122,];accName=[应收账款,];popWinName=[PopMainOpdiv,];CompanyCode=[0000600001000090002J,];CompanyCodeName=[贝梅珠,];BeginAmount=[9,];TotalDebit=[0,];TotalLend=[0,];TotalRemain=[9,];Remark=[,];
+ [DEBUG] 2018-03-18 08:16:37,269 Line:1614 IniAccMgt updateAccBalanceIni : {call proc_updateAccBalanceIni(@accNumber=?,@period=?,@Nyear=?,@Nmonth=?,@currency=?,@curRate=?,@CurrYIniBase=?,@CurrYIniDebitSumBase=?,@CurrYIniCreditSumBase=?,@CurrYIniBalaBase=?,@CurrYIni=?,@CurrYIniDebitSum=?,@CurrYIniCreditSum=?,@CurrYIniBala=?,@DepartmentCode=?,@sunCompany=?,@retCode=?,@retVal=?)}
+ [DEBUG] 2018-03-18 08:16:37,270 Line:1615 IniAccMgt updateAccBalanceIni : 参数：112201282
+ [DEBUG] 2018-03-18 08:16:37,271 Line:1616 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:16:37,271 Line:1617 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:16:37,272 Line:1618 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:16:37,272 Line:1620 IniAccMgt updateAccBalanceIni : 参数：
+ [DEBUG] 2018-03-18 08:16:37,273 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:16:37,273 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-9.00000000
+ [DEBUG] 2018-03-18 08:16:37,273 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:16:37,274 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:16:37,274 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-9.00000000
+ [DEBUG] 2018-03-18 08:16:37,275 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:16:37,275 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:16:37,276 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:16:37,276 Line:1629 IniAccMgt updateAccBalanceIni : 参数：-0
+ [DEBUG] 2018-03-18 08:16:37,276 Line:1634 IniAccMgt updateAccBalanceIni : 参数：
+ [DEBUG] 2018-03-18 08:16:37,277 Line:1635 IniAccMgt updateAccBalanceIni : 参数：00001
+ [DEBUG] 2018-03-18 08:16:37,330 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_updateParentBalance(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:16:37,331 Line:1270 1122
+ [DEBUG] 2018-03-18 08:16:37,332 Line:1270 -1
+ [DEBUG] 2018-03-18 08:16:37,332 Line:1270 -1
+ [DEBUG] 2018-03-18 08:16:39,457 Line:239 ************上述语句执行时间：2127
+ [DEBUG] 2018-03-18 08:16:39,458 Line:921 自定义执行的语句显示： IniAcc_Update :select id as IniId,ReceiveTotalDebit,ReceiveTotalRemain from tblCompanyIni where CompanyCode = ?
+ [DEBUG] 2018-03-18 08:16:39,458 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:16:39,459 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:16:39,461 Line:1025 query condition columnName:IniId----value:6C953AA9862F46539672EC43EF7020
+ [DEBUG] 2018-03-18 08:16:39,462 Line:1023 query condition columnName:ReceiveTotalDebit----value:9.00000000
+ [DEBUG] 2018-03-18 08:16:39,463 Line:1023 query condition columnName:ReceiveTotalRemain----value:9.00000000
+ [DEBUG] 2018-03-18 08:16:39,463 Line:1043 ---上述语句时间---5
+ [DEBUG] 2018-03-18 08:16:39,464 Line:921 自定义执行的语句显示： IniAcc_Update :select top 1 id as AccDetId, BeginAmount,TotalRemain from tblIniAccDet where CompanyCode = ? order by createTime desc
+ [DEBUG] 2018-03-18 08:16:39,464 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:16:39,465 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:16:39,479 Line:1025 query condition columnName:AccDetId----value:604587BB8C3B4832A68492E6FBD00B
+ [DEBUG] 2018-03-18 08:16:39,480 Line:1023 query condition columnName:BeginAmount----value:200.00000000
+ [DEBUG] 2018-03-18 08:16:39,481 Line:1023 query condition columnName:TotalRemain----value:200.00000000
+ [DEBUG] 2018-03-18 08:16:39,481 Line:1043 ---上述语句时间---18
+ [DEBUG] 2018-03-18 08:16:39,482 Line:921 自定义执行的语句显示： IniAcc_Update :select id as TotalId, ReceiveTotalDebit,ReceiveTotalRemain from tblCompanyTotal where CompanyCode = ?
+ [DEBUG] 2018-03-18 08:16:39,482 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:16:39,483 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:16:39,490 Line:1025 query condition columnName:TotalId----value:BE337358914E4F9986CECB88ABC5DC
+ [DEBUG] 2018-03-18 08:16:39,491 Line:1023 query condition columnName:ReceiveTotalDebit----value:9.00000000
+ [DEBUG] 2018-03-18 08:16:39,491 Line:1023 query condition columnName:ReceiveTotalRemain----value:9.00000000
+ [DEBUG] 2018-03-18 08:16:39,492 Line:1043 ---上述语句时间---10
+ [DEBUG] 2018-03-18 08:16:39,493 Line:313 exeCondition:IniAcc_Update :'1122'=='2202'
+ [DEBUG] 2018-03-18 08:16:39,509 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:16:39,510 Line:313 exeCondition:IniAcc_Update :'1122'=='1122'
+ [DEBUG] 2018-03-18 08:16:39,512 Line:321 flag:true
+ [DEBUG] 2018-03-18 08:16:39,513 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_iterateExeProc(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:16:39,514 Line:1270 select id as IniId@SPFieldLink:2 as ComType from tblCompanyIni where PeriodYear=-1 and (ReceiveTotalDebit!=0 or FcRecTotalDebit!=0)
+ [DEBUG] 2018-03-18 08:16:39,514 Line:1270 proc_deleteComIni
+ [DEBUG] 2018-03-18 08:16:39,514 Line:1270 @IniId@ParamLink:@ComType
+ [DEBUG] 2018-03-18 08:16:39,580 Line:1292 存储过程内部信息： declare @IniId varchar(500) declare @ComType varchar(500)  declare @param1 varchar(5000)  declare @param2 varchar(5000)  declare iterCursor cursor for select id as IniId,2 as ComType from tblCompanyIni where PeriodYear=-1 and (ReceiveTotalDebit!=0 or FcRecTotalDebit!=0)
+open iterCursor
+fetch next from iterCursor into @IniId,@ComType
+
+declare @retCode int
+declare @retVal  varchar(100)
+
+while(@@fetch_status=0)
+     begin	 set @param1=@IniId set @param2=@ComType exec proc_deleteComIni @param1,@param2, @retCode output,@retVal output  fetch next from iterCursor into @IniId,@ComType    end	
+
+deallocate iterCursor
+ [DEBUG] 2018-03-18 08:16:39,581 Line:425 ************上述语句执行时间：68
+ [DEBUG] 2018-03-18 08:16:39,582 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_iterateExeProc(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:16:39,582 Line:1270 select substring(replace(newid()@SPFieldLink:'-'@SPFieldLink:'')@SPFieldLink:1@SPFieldLink:30) as id@SPFieldLink:CompanyCode as CompanyCode@SPFieldLink:SCompanyID as SCompanyID@SPFieldLink:sum(TotalRemain) as TotalRemain@SPFieldLink:isnull(Currency@SPFieldLink:'') as Currency@SPFieldLink:isnull(CurrencyRate@SPFieldLink:0) as CurrencyRate@SPFieldLink:isnull(sum(CurTotalRemain)@SPFieldLink:0) as CurTotalRemain from tblIniAccDet where accCode like '1122%' and CompanyCode = '0000600001000090002J' group by CompanyCode@SPFieldLink:Currency@SPFieldLink:CurrencyRate@SPFieldLink:SCompanyID
+ [DEBUG] 2018-03-18 08:16:39,583 Line:1270 proc_insertComIni
+ [DEBUG] 2018-03-18 08:16:39,584 Line:1270 @id@ParamLink:@CompanyCode@ParamLink:2@ParamLink:-1@ParamLink:'ReceiveTotalDebit='+@TotalRemain+'@SPFieldLink:Currency='+@Currency+'@SPFieldLink:CurrencyRate='+@CurrencyRate+'@SPFieldLink:FcRecTotalDebit='+@CurTotalRemain+'@SPFieldLink:Period=-1@SPFieldLink:PeriodYear=-1@SPFieldLink:PeriodMonth=-1@SPFieldLink:RelationDocID=b4bf6649_1803180814100280044@SPFieldLink:createBy=@SPFieldLink:createTime=2018-03-18 08:14:10@SPFieldLink:lastUpdateBy=@SPFieldLink:lastUpdateTime=@SPFieldLink:BillType=tblCompanybeginning@SPFieldLink:BillNo=@SPFieldLink:EmployeeID=@SPFieldLink:DepartmentCode=@SPFieldLink:SCompanyID='+@SCompanyID+'@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark='
+ [DEBUG] 2018-03-18 08:16:39,608 Line:1292 存储过程内部信息： declare @id varchar(500) declare @CompanyCode varchar(500) declare @SCompanyID varchar(500) declare @TotalRemain varchar(500) declare @Currency varchar(500) declare @CurrencyRate varchar(500) declare @CurTotalRemain varchar(500)  declare @param1 varchar(5000)  declare @param2 varchar(5000)  declare @param3 varchar(5000)  declare @param4 varchar(5000)  declare @param5 varchar(5000)  declare iterCursor cursor for select substring(replace(newid(),'-',''),1,30) as id,CompanyCode as CompanyCode,SCompanyID as SCompanyID,sum(TotalRemain) as TotalRemain,isnull(Currency,'') as Currency,isnull(CurrencyRate,0) as CurrencyRate,isnull(sum(CurTotalRemain),0) as CurTotalRemain from tblIniAccDet where accCode like '1122%' and CompanyCode = '0000600001000090002J' group by CompanyCode,Currency,CurrencyRate,SCompanyID
+open iterCursor
+fetch next from iterCursor into @id,@CompanyCode,@SCompanyID,@TotalRemain,@Currency,@CurrencyRate,@CurTotalRemain
+
+declare @retCode int
+declare @retVal  varchar(100)
+
+while(@@fetch_status=0)
+     begin	 set @param1=@id set @param2=@CompanyCode set @param3=2 set @param4=-1 set @param5='ReceiveTotalDebit='+@TotalRemain+'@SPFieldLink:Currency='+@Currency+'@SPFieldLink:CurrencyRate='+@CurrencyRate+'@SPFieldLink:FcRecTotalDebit='+@CurTotalRemain+'@SPFieldLink:Period=-1@SPFieldLink:PeriodYear=-1@SPFieldLink:PeriodMonth=-1@SPFieldLink:RelationDocID=b4bf6649_1803180814100280044@SPFieldLink:createBy=@SPFieldLink:createTime=2018-03-18 08:14:10@SPFieldLink:lastUpdateBy=@SPFieldLink:lastUpdateTime=@SPFieldLink:BillType=tblCompanybeginning@SPFieldLink:BillNo=@SPFieldLink:EmployeeID=@SPFieldLink:DepartmentCode=@SPFieldLink:SCompanyID='+@SCompanyID+'@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark=' exec proc_insertComIni @param1,@param2,@param3,@param4,@param5, @retCode output,@retVal output  fetch next from iterCursor into @id,@CompanyCode,@SCompanyID,@TotalRemain,@Currency,@CurrencyRate,@CurTotalRemain    end	
+
+deallocate iterCursor
+ [DEBUG] 2018-03-18 08:16:39,608 Line:425 ************上述语句执行时间：27
+ [DEBUG] 2018-03-18 08:16:39,609 Line:313 exeCondition:IniAcc_Update :'1122'=='1123'
+ [DEBUG] 2018-03-18 08:16:39,612 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:16:39,613 Line:313 exeCondition:IniAcc_Update :'1122'=='2203'
+ [DEBUG] 2018-03-18 08:16:39,616 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:16:39,643 Line:1614 IniAccMgt updateAccBalanceIni : {call proc_updateAccBalanceIni(@accNumber=?,@period=?,@Nyear=?,@Nmonth=?,@currency=?,@curRate=?,@CurrYIniBase=?,@CurrYIniDebitSumBase=?,@CurrYIniCreditSumBase=?,@CurrYIniBalaBase=?,@CurrYIni=?,@CurrYIniDebitSum=?,@CurrYIniCreditSum=?,@CurrYIniBala=?,@DepartmentCode=?,@sunCompany=?,@retCode=?,@retVal=?)}
+ [DEBUG] 2018-03-18 08:16:39,643 Line:1615 IniAccMgt updateAccBalanceIni : 参数：112201282
+ [DEBUG] 2018-03-18 08:16:39,658 Line:1616 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:16:39,658 Line:1617 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:16:39,659 Line:1618 IniAccMgt updateAccBalanceIni : 参数：-1
+ [DEBUG] 2018-03-18 08:16:39,660 Line:1620 IniAccMgt updateAccBalanceIni : 参数：
+ [DEBUG] 2018-03-18 08:16:39,660 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:16:39,660 Line:1629 IniAccMgt updateAccBalanceIni : 参数：9
+ [DEBUG] 2018-03-18 08:16:39,661 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:16:39,661 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:16:39,662 Line:1629 IniAccMgt updateAccBalanceIni : 参数：9
+ [DEBUG] 2018-03-18 08:16:39,663 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:16:39,663 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:16:39,664 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:16:39,665 Line:1629 IniAccMgt updateAccBalanceIni : 参数：0
+ [DEBUG] 2018-03-18 08:16:39,665 Line:1634 IniAccMgt updateAccBalanceIni : 参数：
+ [DEBUG] 2018-03-18 08:16:39,666 Line:1635 IniAccMgt updateAccBalanceIni : 参数：00001
+ [DEBUG] 2018-03-18 08:16:39,672 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_updateParentBalance(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:16:39,673 Line:1270 1122
+ [DEBUG] 2018-03-18 08:16:39,673 Line:1270 -1
+ [DEBUG] 2018-03-18 08:16:39,674 Line:1270 -1
+ [DEBUG] 2018-03-18 08:16:41,955 Line:239 ************上述语句执行时间：2283
+ [DEBUG] 2018-03-18 08:16:41,956 Line:921 自定义执行的语句显示： IniAcc_Update :select id as IniId,ReceiveTotalDebit,ReceiveTotalRemain from tblCompanyIni where CompanyCode = ?
+ [DEBUG] 2018-03-18 08:16:41,957 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:16:41,957 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:16:41,959 Line:1043 ---上述语句时间---3
+ [DEBUG] 2018-03-18 08:16:41,960 Line:921 自定义执行的语句显示： IniAcc_Update :select top 1 id as AccDetId, BeginAmount,TotalRemain from tblIniAccDet where CompanyCode = ? order by createTime desc
+ [DEBUG] 2018-03-18 08:16:41,960 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:16:41,961 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:16:41,976 Line:1025 query condition columnName:AccDetId----value:b4bf6649_1803180816396410046
+ [DEBUG] 2018-03-18 08:16:41,977 Line:1023 query condition columnName:BeginAmount----value:9.00000000
+ [DEBUG] 2018-03-18 08:16:41,978 Line:1023 query condition columnName:TotalRemain----value:9.00000000
+ [DEBUG] 2018-03-18 08:16:41,978 Line:1043 ---上述语句时间---18
+ [DEBUG] 2018-03-18 08:16:41,979 Line:921 自定义执行的语句显示： IniAcc_Update :select id as TotalId, ReceiveTotalDebit,ReceiveTotalRemain from tblCompanyTotal where CompanyCode = ?
+ [DEBUG] 2018-03-18 08:16:41,979 Line:922 上述自定义执行的语句参数显示： 
+ [DEBUG] 2018-03-18 08:16:41,980 Line:988 1值：0000600001000090002J
+ [DEBUG] 2018-03-18 08:16:41,986 Line:1025 query condition columnName:TotalId----value:BE337358914E4F9986CECB88ABC5DC
+ [DEBUG] 2018-03-18 08:16:41,987 Line:1023 query condition columnName:ReceiveTotalDebit----value:0E-8
+ [DEBUG] 2018-03-18 08:16:41,987 Line:1023 query condition columnName:ReceiveTotalRemain----value:0E-8
+ [DEBUG] 2018-03-18 08:16:41,988 Line:1043 ---上述语句时间---9
+ [DEBUG] 2018-03-18 08:16:41,988 Line:313 exeCondition:IniAcc_Update :'1122'=='2202'
+ [DEBUG] 2018-03-18 08:16:41,991 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:16:41,992 Line:313 exeCondition:IniAcc_Update :'1122'=='1122'
+ [DEBUG] 2018-03-18 08:16:41,996 Line:321 flag:true
+ [DEBUG] 2018-03-18 08:16:41,997 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_iterateExeProc(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:16:41,998 Line:1270 select id as IniId@SPFieldLink:2 as ComType from tblCompanyIni where PeriodYear=-1 and (ReceiveTotalDebit!=0 or FcRecTotalDebit!=0)
+ [DEBUG] 2018-03-18 08:16:41,999 Line:1270 proc_deleteComIni
+ [DEBUG] 2018-03-18 08:16:41,999 Line:1270 @IniId@ParamLink:@ComType
+ [DEBUG] 2018-03-18 08:16:42,044 Line:1292 存储过程内部信息： declare @IniId varchar(500) declare @ComType varchar(500)  declare @param1 varchar(5000)  declare @param2 varchar(5000)  declare iterCursor cursor for select id as IniId,2 as ComType from tblCompanyIni where PeriodYear=-1 and (ReceiveTotalDebit!=0 or FcRecTotalDebit!=0)
+open iterCursor
+fetch next from iterCursor into @IniId,@ComType
+
+declare @retCode int
+declare @retVal  varchar(100)
+
+while(@@fetch_status=0)
+     begin	 set @param1=@IniId set @param2=@ComType exec proc_deleteComIni @param1,@param2, @retCode output,@retVal output  fetch next from iterCursor into @IniId,@ComType    end	
+
+deallocate iterCursor
+ [DEBUG] 2018-03-18 08:16:42,045 Line:425 ************上述语句执行时间：48
+ [DEBUG] 2018-03-18 08:16:42,046 Line:1264 自定义执行的语句显示： IniAcc_Update:{call proc_iterateExeProc(?,?,?,?,?)}
+ [DEBUG] 2018-03-18 08:16:42,046 Line:1270 select substring(replace(newid()@SPFieldLink:'-'@SPFieldLink:'')@SPFieldLink:1@SPFieldLink:30) as id@SPFieldLink:CompanyCode as CompanyCode@SPFieldLink:SCompanyID as SCompanyID@SPFieldLink:sum(TotalRemain) as TotalRemain@SPFieldLink:isnull(Currency@SPFieldLink:'') as Currency@SPFieldLink:isnull(CurrencyRate@SPFieldLink:0) as CurrencyRate@SPFieldLink:isnull(sum(CurTotalRemain)@SPFieldLink:0) as CurTotalRemain from tblIniAccDet where accCode like '1122%' and CompanyCode = '0000600001000090002J' group by CompanyCode@SPFieldLink:Currency@SPFieldLink:CurrencyRate@SPFieldLink:SCompanyID
+ [DEBUG] 2018-03-18 08:16:42,047 Line:1270 proc_insertComIni
+ [DEBUG] 2018-03-18 08:16:42,047 Line:1270 @id@ParamLink:@CompanyCode@ParamLink:2@ParamLink:-1@ParamLink:'ReceiveTotalDebit='+@TotalRemain+'@SPFieldLink:Currency='+@Currency+'@SPFieldLink:CurrencyRate='+@CurrencyRate+'@SPFieldLink:FcRecTotalDebit='+@CurTotalRemain+'@SPFieldLink:Period=-1@SPFieldLink:PeriodYear=-1@SPFieldLink:PeriodMonth=-1@SPFieldLink:RelationDocID=b4bf6649_1803180816396410046@SPFieldLink:createBy=@SPFieldLink:createTime=@SPFieldLink:lastUpdateBy=@SPFieldLink:lastUpdateTime=@SPFieldLink:BillType=tblCompanybeginning@SPFieldLink:BillNo=@SPFieldLink:EmployeeID=@SPFieldLink:DepartmentCode=@SPFieldLink:SCompanyID='+@SCompanyID+'@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark='
+ [DEBUG] 2018-03-18 08:16:42,093 Line:1292 存储过程内部信息： declare @id varchar(500) declare @CompanyCode varchar(500) declare @SCompanyID varchar(500) declare @TotalRemain varchar(500) declare @Currency varchar(500) declare @CurrencyRate varchar(500) declare @CurTotalRemain varchar(500)  declare @param1 varchar(5000)  declare @param2 varchar(5000)  declare @param3 varchar(5000)  declare @param4 varchar(5000)  declare @param5 varchar(5000)  declare iterCursor cursor for select substring(replace(newid(),'-',''),1,30) as id,CompanyCode as CompanyCode,SCompanyID as SCompanyID,sum(TotalRemain) as TotalRemain,isnull(Currency,'') as Currency,isnull(CurrencyRate,0) as CurrencyRate,isnull(sum(CurTotalRemain),0) as CurTotalRemain from tblIniAccDet where accCode like '1122%' and CompanyCode = '0000600001000090002J' group by CompanyCode,Currency,CurrencyRate,SCompanyID
+open iterCursor
+fetch next from iterCursor into @id,@CompanyCode,@SCompanyID,@TotalRemain,@Currency,@CurrencyRate,@CurTotalRemain
+
+declare @retCode int
+declare @retVal  varchar(100)
+
+while(@@fetch_status=0)
+     begin	 set @param1=@id set @param2=@CompanyCode set @param3=2 set @param4=-1 set @param5='ReceiveTotalDebit='+@TotalRemain+'@SPFieldLink:Currency='+@Currency+'@SPFieldLink:CurrencyRate='+@CurrencyRate+'@SPFieldLink:FcRecTotalDebit='+@CurTotalRemain+'@SPFieldLink:Period=-1@SPFieldLink:PeriodYear=-1@SPFieldLink:PeriodMonth=-1@SPFieldLink:RelationDocID=b4bf6649_1803180816396410046@SPFieldLink:createBy=@SPFieldLink:createTime=@SPFieldLink:lastUpdateBy=@SPFieldLink:lastUpdateTime=@SPFieldLink:BillType=tblCompanybeginning@SPFieldLink:BillNo=@SPFieldLink:EmployeeID=@SPFieldLink:DepartmentCode=@SPFieldLink:SCompanyID='+@SCompanyID+'@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark=' exec proc_insertComIni @param1,@param2,@param3,@param4,@param5, @retCode output,@retVal output  fetch next from iterCursor into @id,@CompanyCode,@SCompanyID,@TotalRemain,@Currency,@CurrencyRate,@CurTotalRemain    end	
+
+deallocate iterCursor
+ [DEBUG] 2018-03-18 08:16:42,094 Line:1292 存储过程内部信息： insert into tblCompanyIni (id,ItemNo,CompanyCode,BillDate,ReceiveTotalDebit,Currency,CurrencyRate,FcRecTotalDebit,Period,PeriodYear,PeriodMonth,RelationDocID,createBy,createTime,lastUpdateBy,lastUpdateTime,BillType,BillNo,EmployeeID,DepartmentCode,SCompanyID,DiscountAmount,Remark) values('3817472E7821456E95F60BE6AE0C99',1,'0000600001000090002J','-1','9.00000000','','0.00000000','0.00000000','-1','-1','-1','b4bf6649_1803180816396410046','','','','','tblCompanybeginning','','','','00001','0','')
+ [DEBUG] 2018-03-18 08:16:42,094 Line:425 ************上述语句执行时间：49
+ [DEBUG] 2018-03-18 08:16:42,095 Line:313 exeCondition:IniAcc_Update :'1122'=='1123'
+ [DEBUG] 2018-03-18 08:16:42,098 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:16:42,098 Line:313 exeCondition:IniAcc_Update :'1122'=='2203'
+ [DEBUG] 2018-03-18 08:16:42,101 Line:321 flag:false
+ [DEBUG] 2018-03-18 08:16:43,672 Line:135 BaseAction.execute 请求地址：/IniAccQueryAction.do
+ [DEBUG] 2018-03-18 08:16:43,673 Line:146 BaseAction.execute 操作人:admin;请求数据：id=[C1B377CC-C84C-479D-A108-188790,];accCode=[0000100006,];accNumber=[1122,];oldaccName=[应收账款,];popWinName=[,];opType=[,];operation=[7,];isItems=[,];conCompanyCode=[,];conCompanyCodeName=[,];order=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,];Remark=[,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,];pageSize=[100,];pageNo=[1,];
+ [DEBUG] 2018-03-18 08:20:49,966 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 11:30:32,022 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 11:35:03,538 Line:549 ReportDataMgt.getReportData SQL=select      tblSalesOutStock.BillDate as BillDate,     tblSalesOutStock.BillNo as BillNo,     tblProject.ProjectName as ProjectName,     tblStock.classCode as StockCode,     tblGoods.classCode as GoodsCode,     tblCompany.ComFullName as ComFullName,     tblCompany.ComNumber as ComNumber,     tblDepartment.DeptFullName as DeptFullName,     tblEmployee.EmpFullName as EmpFullName,     tblEmployee2.EmpFullName as createBy,     tblStock.StockFullName as StockFullName,     tblGoods.GoodsNumber as GoodsNumber,     tblGoods.GoodsFullName as GoodsFullName,     tblGoods.GoodsSpec as GoodsSpec,     tblGoods.BaseUnit as BaseUnit,     tblSalesOutStockDet.BatchNo as BatchNo,     tblSalesOutStockDet.Inch as Inch,     tblSalesOutStockDet.Hue as Hue,     tblSalesOutStockDet.yearNO as yearNO,     tblSalesOutStockDet.ProDate as ProDate,     tblSalesOutStockDet.Availably as Availably,     tblSalesOutStockDet.Qty as Qty,     tblSalesOutStockDet.Price as Price,     tblSalesOutStockDet.Amount as Amount,     tblSalesOutStockDet.SecUnit as SecName,     tblSalesOutStockDet.UnitIntQty as SecUnitQty,     tblSalesOutStockDet.UnitBaseQty as SecBaseQty,     tblSalesOutStockDet.UnitQty as SecQty,     tblSalesOutStockDet.UnitPrice as SecPrice,     tblSalesOutStockDet.Discount as Discount,     tblSalesOutStockDet.DisPrice as DisPrice,     tblSalesOutStockDet.DisBackAmt as DisBackAmt,     tblSalesOutStockDet.DisAmount as DisAmount,     tblSalesOutStock.Tax as Tax,     tblSalesOutStockDet.TaxPrice as TaxPrice,     tblSalesOutStockDet.TaxAmount as TaxAmount,     tblSalesOutStockDet.CoTaxAmt as CoTaxAmt,     tblCurrency.CurrencyName as CurrencyName,     tblSalesOutStock.CurrencyRate as CurrencyRate,     tblSalesOutStockDet.CurPrice as CurPrice,     tblSalesOutStockDet.CurAmount as CurTaxAmount,     tblSalesOutStockDet.AccountingPrice as AccountingPrice,     tblSalesOutStockDet.PreferAmount as DiscountAmount,     tblSalesOutStock.id as id,     tblSalesOutStockDet.BackQty as BackQty,     tblSalesOutStockDet.FactOutQty as FactOutQty,     tblSalesOutStock.SCompanyID as SCompanyID,     tblSalesOutStockDet.InvoiceQty as InvoiceQty,     tblSalesOutStockDet.NoInvoiceQty as NoInvoiceQty,     tblSalesOutStockDet.BuyQty as BuyQty,     tblSalesOutStockDet.NotBuyQty as NotBuyQty,     tblSalesOrder.BillNo as SalesOrderNo,     tblSalesOutStockDet.PresentSampleType as PresentSampleType,     tblSalesOutStockDet.PresentPrice as PresentPrice,     tblSalesOutStockDet.PresentAmt as PresentAmt,     case when len(isnull(tblSalesOutStockDet.Seq,''))=0 then '' else (select top 1 languageId from tblDBEnumerationItem where enumValue='seq') end as Seq,     tblSalesOutStock.Remark as Remark,     tblSalesOutStockDet.Remark as ReRemark,     tblSalesOutStockDet.SalesOrderID as SalesOrderID,     tblSalesOutStockDet.NeedReceiveAmt as NeedReceiveAmt,     tblStock.classCode+';'+CAST(tblStock.isCatalog as varchar(2))+';;' as hideStockCode,     tblGoods.classCode+';'+CAST(tblGoods.isCatalog as varchar(2))+';;' as hideGoodsCode,     tblSalesOutStock.workFlowNodeName as workFlowNodeName,     tblSalesOutStock.AcceptDate as AcceptDate,     REPLACE(Seq,'~',',') as SeqCond from tblSalesOutStockDet    left join tblSalesOrder noRight on tblSalesOutStockDet.SalesOrderID=tblSalesOrder.id   join tblGoods on tblGoods.ClassCode=tblSalesOutStockDet.GoodsCode   join tblSalesOutStock on tblSalesOutStockDet.f_ref=tblSalesOutStock.id   left join tblStock on tblStock.classCode=tblSalesOutStockDet.StockCode   left join tblCurrency on tblCurrency.id=tblSalesOutStock.Currency   join tblEmployee on tblEmployee.id = tblSalesOutStock.EmployeeID   join tblEmployee as tblEmployee2 on tblEmployee2.id = tblSalesOutStock.createBy   join tblCompany on tblCompany.classCode = tblSalesOutStock.CompanyCode   left join tblDepartment on tblDepartment.classCode = tblSalesOutStock.DepartmentCode   left join tblProject on tblSalesOutStock.ProjectCode=tblProject.id  where 1=1        and (tblSalesOutStock.BillDate >= '2018-03-01')                                                                                                                              and (tblSalesOutStock.SCompanyID like '00001'+'%' escape '!')                                          and (tblSalesOutStock.NeedReturnAmt>0 AND len(tblSalesOutStock.AcceptDate)>0 AND tblSalesOutStock.AcceptDate<GETDATE()+1 AND CAST(tblSalesOutStock.AcceptDate AS DATETIME)>(GETDATE()-CAST((SELECT MIN(tmp.days) FROM (SELECT ? AS days UNION SELECT 5000 AS days) AS tmp) AS INT)-1))       and (tblSalesOutStock.workFlowNodeName ='finish')         
+ [DEBUG] 2018-03-18 11:35:03,538 Line:582 ReportDataMgt.getReportData 参数1:2
+ [ERROR] 2018-03-18 11:35:03,694 Line:1394 ReportDataMgt.getReportData() Error:
+ com.microsoft.sqlserver.jdbc.SQLServerException: 无法绑定由多个部分组成的标识符 "tblSalesOrder.id"。
+	at com.microsoft.sqlserver.jdbc.SQLServerException.makeFromDatabaseError(SQLServerException.java:197)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.getNextResult(SQLServerStatement.java:1493)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.doExecutePreparedStatement(SQLServerPreparedStatement.java:390)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement$PrepStmtExecCmd.doExecute(SQLServerPreparedStatement.java:340)
+	at com.microsoft.sqlserver.jdbc.TDSCommand.execute(IOBuffer.java:4575)
+	at com.microsoft.sqlserver.jdbc.SQLServerConnection.executeCommand(SQLServerConnection.java:1400)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeCommand(SQLServerStatement.java:179)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeStatement(SQLServerStatement.java:154)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.executeQuery(SQLServerPreparedStatement.java:283)
+	at org.apache.tomcat.dbcp.dbcp.DelegatingPreparedStatement.executeQuery(DelegatingPreparedStatement.java:96)
+	at org.apache.tomcat.dbcp.dbcp.DelegatingPreparedStatement.executeQuery(DelegatingPreparedStatement.java:96)
+	at com.menyi.aio.web.report.ReportDataMgt$12$1.execute(ReportDataMgt.java:584)
+	at org.hibernate.impl.SessionImpl.doWork(SessionImpl.java:1850)
+	at com.menyi.aio.web.report.ReportDataMgt$12.exec(ReportDataMgt.java:553)
+	at com.dbfactory.hibernate.DBUtil.execute(DBUtil.java:364)
+	at com.menyi.aio.web.report.ReportDataMgt.getReportData(ReportDataMgt.java:551)
+	at com.menyi.aio.web.alert.AlertCenterMgt.showData(AlertCenterMgt.java:933)
+	at com.menyi.aio.web.alert.AlertCenterMgt.queryAlertTotals(AlertCenterMgt.java:177)
+	at com.menyi.web.util.TimingMsgThread.run(TimingMsgThread.java:44)
+[DEBUG] 2018-03-18 12:22:51,167 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 13:14:45,382 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 15:04:07,061 Line:88 CommonServlet.service 请求地址：/CommonServlet?operation=qrcodeDownload
+ [DEBUG] 2018-03-18 15:04:07,062 Line:99 CommonServlet.service 操作人:;请求数据：operation=[qrcodeDownload,];
+ [DEBUG] 2018-03-18 15:04:07,175 Line:135 BaseAction.execute 请求地址：/loginAction.do?operation=15
+ [DEBUG] 2018-03-18 15:04:07,176 Line:146 BaseAction.execute 操作人:;请求数据：operation=[15,];
+ [DEBUG] 2018-03-18 15:04:07,373 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=valpwd&time=1521356647370
+ [DEBUG] 2018-03-18 15:04:07,374 Line:163 UtilServlet.service 操作人:;请求数据：operation=[valpwd,];time=[1521356647370,];
+ [DEBUG] 2018-03-18 15:04:08,569 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 15:04:08,777 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=getUserInfo&name=admin&time=1521356648770
+ [DEBUG] 2018-03-18 15:04:08,777 Line:163 UtilServlet.service 操作人:;请求数据：operation=[getUserInfo,];name=[admin,];time=[1521356648770,];
+ [DEBUG] 2018-03-18 15:04:08,786 Line:152 UtilServlet.service 请求地址：/UtilServlet?operation=sunCompany&name=admin&time=1521356648784
+ [DEBUG] 2018-03-18 15:04:08,786 Line:163 UtilServlet.service 操作人:;请求数据：operation=[sunCompany,];name=[admin,];time=[1521356648784,];
+ [DEBUG] 2018-03-18 15:04:08,799 Line:135 BaseAction.execute 请求地址：/loginAction.do
+ [DEBUG] 2018-03-18 15:04:08,800 Line:146 BaseAction.execute 操作人:;请求数据：org.apache.struts.taglib.html.TOKEN=[,];NOTTOKEN=[true,];operation=[10,];ukId=[,];strM1=[,];strM2=[,];clientKey=[,];random=[,];screenWidth=[1218,];sunCompany=[1,];style=[style1,];system=[new,];loc=[zh_CN,];name=[admin,];password=[0192023A7BBD73250516F069DF18B500,];
+ [DEBUG] 2018-03-18 15:04:08,890 Line:2987 select count(*) from tblSunCompanys a where a.classCode like '00001_____%'
+ [DEBUG] 2018-03-18 15:04:08,904 Line:530 select AccYear,AccOverYear from  tblAccPeriod group by Accyear,AccOverYear
+ [DEBUG] 2018-03-18 15:04:09,012 Line:135 BaseAction.execute 请求地址：/AIO.do
+ [DEBUG] 2018-03-18 15:04:09,012 Line:146 BaseAction.execute 操作人:admin;请求数据：
+ [DEBUG] 2018-03-18 15:04:09,015 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-18 15:04:09,292 Line:135 BaseAction.execute 请求地址：/newMenu.do?keyId=fca2035a_0910281034230930020&name=%E6%88%91%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8F%B0&operation=0&winCurIndex=0
+ [DEBUG] 2018-03-18 15:04:09,293 Line:146 BaseAction.execute 操作人:admin;请求数据：keyId=[fca2035a_0910281034230930020,];name=[???????·??????°,];operation=[0,];winCurIndex=[0,];
+ [DEBUG] 2018-03-18 15:04:09,337 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=1&loadMenu=true
+ [DEBUG] 2018-03-18 15:04:09,337 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[1,];loadMenu=[true,];
+ [DEBUG] 2018-03-18 15:04:09,339 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-18 15:04:09,354 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=2&loadMenu=true
+ [DEBUG] 2018-03-18 15:04:09,355 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[2,];loadMenu=[true,];
+ [DEBUG] 2018-03-18 15:04:09,356 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-18 15:04:09,382 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=3&loadMenu=true
+ [DEBUG] 2018-03-18 15:04:09,383 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[3,];loadMenu=[true,];
+ [DEBUG] 2018-03-18 15:04:09,384 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-18 15:04:09,396 Line:135 BaseAction.execute 请求地址：/MenuQueryAction.do?sysType=0&loadMenu=true
+ [DEBUG] 2018-03-18 15:04:09,396 Line:146 BaseAction.execute 操作人:admin;请求数据：sysType=[0,];loadMenu=[true,];
+ [DEBUG] 2018-03-18 15:04:09,397 Line:404 PublicMgt.queryClass 查询可新建工作流sql=select work.id,work.templateName,work.templateType,a.ModuleName,work.templateStatus,work.templateClass,work.statusId,work.flowOrder,work.templateFile,work.allowAdd,work.timeType,work.timeVal,work.designType  from OAWorkFlowTemplate work, tblWorkFlowType a where work.templateClass=a.classCode and a.classCode like '00002%'  and work.fileFinish='1' and work.templateStatus=1 and work.statusId=0  order by work.flowOrder
+ [DEBUG] 2018-03-18 15:05:18,506 Line:135 BaseAction.execute 请求地址：/IniAccQueryAction.do?src=menu&winCurIndex=1
+ [DEBUG] 2018-03-18 15:05:18,507 Line:146 BaseAction.execute 操作人:admin;请求数据：src=[menu,];winCurIndex=[1,];
+ [DEBUG] 2018-03-18 15:05:18,509 Line:215 ---------->SET Page 1 DEFAULT URL = /IniAccQueryAction.do
+ [DEBUG] 2018-03-18 15:05:18,512 Line:1579 select min(len(b.classCode)) from tblAccBalance accBanlance left join tblAccTypeInfo b on accBanlance.SubCode=b.AccNumber left join tblLanguage l on l.id=b.AccName where accBanlance.Period=-1 and accBanlance.SCompanyID='00001' and b.SCompanyID='00001' and isnull(accBanlance.departmentCode,'')=''
+ [DEBUG] 2018-03-18 15:05:18,874 Line:143 IniAccMgt sql = select accBanlance.id, b.classCode,b.AccNumber,case isnull(l.zh_CN,'') when '' then b.AccName else isnull(l.zh_CN,'') end as AccName,accBanlance.CurrYIniBase,accBanlance.CurrYIniDebitSumBase,accBanlance.CurrYIniCreditSumBase,accBanlance.CurrYIniBalaBase,accBanlance.CurrYIniBala,accBanlance.curRate,b.isCatalog as count,b.JdFlag,case when IsDept=1 then 1 when IsPersonal=1 then 1 when IsClient=1 then 1 when IsProvider=1 then 1 when isStock=1 then 1 when IsProject=1 then 1 when IsForCur=1 then 1 else 0 end as ischeck,isnull(b.isCalculate,'') as isCalculate,row_number() over(order by accBanlance.subCode) as row_id from tblAccBalance accBanlance left join tblAccTypeInfo b on accBanlance.SubCode=b.AccNumber left join tblLanguage l on l.id=b.AccName where accBanlance.Period=-1 and accBanlance.SCompanyID='00001' and b.SCompanyID='00001' and isnull(accBanlance.departmentCode,'')='' and len(b.classCode)=5 
+ [DEBUG] 2018-03-18 15:05:25,718 Line:135 BaseAction.execute 请求地址：/AdvanceAction.do?src=menu&winCurIndex=2
+ [DEBUG] 2018-03-18 15:05:25,719 Line:146 BaseAction.execute 操作人:admin;请求数据：src=[menu,];winCurIndex=[2,];
+ [DEBUG] 2018-03-18 15:05:25,719 Line:215 ---------->SET Page 2 DEFAULT URL = /AdvanceAction.do
+ [DEBUG] 2018-03-18 15:05:27,215 Line:135 BaseAction.execute 请求地址：/AdvanceAction.do?optype=index
+ [DEBUG] 2018-03-18 15:05:27,216 Line:146 BaseAction.execute 操作人:admin;请求数据：optype=[index,];
+ [DEBUG] 2018-03-18 15:05:28,613 Line:135 BaseAction.execute 请求地址：/CustomAction.do?type=defineQuery&from=adv&src=menu&winCurIndex=3
+ [DEBUG] 2018-03-18 15:05:28,614 Line:146 BaseAction.execute 操作人:admin;请求数据：type=[defineQuery,];from=[adv,];src=[menu,];winCurIndex=[3,];
+ [DEBUG] 2018-03-18 15:05:28,615 Line:215 ---------->SET Page 3 DEFAULT URL = /CustomAction.do?type=defineQuery&from=adv
+ [DEBUG] 2018-03-18 15:05:30,721 Line:135 BaseAction.execute 请求地址：/CustomAction.do?type=defineQuery
+ [DEBUG] 2018-03-18 15:05:30,721 Line:146 BaseAction.execute 操作人:admin;请求数据：type=[defineQuery,];from=[adv,];keyword=[IniAcc_Update,];
+ [DEBUG] 2018-03-18 15:05:32,724 Line:133 ReportServlet.service 请求地址：/ReportServlet?operation=getDefineFile&fileName=config_v7\define\define.xml&SESSION=B27F7FF89417F33E16B2477B04DE54F6F0CADC01E33A46A74D29E22412A4BA7618D8CC591D347836024EB014B10A5B165622FDE4212056BC
+ [DEBUG] 2018-03-18 15:05:32,737 Line:1653 ReportServlet 读define文件:D:\Project\aio\tomcat7\bin\..\..\config_v7\define\define.xml
+ [DEBUG] 2018-03-18 15:34:19,485 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 16:04:32,437 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [INFO ] 2018-03-18 16:14:28,904 Line:144 SAFE 备份任务开始执行，时间2018-03-18 16:14:28
+ [INFO ] 2018-03-18 16:15:00,573 Line:148 SAFE 备份任务执行成功，时间2018-03-18 16:15:00
+ [INFO ] 2018-03-18 16:15:00,576 Line:129 SAFE 碎片整理开始执行，时间2018-03-18 16:15:00
+ [INFO ] 2018-03-18 16:15:07,810 Line:134 SAFE 碎片整理结束执行，时间2018-03-18 16:15:07
+ [DEBUG] 2018-03-18 16:34:43,978 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 17:05:00,460 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 17:35:25,661 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 18:06:39,690 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 18:36:57,263 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 21:51:42,636 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 22:03:52,337 Line:549 ReportDataMgt.getReportData SQL=select      tblSalesOutStock.BillDate as BillDate,     tblSalesOutStock.BillNo as BillNo,     tblProject.ProjectName as ProjectName,     tblStock.classCode as StockCode,     tblGoods.classCode as GoodsCode,     tblCompany.ComFullName as ComFullName,     tblCompany.ComNumber as ComNumber,     tblDepartment.DeptFullName as DeptFullName,     tblEmployee.EmpFullName as EmpFullName,     tblEmployee2.EmpFullName as createBy,     tblStock.StockFullName as StockFullName,     tblGoods.GoodsNumber as GoodsNumber,     tblGoods.GoodsFullName as GoodsFullName,     tblGoods.GoodsSpec as GoodsSpec,     tblGoods.BaseUnit as BaseUnit,     tblSalesOutStockDet.BatchNo as BatchNo,     tblSalesOutStockDet.Inch as Inch,     tblSalesOutStockDet.Hue as Hue,     tblSalesOutStockDet.yearNO as yearNO,     tblSalesOutStockDet.ProDate as ProDate,     tblSalesOutStockDet.Availably as Availably,     tblSalesOutStockDet.Qty as Qty,     tblSalesOutStockDet.Price as Price,     tblSalesOutStockDet.Amount as Amount,     tblSalesOutStockDet.SecUnit as SecName,     tblSalesOutStockDet.UnitIntQty as SecUnitQty,     tblSalesOutStockDet.UnitBaseQty as SecBaseQty,     tblSalesOutStockDet.UnitQty as SecQty,     tblSalesOutStockDet.UnitPrice as SecPrice,     tblSalesOutStockDet.Discount as Discount,     tblSalesOutStockDet.DisPrice as DisPrice,     tblSalesOutStockDet.DisBackAmt as DisBackAmt,     tblSalesOutStockDet.DisAmount as DisAmount,     tblSalesOutStock.Tax as Tax,     tblSalesOutStockDet.TaxPrice as TaxPrice,     tblSalesOutStockDet.TaxAmount as TaxAmount,     tblSalesOutStockDet.CoTaxAmt as CoTaxAmt,     tblCurrency.CurrencyName as CurrencyName,     tblSalesOutStock.CurrencyRate as CurrencyRate,     tblSalesOutStockDet.CurPrice as CurPrice,     tblSalesOutStockDet.CurAmount as CurTaxAmount,     tblSalesOutStockDet.AccountingPrice as AccountingPrice,     tblSalesOutStockDet.PreferAmount as DiscountAmount,     tblSalesOutStock.id as id,     tblSalesOutStockDet.BackQty as BackQty,     tblSalesOutStockDet.FactOutQty as FactOutQty,     tblSalesOutStock.SCompanyID as SCompanyID,     tblSalesOutStockDet.InvoiceQty as InvoiceQty,     tblSalesOutStockDet.NoInvoiceQty as NoInvoiceQty,     tblSalesOutStockDet.BuyQty as BuyQty,     tblSalesOutStockDet.NotBuyQty as NotBuyQty,     tblSalesOrder.BillNo as SalesOrderNo,     tblSalesOutStockDet.PresentSampleType as PresentSampleType,     tblSalesOutStockDet.PresentPrice as PresentPrice,     tblSalesOutStockDet.PresentAmt as PresentAmt,     case when len(isnull(tblSalesOutStockDet.Seq,''))=0 then '' else (select top 1 languageId from tblDBEnumerationItem where enumValue='seq') end as Seq,     tblSalesOutStock.Remark as Remark,     tblSalesOutStockDet.Remark as ReRemark,     tblSalesOutStockDet.SalesOrderID as SalesOrderID,     tblSalesOutStockDet.NeedReceiveAmt as NeedReceiveAmt,     tblStock.classCode+';'+CAST(tblStock.isCatalog as varchar(2))+';;' as hideStockCode,     tblGoods.classCode+';'+CAST(tblGoods.isCatalog as varchar(2))+';;' as hideGoodsCode,     tblSalesOutStock.workFlowNodeName as workFlowNodeName,     tblSalesOutStock.AcceptDate as AcceptDate,     REPLACE(Seq,'~',',') as SeqCond from tblSalesOutStockDet    left join tblSalesOrder noRight on tblSalesOutStockDet.SalesOrderID=tblSalesOrder.id   join tblGoods on tblGoods.ClassCode=tblSalesOutStockDet.GoodsCode   join tblSalesOutStock on tblSalesOutStockDet.f_ref=tblSalesOutStock.id   left join tblStock on tblStock.classCode=tblSalesOutStockDet.StockCode   left join tblCurrency on tblCurrency.id=tblSalesOutStock.Currency   join tblEmployee on tblEmployee.id = tblSalesOutStock.EmployeeID   join tblEmployee as tblEmployee2 on tblEmployee2.id = tblSalesOutStock.createBy   join tblCompany on tblCompany.classCode = tblSalesOutStock.CompanyCode   left join tblDepartment on tblDepartment.classCode = tblSalesOutStock.DepartmentCode   left join tblProject on tblSalesOutStock.ProjectCode=tblProject.id  where 1=1        and (tblSalesOutStock.BillDate >= '2018-03-01')                                                                                                                              and (tblSalesOutStock.SCompanyID like '00001'+'%' escape '!')                                          and (tblSalesOutStock.NeedReturnAmt>0 AND len(tblSalesOutStock.AcceptDate)>0 AND tblSalesOutStock.AcceptDate<GETDATE()+1 AND CAST(tblSalesOutStock.AcceptDate AS DATETIME)>(GETDATE()-CAST((SELECT MIN(tmp.days) FROM (SELECT ? AS days UNION SELECT 5000 AS days) AS tmp) AS INT)-1))       and (tblSalesOutStock.workFlowNodeName ='finish')         
+ [DEBUG] 2018-03-18 22:03:52,339 Line:582 ReportDataMgt.getReportData 参数1:2
+ [ERROR] 2018-03-18 22:03:52,519 Line:1394 ReportDataMgt.getReportData() Error:
+ com.microsoft.sqlserver.jdbc.SQLServerException: 无法绑定由多个部分组成的标识符 "tblSalesOrder.id"。
+	at com.microsoft.sqlserver.jdbc.SQLServerException.makeFromDatabaseError(SQLServerException.java:197)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.getNextResult(SQLServerStatement.java:1493)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.doExecutePreparedStatement(SQLServerPreparedStatement.java:390)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement$PrepStmtExecCmd.doExecute(SQLServerPreparedStatement.java:340)
+	at com.microsoft.sqlserver.jdbc.TDSCommand.execute(IOBuffer.java:4575)
+	at com.microsoft.sqlserver.jdbc.SQLServerConnection.executeCommand(SQLServerConnection.java:1400)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeCommand(SQLServerStatement.java:179)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeStatement(SQLServerStatement.java:154)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.executeQuery(SQLServerPreparedStatement.java:283)
+	at org.apache.tomcat.dbcp.dbcp.DelegatingPreparedStatement.executeQuery(DelegatingPreparedStatement.java:96)
+	at org.apache.tomcat.dbcp.dbcp.DelegatingPreparedStatement.executeQuery(DelegatingPreparedStatement.java:96)
+	at com.menyi.aio.web.report.ReportDataMgt$12$1.execute(ReportDataMgt.java:584)
+	at org.hibernate.impl.SessionImpl.doWork(SessionImpl.java:1850)
+	at com.menyi.aio.web.report.ReportDataMgt$12.exec(ReportDataMgt.java:553)
+	at com.dbfactory.hibernate.DBUtil.execute(DBUtil.java:364)
+	at com.menyi.aio.web.report.ReportDataMgt.getReportData(ReportDataMgt.java:551)
+	at com.menyi.aio.web.alert.AlertCenterMgt.showData(AlertCenterMgt.java:933)
+	at com.menyi.aio.web.alert.AlertCenterMgt.queryAlertTotals(AlertCenterMgt.java:177)
+	at com.menyi.web.util.TimingMsgThread.run(TimingMsgThread.java:44)
+[DEBUG] 2018-03-18 22:22:08,567 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 22:52:51,955 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 23:23:31,493 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ [DEBUG] 2018-03-18 23:54:15,625 Line:56 ConfigRefresh.getLastInfo -- and refresh ip
+ 

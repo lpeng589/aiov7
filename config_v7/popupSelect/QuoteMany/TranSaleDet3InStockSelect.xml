@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="TranSaleDet3InStockSelect" type="checkBox">
+     <table>tblBuyInStock,tblCompany</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblBuyInStock.BillNo f1,
+      tblBuyInStock.TotalTaxAmount f2,
+      tblBuyInStock.AlreadyPayAmt f3,
+      tblBuyInStock.NeedPayAmt f4,
+      tblBuyInStock.BuyOrderNo f5,
+      tblBuyInStock.BuyOrderID f6,
+      tblBuyInStock.id f7,
+      tblCompany.ComFullName f8
+  from tblBuyInStock
+  left join tblCompany on tblBuyInStock.CompanyCode = tblCompany.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>预付转应付明细</remark>
+     <condition>tblBuyInStock.workFlowNodeName = 'finish' and tblBuyInStock.BillDate&lt;='@ValueofDB:BillDate' and tblCompany.classCode='@ValueofDB:InCompanyCode' and tblBuyInStock.NeedPayAmt &gt; 0</condition>
+     <changeCond></changeCond>
+     <orderBy>tblBuyInStock.BillNo,tblCompany.ComFullName</orderBy>
+     <displayFields>
+          <field name="tblBuyInStock.BillNo" width="100" searchType="match" keySearch="true" parentDisplay="true" display="tblTransferSaleDet3.RefbillNo" orderBy="升" />
+          <field name="tblCompany.ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblBuyInStock.TotalTaxAmount" width="100" parentDisplay="true" display="tblTransferSaleDet3.BillAmt" />
+          <field name="tblBuyInStock.AlreadyPayAmt" width="100" parentDisplay="false" display="tblTransferSaleDet3.SettledAmt" />
+          <field name="tblBuyInStock.NeedPayAmt" width="100" parentDisplay="false" display="tblTransferSaleDet3.WexeBalAmt" />
+     </displayFields>
+     <saveFields>
+          <field name="tblBuyInStock.BillNo" parentName="tblTransferSaleDet3.RefbillNo" display="tblTransferSaleDet3.RefbillNo" relationKey="true" hidden="false" orderBy="升" />
+          <field name="tblBuyInStock.TotalTaxAmount" parentName="tblTransferSaleDet3.BillAmt" display="tblTransferSaleDet3.BillAmt" relationKey="false" hidden="false" />
+          <field name="tblBuyInStock.AlreadyPayAmt" parentName="tblTransferSaleDet3.SettledAmt" display="tblTransferSaleDet3.SettledAmt" relationKey="false" hidden="true" />
+          <field name="tblBuyInStock.NeedPayAmt" parentName="tblTransferSaleDet3.WexeBalAmt" display="tblTransferSaleDet3.WexeBalAmt" relationKey="false" hidden="true" />
+          <field name="tblBuyInStock.BuyOrderNo" parentName="tblTransferSaleDet3.BuyOrderNo" relationKey="false" hidden="true" />
+          <field name="tblBuyInStock.BuyOrderID" parentName="tblTransferSaleDet3.BuyOrderID" relationKey="false" hidden="true" />
+          <field name="tblBuyInStock.id" parentName="tblTransferSaleDet3.RefbillID" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+	<define name="tblContract_Add">
+		<sql type="condition">
+			<condition>
+				<select> select count(*) recordcount  from HFComboActive where HFComboActive.SourceId=@ValueofDB:id </select>
+				<select> select tblCompany.ComFullName,tblcompany.classCode CompanyCode1 from tblCompany where id = @ValueofDB:CompanyCode </select>
+				<select> select  right(replace(newid(),'-',''),30) newBillId </select>
+				<select> select HFComboActive.id billId from HFComboActive where HFComboActive.SourceId=@ValueofDB:id </select>
+			</condition>
+			<!--如果首款大于0 并且，促销活动不存在，则自动生成促销活动 -->
+			<exec condition="true ">
+	
+				<!--主表-->
+				<sql>
+					insert HFComboActive (id, startDate, endDate, name, remark, 
+									  createBy, lastUpdateBy, createTime, lastUpdateTime, statusId, 
+									  SCompanyID, finishTime, workFlowNode, workFlowNodeName, status, 
+									  invalDate, CompanyCode, District, mode, SourceId,FirstAmount)
+					select @SqlReturn:newBillId, tblContract.BillDate1,convert(varchar(10),dateadd(day,7,tblContract.BillDate1),120),
+						'合同首批款:'+@SqlReturn:ComFullName + tblContract.BillNo ,@SqlReturn:ComFullName + tblContract.BillNo + convert(varchar(100),tblContract.FirstAmount),
+						tblContract.createBy,tblContract.lastUpdateBy,tblContract.createTime,tblContract.lastUpdateTime,0,
+						'00001',tblContract.finishTime,'-1','finish',0,
+						tblContract.BillDate2 ,tblContract.CompanyCode,'','2',tblContract.id,tblContract.FirstAmount
+					from tblContract where id =@ValueofDB:id
+				</sql>
+				<!-- HFComboActiveDet 活动明细-->
+				<sql>
+					insert HFComboActivedet (f_ref, startAmt, endAmt, ComboId, Advertisement, parts)
+					select @SqlReturn:newBillId,0,tblContract.FirstAmount,'49e14316_1704100955369700811',tblContract.Advertisement ,tblContract.Parts
+					from tblContract where id =@ValueofDB:id
+				</sql>
+				<!--客户明细 -->
+				<sql>
+					insert HFCompanyActiveDet (f_ref, CompanyCode, Remark)
+					select @SqlReturn:newBillId,@SqlReturn:CompanyCode1,'来自合同自动单据客户'
+					from tblContract where id =@ValueofDB:id
+				</sql>
+			</exec>
+			<!--如果自动生成的促销活动已经存在,刚更新相关信息 -->
+			<exec condition="@SqlReturn:recordcount&gt;0 &amp;&amp; @ValueofDB:FirstAmount&gt;0 ">	
+				<sql>
+					update HFComboActivedet set HFComboActivedet.endAmt = @ValueofDB:FirstAmount
+					where f_ref =@SqlReturn:billId
+				</sql>
+			</exec>
+		</sql>
+	</define>
+	
+	<define name="tblContract_Del">
+		<sql type="condition">
+			<exec condition="'@Sess:BillOper'=='delete'">
+				<sql> delete HFComboActive where HFComboActive.SourceId=@ValueofDB:id</sql>
+			</exec>
+		</sql>
+	</define>
+	
+	<define name="tblContract_ReCalAmount">
+		<sql type="condition">
+		<exec condition="true">
+			<sql>
+				declare @id  varchar(100)
+				declare @companycode varchar(100)
+				declare @beginDate varchar(100)
+				declare @endDate varchar(100)
+				
+				set @id =@ValueofDB:id
+				delete  HFDoorFeeDetails where ContractId= @id 
+				select @beginDate=tblContract.BillDate1,@endDate=tblContract.BillDate2 from tblContract where id =@id
+				select @companycode=classCode from TblCompany where id =(select CompanyCode from tblContract where id = @id)
+				declare  @reCalList table (rowId int, 
+											createBy varchar(100),
+											lastUpdateBy varchar(100),
+											createTime varchar(100),
+											lastUpdateTime varchar(100),
+											ItemType varchar(100),
+											billId varchar(100),
+											billType varchar(100),
+											billNo varchar(100),
+											billdate varchar(100),
+											Amount  varchar(100),
+											remark varchar(100))
+				declare @createBy varchar(100)						
+				declare @lastUpdateBy varchar(100)
+				declare @createTime varchar(100)
+				declare @lastUpdateTime varchar(100)
+				declare @billId varchar(100)
+				declare @billType varchar(100)
+				declare @billNo varchar(100)
+				declare @billdate varchar(100)
+				declare @remark varchar(100)
+				declare @ItemType varchar(100)
+				declare @Amount numeric(18,8)
+
+				declare @count int
+				declare @Index int
+
+				insert into @reCalList (createBy,lastUpdateBy,createTime,lastUpdateTime,billId,billType,billNo,billdate,remark)
+				select createBy,lastUpdateBy,createTime,lastUpdateTime,id,'tblSalesOutStock',billNo,billdate,remark from tblSalesOutStock where CompanyCode=@companycode and BillDate&gt;=@beginDate and BillDate&lt;=@endDate and workFlowNodeName ='finish' 
+
+				insert into @reCalList (createBy,lastUpdateBy,createTime,lastUpdateTime,billId,billType,billNo,billdate,remark)
+				select createBy,lastUpdateBy,createTime,lastUpdateTime,id,'tblSaleReceive',billNo,billdate,remark from tblSaleReceive where CompanyCode=@companycode and BillDate&gt;=@beginDate and BillDate&lt;=@endDate and workFlowNodeName ='finish'
+
+				insert into @reCalList (createBy,lastUpdateBy,createTime,lastUpdateTime,billId,billType,billNo,billdate,remark,ItemType,Amount)
+				select createBy,lastUpdateBy,createTime,lastUpdateTime,id,'HFDoorFeeChange',billNo,billdate,remark,FeeType,Amount from HFDoorFeeChange where CompanyCode=@companycode and BillDate&gt;=@beginDate and BillDate&lt;=@endDate
+				
+				insert into @reCalList (createBy,lastUpdateBy,createTime,lastUpdateTime,billId,billType,billNo,billdate,remark)
+				select createBy,lastUpdateBy,createTime,lastUpdateTime,id,'tblExpensed',billNo,billdate,remark from tblExpensed where CompanyCode=@companycode and BillDate&gt;=@beginDate and BillDate&lt;=@endDate and workFlowNodeName ='finish'
+
+				update b set b.rowId=a.RoId  from  (
+				select  billId,billtype, ROW_NUMBER() over(order by billdate,billtype) RoId from @reCalList ) a
+				inner join @reCalList  b on a.billId=b.billId and a.billType=b.billType 
+
+				select @count=COUNT(*) from  @reCalList 
+				set @Index=1
+
+				while @Index&lt;=@count
+				begin
+				  select 
+					 @createBy=createby,
+					 @lastUpdateBy=lastUpdateBy,
+					 @createTime=createTime,
+					 @lastUpdateTime=lastUpdateTime,
+					 @billId=billId,
+					 @billType=billType,
+					 @billNo=billNo,
+					 @billdate=billdate,
+					 @remark =remark,
+					 @ItemType=ItemType,
+					 @Amount=Amount from @reCalList where rowId=@Index
+					 
+					 if @billType='tblSalesOutStock'
+					 begin
+						
+						 declare @mAmount numeric(18,8)
+						 declare @gAmount numeric(18,8)
+						 declare @pAmount numeric(18,8)
+						 declare @mDesc varchar(500)
+						 declare @gDesc varchar(500)
+						 declare @pDesc varchar(500)
+						 set @mAmount =( select isnull(SUM(tblSalesOutStockDet.pjAmount),0) as mAmount 
+									from tblSalesOutStockDet
+									inner join tblExpenses on tblSalesOutStockDet.FeeType = tblExpenses.Subclass 
+									where tblExpenses.Parentclass ='1' and  tblSalesOutStockDet.f_ref=@billId)
+							
+						 set  @gAmount=( select isnull(SUM(tblSalesOutStockDet.pjAmount),0) as gAmount 
+									from tblSalesOutStockDet
+									inner join tblExpenses on tblSalesOutStockDet.FeeType = tblExpenses.Subclass 
+									where tblExpenses.Parentclass ='2' and  tblSalesOutStockDet.f_ref=@billId)
+						
+						 set @pAmount=( select isnull(SUM(tblSalesOutStockDet.pjAmount),0) as pAmount 
+									from tblSalesOutStockDet
+									inner join tblExpenses on tblSalesOutStockDet.FeeType = tblExpenses.Subclass 
+									where tblExpenses.Parentclass ='3' and  tblSalesOutStockDet.f_ref=@billId )
+							
+
+						set @mDesc=(select dbo.getExpensesDesc(tblSalesOutStock.id ,'1') mDesc from tblSalesOutStock where id =@billId)
+						set @gDesc=(select dbo.getExpensesDesc(tblSalesOutStock.id ,'2') gDesc from tblSalesOutStock where id =@billId)
+						set @pDesc=(select dbo.getExpensesDesc(tblSalesOutStock.id ,'3') pDesc from tblSalesOutStock where id =@billId)
+								
+						if isnull(@mAmount,0)&lt;&gt;0 begin
+							exec proc_DoorFeeDetails
+								   @a_createBy=@createBy,
+								   @a_lastUpdateBy=@lastUpdateBy ,
+								   @a_createTime=@createTime,
+								   @a_lastUpdateTime=@lastUpdateTime,
+								   @a_Companycode=@CompanyCode,
+								   @a_ItemType='Advertisement',
+								   @a_InMoney=0,
+								   @a_outMoney=@mAmount,
+								   @a_billId=@billid,
+								   @a_billType='tblSalesOutStock',
+								   @a_billNo=@BillNo,
+								   @a_billDate=@BillDate,
+								   @a_Remark=@mDesc,
+								   @a_opt='add',@retCode=null,@retVal=null
+						end 
+						
+						if (isnull(@gAmount,0)&lt;&gt;0) begin
+							exec proc_DoorFeeDetails
+								   @a_createBy=@createBy,
+								   @a_lastUpdateBy=@lastUpdateBy ,
+								   @a_createTime=@createTime,
+								   @a_lastUpdateTime=@lastUpdateTime,
+								   @a_Companycode=@CompanyCode,
+								   @a_ItemType='PaymentProportion',
+								   @a_InMoney=0,
+								   @a_outMoney=@gAmount,
+								   @a_billId=@billid,
+								   @a_billType='tblSalesOutStock',
+								   @a_billNo=@BillNo,
+								   @a_billDate=@BillDate,
+								   @a_Remark=@gDesc,
+								   @a_opt='add',@retCode=null,@retVal=null
+						end 
+						
+						if (isnull(@pAmount,0)&lt;&gt;0) begin
+							exec proc_DoorFeeDetails
+								   @a_createBy=@createBy,
+								   @a_lastUpdateBy=@lastUpdateBy ,
+								   @a_createTime=@createTime,
+								   @a_lastUpdateTime=@lastUpdateTime,
+								   @a_Companycode=@CompanyCode,
+								   @a_ItemType='Parts',
+								   @a_InMoney=0,
+								   @a_outMoney=@pAmount,
+								   @a_billId=@billid,
+								   @a_billType='tblSalesOutStock',
+								   @a_billNo=@BillNo,
+								   @a_billDate=@BillDate,
+								   @a_Remark=@pDesc,
+								   @a_opt='add',@retCode=null,@retVal=null
+						end 
+					 end
+					 
+					 if @billType='tblSaleReceive' begin
+								declare @Advertisement numeric(18,8)
+								declare @Parts  numeric(18,8)
+								declare @PaymentProportion numeric(18,8)
+								
+								select  @Advertisement=tblSaleReceive.ExeBalAmt*(100 - isnull(tblContract.Freight,0))/100.00 *tblContract.Advertisement/100.00 ,
+									    @Parts =tblSaleReceive.ExeBalAmt*(100 -isnull(tblContract.Freight,0))/100  *tblContract.Parts/100.00  ,
+									    @PaymentProportion =tblSaleReceive.ExeBalAmt  * (100 -isnull(tblContract.Freight,0))/100 *tblContract.PaymentProportion/100.00   
+								from tblSaleReceive 
+								inner join tblcompany on tblSaleReceive.companycode = tblcompany.classcode
+								inner join tblContract on 
+										tblcompany.id=tblContract.CompanyCode and 
+										tblSaleReceive.BillDate&gt;=tblContract.BillDate1 and tblSaleReceive.BillDate&lt;=tblcontract.BillDate2
+								where tblSaleReceive.id =@billid  and tblContract.id=@id
+						
+						if  (isnull(@Advertisement,0)&gt;0) begin
+							exec proc_DoorFeeDetails
+								   @a_createBy=@createBy,
+								   @a_lastUpdateBy=@lastUpdateBy ,
+								   @a_createTime=@createTime,
+								   @a_lastUpdateTime=@lastUpdateTime,
+								   @a_Companycode=@CompanyCode,
+								   @a_ItemType='Advertisement',
+								   @a_InMoney=@Advertisement,
+								   @a_outMoney=0,
+								   @a_billId=@billid,
+								   @a_billType='tblSaleReceive',
+								   @a_billNo=@BillNo,
+								   @a_billDate=@BillDate,
+								   @a_opt='add',@retCode=null,@retVal=null
+						end
+						
+						if (isnull(@Parts,0)&gt;0) begin
+							exec proc_DoorFeeDetails
+								   @a_createBy=@createBy,
+								   @a_lastUpdateBy=@lastUpdateBy ,
+								   @a_createTime=@createTime,
+								   @a_lastUpdateTime=@lastUpdateTime,
+								   @a_Companycode=@CompanyCode,
+								   @a_ItemType='Parts',
+								   @a_InMoney=@Parts,
+								   @a_outMoney=0,
+								   @a_billId=@billid,
+								   @a_billType='tblSaleReceive',
+								   @a_billNo=@BillNo,
+								   @a_billDate=@BillDate,
+								   @a_opt='add',@retCode=null,@retVal=null
+						end
+						
+						if (isnull(@PaymentProportion,0)&gt;0) begin
+							exec proc_DoorFeeDetails
+								   @a_createBy=@createBy,
+								   @a_lastUpdateBy=@lastUpdateBy ,
+								   @a_createTime=@createTime,
+								   @a_lastUpdateTime=@lastUpdateTime,
+								   @a_Companycode=@CompanyCode,
+								   @a_ItemType='PaymentProportion',
+								   @a_InMoney=@PaymentProportion,
+								   @a_outMoney=0,
+								   @a_billId=@billid,
+								   @a_billType='tblSaleReceive',
+								   @a_billNo=@BillNo,
+								   @a_billDate=@BillDate,
+								   @a_opt='add',@retCode=null,@retVal=null
+						end
+						
+						if @billType='HFDoorFeeChange' begin	
+							if (isnull(@PaymentProportion,0)&gt;0) begin
+								exec proc_DoorFeeDetails
+									   @a_createBy=@createBy,
+									   @a_lastUpdateBy=@lastUpdateBy ,
+									   @a_createTime=@createTime,
+									   @a_lastUpdateTime=@lastUpdateTime,
+									   @a_Companycode=@CompanyCode,
+									   @a_ItemType=@ItemType,
+									   @a_InMoney=@Amount,
+									   @a_outMoney=0,
+									   @a_billId=@billid,
+									   @a_billType='HFDoorFeeChange',
+									   @a_billNo=@BillNo,
+									   @a_billDate=@BillDate,
+									   @a_opt='add',@retCode=null,@retVal=null
+							end                     			
+						end
+					   end
+					   
+					   if @billType='tblExpensed' 
+					   begin
+					   
+					   	 declare @EXmAmount numeric(18,8)
+						 declare @EXgAmount numeric(18,8)
+						 declare @EXpAmount numeric(18,8)
+						 
+						  set @EXmAmount =( select isnull(SUM(tblExpenseDet.amt),0) as mAmount 
+										from tblExpenseDet
+										inner join tblExpenses on tblExpenseDet.FeeType = tblExpenses.Subclass 
+										where tblExpenses.Parentclass ='1' and  tblExpenseDet.f_ref=@billId)
+								
+							if (isnull(@EXmAmount,0)&lt;&gt;0) 
+							begin	
+							exec	 proc_DoorFeeDetails @a_createBy=@createBy,
+												   @a_lastUpdateBy=@lastUpdateBy ,
+												   @a_createTime=@createTime,
+												   @a_lastUpdateTime=@lastUpdateTime,
+												   @a_Companycode=@CompanyCode,
+												   @a_ItemType='Advertisement',
+												   @a_InMoney=0,
+												   @a_outMoney=@EXmAmount,
+												   @a_billId=@billid,
+												   @a_billType='tblExpensed',
+												   @a_billNo=@BillNo,
+												   @a_billDate=@BillDate,
+												   @a_opt='add',@retCode=null,@retVal=null 
+							end
+								
+							set @EXgAmount = (select isnull(SUM(tblExpenseDet.amt),0) as gAmount 
+								from tblExpenseDet
+								inner join tblExpenses on tblExpenseDet.FeeType = tblExpenses.Subclass 
+								where tblExpenses.Parentclass ='2' and  tblExpenseDet.f_ref=@billId)
+								
+								if (isnull(@EXgAmount,0)&lt;&gt;0) begin	
+								exec proc_DoorFeeDetails @a_createBy=@createBy,
+												   @a_lastUpdateBy=@lastUpdateBy ,
+												   @a_createTime=@createTime,
+												   @a_lastUpdateTime=@lastUpdateTime,
+												   @a_Companycode=@CompanyCode,
+												   @a_ItemType='PaymentProportion',
+												   @a_InMoney=0,
+												   @a_outMoney=@EXgAmount,
+												   @a_billId=@billid,
+												   @a_billType='tblExpensed',
+												   @a_billNo=@BillNo,
+												   @a_billDate=@BillDate,
+												   @a_opt='add',@retCode=null,@retVal=null 
+								end
+								
+							set	@EXpAmount = (select isnull(SUM(tblExpenseDet.amt),0) as pAmount 
+											from tblExpenseDet
+											inner join tblExpenses on tblExpenseDet.FeeType = tblExpenses.Subclass 
+											where tblExpenses.Parentclass ='3' and  tblExpenseDet.f_ref=@billId)
+								
+								if (isnull(@EXpAmount,0)&lt;&gt;0) begin	
+								exec proc_DoorFeeDetails @a_createBy=@createBy,
+												   @a_lastUpdateBy=@lastUpdateBy ,
+												   @a_createTime=@createTime,
+												   @a_lastUpdateTime=@lastUpdateTime,
+												   @a_Companycode=@CompanyCode,
+												   @a_ItemType='Parts',
+												   @a_InMoney=0,
+												   @a_outMoney=@EXpAmount,
+												   @a_billId=@billid,
+												   @a_billType='tblExpense',
+												   @a_billNo=@BillNo,
+												   @a_billDate=@BillDate,
+												   @a_opt='add',@retCode=null,@retVal=null 
+								end
+						
+					   end
+					   
+					   
+					   set @index=@index + 1
+					end
+				</sql>
+			</exec>
+		</sql>
+	</define>
+</defineSqls>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ClientInVoiceWithAcceptDateOrder">
+     <table>tblCompany,tblEmployee,tblDepartment</table>
+     <forwardModel>tblCompany&amp;moduleType=2&amp;ClientFlag=2</forwardModel>
+     <relation></relation>
+     <defineSQL>
+  from tblCompany
+  left join tblEmployee on tblCompany.EmployeeID=tblEmployee.id
+  left join tblDepartment on tblCompany.DepartmentCode=tblDepartment.classCode
+     </defineSQL>
+     <classCode  classSysType="Customer">tblCompany.classCode</classCode>
+     <remark>销售订单客户弹出框，回填发票类型，收款日期.  与销售出库单同一弹窗的回填字段不同,单独保留</remark>
+     <condition>(tblCompany.ClientFlag=2 or tblCompany.ClientFlag=3)</condition>
+     <changeCond>(tblCompany.statusId!='-1')</changeCond>
+     <orderBy>tblCompany.ComNumber,tblCompany.ComFullName</orderBy>
+     <displayFields>
+          <field name="tblCompany.[tblCompany_2]" width="100" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblCompany.PreReceiveTotalRemain" width="100" parentDisplay="false" hiddenInput="true" />
+          <field name="tblCompany.ReceiveTotalRemain" width="100" parentDisplay="false" hiddenInput="true" />
+          <field name="case when len(tblCompany.DepartmentCode)&gt;0 then tblDepartment.DeptFullName else '@Sess:DepartmentName' end" asName="Department.DeptFullName" width="80" parentDisplay="false" display="tblCompany.DepartmentCode" />
+          <field name="case when len(tblCompany.EmployeeID)&gt;0 then tblEmployee.EmpFullName else '@Sess:UserName' end" asName="Employee.EmpFullName" width="80" parentDisplay="false" display="tblCompany.EmployeeID" />
+          <field name="CONVERT(varchar(10),dateadd(Day,case tblCompany.SettleCys when 0 then null else tblCompany.SettleCys end,'@ValueofDB:BillDate'),121)" asName="@TABLENAME.ReceiveDate" width="70" parentDisplay="false" display="@TABLENAME.ReceiveDate" />
+     </displayFields>
+     <saveFields>
+          <field name="tblCompany.classCode" parentName="@TABLENAME.CompanyCode" relationKey="true" hidden="true" />
+          <field name="tblCompany.InVoiceType" parentName="@TABLENAME.InVoiceType" relationKey="false" hidden="true" />
+          <field name="case when tblCompany.Discount&gt;0 then tblCompany.Discount else 100 end" parentName="@TABLENAME.Discount" display="@TABLENAME.Discount" relationKey="false" hidden="true" />
+          <field name="case when len(tblCompany.DepartmentCode)&gt;0 then tblCompany.DepartmentCode else '@Sess:DepartmentCode' end" parentName="@TABLENAME.DepartmentCode" display="@TABLENAME.DepartmentCode" relationKey="false" hidden="true" />
+          <field name="case when len(tblCompany.DepartmentCode)&gt;0 then tblDepartment.DeptFullName else '@Sess:DepartmentName' end" parentName="@TABLENAME.tblDepartment_DeptFullName" display="tblCompany.DepartmentCode" relationKey="false" hidden="true" />
+          <field name="case when len(tblCompany.EmployeeID)&gt;0 then tblCompany.EmployeeID else '@Sess:UserId' end" parentName="@TABLENAME.EmployeeID" display="@TABLENAME.EmployeeID" relationKey="false" hidden="true" />
+          <field name="case when len(tblCompany.EmployeeID)&gt;0 then tblEmployee.EmpFullName else '@Sess:UserName' end" parentName="@TABLENAME.tblEmployee_EmpFullName" display="tblCompany.EmployeeID" relationKey="false" hidden="true" />
+          <field name="CONVERT(varchar(10),dateadd(Day,case tblCompany.SettleCys when 0 then null else tblCompany.SettleCys end,'@ValueofDB:BillDate'),121)" parentName="@TABLENAME.ReceiveDate" display="@TABLENAME.AcceptDate" relationKey="false" hidden="false" />
+          <field name="case tblCompany.InVoiceType when 1 then '@MEM:Commoninvoice' when 2 then '@MEM:VATinvoice' else '0' end" parentName="@TABLENAME.Tax" keySearch="true" />
+     </saveFields>
+</select>
+</popupSelect>

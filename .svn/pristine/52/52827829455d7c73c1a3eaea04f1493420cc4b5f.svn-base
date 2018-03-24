@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="CompanyAccDetail">
+     <table>tblCompany</table>
+     <forwardModel>tblCompany&amp;moduleType=1&amp;ClientFlag=1</forwardModel>
+     <relation></relation>
+     <defineSQL>
+  from tblCompany
+     </defineSQL>
+     <classCode>tblCompany.classCode</classCode>
+     <condition>((tblCompany.ClientFlag in (1,3) and @ValueofDB:@TABLENAME_AccCode in ('1123','2202')) or (tblCompany.ClientFlag in (2,3) and @ValueofDB:@TABLENAME_AccCode in ('2203','1122')) or (@ValueofDB:@TABLENAME_AccCode not in ('2203','1122','1123','2202')))</condition>
+     <changeCond>(tblCompany.statusId!='-1')</changeCond>
+     <orderBy>tblCompany.ComNumber,tblCompany.ComFullName</orderBy>
+     <displayFields>
+          <field name="tblCompany.[tblCompany_1]" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"/>
+          <field name="tblCompany.PreReceiveTotalRemain" width="100" parentDisplay="false" hiddenInput="true" />
+          <field name="tblCompany.ReceiveTotalRemain" width="100" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblCompany.classCode" parentName="@TABLENAME.CompanyCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

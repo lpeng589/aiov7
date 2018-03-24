@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="SelectFlowNwaichushenqingdan2" > 
+		<orderBy>FlowNwaichushenqingdan2 .lastUpdateTime desc</orderBy>
+		<defineSQL>
+from FlowNwaichushenqingdan2 
+left join tblEmployee on FlowNwaichushenqingdan2.createBy = tblEmployee.id
+where FlowNwaichushenqingdan2.EmployeeID='@Sess:UserId'
+		</defineSQL>
+		<changeCond>FlowNwaichushenqingdan2.workFlowNodeName != 'draft'</changeCond>
+		<displayFields>
+			<field name="tblEmployee.EmpFullName" parentDisplay="true" width="100" />
+			<field name="FlowNwaichushenqingdan2.Billno" display="@TABLENAME.FlowNwaichushenqingdan2Id" parentDisplay="true" width="0" />
+			<field name="FlowNwaichushenqingdan2.Wctime" parentDisplay="true" width="100" />
+			<field name="FlowNwaichushenqingdan2.Fhtime" parentDisplay="true" width="100" />
+			<field name="FlowNwaichushenqingdan2.Outdue" parentDisplay="true" width="100" />
+			<field name="FlowNwaichushenqingdan2.workFlowNodeName" parentDisplay="false" width="100" />
+			<field name="FlowNwaichushenqingdan2.lastUpdateTime" parentDisplay="false" width="200" />
+		</displayFields>
+		<saveFields>
+			<field name="FlowNwaichushenqingdan2.id" parentName="@TABLENAME.FlowNwaichushenqingdan2Id" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

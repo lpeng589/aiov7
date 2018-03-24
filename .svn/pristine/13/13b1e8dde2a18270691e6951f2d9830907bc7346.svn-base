@@ -1,0 +1,1144 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+<!--预算期间添加-->
+<define name="tblBudgetPeriod_before_Add">
+<sql type="condition">
+<exec condition="&quot;@ValueofDB:tblBudgetPeriod_periodVal&quot;.search(new RegExp(&quot;^[-]{0,1}[0-9]*$&quot;))&lt;0 || &quot;@ValueofDB:tblBudgetPeriod_periodYear&quot;.search(new RegExp(&quot;^[-]{0,1}[0-9]*$&quot;))&lt;0">
+<error>periodValorperiodYear.setisInt.error</error>
+</exec>
+</sql>
+</define>
+<define name="tblBudgetPeriod_Add">
+<sql type="condition">
+	<exec condition="@ValueofDB:tblBudgetPeriod_saleAmt==0 || @ValueofDB:tblBudgetPeriod_fee==0">
+		<error>saleAmtORfee.addisZero.error</error>
+	</exec>
+</sql>
+<sql type="condition">
+	<condition>
+		<select>SELECT statusId FROM tblAccPeriod WHERE AccMonth = (CASE WHEN @ValueofDB:tblBudgetPeriod_periodType = 1 OR (@ValueofDB:tblBudgetPeriod_periodType = 2 AND CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) = 4) THEN 12
+WHEN @ValueofDB:tblBudgetPeriod_periodType = 2 THEN (CASE CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) WHEN 1 THEN 3 WHEN 2 THEN 6 ELSE 9 END) ELSE CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) END) AND CONVERT(VARCHAR(10),AccYear) = @ValueofDB:tblBudgetPeriod_periodYear AND ISNUMERIC(@ValueofDB:tblBudgetPeriod_periodYear) = 1 AND ISNUMERIC(@ValueofDB:tblBudgetPeriod_periodVal) = 1</select>
+	</condition>
+	<!--已经月结的期间不允许添加-->
+	<exec condition="@SqlReturn:statusId==2">
+		<error>Period.balanced.adderror</error>
+	</exec>
+</sql>
+<sql type="condition">
+	<exec condition="@ValueofDB:tblBudgetPeriod_Coeff &lt; 0">
+		<error>BudgetPeriodCoeff.add.isnagetive</error>
+	</exec>
+</sql>
+<sql type="condition">
+<condition>
+<!--<select>SELECT periodYear FROM tblBudgetPeriod WHERE id = @ValueofDB:tblBudgetPeriod_id AND periodYear &lt; 1700</select>-->
+<select>SELECT periodVal AS periodValMonth FROM tblBudgetPeriod WHERE id = @ValueofDB:tblBudgetPeriod_id AND periodType = '3' AND (CONVERT(DECIMAL(20,2),periodVal)&lt;1 OR CONVERT(DECIMAL(20,2),periodVal)&gt;12) </select>
+<select>SELECT periodVal AS periodValQuarter FROM tblBudgetPeriod WHERE id = @ValueofDB:tblBudgetPeriod_id AND periodType = '2' AND (CONVERT(DECIMAL(20,2),periodVal)&lt;1 OR CONVERT(DECIMAL(20,2),periodVal)&gt;4) </select>
+<select>SELECT periodVal AS periodValYear FROM tblBudgetPeriod WHERE id = @ValueofDB:tblBudgetPeriod_id AND periodType = '1' AND (CONVERT(DECIMAL(20,2),periodVal) &lt;1 OR periodVal != periodYear) </select>
+<select>SELECT 1 AS nullCount FROM tblBudgetPeriod GROUP BY periodType,periodYear,periodVal HAVING COUNT(*) &gt; 1</select>
+<!--当 “当前预算类型” 为 “月” 时，判断其所在的季度期间预算是否低于当前期间预算与同一个季度内其他月期间预算之和-->
+<select>SELECT CONVERT(DECIMAL(20,2),ISNULL(a.fee,0)) HquarterFee,CONVERT(DECIMAL(20,2),ISNULL(HMFee,0)) AS HMFee,convert(decimal(20,2),isnull(a.usableFee,0)) as UseableBudget FROM tblBudgetPeriod a JOIN (
+SELECT DISTINCT periodYear,periodType,CASE WHEN CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) BETWEEN 1 AND 3 THEN 1 
+WHEN CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) BETWEEN 4 AND 6 THEN 2
+WHEN CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) BETWEEN 7 AND 9 THEN 3
+ELSE 4 END AS quarter
+FROM tblBudgetPeriod WHERE @ValueofDB:tblBudgetPeriod_periodType = 3 AND periodYear = @ValueofDB:tblBudgetPeriod_periodYear AND periodType = 2 
+) b ON a.periodType = b.periodType AND a.periodYear = b.periodYear AND a.periodVal = b.quarter 
+JOIN (
+SELECT a.periodYear,a.periodType,b.quarter,SUM(fee) HMFee FROM tblBudgetPeriod a JOIN (SELECT periodYear,periodType,periodVal,CASE WHEN CONVERT(DECIMAL(20,2),periodVal) BETWEEN 1 AND 3 THEN 1 
+WHEN CONVERT(DECIMAL(20,2),periodVal) BETWEEN 4 AND 6 THEN 2
+WHEN CONVERT(DECIMAL(20,2),periodVal) BETWEEN 7 AND 9 THEN 3
+ELSE 4 END AS quarter
+FROM tblBudgetPeriod WHERE periodYear = @ValueofDB:tblBudgetPeriod_periodYear AND periodType = 3 ) b ON a.periodYear = b.periodYear AND a.periodType = b.periodType AND a.periodVal = b.periodVal GROUP BY a.periodYear,a.periodType,b.quarter
+) c ON b.quarter = c.quarter </select>
+<!--当 “当前预算类型” 为 “月” 时，判断其所在的年期间预算是否低于当前期间预算与其他没有季度期间预算的月期间预算之和-->
+<select>SELECT a.periodVal AS errorPeriodVal,CONVERT(DECIMAL(20,2),a.fee) as YearBudget1 FROM tblBudgetPeriod a JOIN (SELECT periodYear,SUM(fee) AS YearHaveMonth FROM tblBudgetPeriod WHERE periodType = 3 AND periodYear = @ValueofDB:tblBudgetPeriod_periodYear AND periodVal NOT IN (SELECT b.periodVal FROM tblBudgetPeriod a JOIN (SELECT periodYear,periodVal,CASE WHEN periodVal BETWEEN 1 AND 3 THEN 1 WHEN periodVal BETWEEN 4 AND 6 THEN 2 WHEN periodVal BETWEEN 7 AND 9  THEN 3 ELSE 4 END AS quarter FROM tblBudgetPeriod WHERE periodType = 3 AND periodYear = @ValueofDB:tblBudgetPeriod_periodYear) b ON a.periodVal = b.quarter WHERE a.periodType = 2 AND a.periodYear = @ValueofDB:tblBudgetPeriod_periodYear) GROUP BY periodYear) b ON a.periodYear = b.periodYear WHERE a.periodType = 1 AND a.periodYear = @ValueofDB:tblBudgetPeriod_periodYear AND a.fee &lt; b.YearHaveMonth</select>
+<!---当 “当前预算类型” 为 “季度” 时，判断其所在的年期间预算是否低于当前期间预算-->
+<select>SELECT CONVERT(DECIMAL(20,2),ISNULL(HyearFee,0)) HyearFee,CONVERT(DECIMAL(20,2),ISNULL(HQBudgetFee,0)) HQBudgetFee,CONVERT(DECIMAL(20,2),ISNULL(HyearFee,0) - ISNULL(HQBudgetFee,0)) UseableYearBudget FROM (
+SELECT periodYear,fee HyearFee FROM tblBudgetPeriod WHERE @ValueofDB:tblBudgetPeriod_periodType = 2 AND periodType = 1 AND periodYear = @ValueofDB:tblBudgetPeriod_periodYear) a LEFT JOIN (
+SELECT periodYear,periodType,SUM(fee) HQBudgetFee FROM tblBudgetPeriod WHERE periodType = 2 AND periodYear = @ValueofDB:tblBudgetPeriod_periodYear AND id != @ValueofDB:tblBudgetPeriod_id GROUP BY periodYear,periodType
+) b ON a.periodYear = b.periodYear
+</select>
+<!--当 “当前预算类型” 为 “季度” 时，判断其包括的已经存在的所有月期间预算是否高于于当前期间预算-->
+<select>SELECT periodYear,periodType,quarter,convert(decimal(20,2),isnull(SUM(fee),0)) HMquarterFee FROM (
+SELECT periodYear,periodType,periodVal,fee,CASE WHEN periodVal BETWEEN 1 AND 3 THEN 1 
+WHEN periodVal BETWEEN 4 AND 6 THEN 2
+WHEN periodVal BETWEEN 7 AND 9 THEN 3
+ELSE 4 END AS quarter
+FROM tblBudgetPeriod WHERE @ValueofDB:tblBudgetPeriod_periodType = 2 AND periodYear = @ValueofDB:tblBudgetPeriod_periodYear AND periodType = 3 
+) a WHERE quarter = CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) GROUP BY periodYear,periodType,quarter</select>
+<!--当 “当前预算类型” 为 “年” 时，判断其包括的已经存在的所有季度期间预算是否高于于当前期间预算-->
+<select>SELECT CONVERT(DECIMAL(20,2),ISNULL(YearFee,0) + ISNULL(YearHavMonthFee,0)) AS YearHavMonthplusQuarterFee FROM tblBudgetPeriod a LEFT JOIN 
+(SELECT periodYear,periodType,convert(decimal(20,2),isnull(SUM(fee),0)) YearFee FROM tblBudgetPeriod WHERE @ValueofDB:tblBudgetPeriod_periodType = 1 AND periodType = 2 AND periodYear = @ValueofDB:tblBudgetPeriod_periodYear GROUP BY periodYear,periodType
+) b ON a.periodYear = b.periodYear LEFT JOIN
+(SELECT periodYear,quarter,SUM(fee) YearHavMonthFee FROM (
+SELECT periodYear,periodType,periodVal,fee,CASE WHEN CONVERT(DECIMAL(20,2),periodVal) BETWEEN 1 AND 3 THEN 1 WHEN CONVERT(DECIMAL(20,2),periodVal) BETWEEN 4 AND 6 THEN 2 WHEN CONVERT(DECIMAL(20,2),periodVal) BETWEEN 7 AND 9 THEN 3 ELSE 4 END quarter FROM tblBudgetPeriod WHERE periodYear = @ValueofDB:tblBudgetPeriod_periodYear AND periodType = 3
+) a WHERE quarter NOT IN (SELECT periodVal FROM tblBudgetPeriod WHERE periodType = 2 AND periodYear = @ValueofDB:tblBudgetPeriod_periodYear)
+GROUP BY periodYear,quarter) c ON a.periodYear = c.periodYear WHERE @ValueofDB:tblBudgetPeriod_periodType = 1 AND a.periodType = 1 AND a.periodYear = @ValueofDB:tblBudgetPeriod_periodYear</select>
+<!--当添加某个期间类型的预算时，判断上一级类型的预算是否在项目设置、部门设置里面引用-->
+<select>SELECT 1 AS ItemSetUl,case a.periodType when 1 then '年' when 2 then '季度' else '月' end ItemperiodType,a.periodVal ItemperiodVal FROM tblBudgetPeriod a JOIN tblBudgetItem b ON a.id = b.PeriodID WHERE @ValueofDB:tblBudgetPeriod_periodType >=2 AND a.periodType = @ValueofDB:tblBudgetPeriod_periodType - 1 AND a.periodYear = @ValueofDB:tblBudgetPeriod_periodYear AND a.periodVal = (CASE WHEN @ValueofDB:tblBudgetPeriod_periodType = 2 THEN a.periodYear ELSE (CASE WHEN @ValueofDB:tblBudgetPeriod_periodVal BETWEEN 1 AND 3 THEN 1 WHEN @ValueofDB:tblBudgetPeriod_periodVal BETWEEN 4 AND 6 THEN 2 WHEN @ValueofDB:tblBudgetPeriod_periodVal BETWEEN 7 AND 9 THEN 3 ELSE 4 END) END)</select>
+<select>SELECT 2 AS DeptSetUl,case a.periodType when 1 then '年' when 2 then '季度' else '月' end DeptperiodType,a.periodVal DeptperiodVal FROM tblBudgetPeriod a JOIN tblBudgetDept b ON a.id = b.PeriodID WHERE @ValueofDB:tblBudgetPeriod_periodType >=2 AND a.periodType = @ValueofDB:tblBudgetPeriod_periodType - 1 AND a.periodYear = @ValueofDB:tblBudgetPeriod_periodYear AND a.periodVal = (CASE WHEN @ValueofDB:tblBudgetPeriod_periodType = 2 THEN a.periodYear ELSE (CASE WHEN CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) BETWEEN 1 AND 3 THEN 1 WHEN CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) BETWEEN 4 AND 6 THEN 2 WHEN CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) BETWEEN 7 AND 9 THEN 3 ELSE 4 END) END) </select>
+<!--添加 年 预算期间时，判断有没有对应的 季度 或者 月，有则将本年的statusID 设为-1-->
+<select>SELECT 1 AS YisHavQorM FROM tblBudgetPeriod WHERE @ValueofDB:tblBudgetPeriod_periodType = 1 AND periodType IN (2,3) AND periodYear = @ValueofDB:tblBudgetPeriod_periodYear</select>
+<!--添加 季度 预算期间时，判断有没有对应的 年 预算期间，有则将对应的 年 的 statusID 设为 -1；判断有没有对应的月预算期间，有 则将本季度的statusID设为-1-->
+<select>SELECT 1 AS QisHavY FROM tblBudgetPeriod WHERE @ValueofDB:tblBudgetPeriod_periodType = 2 AND periodType = 1 AND periodYear = @ValueofDB:tblBudgetPeriod_periodYear</select>
+<select>SELECT 1 AS QisHavM FROM (
+SELECT periodYear,periodVal,statusId,CASE WHEN CONVERT(DECIMAL(20,2),periodVal) BETWEEN 1 AND 3 THEN 1 WHEN CONVERT(DECIMAL(20,2),periodVal) BETWEEN 4 AND 6 THEN 2 WHEN CONVERT(DECIMAL(20,2),periodVal) BETWEEN 7 AND 9 THEN 3 ELSE 4 END AS quarter FROM tblBudgetPeriod  WHERE periodType = 3
+) a WHERE @ValueofDB:tblBudgetPeriod_periodType = 2 AND a.periodYear = @ValueofDB:tblBudgetPeriod_periodYear AND a.quarter = CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal)</select>
+<!--添加 月 预算期间时，判断有没有对应的 季度 或者 年预算期间，有则将对应的 季度 或者 年 的statusID 设为-1-->
+<select>SELECT 1 AS MisHavY FROM tblBudgetPeriod WHERE @ValueofDB:tblBudgetPeriod_periodType = 3 AND periodType = 1 AND periodYear = @ValueofDB:tblBudgetPeriod_periodYear</select>
+<select>SELECT 1 AS MisHavQ FROM tblBudgetPeriod WHERE @ValueofDB:tblBudgetPeriod_periodType = 3 AND periodType = 2 AND periodYear =  @ValueofDB:tblBudgetPeriod_periodYear AND periodVal = (CASE WHEN  CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) BETWEEN 1 AND 3 THEN 1 WHEN CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) BETWEEN 4 AND 6 THEN 2 WHEN CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) BETWEEN 7 AND 9 THEN 3 ELSE 4 END) </select>
+</condition>
+<exec condition="@ValueofDB:tblBudgetPeriod_periodYear &lt; 1700">
+<error>BudgetPeriod.periodYearSet.error</error>
+</exec>
+<exec condition="@ValueofDB:tblBudgetPeriod_saleAmt &lt; 0 || @ValueofDB:tblBudgetPeriod_fee &lt; 0">
+<error>BudgetPeriod.negativevalueSet.error</error>
+</exec>
+<exec condition="&quot;@SqlReturn:periodValMonth&quot;!=&quot;null&quot;&amp;&amp;&quot;@SqlReturn:periodValMonth&quot;.length!=0">
+<error>BudgetPeriod.MSet.error</error>
+</exec>
+<exec condition="&quot;@SqlReturn:errorPeriodVal&quot;!=&quot;null&quot;">
+<error>BudgetPeriod.MSet.error1,@SqlReturn:YearBudget1</error>
+</exec>
+<exec condition="&quot;@SqlReturn:periodValQuarter&quot;!=&quot;null&quot;&amp;&amp;&quot;@SqlReturn:periodValQuarter&quot;.length!=0">
+<error>BudgetPeriod.QSet.error</error>
+</exec>
+<exec condition="&quot;@SqlReturn:periodValYear&quot;!=&quot;null&quot;&amp;&amp;&quot;@SqlReturn:periodValYear&quot;.length!=0">
+<error>BudgetPeriod.YSet.error</error>
+</exec>
+<exec condition="&quot;@SqlReturn:nullCount&quot;==&quot;1&quot;&amp;&amp;&quot;@SqlReturn:nullCount&quot;.length!=0">
+<error>BudgetPeriod.UpdateSet.error</error>
+</exec>
+<!--<exec condition="&quot;@SqlReturn:isRightPeriodVal&quot;==&quot;null&quot; || &quot;@SqlReturn:isRightPeriodYear&quot;==&quot;null&quot;">
+<error>periodValorperiodYear.setisInt.error</error>
+</exec>-->
+<exec condition="&quot;@SqlReturn:UseableBudget&quot;!=&quot;null&quot;&amp;&amp;(@SqlReturn:UseableBudget&lt;@ValueofDB:tblBudgetPeriod_fee||@SqlReturn:HquarterFee&lt;@SqlReturn:HMFee)">
+<error>MoverspendQ.overspend.error,@SqlReturn:HquarterFee,@SqlReturn:UseableBudget</error>
+</exec>
+<exec condition="&quot;@SqlReturn:HyearFee&quot;!=&quot;null&quot;&amp;&amp;@SqlReturn:UseableYearBudget&lt;@ValueofDB:tblBudgetPeriod_fee">
+<error>QoverspendY.overspend.error,@SqlReturn:HyearFee,@SqlReturn:UseableYearBudget</error>
+</exec>
+<exec condition="&quot;@SqlReturn:HMquarterFee&quot;!=&quot;null&quot;&amp;&amp;@SqlReturn:HMquarterFee&gt;@ValueofDB:tblBudgetPeriod_fee">
+<error>QlowerthanM.lower.error,@SqlReturn:HMquarterFee</error>
+</exec>
+<exec condition="&quot;@SqlReturn:YearHavMonthplusQuarterFee&quot;!=&quot;null&quot;&amp;&amp;@SqlReturn:YearHavMonthplusQuarterFee&gt;@ValueofDB:tblBudgetPeriod_fee">
+<error>QupperthanY.upper.error,@SqlReturn:YearHavMonthplusQuarterFee</error>
+</exec>
+<exec condition="@SqlReturn:ItemSetUl==1">
+<error>ItemDeptSetUl.set.error,@SqlReturn:ItemperiodVal,@SqlReturn:ItemperiodType</error>
+</exec>
+<exec condition="@SqlReturn:DeptSetUl==2">
+<error>ItemDeptSetUl.set.error,@SqlReturn:DeptperiodVal,@SqlReturn:DeptperiodType</error>
+</exec>
+<exec condition="@SqlReturn:YisHavQorM == 1 || @SqlReturn:QisHavM == 1">
+<sql>UPDATE tblBudgetPeriod SET statusId = -1 WHERE id = @ValueofDB:tblBudgetPeriod_id</sql>
+</exec>
+<exec condition="@SqlReturn:QisHavY == 1 || @SqlReturn:MisHavY == 1">
+<sql>UPDATE tblBudgetPeriod SET statusId = -1 WHERE periodType = 1 AND periodYear = @ValueofDB:tblBudgetPeriod_periodYear</sql>
+</exec>
+<exec condition="@SqlReturn:MisHavQ == 1">
+<sql>UPDATE tblBudgetPeriod SET statusId = -1 WHERE periodType = 2 AND periodYear =  @ValueofDB:tblBudgetPeriod_periodYear AND periodVal = (CASE WHEN  CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) BETWEEN 1 AND 3 THEN 1 WHEN CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) BETWEEN 4 AND 6 THEN 2 WHEN CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) BETWEEN 7 AND 9 THEN 3 ELSE 4 END)</sql>
+</exec>
+<exec condition="true">
+<sql>UPDATE tblBudgetPeriod SET usableFee = fee WHERE id = @ValueofDB:tblBudgetPeriod_id</sql>
+</exec>
+</sql>
+</define>
+
+<!--预算期间修改-->
+<define name="tblBudgetPeriod_update">
+<sql type="condition">
+<condition>
+<!--<select>SELECT 1 AS DepEmpItemHav FROM tblBudgetPeriod a JOIN tblBudgetDept b ON a.id = b.PeriodID JOIN tblBudgetEmp c ON b.id = c.DeptID JOIN tblBudgetItem d ON a.id = d.PeriodID WHERE a.id = @ValueofDB:tblBudgetPeriod_id</select>-->
+<!--<select>SELECT CAST(periodVal AS NUMERIC) AS isRightPeriodVal FROM tblBudgetPeriod WHERE ISNUMERIC(@ValueofDB:tblBudgetPeriod_periodVal) = 1 and id = @ValueofDB:tblBudgetPeriod_id </select>
+<select>SELECT CAST(periodYear AS NUMERIC) AS isRightPeriodYear FROM tblBudgetPeriod WHERE ISNUMERIC(@ValueofDB:tblBudgetPeriod_periodYear) = 1 and id = @ValueofDB:tblBudgetPeriod_id </select>-->
+<select>SELECT 1 AS DeptSetHavPeriod FROM tblBudgetDept WHERE PeriodID = @ValueofDB:tblBudgetPeriod_id</select>
+<select>SELECT 1 AS ItemSetHavPeriod FROM tblBudgetItem WHERE PeriodID = @ValueofDB:tblBudgetPeriod_id</select>
+<select>SELECT statusId FROM tblAccPeriod WHERE AccMonth = (CASE WHEN @ValueofDB:tblBudgetPeriod_periodType = 1 OR (@ValueofDB:tblBudgetPeriod_periodType = 2 AND CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) = 4) THEN 12
+WHEN @ValueofDB:tblBudgetPeriod_periodType = 2 THEN (CASE CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) WHEN 1 THEN 3 WHEN 2 THEN 6 ELSE 9 END) ELSE CONVERT(DECIMAL(20,2),@ValueofDB:tblBudgetPeriod_periodVal) END) AND CONVERT(VARCHAR(10),AccYear) = @ValueofDB:tblBudgetPeriod_periodYear AND ISNUMERIC(@ValueofDB:tblBudgetPeriod_periodYear) = 1 AND ISNUMERIC(@ValueofDB:tblBudgetPeriod_periodVal) = 1</select>
+</condition>
+<exec condition="&quot;@ValueofDB:tblBudgetPeriod_periodVal&quot;.search(new RegExp(&quot;^[-]{0,1}[0-9]*$&quot;))&lt;0 || &quot;@ValueofDB:tblBudgetPeriod_periodYear&quot;.search(new RegExp(&quot;^[-]{0,1}[0-9]*$&quot;))&lt;0">
+<error>periodValorperiodYear.setisInt.error</error>
+</exec>
+<exec condition="@SqlReturn:DeptSetHavPeriod==1 || @SqlReturn:ItemSetHavPeriod==1">
+<error>DepEmpItemHav.isUsed.error</error>
+</exec>
+<exec condition="@SqlReturn:statusId==2">
+<error>Period.balanced.error</error>
+</exec>
+</sql>
+</define>
+
+<!--预算期间删除-->
+<define name="tblBudgetPeriod_delete">
+<sql type="condition">
+<condition>
+<select>SELECT 1 AS ItemSetHavPeriod FROM tblBudgetItem WHERE PeriodID = @ValueofDB:tblBudgetPeriod_id</select>
+<select>SELECT 1 AS DeptSetHavPeriod FROM tblBudgetDept WHERE PeriodID = @ValueofDB:tblBudgetPeriod_id</select>
+</condition>
+<exec condition="@SqlReturn:ItemSetHavPeriod == 1 || @SqlReturn:DeptSetHavPeriod == 1">
+<error>ItemorDept.SetHavPeriod.error</error>
+</exec>
+</sql>
+</define>
+
+<!--项目管理添加-->
+<define name="tblItem_Add">
+<sql type="condition">
+<condition>
+<select>SELECT LEN(classCode) AS isPerentItem FROM tblItem WHERE id = @ValueofDB:tblItem_id</select>
+<select>SELECT 1 AS ParentItemisUnique FROM tblItem WHERE ItemName = @ValueofDB:tblItem_ItemName AND id != @ValueofDB:tblItem_id</select>
+<select>SELECT 2 AS ChildItemisUnique FROM tblItem WHERE ItemName = @ValueofDB:tblItem_ItemName AND id != @ValueofDB:tblItem_id AND SUBSTRING(classCode,1,LEN(classCode)-5) = SUBSTRING(@ValueofDB:tblItem_classCode,1,LEN(@ValueofDB:tblItem_classCode)-5)</select>
+</condition>
+<exec condition="&quot;@SqlReturn:isPerentItem&quot;==5&amp;&amp;&quot;@SqlReturn:ParentItemisUnique&quot;==1">
+<error>ParentItem.isUnique.error</error>s
+</exec>
+<exec condition="&quot;@SqlReturn:isPerentItem&quot;&gt;5&amp;&amp;&quot;@SqlReturn:ChildItemisUnique&quot;==2">
+<error>ChildItem.isUnique.error</error>
+</exec>
+<exec condition="true">
+<sql>UPDATE tblDBFieldInfo SET isCopy = 1 WHERE tableId IN (SELECT id FROM tblDBTableInfo WHERE tblDBTableInfo.tableName = 'tblItem') AND fieldName = 'classCode'</sql>
+</exec>
+</sql>
+</define>
+
+<!--项目管理删除-->
+<define name="tblItem_Delete">
+<sql type="condition">
+<condition>
+<select>SELECT 1 AS BudgetItemHavItem FROM tblItem a JOIN tblBudgetItem b ON a.classCode = b.ItemID WHERE a.id = @ValueofDB:tblItem_id</select>
+</condition>
+<exec condition="@SqlReturn:BudgetItemHavItem == 1">
+<error>BudgetItem.HavItem.error</error>
+</exec>
+</sql>
+</define>
+
+<!--用途管理添加-->
+<define name="tblUse_Add">
+<sql type="condition">
+<condition>
+<select>SELECT LEN(classCode) AS isPerentUse FROM tblUse WHERE id = @ValueofDB:tblUse_id </select>
+<select>SELECT 1 AS ParentUseisUnique FROM tblUse WHERE UseName = @ValueofDB:tblUse_UseName AND id != @ValueofDB:tblUse_id</select>
+<select>SELECT 2 AS ChildUseisUnique FROM tblUse WHERE UseName = @ValueofDB:tblUse_UseName AND id != @ValueofDB:tblUse_id AND SUBSTRING(classCode,1,LEN(classCode)-5) = SUBSTRING(@ValueofDB:tblUse_classCode,1,LEN(@ValueofDB:tblUse_classCode)-5)</select>
+</condition>
+<exec condition="&quot;@SqlReturn:isPerentUse&quot;==5&amp;&amp;&quot;@SqlReturn:ParentUseisUnique&quot;==1">
+<error>ParentUse.isUnique.error</error>
+</exec>
+<exec condition="&quot;@SqlReturn:isPerentUse&quot;&gt;5&amp;&amp;&quot;@SqlReturn:ChildUseisUnique&quot;==2">
+<error>ChildUse.isUnique.error</error>
+</exec>
+<exec condition="true">
+<sql>UPDATE tblDBFieldInfo SET isCopy = 1 WHERE tableId IN (SELECT id FROM tblDBTableInfo WHERE tblDBTableInfo.tableName = 'tblUse') AND fieldName = 'classCode'</sql>
+</exec>
+</sql>
+</define>
+
+<!--用途管理删除-->
+<define name="tblUse_Delete">
+<sql type="condition">
+<condition>
+<select>SELECT 1 AS BudgetAppHavUse FROM tblBudgetApp WHERE UseID IN (SELECT classCode FROM tblUse WHERE id = @ValueofDB:tblUse_id)</select>
+</condition>
+<exec condition="@SqlReturn:BudgetAppHavUse == 1">
+<error>BudgetApp.HavUse.error</error>
+</exec>
+</sql>
+</define>
+
+<!--预算项目设置添加-->
+<define name="tblBudgetItem_Add">
+<sql type="condition">
+<condition>
+<select>
+SELECT 1 AS PeriodItemUniqueCount FROM tblBudgetItem WHERE PeriodID = @ValueofDB:tblBudgetItem_PeriodID AND ItemID = @ValueofDB:tblBudgetItem_ItemID AND id != @ValueofDB:tblBudgetItem_id
+</select>
+<select>
+SELECT dbo.throwZero(usableFee) AS BudgetPeriodFee FROM tblBudgetPeriod WHERE id = @ValueofDB:tblBudgetItem_PeriodID
+</select>
+<select>
+SELECT LEN(ItemID) ItemIDLength FROM tblBudgetItem WHERE id = @ValueofDB:tblBudgetItem_id
+</select>
+<select>
+SELECT Fee as ParentItemBudget FROM tblBudgetItem WHERE ItemID = SUBSTRING(@ValueofDB:tblBudgetItem_ItemID,1,LEN(@ValueofDB:tblBudgetItem_ItemID)-5) AND PeriodID = @ValueofDB:tblBudgetItem_PeriodID
+</select>
+<select>SELECT dbo.throwZero(usableFee) AS ParentItemBudgetusableFee FROM tblBudgetItem WHERE ItemID = SUBSTRING(@ValueofDB:tblBudgetItem_ItemID,1,LEN(@ValueofDB:tblBudgetItem_ItemID) - 5) AND PeriodID = @ValueofDB:tblBudgetItem_PeriodID</select>
+<select>SELECT SUM(Fee) AS childBudgetFee FROM tblBudgetItem WHERE PeriodID = @ValueofDB:tblBudgetItem_PeriodID AND ItemID LIKE @ValueofDB:tblBudgetItem_ItemID+'_____'</select>
+</condition>
+<exec condition="@ValueofDB:tblBudgetItem_Fee &lt; 0">
+<error>ItemBudgetFee.nagetivevalueSet.error</error>
+</exec>
+<exec condition="&quot;@SqlReturn:PeriodItemUniqueCount&quot;==&quot;1&quot;">
+<error>PeriodItemUniqueCount.Add.error</error>
+</exec>
+<exec condition="&quot;@SqlReturn:ParentItemBudget&quot;==&quot;null&quot;&amp;&amp;&quot;@SqlReturn:ItemIDLength&quot;&gt;5">
+<error>ParentItemBudget.mustSet.error</error>
+</exec>
+<exec condition="@SqlReturn:BudgetPeriodFee&lt;@ValueofDB:tblBudgetItem_Fee &amp;&amp;&quot;@SqlReturn:ItemIDLength&quot;==5">
+<error>PeriodItem.Add.error,@SqlReturn:BudgetPeriodFee</error>
+</exec>
+<exec condition="&quot;@SqlReturn:childBudgetFee&quot;.length != &quot;0&quot;&amp;&amp;&quot;@SqlReturn:childBudgetFee&quot;!=&quot;null&quot;&amp;&amp;&quot;@SqlReturn:childBudgetFee&quot;&gt;&quot;@ValueofDB:tblBudgetItem_Fee&quot;">
+<error>BudgetItem.update.iserror,@SqlReturn:childBudgetFee</error>
+</exec>
+<exec condition="&quot;@SqlReturn:ItemIDLength&quot;&gt;5&amp;&amp;@SqlReturn:ParentItemBudgetusableFee &lt;@ValueofDB:tblBudgetItem_Fee">
+  <error>childPeriodItem.Add.error,@SqlReturn:ParentItemBudgetusableFee</error>
+</exec>
+<!--更新预算期间设置里面对应的可用预算-->
+<exec condition="&quot;@ValueofDB:tblBudgetItem_ItemID&quot;.length == 5">
+<sql>UPDATE tblBudgetPeriod SET usableFee = usableFee - @ValueofDB:tblBudgetItem_Fee WHERE id = @ValueofDB:tblBudgetItem_PeriodID</sql>
+</exec>
+<!--添加时，更新预算项目设置里面对应的可用预算-->
+<exec condition="&quot;@SqlReturn:childBudgetFee&quot;==&quot;&quot;||&quot;@SqlReturn:childBudgetFee&quot;==&quot;null&quot;">
+<sql>UPDATE tblBudgetItem SET usableFee = Fee WHERE id = @ValueofDB:tblBudgetItem_id</sql>
+</exec>
+<!--有子级项目预算修改父级项目预算时更新预算项目设置里面对应的可用预算-->
+<exec condition="&quot;@SqlReturn:childBudgetFee&quot;.length != &quot;0&quot;&amp;&amp;&quot;@SqlReturn:childBudgetFee&quot;!=&quot;null&quot;&amp;&amp;&quot;@SqlReturn:childBudgetFee&quot;&lt;&quot;@ValueofDB:tblBudgetItem_Fee&quot;">
+<sql>UPDATE tblBudgetItem SET usableFee = Fee - @SqlReturn:childBudgetFee WHERE id = @ValueofDB:tblBudgetItem_id</sql>
+</exec>
+<!--回填父级项目可用预算-->
+<exec condition="&quot;@ValueofDB:tblBudgetItem_ItemID&quot;.length &gt; 5">
+<sql>UPDATE tblBudgetItem SET usableFee = usableFee - @ValueofDB:tblBudgetItem_Fee WHERE ItemID = SUBSTRING(@ValueofDB:tblBudgetItem_ItemID,1,LEN(@ValueofDB:tblBudgetItem_ItemID) - 5) AND PeriodID = @ValueofDB:tblBudgetItem_PeriodID</sql> 
+</exec>
+<!--添加时，-->
+<!--<exec condition="&quot;@ValueofDB:tblBudgetItem_ItemID&quot;.length &gt; 5&amp;&amp;(&quot;@SqlReturn:childBudgetFee&quot;==&quot;&quot;||&quot;@SqlReturn:childBudgetFee&quot;==&quot;null&quot;)">
+  <sql>UPDATE tblBudgetItem SET usableFee = usableFee - @ValueofDB:tblBudgetItem_Fee WHERE ItemID = SUBSTRING(@ValueofDB:tblBudgetItem_ItemID,1,LEN(@ValueofDB:tblBudgetItem_ItemID) - 5) AND PeriodID = @ValueofDB:tblBudgetItem_PeriodID</sql> 
+  <sql>UPDATE tblBudgetItem SET usableFee = Fee WHERE id = @ValueofDB:tblBudgetItem_id</sql>
+  </exec>-->
+<!--更新预算项目设置里面的父级标识-->
+<exec condition="@SqlReturn:ItemIDLength&gt;5">
+<sql>UPDATE tblBudgetItem SET isCatalog = a.isCatalog,classCode = a.classCode FROM (SELECT isCatalog,classCode FROM tblItem a WHERE a.classCode = SUBSTRING(@ValueofDB:tblBudgetItem_ItemID,1,5)) a WHERE ItemID = SUBSTRING(@ValueofDB:tblBudgetItem_ItemID,1,5) AND tblBudgetItem.PeriodID = @ValueofDB:tblBudgetItem_PeriodID</sql>
+</exec>
+<exec condition="true">
+<sql>UPDATE tblDBFieldInfo SET isCopy = 1 WHERE tableId IN (SELECT id FROM tblDBTableInfo WHERE tblDBTableInfo.tableName = 'tblBudgetItem') AND fieldName = 'classCode'</sql>
+</exec>
+</sql>
+</define>
+
+<!---预算项目设置修改-->
+<define name="tblBudgetItem_Update">
+<sql type="condition">
+<condition>
+<!---月结的不允许修改-->
+<select>SELECT a.statusId FROM tblAccPeriod a JOIN tblBudgetPeriod b ON   
+a.AccMonth = (CASE WHEN b.periodType = 1 OR (b.periodType = 2 AND b.periodVal = 4) THEN 12
+WHEN b.periodType = 2 THEN (CASE b.periodVal WHEN 1 THEN 3 WHEN 2 THEN 6 ELSE 9 END) ELSE b.periodVal END) AND a.AccYear = b.periodYear
+WHERE b.id = @ValueofDB:tblBudgetItem_PeriodID</select>
+<select>SELECT 1 AS BudgetAppHav FROM tblBudgetApp WHERE BudgetItemID = @ValueofDB:tblBudgetItem_id</select>
+</condition>
+<exec condition="@SqlReturn:statusId==2">
+<error>Period.balanced.error</error>
+</exec>
+<exec condition="@SqlReturn:BudgetAppHav == 1">
+<error>BudgetApp.HavThisPeriod.error</error>
+</exec>
+<exec condition="&quot;@ValueofDB:tblBudgetItem_ItemID&quot;.length == 5 &amp;&amp;@SqlReturn:statusId!=2&amp;&amp;@SqlReturn:BudgetAppHav != 1">
+<sql>UPDATE tblBudgetPeriod SET usableFee = usableFee + a.Fee FROM (SELECT Fee FROM tblBudgetItem WHERE id = @ValueofDB:tblBudgetItem_id) a WHERE id = @ValueofDB:tblBudgetItem_PeriodID</sql>
+</exec>
+<exec condition="&quot;@ValueofDB:tblBudgetItem_ItemID&quot;.length &gt;5&amp;&amp;@SqlReturn:statusId!=2&amp;&amp;@SqlReturn:BudgetAppHav != 1">
+<sql>UPDATE tblBudgetItem SET usableFee = usableFee + a.Fee FROM (SELECT Fee FROM tblBudgetItem WHERE id = @ValueofDB:tblBudgetItem_id) a WHERE ItemID = SUBSTRING(@ValueofDB:tblBudgetItem_ItemID,1,LEN(@ValueofDB:tblBudgetItem_ItemID) - 5) AND PeriodID = @ValueofDB:tblBudgetItem_PeriodID</sql>
+</exec>
+</sql>
+</define>
+
+<!--生成预算项目-->
+<!--添加预算期间时生成预算项目-->
+<define name="CreatePeriodItemSet_tblBudgetItem">
+<sql type="condition">
+<condition>
+<select>SELECT 1 AS MonthBalanced FROM tblBudgetPeriod a JOIN (SELECT AccYear,AccMonth,AccPeriod FROM tblAccPeriod WHERE statusId = 2) b
+ON a.periodYear = b.AccYear AND (CASE WHEN a.periodType = 1 OR (a.periodType = 2 AND a.periodVal = 4) THEN 12 WHEN a.periodType = 2 THEN (CASE a.periodVal WHEN 1 THEN 3 WHEN 2 THEN 6 ELSE 9 END) ELSE a.periodVal END) = b.AccPeriod WHERE id = @ValueofDB:tblBudgetPeriod_id</select>
+<select>SELECT statusId FROM tblBudgetPeriod WHERE id = @ValueofDB:tblBudgetPeriod_id AND statusId = -1</select>
+<select>SELECT periodType FROM tblBudgetPeriod WHERE id = @ValueofDB:tblBudgetPeriod_id</select>
+<select>SELECT ItemName AS ItemNameIsNull FROM tblItem</select>
+</condition>
+<exec condition="&quot;@SqlReturn:ItemNameIsNull&quot;==&quot;null&quot;">
+	<error>BudgetItemCreate.ItemNameIsNull.error</error>
+</exec>
+<exec condition="@SqlReturn:MonthBalanced == 1">
+<error>MonthBalanced.BudgetPeriod.error</error>
+</exec>
+<exec condition="@SqlReturn:statusId == -1">
+<error>ChooseBigPeriod.choose.error</error>
+</exec>
+<!--<exec condition="@SqlReturn:periodType &gt; 0 &amp;&amp; @SqlReturn:periodType &lt; 3 &amp;&amp;@SqlReturn:statusId != -1">
+<sucess yesDefine="CreatePeriodItemSet_PI" noDefine="">CreatePeriodItem_Set_PI</sucess>
+</exec>-->
+<!--<exec condition="@SqlReturn:periodType &gt; 0 &amp;&amp; @SqlReturn:periodType &lt; 3 &amp;&amp;@SqlReturn:statusId != -1">
+<sql type="define">CreatePeriodItemSet_PI</sql>
+</exec>-->
+<exec condition="@SqlReturn:periodType &gt; 0 &amp;&amp; @SqlReturn:periodType &lt; 3 &amp;&amp;@SqlReturn:statusId != -1">
+	<error>CreatePeriodItem_Set_PI</error>
+</exec>
+<exec condition="@SqlReturn:periodType == 3">
+<sql type="define">CreatePeriodItemSet_PI</sql>
+</exec>
+<!--<exec condition="@SqlReturn:periodType == 2">
+<confirm yesDefine="CreatePeriodItemSet_PI" noDefine="">CreatePeriodItem_Set_PI</confirm>
+</exec>-->
+</sql>
+</define>
+<define name="CreatePeriodItemSet_PI">
+<sql>INSERT INTO tblBudgetItem(id,classCode,PeriodID,ItemID,Fee,usableFee,createBy,isCatalog)
+SELECT DISTINCT substring(replace(newid(),'-',''),1,28) id,a.classCode,b.id PeriodID,a.classCode ItemID,0 Fee,0 UseFee,'',a.isCatalog
+FROM tblItem a,(SELECT DISTINCT a.id FROM tblBudgetPeriod a LEFT JOIN tblBudgetItem b ON a.id = b.PeriodID WHERE a.id = @ValueofDB:tblBudgetPeriod_id) b
+WHERE a.classCode NOT IN (SELECT CASE WHEN ItemID IS NULL THEN '' ELSE ItemID END FROM (SELECT DISTINCT b.ItemID FROM tblBudgetPeriod a LEFT JOIN tblBudgetItem b ON a.id = b.PeriodID WHERE a.id = @ValueofDB:tblBudgetPeriod_id) a)</sql>
+<sql>UPDATE tblDBFieldInfo SET isCopy = 1 WHERE tableId IN (SELECT id FROM tblDBTableInfo WHERE tblDBTableInfo.tableName = 'tblBudgetItem') AND fieldName = 'classCode'</sql>
+</define>
+
+<!--添加项目时生成预算项目-->
+<define name="CreateItemPeriodSet_tblBudgetItem">
+<sql type="condition">
+<condition>
+<!--判断存在的年期间是否有月期间-->
+<select>SELECT DISTINCT 1 AS YearBudgetHasMonthBudget FROM tblBudgetPeriod a JOIN tblBudgetPeriod b ON a.periodYear = b.periodYear WHERE a.periodType = 1 AND b.periodType = 3</select>
+<!--判断存在的季度期间是否有对应的月期间-->
+<select>SELECT DISTINCT 1 AS QuarterBudgetHasMonthBudget FROM tblBudgetPeriod a JOIN (
+SELECT periodVal,periodYear,CASE WHEN periodVal BETWEEN 1 AND 3 THEN 1 WHEN periodVal BETWEEN 4 AND 6 THEN 2 WHEN periodVal BETWEEN 7 AND 9 THEN 3 ELSE 4 END AS quarter FROM tblBudgetPeriod WHERE periodType = 3
+) b ON a.periodYear = b.periodYear AND a.periodVal = b.quarter WHERE a.periodType = 2</select>
+</condition>
+<exec condition="(@SqlReturn:YearBudgetHasMonthBudget == 1 &amp;&amp; @SqlReturn:QuarterBudgetHasMonthBudget == 1)||(@SqlReturn:YearBudgetHasMonthBudget ==null &amp;&amp;@SqlReturn:QuarterBudgetHasMonthBudget ==null)">
+<sql type="define">CreateItemPeriodSet_IP</sql>
+</exec>
+<!--<exec condition ="@SqlReturn:YearBudgetHasMonthBudget == 1 || @SqlReturn:QuarterBudgetHasMonthBudget == 1">
+<sucess yesDefine="CreateItemPeriodSet_IP" noDefine="">CreateItemPeriod_Set_IP</sucess>
+</exec>-->
+<exec condition ="(&quot;@SqlReturn:YearBudgetHasMonthBudget&quot;!=&quot;null&quot;&amp;&amp;@SqlReturn:YearBudgetHasMonthBudget !=1 )||(&quot;@SqlReturn:QuarterBudgetHasMonthBudget&quot;!=&quot;null&quot;&amp;&amp;@SqlReturn:QuarterBudgetHasMonthBudget !=1)||(&quot;@SqlReturn:YearBudgetHasMonthBudget&quot;==&quot;null&quot;&amp;&amp;&quot;@SqlReturn:QuarterBudgetHasMonthBudget&quot;==&quot;null&quot;)">
+	<error>CreateItemPeriod_Set_IP</error>
+</exec> 
+</sql>
+</define>
+<define name="CreateItemPeriodSet_IP">
+<sql>INSERT INTO tblBudgetItem(id,classCode,PeriodID,ItemID,Fee,usableFee,createBy,isCatalog)
+SELECT distinct substring(replace(newid(),'-',''),1,28) id,b.classCode classCode,a.id PeriodID,b.classCode ItemID,0 Fee,0 UseFee,'',b.isCatalog
+FROM tblBudgetPeriod a, (SELECT a.classCode,a.isCatalog,b.PeriodID FROM (SELECT classCode,isCatalog FROM tblItem WHERE id = @ValueofDB:tblItem_id UNION ALL SELECT b.classCode,b.isCatalog FROM tblItem a JOIN tblItem b ON a.classCode = SUBSTRING(b.classCode,1,LEN(b.classCode) - 5) WHERE a.id = @ValueofDB:tblItem_id UNION ALL SELECT a.classCode,a.isCatalog FROM tblItem a JOIN tblItem b ON a.classCode = SUBSTRING(b.classCode,1,LEN(b.classCode) - 5) WHERE b.id = @ValueofDB:tblItem_id) a LEFT JOIN tblBudgetItem b ON a.classCode = b.classCode) b WHERE a.id NOT IN (SELECT CASE WHEN PeriodID IS NULL  THEN '' ELSE PeriodID END FROM (SELECT DISTINCT b.PeriodID FROM (SELECT classCode,isCatalog FROM tblItem WHERE id = @ValueofDB:tblItem_id UNION ALL SELECT b.classCode,b.isCatalog FROM tblItem a JOIN tblItem b ON a.classCode = SUBSTRING(b.classCode,1,LEN(b.classCode) - 5) WHERE a.id = @ValueofDB:tblItem_id UNION ALL SELECT a.classCode,a.isCatalog FROM tblItem a JOIN tblItem b ON a.classCode = SUBSTRING(b.classCode,1,LEN(b.classCode) - 5) WHERE b.id = @ValueofDB:tblItem_id) a LEFT JOIN tblBudgetItem b ON a.classCode = b.classCode ) a)
+ </sql>
+ <sql>UPDATE tblDBFieldInfo SET isCopy = 1 WHERE tableId IN (SELECT id FROM tblDBTableInfo WHERE tblDBTableInfo.tableName = 'tblBudgetItem') AND fieldName = 'classCode'</sql>
+</define>
+
+<!--预算项目设置删除-->
+<define name="tblBudgetItem_before_delete">
+<sql type="condition">
+<condition>
+<select>SELECT 1 AS BudgetAppHavBudgetItem FROM tblBudgetApp WHERE BudgetItemID = @ValueofDB:tblBudgetItem_id</select>
+<select>select PeriodID,ItemID,Fee from tblBudgetItem where id = @ValueofDB:tblBudgetItem_id</select>
+</condition>
+<exec condition="@SqlReturn:BudgetAppHavBudgetItem == 1">
+<error>BudgetApp.HavBudgetItem.error</error>
+</exec>
+<exec condition="&quot;@SqlReturn:ItemID&quot;.length == 5 &amp;&amp;@SqlReturn:BudgetAppHavBudgetItem != 1">
+<sql>UPDATE tblBudgetPeriod SET usableFee = usableFee + @SqlReturn:Fee WHERE id = @SqlReturn:PeriodID</sql>
+</exec>
+<exec condition="&quot;@SqlReturn:ItemID&quot;.length &gt; 5 &amp;&amp;@SqlReturn:BudgetAppHavBudgetItem != 1">
+<sql>UPDATE tblBudgetItem SET usableFee = usableFee + @SqlReturn:Fee WHERE PeriodID = @SqlReturn:PeriodID AND ItemID = SUBSTRING(@SqlReturn:ItemID,1,LEN(@SqlReturn:ItemID) - 5)</sql>
+</exec>
+</sql>
+</define>
+
+<!--预算项目设置删除-->
+<!--<define name="tblBudgetItem_before_delete">
+<sql type="condition">
+<condition>
+<select>SELECT 1 AS BudgetAppHavBudgetItem FROM tblBudgetApp WHERE BudgetItemID = @ValueofDB:tblBudgetItem_id</select>
+</condition>
+<exec condition="@SqlReturn:BudgetAppHavBudgetItem == 1">
+<error>BudgetApp.HavBudgetItem.error</error>
+</exec>
+</sql>
+</define>-->
+
+<define name="tblBudgetItem_delete">
+<sql type="condition">
+<condition>
+<select>select PeriodID,ItemID,Fee from tblBudgetItem where id = @ValueofDB:tblBudgetItem_id</select>
+</condition>
+<exec condition="&quot;@SqlReturn:ItemID&quot;.length == 5">
+<sql>UPDATE tblBudgetPeriod SET usableFee = usableFee + @SqlReturn:Fee WHERE id = @SqlReturn:PeriodID</sql>
+</exec>
+<exec condition="&quot;@SqlReturn:ItemID&quot;.length &gt; 5">
+<sql>UPDATE tblBudgetItem SET usableFee = usableFee + @SqlReturn:Fee WHERE PeriodID = @SqlReturn:PeriodID AND ItemID = SUBSTRING(@SqlReturn:ItemID,1,LEN(@SqlReturn:ItemID) - 5)</sql>
+</exec>
+</sql>
+</define>
+
+
+<define  name = "tblBudgetDept_add"> 
+	<!--费用不能大于父级部门的可用预算 -->
+	<sql type="condition">
+			<condition>
+				<select>
+					SELECT id as BID,usableFee FROM tblBudgetDept  WHERE DepartmentCode = substring(@ValueofDB:tblBudgetDept_DepartmentCode,1,len(@ValueofDB:tblBudgetDept_DepartmentCode)-5) and @ValueofDB:tblBudgetDept_Fee&gt;usableFee and @ValueofDB:tblBudgetDept_PeriodID=PeriodID
+				</select>
+			</condition>
+			<exec condition="&quot;@SqlReturn:BID&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:BID&quot;.length != 0 ">	 
+				<error>BudgetDept1.Fee.error</error>
+			</exec>
+	</sql>
+<sql type="condition">            
+<condition>
+	<select>select substring(@ValueofDB:tblBudgetDept_DepartmentCode,1,len(@ValueofDB:tblBudgetDept_DepartmentCode)-5) as streturn from tblBudgetDept  where @ValueofDB:tblBudgetDept_PeriodID = tblBudgetDept.PeriodID</select>
+    <select>select tblBudgetDept.fee as fee1 from tblBudgetDept where tblBudgetDept.DepartmentCode =substring(@ValueofDB:tblBudgetDept_DepartmentCode,1,len(@ValueofDB:tblBudgetDept_DepartmentCode)-5) and  @ValueofDB:tblBudgetDept_PeriodID = tblBudgetDept.PeriodID and len(@ValueofDB:tblBudgetDept_DepartmentCode) &gt; 5</select>
+    <select>select sum(tblBudgetDept.fee) as sum1 from tblBudgetDept where tblBudgetDept.DepartmentCode like substring(@ValueofDB:tblBudgetDept_DepartmentCode,1,len(@ValueofDB:tblBudgetDept_DepartmentCode)-5) +'_____'  and  @ValueofDB:tblBudgetDept_PeriodID = tblBudgetDept.PeriodID</select>
+	<select>select sum(tblBudgetDept.fee) as sum2 from tblBudgetDept where len(tblBudgetDept.DepartmentCode) = 5  and  @ValueofDB:tblBudgetDept_PeriodID = tblBudgetDept.PeriodID</select>
+    <select>select tblBudgetPeriod.fee as tblBudgetPeriod_fee from tblBudgetPeriod where @ValueofDB:tblBudgetDept_PeriodID=tblBudgetPeriod.id </select>
+</condition>
+<exec condition ="@ValueofDB:tblBudgetDept_Fee &lt;= 0">
+<error>tblBudgetDept.fee1.error</error>/*费用必须大于0！*/
+</exec>  
+<exec condition ="&quot;@SqlReturn:streturn&quot;!=&quot;null&quot;&amp;&amp;&quot;@SqlReturn:streturn&quot;.length!=0&amp;&amp;&quot;@SqlReturn:fee1&quot;==&quot;null&quot;" >/*父级部门没有预算，请先添加父级部门预算*/
+<error>tblBudgetDept.fee.error</error>
+</exec>
+<exec condition ="&quot;@SqlReturn:streturn&quot;==&quot;&quot;&amp;&amp;@SqlReturn:sum2&gt;@SqlReturn:tblBudgetPeriod_fee" >
+<error>tblBudgetDept.DepartmentCode2.error</error>/*一级部门之和不能大于预算期间设置总预算*/
+</exec> 
+<exec condition ="&quot;@SqlReturn:streturn&quot;!=&quot;null&quot;&amp;&amp;&quot;@SqlReturn:streturn&quot;.length!=0&amp;&amp;@SqlReturn:sum1&gt;@SqlReturn:fee1">
+<error>tblBudgetDept.DepartmentCode1.error</error>/*子级预算费用之和不能超过父级*/
+</exec>
+<!--添加时回填父级部门可用费用-->
+<exec condition ="&quot;@SqlReturn:streturn&quot;!=&quot;null&quot;&amp;&amp;&quot;@SqlReturn:streturn&quot;.length!=0">
+<sql> update tblBudgetDept set usableFee = usableFee - @ValueofDB:tblBudgetDept_Fee where DepartmentCode = (select substring(@ValueofDB:tblBudgetDept_DepartmentCode,1,len(@ValueofDB:tblBudgetDept_DepartmentCode)-5) from tblBudgetDept where id = @ValueofDB:tblBudgetDept_id) and PeriodID=@ValueofDB:tblBudgetDept_PeriodID</sql></exec>
+
+<exec condition ="true">
+<sql> update tblBudgetPeriod set usableFee = usableFee - @ValueofDB:tblBudgetDept_Fee where @ValueofDB:tblBudgetDept_PeriodID=tblBudgetPeriod.id and len(@ValueofDB:tblBudgetDept_DepartmentCode) = 5</sql>
+<sql> update tblBudgetDept set usableFee = Fee where id = @ValueofDB:tblBudgetDept_id </sql>
+</exec>/*回填默认值，预算期间设置费用减去本部门设置费用，本部门可用费用默认为费用*/
+</sql>
+</define>
+
+<define  name = "tblBudgetDept_add1"> 
+<sql type="condition">                                                                                                                                                 
+<condition>
+   <select>select tblBudgetDept.DepartmentCode as department from tblBudgetDept where @ValueofDB:tblBudgetDept_DepartmentCode = tblBudgetDept.DepartmentCode and  @ValueofDB:tblBudgetDept_PeriodID = tblBudgetDept.PeriodID</select>
+    <select>select tblBudgetDept.DepartmentCode as department1 from tblBudgetDept where len(tblBudgetDept.DepartmentCode) = 5 </select>
+</condition>
+<exec condition ="&quot;@SqlReturn:department&quot;!=&quot;null&quot;&amp;&amp;@SqlReturn:department1!=&quot;null&quot;" >
+<error>tblBudgetDept.department.error</error>/*在同一期间已有相同部门存在，请在原有基础上修改预算！*/
+</exec>  
+</sql>
+
+</define>
+
+<!--删除部门预算时回填期间可用费用-->
+<define  name = "tblBudgetDept_delete">  
+<sql type="condition">
+<condition>
+<select>select DepartmentCode as deptDepartmentCode from tblBudgetDept where id = @ValueofDB:tblBudgetDept_id</select>
+<select>select DeptID as DeptID from tblBudgetEmp  where @ValueofDB:tblBudgetDept_id =tblBudgetEmp.DeptID</select>
+<select> select tblBudgetDept.DepartmentCode as streturn from tblBudgetDept where  DepartmentCode like (select DepartmentCode from tblBudgetDept where id = @ValueofDB:tblBudgetDept_id)+'_____' AND (select PeriodID from tblBudgetDept where id = @ValueofDB:tblBudgetDept_id) = tblBudgetDept.PeriodID 
+ </select>
+<select>select tblBudgetApp.DepartmentCode as AppDepartmentCode from tblBudgetApp left join tblBudgetDept on tblBudgetDept.PeriodID = tblBudgetApp.PeriodID where (select DepartmentCode from tblBudgetDept where id = @ValueofDB:tblBudgetDept_id)= tblBudgetApp.DepartmentCode and (select PeriodID from tblBudgetDept where id = @ValueofDB:tblBudgetDept_id) = tblBudgetApp.PeriodID</select>
+</condition>
+<exec condition ="&quot;@SqlReturn:streturn&quot;!=&quot;null&quot;" >
+<error>tblBudgetDept.streturn.error</error> /*有子级部门预算存在，不能直接删除父级部门！*/</exec>
+<exec condition ="&quot;@SqlReturn:AppDepartmentCode&quot;!=&quot;null&quot;" >
+<error>tblBudgetDept.DepartmentCode.error</error> /*部门本期间费用已被申请单引用不可再做修改！*/
+</exec>
+<exec condition = "&quot;@SqlReturn:DeptID&quot;!= &quot;null&quot;">
+<error>tblBudgetDept.DeptID.error</error>/*单据已经被职员预算引用，不可以做其他操作！*/
+</exec>
+<!--删除时回填父级部门可用费用-->
+<exec condition ="&quot;@SqlReturn:deptDepartmentCode&quot;.length &gt; 5">
+<sql> update tblBudgetDept set usableFee = usableFee + (select fee from tblBudgetDept where id = @ValueofDB:tblBudgetDept_id) where DepartmentCode = substring(@SqlReturn:deptDepartmentCode,1,len(@SqlReturn:deptDepartmentCode)-5) and PeriodID=(select PeriodID from tblBudgetDept where id = @ValueofDB:tblBudgetDept_id)</sql></exec>
+
+<exec condition = "&quot;@SqlReturn:deptDepartmentCode&quot;.length == 5">
+<sql> update tblBudgetPeriod set tblBudgetPeriod.usableFee = tblBudgetPeriod.usableFee + (select fee from tblBudgetDept where id = @ValueofDB:tblBudgetDept_id) from tblBudgetDept where (select PeriodID from tblBudgetDept where id = @ValueofDB:tblBudgetDept_id)=tblBudgetPeriod.id </sql></exec>/*删除时回填预算期间设置费用*/
+</sql>
+</define>
+
+<!--预算部门更改时候控制条件-->
+<define  name = "tblBudgetDept_update"> 
+<sql type="condition">
+<condition>
+<select> select tblBudgetDept.DepartmentCode as streturndepart from tblBudgetDept where  DepartmentCode like (select DepartmentCode from tblBudgetDept where id = @ValueofDB:tblBudgetDept_id)+'_____' AND (select PeriodID from tblBudgetDept where id = @ValueofDB:tblBudgetDept_id) = tblBudgetDept.PeriodID 
+ </select>
+<select>select DeptID as DeptID from tblBudgetEmp  where @ValueofDB:tblBudgetDept_id =tblBudgetEmp.DeptID</select>
+<select>select AccYear as AccYear,AccPeriod as AccPeriod from tblAccPeriod where statusId = '2'</select>
+<select>select periodType as periodType,periodYear as periodYear,(case tblBudgetPeriod.periodType when 1 then tblBudgetPeriod.periodYear when 2 then (case tblBudgetPeriod.periodVal when '1' then 1 when '2' then 1 when '3' then 1 when '4'then 2 when '5' then 2 when '6'then 2 when '7'then 3 when '8' then 3 when '9' then 3 else 4 end) else tblBudgetPeriod.periodVal end) as periodVal from tblBudgetPeriod left join tblBudgetDept on tblBudgetDept.PeriodID = tblBudgetPeriod.id where (select PeriodID from tblBudgetApp where id =@ValueofDB:tblBudgetApp_id) = tblBudgetPeriod.id</select>
+<select>select DepartmentCode as AppDepartmentCode from tblBudgetApp where @ValueofDB:tblBudgetDept_DepartmentCode = tblBudgetApp.DepartmentCode and @ValueofDB:tblBudgetDept_PeriodID = tblBudgetApp.PeriodID</select>
+<select>select substring(@ValueofDB:tblBudgetDept_DepartmentCode,1,len(@ValueofDB:tblBudgetDept_DepartmentCode)-5) as streturn from tblBudgetDept</select>
+</condition>
+<exec condition ="&quot;@SqlReturn:streturndepart&quot;!=&quot;null&quot;&amp;&amp;&quot;@SqlReturn:streturndepart&quot;.length !=0" >
+<error>tblBudgetDept.streturn.error</error> /*有子级部门预算存在，不能直接删除父级部门！*/</exec>
+<exec condition = "&quot;@SqlReturn:DeptID&quot;!= &quot;null&quot;">
+<error>tblBudgetDept.DeptID.error</error>/*单据已经被职员预算引用，不可以做其他操作！*/
+</exec>
+<exec condition = "@SqlReturn:AccYear == @SqlReturn:periodYear &amp;&amp;@SqlReturn:periodType ==1 &amp;&amp;@SqlReturn:AccPeriod==12">
+<error>tblBudgetDept.AccperiodDept.error</error>
+</exec>
+<exec condition = "@SqlReturn:AccYear == @SqlReturn:periodYear &amp;&amp;@SqlReturn:periodType ==2 &amp;&amp;@SqlReturn:AccPeriod==3&amp;&amp;@SqlReturn:periodVal == 1"><error>tblBudgetDept.AccperiodDept.error</error>
+</exec>
+<exec condition = "@SqlReturn:AccYear == @SqlReturn:periodYear &amp;&amp;@SqlReturn:periodType ==2 &amp;&amp;@SqlReturn:AccPeriod==6&amp;&amp;@SqlReturn:periodVal == 2"><error>tblBudgetDept.AccperiodDept.error</error>
+</exec>
+<exec condition = "@SqlReturn:AccYear == @SqlReturn:periodYear &amp;&amp;@SqlReturn:periodType ==2 &amp;&amp;@SqlReturn:AccPeriod==9&amp;&amp;@SqlReturn:periodVal == 3"><error>tblBudgetDept.AccperiodDept.error</error>
+</exec>
+<exec condition = "@SqlReturn:AccYear == @SqlReturn:periodYear &amp;&amp;@SqlReturn:periodType ==2 &amp;&amp;@SqlReturn:AccPeriod==12&amp;&amp;@SqlReturn:periodVal == 4"><error>tblBudgetDept.AccperiodDept.error</error>
+</exec>
+<exec condition = "@SqlReturn:AccYear == @SqlReturn:periodYear &amp;&amp;@SqlReturn:periodType ==3 &amp;&amp;@SqlReturn:AccPeriod==@SqlReturn:periodVal">
+<error>tblBudgetDept.AccperiodDept.error</error>/*本期间已经月结，部门预算不能再做修改！*/
+</exec>
+<exec condition ="&quot;@SqlReturn:AppDepartmentCode&quot;!=&quot;null&quot;" >
+<error>tblBudgetDept.DepartmentCode.error</error> /*部门本期间费用已被申请单引用不可再做修改！*/
+</exec>
+<!--修改时回填父级部门可用费用-->
+<exec condition ="&quot;@ValueofDB:tblBudgetDept_DepartmentCode&quot;.length &gt; 5">
+<sql> update tblBudgetDept set usableFee = usableFee + (select fee from tblBudgetDept where id = @ValueofDB:tblBudgetDept_id) where DepartmentCode = substring(@ValueofDB:tblBudgetDept_DepartmentCode,1,len(@ValueofDB:tblBudgetDept_DepartmentCode)-5) and PeriodID=(select PeriodID from tblBudgetDept where id = @ValueofDB:tblBudgetDept_id)</sql></exec>
+<exec condition ="true">
+<sql> update tblBudgetPeriod set usableFee = usableFee + (select fee from tblBudgetDept where id = @ValueofDB:tblBudgetDept_id) where @ValueofDB:tblBudgetDept_PeriodID=tblBudgetPeriod.id and len(@ValueofDB:tblBudgetDept_DepartmentCode) = 5</sql>
+</exec>/*修改时回填预算期间设置费用*/
+</sql>
+</define>
+
+<!--预算申请单添加操作-->
+<define  name = "tblBudgetApp_add"> 
+	<!-- 保存时确保职员是部门中的职员 否则提示 '{0}'不是'{1}'的职员 -->
+	<sql type="condition">
+		<condition>
+			<select>SELECT  a.DeptFullName FROM tblDepartment a WHERE @ValueofDB:tblBudgetApp_DepartmentCode=a.classCode
+			</select>
+			<select>
+				SELECT  EmpFullName,DepartmentCode AS dpcode FROM tblEmployee WHERE id=@ValueofDB:EmployeeID
+			</select>
+		</condition>
+		<exec condition="@ValueofDB:tblBudgetApp_DepartmentCode != @SqlReturn:dpcode">
+			<error>BudgetEmp.not.in.dept.error,@SqlReturn:EmpFullName,@SqlReturn:DeptFullName</error>
+		</exec>
+	</sql>
+	<sql type="condition">                                                                                                                                     
+		<condition>
+			<select>select EmployeeID as Employee from tblBudgetEmp  left join tblBudgetDept on tblBudgetDept.id = tblBudgetEmp.DeptID left join tblBudgetPeriod on tblBudgetPeriod.id = tblBudgetDept.PeriodID where tblBudgetEmp.EmployeeID = @ValueofDB:tblBudgetApp_EmployeeID and tblBudgetDept.DepartmentCode = @ValueofDB:tblBudgetApp_DepartmentCode and tblBudgetPeriod.id = @ValueofDB:tblBudgetApp_PeriodID</select> 
+			<select>select tblBudgetDept.Fee as DeptFee from tblBudgetDept where @ValueofDB:tblBudgetApp_PeriodID = tblBudgetDept.PeriodID and tblBudgetDept.DepartmentCode = @ValueofDB:tblBudgetApp_DepartmentCode </select>
+			<select>select usableFee as usableFee from tblBudgetItem where @ValueofDB:tblBudgetApp_BudgetItemID = tblBudgetItem.id</select>
+			<select>select sum(tblBudgetApp.Fee) as sumuse from tblBudgetApp where @ValueofDB:tblBudgetApp_EmployeeID =tblBudgetApp.EmployeeID</select>
+			<select>select tblBudgetEmp.Fee as EmpFee from tblBudgetEmp where @ValueofDB:tblBudgetApp_EmployeeID = tblBudgetEmp.EmployeeID</select>
+		</condition>
+		<exec condition ="&quot;@ValueofDB:BudgetItemID&quot; == &quot;&quot;&amp;&amp;&quot;@ValueofDB:UseID&quot;==&quot;&quot;">
+			<error>tblBudgetApp.ItemUse.error</error>/*申请项目和申请用途至少输入一个！*/
+		</exec> 
+		<exec condition ="@ValueofDB:tblBudgetApp_Fee &lt;= 0">
+			<error>tblBudgetApp.fee1.error</error>/*申请金额必须大于0！*/
+		</exec> 
+		<exec condition ="&quot;@SqlReturn:Employee&quot; == &quot;null&quot;&amp;&amp;&quot;@ValueofDB:BudgetItemID&quot; == &quot;&quot;&amp;&amp;@SqlReturn:sumuse &gt; @SqlReturn:DeptFee">
+			<error>tblBudgetApp.appfeedept.error</error>/*申请费用不能大于部门设置费用！*/
+		</exec>
+	</sql>
+	<sql type="condition">		
+		<exec condition ="true">
+			<sql type="define">tblBudgetApp_addConfirm1</sql>
+		</exec> 
+	</sql>
+	<sql type="condition">		
+		<exec condition ="true">
+			<sql type="define">tblBudgetApp_addConfirm2</sql>
+		</exec> 
+	</sql>
+	<sql type="condition">
+		<!--不启用审核流-->
+		<exec condition="&quot;@MEM:tblBudgetApp_IsStatart&quot; == &quot;0&quot;">
+			<sql type="define">tblBudgetApp_add_one</sql>
+		</exec>
+	</sql>
+</define>
+
+<define name="tblBudgetApp_addConfirm1">
+	<sql type="condition">
+		<condition>
+			<select>select sum(tblBudgetApp.Fee) as sumuse from tblBudgetApp where @ValueofDB:tblBudgetApp_EmployeeID =tblBudgetApp.EmployeeID</select>
+			<select>select tblBudgetEmp.Fee as EmpFee from tblBudgetEmp where @ValueofDB:tblBudgetApp_EmployeeID = tblBudgetEmp.EmployeeID</select>
+		</condition>
+		<exec condition ="&quot;@ValueofDB:BudgetItemID&quot; == &quot;&quot;&amp;&amp;@SqlReturn:sumuse &gt; @SqlReturn:EmpFee &amp;&amp;@SqlReturn:EmpFee != null">
+			<confirm yesDefine="tblBudgetApp_add1" noDefine="">tblBudgetApp.addconfirm</confirm>
+		</exec> 
+	</sql>
+</define>
+
+<define name="tblBudgetApp_addConfirm2">
+	<sql type="condition">
+		<condition>
+			<select>select usableFee as usableFee from tblBudgetItem where @ValueofDB:tblBudgetApp_BudgetItemID = tblBudgetItem.id</select>
+		</condition>/*申请用途费用大于本期间预算职员设置费用！*/	
+		<exec condition ="&quot;@ValueofDB:BudgetItemID&quot;!= &quot;&quot;&amp;&amp;@ValueofDB:tblBudgetApp_Fee &gt; @SqlReturn:usableFee">
+			<confirm yesDefine="tblBudgetApp_add1" noDefine="">tblBudgetApp.additemconfirm</confirm>/*申请费用大于本期间项目可用预算*/
+		</exec> 
+	</sql>
+</define>
+
+<!--预算申请是否弹出框回滚内容-->
+<define  name = "tblBudgetApp_add1">
+	<sql type="condition">
+	<exec condition="&quot;@MEM:tblBudgetApp_IsStatart&quot; == &quot;0&quot;">
+		<sql type="define">tblBudgetApp_add_one</sql>
+	</exec>
+	</sql>
+</define>
+<!--添加时不启用审核流-->
+<define  name = "tblBudgetApp_add_one"> 
+	<sql type="condition">
+		<condition>
+			<select>select BudgetItemID as BudgetItemID,DepartmentCode as DepartmentCode,EmployeeID as EmployeeID,PeriodID as PeriodID from tblBudgetApp where id = @ValueofDB:tblBudgetApp_id </select>
+			<select>select DepartmentCode as Emp from tblBudgetEmp left join tblBudgetDept on tblBudgetDept.id = tblBudgetEmp.DeptID where tblBudgetDept.PeriodID=@SqlReturn:PeriodID and tblBudgetDept.DepartmentCode=@SqlReturn:DepartmentCode and tblBudgetEmp.EmployeeID=@SqlReturn:EmployeeID</select>
+			<select>select DepartmentCode as dept from tblBudgetDept where tblBudgetDept.PeriodID=@SqlReturn:PeriodID and tblBudgetDept.DepartmentCode=@SqlReturn:DepartmentCode</select>
+			<select>select BudgetItemID as BudgetItemID from tblBudgetApp where id = @ValueofDB:tblBudgetApp_id </select>
+		</condition>
+		<exec condition ="&quot;@SqlReturn:BudgetItemID&quot; !=&quot;&quot;">
+			<sql> update tblBudgetItem set usableFee= usableFee - (select Fee from tblBudgetApp where id = @ValueofDB:tblBudgetApp_id) from tblBudgetApp where tblBudgetApp.BudgetItemID = tblBudgetItem.id and tblBudgetItem.id=(select BudgetItemID from tblBudgetApp where id = @ValueofDB:tblBudgetApp_id)</sql>
+		</exec>
+		<exec condition ="&quot;@SqlReturn:BudgetItemID&quot; ==&quot;&quot;&amp;&amp;&quot;@SqlReturn:Emp&quot; ==&quot;null&quot;&amp;&amp;&quot;@SqlReturn:dept&quot; !=&quot;null&quot;">
+			<sql> update tblBudgetDept set usableFee= usableFee - (select Fee from tblBudgetApp where id = @ValueofDB:tblBudgetApp_id) where tblBudgetDept.PeriodID=@SqlReturn:PeriodID and tblBudgetDept.DepartmentCode=@SqlReturn:DepartmentCode </sql>
+		</exec>
+		<exec condition="true">
+			<sql>update tblBudgetApp set NotUseFee = Fee where id = @ValueofDB:tblBudgetApp_id </sql><!--设定预算申请单未领用费用初始值-->
+		</exec>
+	</sql>
+</define>
+
+<!--删除预算申请单 前进行判断-->
+<define  name = "tblBudgetApp_delete">  
+	<sql type="condition">
+		<exec condition="&quot;@MEM:tblBudgetApp_IsStatart&quot; == &quot;0&quot;">
+			<sql type="define">tblBudgetApp_delete_one</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--删除时不启用审核流-->
+<define  name = "tblBudgetApp_delete_one">
+	<sql type="condition">
+		<condition>
+			<select>select a.BudgetAppID as CollarBill,b.BillNo as Num from tblBudgetCollarDet a,tblBudgetCollar b where @ValueofDB:tblBudgetApp_id =a.BudgetAppID and a.f_ref=b.id</select>
+		</condition>
+		<exec condition = "&quot;@SqlReturn:CollarBill&quot; != &quot;null&quot;">
+			<error>tblBudgetApp.CollarBill.error,@SqlReturn:Num</error>/*单据已经被领用单引用，不可以做变更操作！*/
+		</exec>
+	</sql>	
+	<!--删除申请单过程相关数据的回填-->	
+	<sql type="condition">
+		<condition>
+			<select>select BudgetItemID as BudgetItemID,DepartmentCode as DepartmentCode,EmployeeID as EmployeeID,PeriodID as PeriodID from tblBudgetApp where id = @ValueofDB:tblBudgetApp_id </select>
+			<select>select DepartmentCode as Emp from tblBudgetEmp left join tblBudgetDept on tblBudgetDept.id = tblBudgetEmp.DeptID where tblBudgetDept.PeriodID=@SqlReturn:PeriodID and tblBudgetDept.DepartmentCode=@SqlReturn:DepartmentCode and tblBudgetEmp.EmployeeID=@SqlReturn:EmployeeID</select>
+			<select>select DepartmentCode as dept from tblBudgetDept where tblBudgetDept.PeriodID=@SqlReturn:PeriodID and tblBudgetDept.DepartmentCode=@SqlReturn:DepartmentCode</select>
+			<select>select BudgetItemID as BudgetItemID from tblBudgetApp where id = @ValueofDB:tblBudgetApp_id </select>
+		</condition>
+		<exec condition ="&quot;@SqlReturn:BudgetItemID&quot; !=&quot;&quot;">
+			<sql> update tblBudgetItem set usableFee= usableFee + (select Fee from tblBudgetApp where id = @ValueofDB:tblBudgetApp_id) from tblBudgetApp where tblBudgetApp.BudgetItemID = tblBudgetItem.id and tblBudgetItem.id=(select BudgetItemID from tblBudgetApp where id = @ValueofDB:tblBudgetApp_id)</sql>
+		</exec>
+		<exec condition ="&quot;@SqlReturn:BudgetItemID&quot; ==&quot;&quot;&amp;&amp;&quot;@SqlReturn:Emp&quot; ==&quot;null&quot;&amp;&amp;&quot;@SqlReturn:dept&quot; !=&quot;null&quot;">
+			<sql> update tblBudgetDept set usableFee= usableFee + (select Fee from tblBudgetApp where id = @ValueofDB:tblBudgetApp_id) where tblBudgetDept.PeriodID=@SqlReturn:PeriodID and tblBudgetDept.DepartmentCode=@SqlReturn:DepartmentCode </sql>
+		</exec>
+	</sql>
+</define>
+
+
+<!--============================================== 预算职员设置  开始    ==============================================-->
+<define name="tblBudgetEmp_add">
+	<sql type="condition">
+		<condition>
+			<select>
+				SELECT  a.DeptFullName ,a.classCode AS clcode FROM tblDepartment a , tblBudgetDept b WHERE b.DepartmentCode=a.classCode AND b.id=@ValueofDB:DeptID
+			</select>
+			<select>
+				SELECT  EmpFullName,DepartmentCode AS dpcode FROM tblEmployee WHERE id=@ValueofDB:EmployeeID
+			</select>
+		</condition>
+		<!-- 费用必须大于0 -->
+		<exec condition ="@ValueofDB:tblBudgetEmp_Fee &lt;= 0">
+			<error>tblBudgetDept.fee1.error</error>
+		</exec> 
+		<!-- 保存时确保职员是部门中的职员 否则提示 '{0}'不是'{1}'的职员 -->
+		<exec condition="@SqlReturn:clcode != @SqlReturn:dpcode">
+			<error>BudgetEmp.not.in.dept.error,@SqlReturn:EmpFullName,@SqlReturn:DeptFullName</error>
+		</exec>
+	</sql>
+	
+	<!-- 预算职员设置同一职员同一期间只能设置一个 -->
+	<sql type="condition">
+			<condition>
+				<select>
+					SELECT COUNT(*) AS COUB FROM tblBudgetEmp a ,tblBudgetDept b WHERE  a.DeptID=b.id  and a.EmployeeID=@ValueofDB:EmployeeID and a.DeptID=@ValueofDB:DeptID
+				</select>
+			</condition>
+			<exec condition="@SqlReturn:COUB &gt; 1">
+				<error>BudgetEmp.more.than.one.error</error>
+			</exec>
+	</sql>
+	<!-- 预算部门中的预算人员的费用不能大于部门的可用预算 -->
+	<sql type="condition">
+			<condition>
+				<select>
+					SELECT b.id as BID,b.usableFee,a.Fee FROM tblBudgetEmp a,tblBudgetDept b WHERE a.DeptID=b.id and b.id=@ValueofDB:tblBudgetEmp_DeptID and a.Fee&gt;b.usableFee
+				</select>
+			</condition>
+			<exec condition="&quot;@SqlReturn:BID&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:BID&quot;.length != 0 ">	 
+				<error>BudgetEmp1.Fee.error</error>
+			</exec>
+	</sql>
+	<!-- 预算部门中的预算人员的总预算不能大于部门的预算 -->
+	<sql type="condition">
+			<condition>
+				<select>
+					SELECT b.id as BID,b.fee,SUM(a.Fee) FROM tblBudgetEmp a,tblBudgetDept b WHERE a.DeptID=b.id and b.id=@ValueofDB:tblBudgetEmp_DeptID GROUP BY b.id, b.fee HAVING SUM(a.Fee)>b.fee
+				</select>
+			</condition>
+			<exec condition="&quot;@SqlReturn:BID&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:BID&quot;.length != 0 ">	 
+				<error>BudgetEmp.Fee.error</error>
+			</exec>
+	</sql>
+	<!-- 更新预算部门的可用费用  -->
+	<sql type="condition">
+		<exec condition="true">
+			<sql>UPDATE tblBudgetDept SET usableFee=isnull(usableFee,0)-isnull(@ValueofDB:Fee,0) WHERE id=@ValueofDB:DeptID</sql>
+		</exec>
+	</sql>
+</define>	
+
+
+<define name="tblBudgetEmp_delete">
+	<sql type="condition">	
+		<condition>
+		<!-- 查询当前预算职员在部门期间内是否有申请记录 -->
+			<select>				
+				SELECT COUNT(a.id) AS COU FROM tblBudgetApp a ,tblBudgetEmp b,tblBudgetDept c  WHERE 
+				a.EmployeeID=b.EmployeeID AND b.DeptID=c.id AND a.PeriodID = c.PeriodID AND b.id =@ValueofDB:id 
+			</select>
+		</condition>
+		
+		<!-- 如果此员工在此期间内已经有预算申请记录，不允许修改 -->
+		<exec condition="@SqlReturn:COU &gt; 0">
+			<error>BudgetEmp.exist.app.error</error>
+		</exec>
+		
+		<condition>	
+		<!-- 查询当前预算职员期间值的月结状态 -->
+			<select>
+				SELECT c.statusId AS STATUSID 
+				FROM tblBudgetDept a , 
+				(
+				SELECT id,periodYear,(CASE WHEN periodType=2 AND periodVal=1 THEN 3 WHEN periodType=2 AND periodVal=2 THEN 6 
+							 WHEN periodType=2 AND periodVal=3 THEN 9 WHEN periodType=2 AND periodVal=4 THEN 12 
+							 WHEN periodType=1 THEN 12 WHEN periodType=3 THEN periodVal 
+				END) AS VAL FROM tblBudgetPeriod  
+				) b ,tblAccPeriod c , tblBudgetEmp d
+				WHERE a.PeriodID = b.id AND b.periodYear = c.AccYear AND b.VAL=c.AccMonth AND a.id = d.DeptID AND d.id = @ValueofDB:id
+			</select>
+    	</condition>
+    	
+    	<!-- 如果此期间是已经月结的月份，季度，年份，不允许修改 -->	
+		<exec condition="@SqlReturn:STATUSID==&quot;2&quot;">
+			<error>BudgetEmp.update.old.error</error>
+		</exec>    				
+		<condition>
+		<!-- 查询预算部门上一次的可用费用 -->
+			<select>				
+				SELECT  b.Fee AS UBF , a.id AS DID FROM tblBudgetDept a , tblBudgetEmp b  where a.id = b.DeptID and b.id=@ValueofDB:id
+			</select>
+    	</condition>    	
+		<!-- 恢复预算部门可领用金额 -->
+		<exec condition="true">
+			<sql>UPDATE tblBudgetDept SET usableFee=isnull(usableFee,0)+isnull(@SqlReturn:UBF,0) WHERE id=@SqlReturn:DID</sql>
+		</exec>
+	</sql>
+</define>	
+
+<!--============================================== 预算职员设置  结束    ==============================================-->
+
+
+
+<!--  ============================================== 预算领用单  开始 =============================================== -->
+<define name="tblBudgetCollar_Add">	
+	<!-- 预算领料明细细必须有明细记录 -->
+	<sql type="condition">
+		<condition><select>select count(0) as CollarCount from tblBudgetCollarDet where f_ref=@ValueofDB:tblBudgetCollar_id</select></condition>
+		<exec condition="@SqlReturn:CollarCount== 0">			
+			<error>SelectDet.Bill.error</error>
+		</exec>
+	</sql>
+	<!-- 金额必须大于0 -->
+	<sql type="condition">
+		<condition>
+			<select>
+				SELECT b.BillNo AS BN FROM tblBudgetCollarDet a, tblBudgetApp b WHERE a.BudgetAppID=b.id and isnull(a.amt,0)&lt;=0 and a.f_ref=@ValueofDB:id
+			</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:BN&quot; != &quot;null&quot;">
+			<error>tblBudgetCollarDet.amt.error,@SqlReturn:BN</error>
+		</exec>
+	</sql>
+	<!-- 查询是否有领用单明细金额大于其申请单的未领用金额的记录 -->
+	<sql type="condition">
+		<condition>
+			<select>
+				SELECT b.BudgetAppID FROM tblBudgetApp a ,tblBudgetCollarDet b WHERE a.id = b.BudgetAppID GROUP BY b.BudgetAppID,b.f_ref HAVING SUM(Amt) > (select NotUseFee from tblBudgetApp where id= b.BudgetAppID) AND b.f_ref=@ValueofDB:id
+			</select>
+			<select>
+				SELECT BillNo FROM tblBudgetApp  WHERE id=@SqlReturn:BudgetAppID
+			</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:BudgetAppID&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:BudgetAppID&quot;.length != 0">
+				<error>tblBudgetCollar.morethan.app,@SqlReturn:BillNo</error>
+		</exec>
+	</sql>
+	<!--请选择往来单位-->
+	<sql type="condition">
+		<condition>
+			<select>
+				select Count(a.accCode) as SumAccCode 
+				from tblBudgetCollarDet a , tblBudgetCollar b 
+				where a.f_ref=b.id and (a.accCode like '1122%' or a.accCode like '1123%' or a.accCode like '2202%' or a.accCode like '2203%' ) 
+				and  b.id=@ValueofDB:tblBudgetCollar_id  and (b.CompanyCode is null or b.CompanyCode='')
+			</select>
+		</condition>
+		<exec condition="@SqlReturn:SumAccCode &gt; 0">	 					
+			<error>tblAccDetail.SelectCompany.error</error>   
+		</exec>	
+	</sql>	
+	<!-- 为应收、预收账款时，应控制往来单位不能为供应商 -->
+	<sql type="condition">
+		<condition>
+			<select>
+				SELECT c.ComFullName FROM tblBudgetCollar a ,tblBudgetCollarDet b,tblCompany c WHERE a.id=b.f_ref AND a.CompanyCode=c.classCode AND b.accCode IN('1122','2203') AND c.ClientFlag=1 and a.id=@ValueofDB:tblBudgetCollar_id
+			</select>
+		</condition>	
+		<exec condition="&quot;@SqlReturn:ComFullName&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:ComFullName&quot;.length != 0">
+			<error>tblBudgetCollar.ComFullName.AccCodeError</error>
+		</exec>
+	</sql>
+	<!-- 为应付、预付账款时控制往来单位不是为客户 -->
+	<sql type="condition">
+		<condition>
+			<select>
+				SELECT c.ComFullName FROM tblBudgetCollar a ,tblBudgetCollarDet b,tblCompany c WHERE a.id=b.f_ref AND a.CompanyCode=c.classCode AND b.accCode IN('2202','1123') AND c.ClientFlag=2 and a.id=@ValueofDB:tblBudgetCollar_id
+			</select>
+		</condition>	
+		<exec condition="&quot;@SqlReturn:ComFullName&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:ComFullName&quot;.length != 0">
+			<error>tblBudgetCollar.ComFullName.AccCodeError</error>
+		</exec>
+	</sql>
+	<sql type="condition"> 
+		<!--不启用审核流-->
+		<exec condition="&quot;@MEM:tblBudgetCollar_IsStatart&quot; == &quot;0&quot; &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblBudgetCollar_Add_one</sql>
+		</exec>
+	 </sql>
+</define>
+<define name="tblBudgetCollar_Add_one">
+	<!--如果选择了往来单位 则往来明细中插入数据，影响往来汇总-->
+	<sql type="condition">
+		<exec condition="&quot;@ValueofDB:tblBudgetCollar_CompanyCode&quot;.length!=0">
+			<sql type="define">tblBudgetCollar_Add_Company</sql>
+		</exec>
+	</sql>
+	<sql type="condition">		
+		<!-- 单据保存后回填每个申请单的领用金额，并计算其未领用金额-->
+		<exec condition="true">
+        	<sql>
+				UPDATE tblBudgetApp
+				SET UseFee=UseFee+(SELECT SUM(Amt) FROM tblBudgetCollarDet WHERE BudgetAppID=tblBudgetApp.id  AND f_ref=@ValueofDB:id),
+				NotUseFee=NotUseFee-(SELECT SUM(Amt) FROM tblBudgetCollarDet WHERE BudgetAppID=tblBudgetApp.id  AND f_ref=@ValueofDB:id)
+				WHERE id IN (SELECT BudgetAppID FROM tblBudgetCollarDet WHERE f_ref=@ValueofDB:id GROUP BY BudgetAppID)
+			</sql>
+		</exec>
+		<!--预算领用金额=结算金额 -->
+		<exec condition="true">
+			<sql>update tblBudgetCollar set AccFee=@ValueofDB:UseFee,NotAccFee=0 where id=@ValueofDB:id</sql>
+		</exec>
+		<!-- 产生凭证 -->
+		<exec condition="true">
+			<sql type="define">tblAccMain_Add_NewOne</sql>
+		</exec>
+	</sql>
+</define>
+<define name="tblBudgetCollar_Add_Company">
+	<sql type="condition">		
+		<condition>
+			<select>
+				<select>select AccYear,AccMonth,AccPeriod from tblAccPeriod where AccMonth = Month(@ValueofDB:tblBudgetCollar_BillDate) and AccYear=Year(@ValueofDB:tblBudgetCollar_BillDate) and SCompanyID=@Sess:SCompanyID</select>
+			</select>
+		</condition>
+		<!-- 如果出现核算往来的，则根据相应情况对往来单位添加往来明细记录 -->
+		<exec condition="true">
+			<sql type="procedure">
+			{call proc_iterateExeProc(select a.id as id@SPFieldLink:c.CompanyCode as CompanyCode1@SPFieldLink:c.EmployeeID as EmployeeID1@SPFieldLink:c.DepartmentCode as DepartmentCode1@SPFieldLink:b.ct as CodeType@SPFieldLink:(CASE accCode WHEN '2202' THEN Amt ELSE 0 END) AS PayTotalDebit@SPFieldLink:(CASE accCode WHEN '1122' THEN Amt ELSE 0 END) AS ReceiveTotalDebit@SPFieldLink:(CASE accCode WHEN '1123' THEN Amt ELSE 0 END) AS PrePayTotalDebit@SPFieldLink:								
+(CASE accCode WHEN '2203' THEN Amt ELSE 0 END) AS PreReceiveTotalDebit FROM tblBudgetCollarDet a @SPFieldLink:(SELECT id @SPFieldLink:(CASE accCode WHEN '2202' THEN 1 WHEN '1122' THEN 2 WHEN '1123' THEN 3 WHEN '2203' THEN 4 ELSE 0 END) ct FROM tblBudgetCollarDet)b@SPFieldLink:
+tblBudgetCollar c WHERE b.id = a.id and a.f_ref = c.id and c.id='@ValueofDB:tblBudgetCollar_id' and (c.CompanyCode is not null or c.CompanyCode !='null') and a.accCode in('2202'@SPFieldLink:'1122'@SPFieldLink:'1123'@SPFieldLink:'2203'),proc_insertComIni,@id@ParamLink:@CompanyCode1@ParamLink:@CodeType@ParamLink:'@ValueofDB:tblBudgetCollar_BillDate'@ParamLink:'Period=@SqlReturn:AccPeriod@SPFieldLink:PeriodYear=@SqlReturn:AccYear@SPFieldLink:PeriodMonth=@SqlReturn:AccMonth@SPFieldLink:PayTotalDebit='+@PayTotalDebit+'@ParamNum:@SPFieldLink:PayTotalLend=0@SPFieldLink:FcPayTotalDebit=0@SPFieldLink:FcPayTotalCredit=0@SPFieldLink:ReceiveTotalDebit='+@ReceiveTotalDebit+'@ParamNum:@SPFieldLink:ReceiveTotalLend=0@SPFieldLink:FcRecTotalDebit=0@SPFieldLink:FcRecTotalCredit=0@SPFieldLink:PrePayTotalDebit='+@PrePayTotalDebit+'@ParamNum:@SPFieldLink:PrePayTotalLend=0@SPFieldLink:FcPrePayTotalDebit=0@SPFieldLink:FcPrePayTotalCredit=0@SPFieldLink:PreReceiveTotalDebit='+@PreReceiveTotalDebit+'@ParamNum:@SPFieldLink:PreReceiveTotalLend=0@SPFieldLink:FcPreRecTotalDebit=0@SPFieldLink:FcPreRecTotalCredit=0@SPFieldLink:RelationDocID=@ValueofDB:tblBudgetCollar_id@SPFieldLink:CurrencyTypeID=@SPFieldLink:CurrencyRate=0@ParamNum:@SPFieldLink:createBy=@ValueofDB:tblBudgetCollar_createBy@SPFieldLink:createTime=@ValueofDB:tblBudgetCollar_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblBudgetCollar_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblBudgetCollar_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblBudgetCollar_SCompanyID@SPFieldLink:BillNo=@ValueofDB:tblBudgetCollar_BillNo@SPFieldLink:EmployeeID='+@EmployeeID1+'@SPFieldLink:DepartmentCode='+@DepartmentCode1+'@SPFieldLink:BillType=tblBudgetCollar',@retCode,@retVal)}
+			</sql>		
+		</exec>	
+	</sql>	
+</define>
+<define name="tblAccMain_Add_NewOne">
+	<sql type="condition">
+		<condition>		
+			<select>select isnull(max(OrderNo),0) maxOrderNo from tblAccMain where SCompanyID=@Sess:SCompanyID</select>
+			<select>select AccYear,AccMonth,AccPeriod from tblAccPeriod where AccMonth = Month(@ValueofDB:tblBudgetCollar_BillDate) and AccYear=Year(@ValueofDB:tblBudgetCollar_BillDate) and SCompanyID=@Sess:SCompanyID</select>
+		</condition>
+		<!--产生一条会计凭证主记录-->
+		<exec condition="true">
+			<sql>
+			INSERT INTO tblAccMain(
+				id,AutoBillMarker,checkPersons,SCompanyID,BillDate,
+				AcceNum,DepartmentCode,EmployeeID,
+				OrderNo,CredTypeID,Period,
+				RefBillID,RefBillNo,RefBillType,Remark,
+				lastUpdateBy,lastUpdateTime,CredYear,createBy,createTime,
+				CredMonth,statusId,workFlowNode,workFlowNodeName
+			)
+			VALUES(
+				'7'+@ValueofDB:id,1,';'+@ValueofDB:tblBudgetCollar_createBy+';',@ValueofDB:tblBudgetCollar_SCompanyID,@ValueofDB:tblBudgetCollar_BillDate,
+0,@ValueofDB:tblBudgetCollar_DepartmentCode,@ValueofDB:tblBudgetCollar_EmployeeID,
+@SqlReturn:maxOrderNo+1,@MEM:AccNumberType,@SqlReturn:AccPeriod,
+@ValueofDB:tblBudgetCollar_id,@ValueofDB:tblBudgetCollar_BillNo,'tblBudgetCollar','',
+@ValueofDB:tblBudgetCollar_lastUpdateBy,@ValueofDB:tblBudgetCollar_lastUpdateTime,@SqlReturn:AccYear,@ValueofDB:tblBudgetCollar_createBy,@ValueofDB:tblBudgetCollar_createTime,
+@SqlReturn:AccMonth,@ValueofDB:tblBudgetCollar_statusId,0,'notApprove'
+			)
+			</sql>
+		</exec>	
+		<!--产生会计凭证明细记录 -->
+		<exec condition="true">
+			<sql>			
+			<!-- 通过预算领用单产生 1条 会计凭证贷方明细记录 -->
+			INSERT INTO tblAccDetail(
+				id,AccCode,DebitAmount,LendAmount,Currency,CurrencyRate,
+				DebitCurrencyAmount,LendCurrencyAmount,ProjectCode,CompanyCode,SCompanyID,DepartmentCode,
+				EmployeeID,f_ref,RefBillID,RefBillType,
+				lastUpdateBy,lastUpdateTime,
+				createBy,createTime,
+				AccDate,PeriodMonth,PeriodYear,statusId,RecordComment,
+				workFlowNode,workFlowNodeName,ProjectCode
+			)
+			VALUES(
+				'L'+@ValueofDB:id,@ValueofDB:tblBudgetCollar_SubCode,0,@ValueofDB:tblBudgetCollar_UseFee,'',0,
+0,0,'',@ValueofDB:tblBudgetCollar_CompanyCode,@ValueofDB:tblBudgetCollar_SCompanyID,@ValueofDB:tblBudgetCollar_DepartmentCode,
+@ValueofDB:tblBudgetCollar_EmployeeID,'7'+@ValueofDB:tblBudgetCollar_id,@ValueofDB:tblBudgetCollar_id,'tblBudgetCollar',
+@ValueofDB:tblBudgetCollar_lastUpdateBy,@ValueofDB:tblBudgetCollar_lastUpdateTime,
+@ValueofDB:tblBudgetCollar_createBy,@ValueofDB:tblBudgetCollar_createTime,
+@ValueofDB:tblBudgetCollar_BillDate,@SqlReturn:AccMonth,@SqlReturn:AccYear,0,'预算领用单',
+0,'notApprove',@ValueofDB:ProjectCode
+			)
+			</sql>	
+			<!-- 通过预算领用单明细记录产生 1或N条 会计凭证借方明细记录 -->		
+			<sql type="procedure">
+				{call proc_insertByDet(@ValueofDB:tblBudgetCollar_id,tblBudgetCollarDet,tblAccDetail,
+id=tblBudgetCollarDet_id@SPFieldLink:RefBillID=@ValueofDB:tblBudgetCollar_id@SPFieldLink:AccDate=@ValueofDB:tblBudgetCollar_BillDate@SPFieldLink:
+RecordComment=tblBudgetCollarDet_Remark@SPFieldLink:AccCode=tblBudgetCollarDet_accCode@SPFieldLink:DebitAmount=tblBudgetCollarDet_Amt@SPFieldLink:
+LendAmount=0@SPFieldLink:LendCurrencyAmount=0@SPFieldLink:DepartmentCode=@ValueofDB:tblBudgetCollar_DepartmentCode@SPFieldLink:RefBillType=tblBudgetCollar@SPFieldLink:
+Currency=@SPFieldLink:CurrencyRate=0@SPFieldLink:DebitCurrencyAmount=0@SPFieldLink:PeriodYear=@SqlReturn:AccYear@SPFieldLink:
+PeriodMonth=@SqlReturn:AccMonth@SPFieldLink:EmployeeID=@ValueofDB:tblBudgetCollar_EmployeeID@SPFieldLink:
+CompanyCode=@ValueofDB:tblBudgetCollar_CompanyCode@SPFieldLink:createBy=@ValueofDB:tblBudgetCollar_createBy@SPFieldLink:
+createTime=@ValueofDB:tblBudgetCollar_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblBudgetCollar_lastUpdateBy@SPFieldLink:
+lastUpdateTime=@ValueofDB:tblBudgetCollar_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblBudgetCollar_SCompanyID@SPFieldLink:
+f_ref=7@ValueofDB:tblBudgetCollar_id@SPFieldLink:ProjectCode=@ValueofDB:ProjectCode,retCode,retVal)}
+			</sql>
+		</exec>	
+			<!--如果凭证启用了审核流，则插入一条记录OAMyWorkFlow -->
+		<exec condition="&quot;@MEM:tblAccMain_IsStatart&quot; == &quot;1&quot;">
+		  <sql>INSERT INTO OAMyWorkFlow(
+			  id,applyDate,applyType,billNo,tableName,keyId,createBy,checkPerson,currentNode,createtime,lastUpdatetime,
+			  nextNodeIds,departmentCode,statusId
+			  )
+			  select 'w'+@ValueofDB:id,BillDate,(select top 1 id from OAWorkFlowTemplate where templateFile='tblAccMain' and statusId=0),RefBillNo,'tblAccMain','7'+@ValueofDB:id,createBy,';'+createBy+';',0,createTime,lastUpdateTime,'',(select departmentCode from tblEmployee a where a.id=tblAccMain.createBy),0 from tblAccMain	WHERE RefBillID=@ValueofDB:tblBudgetCollar_id
+			</sql>
+		</exec>	
+			<!--如果凭证没有启用审核流，则直接修改凭证workFlowNode-->
+		<exec condition="&quot;@MEM:tblAccMain_IsStatart&quot; == &quot;0&quot;">
+			 <sql>UPDATE tblaccMain SET workFlowNodeName='finish',workFlowNode='-1' where RefBillID=@ValueofDB:tblBudgetCollar_id</sql>
+			<!--调整科目余额-->
+			 <sql type="define">tblaccmain_go_Balance</sql>
+		</exec>
+	</sql>
+</define>
+<!--调整科目余额 -->
+<define name="tblaccmain_go_Balance">
+	<sql type="condition">
+		<exec condition="true">
+			<sql type="procedure">
+			{call proc_iterateExeProc
+			(select a.AccCode as AccCode@SPFieldLink:b.Period as Period@SPFieldLink:b.CredYear as PeriodYear@SPFieldLink:b.CredMonth as PeriodMonth@SPFieldLink:a.DebitAmount as DebitAmount@SPFieldLink:a.LendAmount as LendAmount@SPFieldLink:a.Currency as Currency@SPFieldLink:a.DebitCurrencyAmount as DebitCurrencyAmount@SPFieldLink:a.LendCurrencyAmount as LendCurrencyAmount@SPFieldLink:b.SCompanyID as SCompanyID from tblAccDetail a left join tblAccMain b on b.id=a.f_ref where a.RefBillID='@ValueofDB:id',
+			proc_updateAccBalance,
+			@AccCode@ParamLink:@Period@ParamLink:@PeriodYear@ParamLink:@PeriodMonth@ParamLink:@DebitAmount@ParamLink:@LendAmount@ParamLink:@DebitCurrencyAmount@ParamLink:@LendCurrencyAmount@ParamLink:@SCompanyID@ParamLink:@Currency,
+			retCode,retVal)}
+			</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--恢复科目余额 -->
+<define name="tblaccmain_return_Balance">
+	<sql type="condition">
+	<exec condition="&quot;@MEM:tblAccMain_IsStatart&quot; == &quot;0&quot;">
+		<sql type="procedure">
+		{call proc_iterateExeProc
+		(select a.AccCode as AccCode@SPFieldLink:b.Period as Period@SPFieldLink:b.CredYear as PeriodYear@SPFieldLink:b.CredMonth as PeriodMonth@SPFieldLink:a.DebitAmount as DebitAmount@SPFieldLink:a.LendAmount as LendAmount@SPFieldLink:a.Currency as Currency@SPFieldLink:a.DebitCurrencyAmount as DebitCurrencyAmount@SPFieldLink:a.LendCurrencyAmount as LendCurrencyAmount@SPFieldLink:b.SCompanyID as SCompanyID from tblAccDetail a left join tblAccMain b on b.id=a.f_ref  where a.RefBillID='@ValueofDB:id',
+		proc_updateAccBalance,
+		@AccCode@ParamLink:@Period@ParamLink:@PeriodYear@ParamLink:@PeriodMonth@ParamLink:'(-1)*'+@DebitAmount@ParamLink:'(-1)*'+@LendAmount@ParamLink:'(-1)*'+@DebitCurrencyAmount@ParamLink:'(-1)*'+@LendCurrencyAmount@ParamLink:@SCompanyID@ParamLink:@Currency,
+		retCode,retVal)}
+		</sql>
+	</exec>
+	</sql>
+</define>
+
+
+<define name="tblBudgetCollar_Delete">
+	<!-- 不启用审核流 -->
+	<sql type="condition">
+		<exec condition="&quot;@MEM:tblBudgetCollar_IsStatart&quot; == &quot;0&quot;">
+			<sql type="define">tblBudgetCollar_Del_one</sql>
+		</exec>
+	</sql>
+</define>
+
+<define name="tblBudgetCollar_Del_one">
+	<!--如果存在生成的凭证已被审核，需将对应凭证反审核后才可以进行本单据的反审核操作 -->
+	<sql type="condition">
+		<condition>
+			<select>select CredTypeID,OrderNo,workFlowNodeName from tblAccMain where RefBillID=@ValueofDB:tblBudgetCollar_id</select>
+		</condition>
+        <exec condition="&quot;@MEM:tblAccMain_IsStatart&quot; == &quot;1&quot;&amp;&amp;&quot;@SqlReturn:workFlowNodeName&quot; != &quot;notApprove&quot; &amp;&amp; &quot;@SqlReturn:workFlowNodeName&quot; != &quot;null&quot; &amp;&amp; &quot;@SqlReturn:workFlowNodeName&quot;.length != 0">	 					
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>
+		</exec>
+	</sql>	
+	<!--如果选择了往来单位 恢复往来汇总-->
+	<sql type="condition">
+		<condition>	
+			<select>SELECT CompanyCode FROM tblBudgetCollar WHERE id=@ValueofDB:tblBudgetCollar_id</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:CompanyCode&quot;.length!=0">
+			<sql type="define">tblBudgetCollar_Del_Company</sql>
+		</exec>
+	</sql>
+	<!--更新对应的凭证 -->
+	<sql type="condition">		
+		<exec condition="true">
+			<sql type="define">tblAccMain_Update_before_by_BudgetCollar</sql>
+		</exec>	
+		<!-- 撤销上一步预算 1个或N个 申请单中的“领用金额” 及 "未领用金额" 的更新操作-->
+		<!--查询修改前 申请单的 '领用金额' = 已领用金额 - 当前领用金额 、 未领用金额 = 未领用金额 + 当前领用金额 -->
+		<exec condition="true">
+        	<sql>
+				UPDATE tblBudgetApp	SET UseFee=UseFee-(SELECT SUM(Amt) FROM tblBudgetCollarDet WHERE BudgetAppID=tblBudgetApp.id  AND f_ref=@ValueofDB:id),NotUseFee=NotUseFee+(SELECT SUM(Amt) FROM tblBudgetCollarDet WHERE BudgetAppID=tblBudgetApp.id  AND f_ref=@ValueofDB:id)WHERE id IN (SELECT BudgetAppID FROM tblBudgetCollarDet WHERE f_ref=@ValueofDB:id GROUP BY BudgetAppID)
+			</sql>
+		</exec>
+	</sql>
+</define>	
+
+<!--修改预算领用单 更新对应的凭证-->
+<define name="tblAccMain_Update_before_by_BudgetCollar">
+	<!--删除凭证审核流或者减少科目余额，删除凭证信息-->
+	<sql type="condition">
+		<exec condition="true">
+			<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblBudgetCollar_id,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+</define>
+
+<define name="tblBudgetCollar_Del_Company">
+	<sql type="condition">
+		<exec condition="true">
+			<!-- 删除往来明细: （1应付 2应收 3预付 4预收） -->
+			<sql type="procedure">{call proc_iterateExeProc(select a.id as id@SPFieldLink:c.CompanyCode as CompanyCode1@SPFieldLink:c.EmployeeID as EmployeeID1@SPFieldLink:b.ct as CodeType@SPFieldLink:(CASE accCode WHEN '2202' THEN Amt ELSE 0 END) AS PayTotalDebit@SPFieldLink:(CASE accCode WHEN '1122' THEN Amt ELSE 0 END) AS ReceiveTotalDebit@SPFieldLink:(CASE accCode WHEN '1123' THEN Amt ELSE 0 END) AS PrePayTotalDebit@SPFieldLink:								
+(CASE accCode WHEN '2203' THEN Amt ELSE 0 END) AS PreReceiveTotalDebit FROM tblBudgetCollarDet a @SPFieldLink:(SELECT id @SPFieldLink:(CASE accCode WHEN '2202' THEN 1 WHEN '1122' THEN 2 WHEN '1123' THEN 3 WHEN '2203' THEN 4 ELSE 0 END) ct FROM tblBudgetCollarDet)b@SPFieldLink:tblBudgetCollar c WHERE b.id = a.id and a.f_ref = c.id and c.id='@ValueofDB:tblBudgetCollar_id' and (c.CompanyCode is not null or c.CompanyCode !='null') and a.accCode in('2202'@SPFieldLink:'1122'@SPFieldLink:'1123'@SPFieldLink:'2203'),proc_deleteComIni,@id@ParamLink:@CodeType,@retCode,@retVal)}
+			</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--  ============================================== 预算领用单  结束 =============================================== -->
+
+</defineSqls>

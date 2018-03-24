@@ -1,0 +1,1798 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+<!--===========================================================打开记录===================================================-->
+<define name="tblBrushCardAnnal_Add">
+	<sql type="condition">
+		<condition>
+		 <select>select EmpNumber from tblEmployee where id = @Sess:UserId</select>
+		</condition>
+		<exec condition="true">
+		<sql> update tblBrushCardAnnal set employeeNo=@SqlReturn:EmpNumber where id=@ValueofDB:tblBrushCardAnnal_id </sql>
+		</exec>
+	</sql>
+</define>
+<!--======================================================以上代码：打开记录================================================-->
+
+<!--===========================================================预收转应收===================================================-->
+<define name="tblTransferSale1_Add">
+	<sql type="condition"><!--转账金额必须大于0-->
+		<exec condition="@ValueofDB:tblTransferSale1_ExeTransferAmt&lt;=0">					
+			<error>ChangeAmount.Bill.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表关联单据编号的往来单位与转入单位不同，给出错误提示-->
+		<condition><select>select b.BillNo as difCom from tblTransferSaleDet1 a,tblSalesOutStock b where a.f_ref=@ValueofDB:tblTransferSale1_id and a.RefSalesOutID=b.id and b.CompanyCode!=@ValueofDB:tblTransferSale1_InCompanyCode</select></condition>
+		<exec condition="'@SqlReturn:difCom'!='null'">
+			<error>common.TransferDifCom.error,@SqlReturn:difCom</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表如果出现重复的关联单据，给出错误提示-->
+		<condition><select>select COUNT(0) as billC from tblTransferSaleDet1 where f_ref=@ValueofDB:tblTransferSale1_id group by RefSalesOutID having COUNT(0)&gt;1</select></condition>
+		<exec condition="@SqlReturn:billC&gt;0">
+			<error>common.sameBill.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表的本次结算金额小于等于0或者是大于待结算金额，给出错误提示-->
+		<condition><select>select RefbillID from tblTransferSaleDet1 where f_ref=@ValueofDB:tblTransferSale1_id and (ExeBalAmt&gt;WexeBalAmt or ExeBalAmt&lt;=0)</select></condition>
+		<exec condition="'@SqlReturn:RefbillID'!='null'">
+			<error>tblTransferSale.add.Amt,@SqlReturn:RefbillID</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--转账金额必须大于等于明细表本次结算金额合计，否则给出错误提示-->
+		<condition><select>select dbo.getDigits('tblTransferSaleDet1','ExeBalAmt',isnull(sum(tblTransferSaleDet1.ExeBalAmt),0)) as SumDetAmt from tblTransferSaleDet1 where f_ref=@ValueofDB:tblTransferSale1_id</select></condition>
+		<exec condition="@ValueofDB:tblTransferSale1_ExeTransferAmt&lt;@SqlReturn:SumDetAmt">
+			<error>TransferSale.add.TransferAmt.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--单据日期在引用的单据之前，给出错误提示(采购入库)-->
+		<condition><select>SELECT a.BillDate AS QuoteDate, len(isnull(a.BillDate,'')) as QuoteDateLen FROM tblSalesOutStock a JOIN tblTransferSaleDet1 b ON a.id=b.RefSalesOutID WHERE b.f_ref=@ValueofDB:tblTransferSale1_id</select></condition>
+		<exec condition="@SqlReturn:QuoteDateLen &gt; 0  &amp;&amp;'@ValueofDB:tblTransferSale1_BillDate' &lt; '@SqlReturn:QuoteDate'">			
+			<error>common.billDateLessByQuoteDate.error,@ValueofDB:tblTransferSale1_BillDate,@SqlReturn:QuoteDate</error>       
+		</exec>
+	</sql>
+	<sql type="condition">	
+		<exec condition="true">
+			<sql>update tblTransferSale1 set CertificateNo='' where id=@ValueofDB:tblTransferSale1_id</sql>
+		</exec>
+		<exec condition="'@MEM:tblTransferSale1_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblTransferSale1_Add_One</sql>
+		</exec>
+	</sql>
+</define>
+<define name="tblTransferSale1_Add_One">
+	<sql type="condition">
+		<!--如果启用“自动产生凭证”，则自动插入凭证-->
+    <exec condition="'@MEM:autoGenerateAcc'=='true'"><sql type="certificate">tblTransferSale1</sql></exec>
+    <exec condition="true"> 
+			<!--预收借方增加 影响往来（1应付 2应收 3预付 4预收）-->
+			<sql type="procedure">{call proc_insertComIni(@ValueofDB:tblTransferSale1_id,@ValueofDB:tblTransferSale1_CompanyCode,4,@ValueofDB:tblTransferSale1_BillDate,PreReceiveTotalDebit=@ValueofDB:tblTransferSale1_ExeTransferAmt@SPFieldLink:PreReceiveTotalLend=0@SPFieldLink:RelationDocID=@ValueofDB:tblTransferSale1_id@SPFieldLink:PeriodYear=@ValueofDB:tblTransferSale1_PeriodYear@SPFieldLink:BillType=tblTransferSale1@SPFieldLink:PeriodMonth=@ValueofDB:tblTransferSale1_PeriodMonth@SPFieldLink:Period=@ValueofDB:tblTransferSale1_Period@SPFieldLink:createBy=@ValueofDB:tblTransferSale1_createBy@SPFieldLink:lastUpdateBy=@ValueofDB:tblTransferSale1_lastUpdateBy@SPFieldLink:createTime=@ValueofDB:tblTransferSale1_createTime@SPFieldLink:lastUpdateTime=@ValueofDB:tblTransferSale1_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblTransferSale1_SCompanyID@SPFieldLink:Currency=@ValueofDB:tblTransferSale1_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblTransferSale1_CurrencyRate@SPFieldLink:FcPreRecTotalDebit=@ValueofDB:tblTransferSale1_FcExeTransferAmt@SPFieldLink:FcPreRecTotalCredit=0@SPFieldLink:BillNo=@ValueofDB:tblTransferSale1_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblTransferSale1_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblTransferSale1_DepartmentCode@SPFieldLink:Remark=@ValueofDB:tblTransferSale1_Remark,retCode,retVal)}</sql>
+			<!--应收借方减少-->
+			<sql type="procedure">{call proc_insertComIni(1@ValueofDB:tblTransferSale1_id,@ValueofDB:tblTransferSale1_InCompanyCode,2,@ValueofDB:tblTransferSale1_BillDate,ReceiveTotalDebit=0@SPFieldLink:ReceiveTotalLend=@ValueofDB:tblTransferSale1_ExeTransferAmt@SPFieldLink:RelationDocID=@ValueofDB:tblTransferSale1_id@SPFieldLink:PeriodYear=@ValueofDB:tblTransferSale1_PeriodYear@SPFieldLink:BillType=tblTransferSale1@SPFieldLink:PeriodMonth=@ValueofDB:tblTransferSale1_PeriodMonth@SPFieldLink:Period=@ValueofDB:tblTransferSale1_Period@SPFieldLink:createBy=@ValueofDB:tblTransferSale1_createBy@SPFieldLink:lastUpdateBy=@ValueofDB:tblTransferSale1_lastUpdateBy@SPFieldLink:createTime=@ValueofDB:tblTransferSale1_createTime@SPFieldLink:lastUpdateTime=@ValueofDB:tblTransferSale1_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblTransferSale1_SCompanyID@SPFieldLink:Currency=@ValueofDB:tblTransferSale1_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblTransferSale1_CurrencyRate@SPFieldLink:FcRecTotalDebit=0@SPFieldLink:FcRecTotalCredit=@ValueofDB:tblTransferSale1_FcExeTransferAmt@SPFieldLink:BillNo=@ValueofDB:tblTransferSale1_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblTransferSale1_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblTransferSale1_DepartmentCode@SPFieldLink:Remark=@ValueofDB:tblTransferSale1_Remark,retCode,retVal)}</sql>
+			<!--更新销售出库累计收款金额-->
+			<sql type="procedure">{call proc_iterateExeProc(select RefSalesOutID as RefbillID@SPFieldLink:ExeBalAmt as ExeBalAmt@SPFieldLink:ExeBalFcAmt as ExeBalFcAmt from tblTransferSaleDet1 k where k.f_ref='@ValueofDB:tblTransferSale1_id',proc_SalesReceiveAboutRecPD,@RefbillID@ParamLink:'tblSalesOutStock'@ParamLink:@ExeBalAmt@ParamLink:@ExeBalFcAmt@ParamLink:'add'@ParamLink:@MEM:DigitsAmount,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+</define> 
+<define name="tblTransferSale1_Del"> 
+	<sql type="condition"> 
+		<exec condition="'@MEM:tblTransferSale1_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblTransferSale1_Del_One</sql>
+		</exec>
+	</sql>	  		  
+</define>
+<define name="tblTransferSale1_Del_One">
+	<sql type="condition"><!--凭证启用了审核流，关联次单据的审核流已经审核完毕，不能修改此单 -->
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblTransferSale1_id and workFlowNodeName='finish'</select></condition>
+		<exec condition="'@SqlReturn:OrderNo'!= 'null' ">	 					
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>       
+		</exec>
+	</sql>
+	<sql type="condition">
+		<exec condition=" '@MEM:autoGenerateAcc'=='true'"><!--启用“自动产生凭证”时，删除凭证审核流或者减少科目余额，删除凭证信息-->
+		<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblTransferSale1_id,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	<!--删除预收账款往来明细-->
+	<sql type="procedure">{call proc_deleteComIni(@ValueofDB:tblTransferSale1_id,4,retCode,retVal)}</sql>	
+	<!--删除应收账款往来明细-->
+	<sql type="procedure">{call proc_deleteComIni(1@ValueofDB:tblTransferSale1_id,2,retCode,retVal)}</sql>
+	<!--更新销售出库累计收款金额-->
+	<sql type="procedure">{call proc_iterateExeProc(select RefSalesOutID as RefbillID@SPFieldLink:ExeBalAmt as ExeBalAmt@SPFieldLink:ExeBalFcAmt as ExeBalFcAmt from tblTransferSaleDet1 k where k.f_ref='@ValueofDB:tblTransferSale1_id',proc_SalesReceiveAboutRecPD,@RefbillID@ParamLink:'tblSalesOutStock'@ParamLink:@ExeBalAmt@ParamLink:@ExeBalFcAmt@ParamLink:'delete'@ParamLink:@MEM:DigitsAmount,retCode,retVal)}</sql>
+</define>	 
+<!--=====================================================以上代码：预收转应收=============================================================-->	
+ 
+<!--========================================================应付转应收=================================================================-->	 	
+<define name="tblTransferSale2_Add">
+	<sql type="condition"><!--转账金额必须大于0-->
+		<exec condition="@ValueofDB:tblTransferSale2_ExeTransferAmt&lt;=0">					
+			<error>ChangeAmount.Bill.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--关联单据编号的往来单位与转出单位不同，给出错误提示-->
+		<condition><select>select b.BillNo as difComO from tblTransferSale2 a,tblBuyInStock b where a.id=@ValueofDB:tblTransferSale2_id and a.RefBillNo=b.BillNo and b.CompanyCode!=a.CompanyCode</select></condition>
+		<exec condition="'@SqlReturn:difComO'!='null'">
+			<error>common.TransferDifComO.error,@SqlReturn:difComO</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表关联单据编号的往来单位与转入单位不同，给出错误提示-->
+		<condition><select>select b.BillNo as difCom from tblTransferSaleDet2 a,tblSalesOutStock b where a.f_ref=@ValueofDB:tblTransferSale2_id and a.RefbillID=b.BillNo and b.CompanyCode!=@ValueofDB:tblTransferSale1_InCompanyCode</select></condition>
+		<exec condition="'@SqlReturn:difCom'!='null'">
+			<error>common.TransferDifCom.error,@SqlReturn:difCom</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表如果出现重复的关联单据，给出错误提示-->
+		<condition><select>select COUNT(0) as billC from tblTransferSaleDet2 where f_ref=@ValueofDB:tblTransferSale2_id group by RefbillID having COUNT(0)&gt;1</select></condition>
+		<exec condition="@SqlReturn:billC&gt;0">
+			<error>common.sameBill.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表的本次结算金额小于等于0或者是大于待结算金额，给出错误提示-->
+		<condition><select>select RefbillID from tblTransferSaleDet2 where f_ref=@ValueofDB:tblTransferSale2_id and (ExeBalAmt&gt;WexeBalAmt or ExeBalAmt&lt;=0)</select></condition>
+		<exec condition="'@SqlReturn:RefbillID'!='null'">
+			<error>tblTransferSale.add.Amt,@SqlReturn:RefbillID</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--转账金额必须大于等于明细表本次结算金额合计，否则给出错误提示-->
+		<condition><select>select dbo.getDigits('tblTransferSaleDet2','ExeBalAmt',isnull(sum(tblTransferSaleDet2.ExeBalAmt),0)) as SumDetAmt from tblTransferSaleDet2 where f_ref=@ValueofDB:tblTransferSale2_id</select></condition>
+		<exec condition="@ValueofDB:tblTransferSale2_ExeTransferAmt&lt;@SqlReturn:SumDetAmt">
+			<error>TransferSale.add.TransferAmt.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--单据日期在引用的单据之前，给出错误提示(采购入库)-->
+		<condition><select>SELECT a.BillDate AS QuoteDate, len(isnull(a.BillDate,'')) as QuoteDateLen FROM tblSalesOutStock a JOIN tblTransferSaleDet2 b ON a.BillNo=b.RefbillID WHERE b.f_ref=@ValueofDB:tblTransferSale2_id</select></condition>
+		<exec condition=" @SqlReturn:QuoteDateLen &gt; 0 &amp;&amp; '@ValueofDB:tblTransferSale2_BillDate' &lt; '@SqlReturn:QuoteDate'">			
+			<error>common.billDateLessByQuoteDate.error,@ValueofDB:tblTransferSale2_BillDate,@SqlReturn:QuoteDate</error>       
+		</exec>
+	</sql>
+	<sql type="condition">
+		<exec condition="true">
+			<sql>update tblTransferSale2 set CertificateNo='' where id=@ValueofDB:tblTransferSale2_id</sql>
+		</exec>
+		<exec condition="'@MEM:tblTransferSale2_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblTransferSale2_Add_One</sql>
+		</exec>
+	</sql>
+</define>	
+<define name="tblTransferSale2_Add_One">
+	<sql type="condition">
+		<!--如果启用“自动产生凭证”，则自动插入凭证-->
+    <exec condition="'@MEM:autoGenerateAcc'=='true'"><sql type="certificate">tblTransferSale2</sql></exec>
+    <exec condition="true">
+			<!--转出单位的应付减少 影响往来（1应付 2应收 3预付 4预收）-->
+			<sql type="procedure">{call proc_insertComIni(@ValueofDB:tblTransferSale2_id,@ValueofDB:tblTransferSale2_CompanyCode,1,@ValueofDB:tblTransferSale2_BillDate,PayTotalDebit=@ValueofDB:tblTransferSale2_ExeTransferAmt@SPFieldLink:PayTotalLend=0@ParamNum:@SPFieldLink:RelationDocID=@ValueofDB:tblTransferSale2_id@SPFieldLink:PeriodYear=@ValueofDB:tblTransferSale2_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblTransferSale2_PeriodMonth@SPFieldLink:Period=@ValueofDB:tblTransferSale2_Period@SPFieldLink:BillType=tblTransferSale2@SPFieldLink:createBy=@ValueofDB:tblTransferSale2_createBy@SPFieldLink:lastUpdateBy=@ValueofDB:tblTransferSale2_lastUpdateBy@SPFieldLink:createTime=@ValueofDB:tblTransferSale2_createTime@SPFieldLink:lastUpdateTime=@ValueofDB:tblTransferSale2_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblTransferSale2_SCompanyID@SPFieldLink:Currency=@ValueofDB:tblTransferSale2_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblTransferSale2_CurrencyRate@SPFieldLink:FcPayTotalDebit=@ValueofDB:tblTransferSale2_FcExeTransferAmt@SPFieldLink:FcPayTotalCredit=0@ParamNum:@SPFieldLink:BillNo=@ValueofDB:tblTransferSale2_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblTransferSale2_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblTransferSale2_DepartmentCode@SPFieldLink:Remark=@ValueofDB:tblTransferSale2_Remark,retCode,retVal)}</sql>
+			<!--转入单位的应收减少-->
+			<sql type="procedure">{call proc_insertComIni(1@ValueofDB:tblTransferSale2_id,@ValueofDB:tblTransferSale2_InCompanyCode,2,@ValueofDB:tblTransferSale2_BillDate,ReceiveTotalDebit=0@ParamNum:@SPFieldLink:ReceiveTotalLend=@ValueofDB:tblTransferSale2_ExeTransferAmt@SPFieldLink:RelationDocID=@ValueofDB:tblTransferSale2_id@SPFieldLink:PeriodYear=@ValueofDB:tblTransferSale2_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblTransferSale2_PeriodMonth@SPFieldLink:BillType=tblTransferSale2@SPFieldLink:Period=@ValueofDB:tblTransferSale2_Period@SPFieldLink:createBy=@ValueofDB:tblTransferSale2_createBy@SPFieldLink:lastUpdateBy=@ValueofDB:tblTransferSale2_lastUpdateBy@SPFieldLink:createTime=@ValueofDB:tblTransferSale2_createTime@SPFieldLink:lastUpdateTime=@ValueofDB:tblTransferSale2_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblTransferSale2_SCompanyID@SPFieldLink:Currency=@ValueofDB:tblTransferSale2_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblTransferSale2_CurrencyRate@SPFieldLink:FcRecTotalDebit=0@ParamNum:@SPFieldLink:FcRecTotalCredit=@ValueofDB:tblTransferSale2_FcExeTransferAmt@SPFieldLink:BillNo=@ValueofDB:tblTransferSale2_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblTransferSale2_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblTransferSale2_DepartmentCode@SPFieldLink:Remark=@ValueofDB:tblTransferSale2_Remark,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition><select>select id as RefbillID from tblBuyInStock where BillNo=@ValueofDB:tblTransferSale2_RefBillNo</select></condition>	
+		<!--更新采购入库单累计付款金额-->
+		<exec condition="'@SqlReturn:RefbillID'!='null'">
+			<sql type="procedure">{call proc_BuyPayAboutPay(@SqlReturn:RefbillID,tblBuyInStock,@ValueofDB:tblTransferSale2_ExeTransferAmt,add,@MEM:DigitsAmount,retCode,retVal)}</sql>
+		</exec>
+		<!--更新销售出库累计收款金额-->
+		<exec condition="true">
+			<sql type="procedure">{call proc_iterateExeProc(select l.id as RefbillID@SPFieldLink:ExeBalAmt as ExeBalAmt from tblTransferSaleDet2 k join tblSalesOutStock l on k.RefbillID=l.BillNo where k.f_ref='@ValueofDB:tblTransferSale2_id',proc_SalesReceiveAboutRec,@RefbillID@ParamLink:'tblSalesOutStock'@ParamLink:@ExeBalAmt@ParamLink:'add'@ParamLink:@MEM:DigitsAmount,retCode,retVal)}</sql>
+		</exec>	 
+	</sql>				 		    
+</define>
+
+<define name="tblTransferSale2_Del">
+	<sql type="condition">
+		<exec condition="'@MEM:tblTransferSale2_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblTransferSale2_Del_One</sql>
+		</exec>
+	</sql>	
+</define>
+<define name="tblTransferSale2_Del_One">
+	<sql type="condition">
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblTransferSale2_id and workFlowNodeName='finish'</select></condition>
+		<!--凭证启用了审核流，关联次单据的审核流已经审核完毕，不能修改此单 -->
+		<exec condition="'@SqlReturn:OrderNo'!= 'null' ">	 					
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>       
+		</exec>
+		<!--启用“自动产生凭证”时，删除凭证审核流或者减少科目余额，删除凭证信息-->
+		<exec condition=" '@MEM:autoGenerateAcc'=='true'">
+			<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblTransferSale2_id,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+  
+	<!--删除转出单位的应付记录-->
+	<sql type="procedure">{call proc_deleteComIni(@ValueofDB:tblTransferSale2_id,1,retCode,retVal)}</sql>	 
+	<!--删除转入单位的应收记录-->
+	<sql type="procedure">{call proc_deleteComIni(1@ValueofDB:tblTransferSale2_id,2,retCode,retVal)}</sql>
+	<sql type="condition">
+		<condition><select>select a.id as RefbillID,b.ExeTransferAmt from tblBuyInStock a,tblTransferSale2 b where b.id=@ValueofDB:tblTransferSale2_id and a.BillNo=b.RefBillNo</select></condition>	
+		<!--更新采购入库单累计付款金额-->
+		<exec condition="'@SqlReturn:RefbillID'!='null'">
+			<sql type="procedure">{call proc_BuyPayAboutPay(@SqlReturn:RefbillID,tblBuyInStock,@SqlReturn:ExeTransferAmt,delete,@MEM:DigitsAmount,retCode,retVal)}</sql>
+		</exec>
+		<!--更新销售出库累计收款金额-->
+		<exec condition="true">
+			<sql type="procedure">{call proc_iterateExeProc(select l.id as RefbillID@SPFieldLink:ExeBalAmt as ExeBalAmt from tblTransferSaleDet2 k join tblSalesOutStock l on k.RefbillID=l.BillNo where k.f_ref='@ValueofDB:tblTransferSale2_id',proc_SalesReceiveAboutRec,@RefbillID@ParamLink:'tblSalesOutStock'@ParamLink:@ExeBalAmt@ParamLink:'delete'@ParamLink:@MEM:DigitsAmount,retCode,retVal)}</sql>
+		</exec>	 
+	</sql>	
+</define>		
+<!--========================================================以上代码：应付转应收=============================================================-->		
+
+<!--============================================================预付转应付=============================================================-->		
+<define name="tblTransferSale3_Add">
+	<sql type="condition"><!--转账金额必须大于0-->
+		<exec condition="@ValueofDB:tblTransferSale3_ExeTransferAmt&lt;=0">					
+			<error>ChangeAmount.Bill.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表关联单据编号的往来单位与转入单位不同，给出错误提示-->
+		<condition><select>select b.BillNo as difCom from tblTransferSaleDet3 a,tblBuyInStock b where a.f_ref=@ValueofDB:tblTransferSale3_id and a.RefbillID=b.id and b.CompanyCode!=@ValueofDB:tblTransferSale1_InCompanyCode</select></condition>
+		<exec condition="'@SqlReturn:difCom'!='null'">
+			<error>common.TransferDifCom.error,@SqlReturn:difCom</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表如果出现重复的关联单据，给出错误提示-->
+		<condition><select>select COUNT(0) as billC from tblTransferSaleDet3 where f_ref=@ValueofDB:tblTransferSale3_id group by RefbillID having COUNT(0)&gt;1</select></condition>
+		<exec condition="@SqlReturn:billC&gt;0">
+			<error>common.sameBill.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表的本次结算金额小于等于0或者是大于待结算金额，给出错误提示-->
+		<condition><select>select RefbillNo from tblTransferSaleDet3 where f_ref=@ValueofDB:tblTransferSale3_id and (ExeBalAmt&gt;WexeBalAmt or ExeBalAmt&lt;=0)</select></condition>
+		<exec condition="'@SqlReturn:RefbillNo'!='null'">
+			<error>tblTransferSale.add.Amt,@SqlReturn:RefbillNo</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--转账金额必须大于等于明细表本次结算金额合计，否则给出错误提示-->
+		<condition><select>select dbo.getDigits('tblTransferSaleDet3','ExeBalAmt',isnull(sum(tblTransferSaleDet3.ExeBalAmt),0)) as SumDetAmt from tblTransferSaleDet3 where f_ref=@ValueofDB:tblTransferSale3_id</select></condition>
+		<exec condition="@ValueofDB:tblTransferSale3_ExeTransferAmt&lt;@SqlReturn:SumDetAmt">
+			<error>TransferSale.add.TransferAmt.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--单据日期在引用的单据之前，给出错误提示(采购入库)-->
+		<condition><select>SELECT a.BillDate AS QuoteDate, len(isnull(a.BillDate,'')) as QuoteDateLen FROM tblBuyInStock a JOIN tblTransferSaleDet3 b ON a.id=b.RefBillID WHERE b.f_ref=@ValueofDB:tblTransferSale3_id</select></condition>
+		<exec condition="@SqlReturn:QuoteDateLen &gt; 0 &amp;&amp;'@ValueofDB:tblTransferSale3_BillDate' &lt; '@SqlReturn:QuoteDate'">			
+			<error>common.billDateLessByQuoteDate.error,@ValueofDB:tblTransferSale3_BillDate,@SqlReturn:QuoteDate</error>       
+		</exec>
+	</sql>
+	<sql type="condition">
+		<exec condition="true">
+			<sql>update tblTransferSale3 set CertificateNo='' where id=@ValueofDB:tblTransferSale3_id</sql>
+		</exec>
+		<exec condition="'@MEM:tblTransferSale3_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblTransferSale3_Add_One</sql>
+		</exec>
+	</sql>	
+</define>	
+<define name="tblTransferSale3_Add_One">	
+	<sql type="condition">
+		<!--如果启用“自动产生凭证”，则自动插入凭证-->
+    <exec condition="'@MEM:autoGenerateAcc'=='true'"><sql type="certificate">tblTransferSale3</sql></exec> 
+    <exec condition="true">		
+			<!--转出单位的预付减少 影响往来（1应付 2应收 3预付 4预收）-->
+			<sql type="procedure">{call proc_insertComIni(@ValueofDB:tblTransferSale3_id,@ValueofDB:tblTransferSale3_CompanyCode,3,@ValueofDB:tblTransferSale3_BillDate,PrePayTotalDebit=0@SPFieldLink:PrePayTotalLend=@ValueofDB:tblTransferSale3_ExeTransferAmt@SPFieldLink:RelationDocID=@ValueofDB:tblTransferSale3_id@SPFieldLink:BillType=tblTransferSale3@SPFieldLink:PeriodYear=@ValueofDB:tblTransferSale3_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblTransferSale3_PeriodMonth@SPFieldLink:Period=@ValueofDB:tblTransferSale3_Period@SPFieldLink:createBy=@ValueofDB:tblTransferSale3_createBy@SPFieldLink:createTime=@ValueofDB:tblTransferSale3_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblTransferSale3_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblTransferSale3_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblTransferSale3_SCompanyID@SPFieldLink:Currency=@ValueofDB:tblTransferSale3_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblTransferSale3_CurrencyRate@SPFieldLink:FcPrePayTotalDebit=0@SPFieldLink:FcPrePayTotalCredit=@ValueofDB:tblTransferSale3_FcExeTransferAmt@SPFieldLink:BillNo=@ValueofDB:tblTransferSale3_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblTransferSale3_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblTransferSale3_DepartmentCode@SPFieldLink:Remark=@ValueofDB:tblTransferSale3_Remark,retCode,retVal)}</sql>
+			<!--转入单位的应付减少-->
+			<sql type="procedure">{call proc_insertComIni(1@ValueofDB:tblTransferSale3_id,@ValueofDB:tblTransferSale3_InCompanyCode,1,@ValueofDB:tblTransferSale3_BillDate,PayTotalDebit=@ValueofDB:tblTransferSale3_ExeTransferAmt@SPFieldLink:PayTotalLend=0@ParamNum:@SPFieldLink:RelationDocID=@ValueofDB:tblTransferSale3_id@SPFieldLink:BillType=tblTransferSale3@SPFieldLink:PeriodYear=@ValueofDB:tblTransferSale3_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblTransferSale3_PeriodMonth@SPFieldLink:Period=@ValueofDB:tblTransferSale3_Period@SPFieldLink:createBy=@ValueofDB:tblTransferSale3_createBy@SPFieldLink:createTime=@ValueofDB:tblTransferSale3_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblTransferSale3_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblTransferSale3_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblTransferSale3_SCompanyID@SPFieldLink:Currency=@ValueofDB:tblTransferSale3_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblTransferSale3_CurrencyRate@SPFieldLink:FcPayTotalDebit=@ValueofDB:tblTransferSale3_FcExeTransferAmt@SPFieldLink:FcPayTotalCredit=0@ParamNum:@SPFieldLink:BillNo=@ValueofDB:tblTransferSale3_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblTransferSale3_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblTransferSale3_DepartmentCode@SPFieldLink:Remark=@ValueofDB:tblTransferSale3_Remark,retCode,retVal)}
+			</sql>
+			<!--相关采购入库单的累计付款增加-->
+			<sql type="procedure">{call proc_iterateExeProc(select RefbillID as RefbillID@SPFieldLink:ExeBalAmt as ExeBalAmt@SPFieldLink:ExeBalFcAmt as ExeBalFcAmt from tblTransferSaleDet3 where f_ref='@ValueofDB:tblTransferSale3_id',proc_BuyPayAboutPayPD,@RefbillID@ParamLink:'tblBuyInStock'@ParamLink:@ExeBalAmt@ParamLink:@ExeBalFcAmt@ParamLink:'add'@ParamLink:@MEM:DigitsAmount,retCode,retVal)}</sql>
+		</exec> 
+	</sql>			
+</define>
+
+<define name="tblTransferSale3_Del">
+	<sql type="condition">
+		<exec condition="'@MEM:tblTransferSale3_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblTransferSale3_Del_One</sql>
+		</exec>
+	</sql>	 
+</define>
+<define name="tblTransferSale3_Del_One">
+	<sql type="condition"><!--凭证启用了审核流，关联此单据的审核流已经审核完毕，不能修改此单 -->
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblTransferSale3_id and workFlowNodeName='finish'</select></condition>
+		<exec condition="'@SqlReturn:OrderNo'!= 'null' ">	 					
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>       
+		</exec>
+	</sql>
+	<sql type="condition">
+  <exec condition=" '@MEM:autoGenerateAcc'=='true'"><!--启用“自动产生凭证”时，删除凭证审核流或者减少科目余额，删除凭证信息-->
+		<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblTransferSale3_id,retCode,retVal)}</sql>
+	</exec>
+	</sql>
+	<!--删除转出单位的预付记录-->
+	<sql type="procedure">{call proc_deleteComIni(@ValueofDB:tblTransferSale3_id,3,retCode,retVal)}</sql>
+	<!--删除转入单位的应付记录-->
+	<sql type="procedure">{call proc_deleteComIni(1@ValueofDB:tblTransferSale3_id,1,retCode,retVal)}</sql>	
+	<!--相关采购入库单的累计付款增加-->
+	<sql type="procedure">{call proc_iterateExeProc(select RefbillID as RefbillID@SPFieldLink:ExeBalAmt as ExeBalAmt@SPFieldLink:ExeBalFcAmt as ExeBalFcAmt from tblTransferSaleDet3 where f_ref='@ValueofDB:tblTransferSale3_id',proc_BuyPayAboutPayPD,@RefbillID@ParamLink:'tblBuyInStock'@ParamLink:@ExeBalAmt@ParamLink:@ExeBalFcAmt@ParamLink:'delete'@ParamLink:@MEM:DigitsAmount,retCode,retVal)}</sql>
+</define>
+<!--===============================================以上代码：预付转应付===============================================-->
+
+<!--=================================================应收转应付======================================================-->		 	
+<define name="tblTransferSale4_Add">
+	<sql type="condition"><!--转账金额必须大于0-->
+		<exec condition="@ValueofDB:tblTransferSale4_ExeTransferAmt&lt;=0">					
+			<error>ChangeAmount.Bill.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--关联单据编号的往来单位与转出单位不同，给出错误提示-->
+		<condition><select>select b.BillNo as difComO from tblTransferSale4 a,tblSalesOutStock b where a.id=@ValueofDB:tblTransferSale4_id and a.RefBillNo=b.BillNo and b.CompanyCode!=a.CompanyCode</select></condition>
+		<exec condition="'@SqlReturn:difComO'!='null'">
+			<error>common.TransferDifComO.error,@SqlReturn:difComO</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表关联单据编号的往来单位与转入单位不同，给出错误提示-->
+		<condition><select>select b.BillNo as difCom from tblTransferSaleDet4 a,tblBuyInStock b where a.f_ref=@ValueofDB:tblTransferSale4_id and a.RefbillID=b.BillNo and b.CompanyCode!=@ValueofDB:tblTransferSale1_InCompanyCode</select></condition>
+		<exec condition="'@SqlReturn:difCom'!='null'">
+			<error>common.TransferDifCom.error,@SqlReturn:difCom</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表如果出现重复的关联单据，给出错误提示-->
+		<condition><select>select COUNT(0) as billC from tblTransferSaleDet4 where f_ref=@ValueofDB:tblTransferSale4_id group by RefbillID having COUNT(0)&gt;1</select></condition>
+		<exec condition="@SqlReturn:billC&gt;0">
+			<error>common.sameBill.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表的本次结算金额小于等于0或者是大于待结算金额，给出错误提示-->
+		<condition><select>select RefbillID from tblTransferSaleDet4 where f_ref=@ValueofDB:tblTransferSale4_id and (ExeBalAmt&gt;WexeBalAmt or ExeBalAmt&lt;=0)</select></condition>
+		<exec condition="'@SqlReturn:RefbillID'!='null'">
+			<error>tblTransferSale.add.Amt,@SqlReturn:RefbillID</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--转账金额必须大于等于明细表本次结算金额合计，否则给出错误提示-->
+		<condition><select>select dbo.getDigits('tblTransferSaleDet4','ExeBalAmt',isnull(sum(tblTransferSaleDet4.ExeBalAmt),0)) as SumDetAmt from tblTransferSaleDet4 where f_ref=@ValueofDB:tblTransferSale4_id</select></condition>
+		<exec condition="@ValueofDB:tblTransferSale4_ExeTransferAmt&lt;@SqlReturn:SumDetAmt">
+			<error>TransferSale.add.TransferAmt.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--单据日期在引用的单据之前，给出错误提示(采购入库)-->
+		<condition><select>SELECT a.BillDate AS QuoteDate, len(isnull(a.BillDate,'')) as QuoteDateLen FROM tblBuyInStock a JOIN tblTransferSaleDet4 b ON a.BillNo=b.RefBillID WHERE b.f_ref=@ValueofDB:tblTransferSale4_id</select></condition>
+		<exec condition="@SqlReturn:QuoteDateLen &gt; 0 &amp;&amp;'@ValueofDB:tblTransferSale4_BillDate' &lt; '@SqlReturn:QuoteDate'">			
+			<error>common.billDateLessByQuoteDate.error,@ValueofDB:tblTransferSale4_BillDate,@SqlReturn:QuoteDate</error>       
+		</exec>
+	</sql>
+	<sql type="condition">
+		<exec condition="true">
+			<sql>update tblTransferSale4 set CertificateNo='' where id=@ValueofDB:tblTransferSale4_id</sql>
+		</exec>
+		<exec condition="'@MEM:tblTransferSale4_IsStatart'=='0'&amp;&amp;@MEM:OpenInvoice==false">
+			<sql type="define">tblTransferSale4_Add_One</sql>
+		</exec>
+	</sql>
+</define>
+<define name="tblTransferSale4_Add_One">
+	<sql type="condition">
+		<!--如果启用“自动产生凭证”，则自动插入凭证-->
+    <exec condition="'@MEM:autoGenerateAcc'=='true'"><sql type="certificate">tblTransferSale4</sql></exec> 
+    <exec condition="true">
+			<!--转出单位的应收减少 影响往来（1应付 2应收 3预付 4预收）-->
+			<sql type="procedure">{call proc_insertComIni(@ValueofDB:tblTransferSale4_id,@ValueofDB:tblTransferSale4_CompanyCode,2,@ValueofDB:tblTransferSale4_BillDate,ReceiveTotalDebit=0@SPFieldLink:ReceiveTotalLend=@ValueofDB:tblTransferSale4_ExeTransferAmt@SPFieldLink:RelationDocID=@ValueofDB:tblTransferSale4_id@SPFieldLink:BillType=tblTransferSale4@SPFieldLink:PeriodYear=@ValueofDB:tblTransferSale4_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblTransferSale4_PeriodMonth@SPFieldLink:Period=@ValueofDB:tblTransferSale4_Period@SPFieldLink:createBy=@ValueofDB:tblTransferSale4_createBy@SPFieldLink:createTime=@ValueofDB:tblTransferSale4_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblTransferSale4_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblTransferSale4_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblTransferSale4_SCompanyID@SPFieldLink:Currency=@ValueofDB:tblTransferSale4_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblTransferSale4_CurrencyRate@SPFieldLink:FcRecTotalDebit=0@SPFieldLink:FcRecTotalCredit=@ValueofDB:tblTransferSale4_FcExeTransferAmt@SPFieldLink:BillNo=@ValueofDB:tblTransferSale4_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblTransferSale4_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblTransferSale4_DepartmentCode@SPFieldLink:Remark=@ValueofDB:tblTransferSale4_Remark,retCode,retVal)}</sql>
+			<!--转入单位的应付减少-->
+			<sql type="procedure">{call proc_insertComIni(1@ValueofDB:tblTransferSale4_id,@ValueofDB:tblTransferSale4_InCompanyCode,1,@ValueofDB:tblTransferSale4_BillDate,PayTotalDebit=@ValueofDB:tblTransferSale4_ExeTransferAmt@SPFieldLink:PayTotalLend=0@SPFieldLink:RelationDocID=@ValueofDB:tblTransferSale4_id@SPFieldLink:BillType=tblTransferSale4@SPFieldLink:PeriodYear=@ValueofDB:tblTransferSale4_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblTransferSale4_PeriodMonth@SPFieldLink:Period=@ValueofDB:tblTransferSale4_Period@SPFieldLink:createBy=@ValueofDB:tblTransferSale4_createBy@SPFieldLink:createTime=@ValueofDB:tblTransferSale4_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblTransferSale4_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblTransferSale4_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblTransferSale4_SCompanyID@SPFieldLink:Currency=@ValueofDB:tblTransferSale4_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblTransferSale4_CurrencyRate@SPFieldLink:FcPayTotalDebit=@ValueofDB:tblTransferSale4_FcExeTransferAmt@SPFieldLink:FcPayTotalCredit=0@SPFieldLink:BillNo=@ValueofDB:tblTransferSale4_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblTransferSale4_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblTransferSale4_DepartmentCode@SPFieldLink:Remark=@ValueofDB:tblTransferSale4_Remark,retCode,retVal)}</sql>
+		</exec>	
+	</sql>
+	<sql type="condition">
+		<condition><select>select id as RefbillID from tblSalesOutStock where BillNo=@ValueofDB:tblTransferSale4_RefBillNo</select></condition>	
+		<!--更新销售出库单累计收款金额-->
+		<exec condition="'@SqlReturn:RefbillID'!='null'">
+			<sql type="procedure">{call proc_SalesReceiveAboutRec(@SqlReturn:RefbillID,tblSalesOutStock,@ValueofDB:tblTransferSale4_ExeTransferAmt,add,@MEM:DigitsAmount,retCode,retVal)}</sql>
+		</exec>
+		<!--更新采购入库单累计付款金额-->
+		<exec condition="true">
+			<sql type="procedure">{call proc_iterateExeProc(select l.id as RefbillID@SPFieldLink:ExeBalAmt as ExeBalAmt from tblTransferSaleDet4 k join tblBuyInStock l on k.RefbillID=l.BillNo where k.f_ref='@ValueofDB:tblTransferSale4_id',proc_BuyPayAboutPay,@RefbillID@ParamLink:'tblBuyInStock'@ParamLink:@ExeBalAmt@ParamLink:'add'@ParamLink:@MEM:DigitsAmount,retCode,retVal)}</sql>
+		</exec>	 
+	</sql>
+</define>
+
+<define name="tblTransferSale4_Del">
+	<sql type="condition">
+		<exec condition="'@MEM:tblTransferSale4_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblTransferSale4_Del_One</sql>
+		</exec>
+	</sql>	
+</define>
+<define name="tblTransferSale4_Del_One">
+	<sql type="condition"><!--凭证启用了审核流，关联此单据的审核流已经审核完毕，不能修改此单 -->
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblTransferSale4_id and workFlowNodeName='finish'</select></condition>
+		<exec condition="'@SqlReturn:OrderNo'!= 'null' ">	 					
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>       
+		</exec>
+	</sql>
+    <sql type="condition">
+	    <exec condition=" '@MEM:autoGenerateAcc'=='true'"><!--启用“自动产生凭证”时，删除凭证审核流或者减少科目余额，删除凭证信息-->
+		    <sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblTransferSale4_id,retCode,retVal)}</sql>
+	    </exec>
+    </sql>
+	<!--删除转出单位的应收-->
+	<sql type="procedure">{call proc_deleteComIni(@ValueofDB:tblTransferSale4_id,2,retCode,retVal)}</sql>
+	<!--删除转入单位的应付-->
+	<sql type="procedure">{call proc_deleteComIni(1@ValueofDB:tblTransferSale4_id,1,retCode,retVal)}</sql>
+	
+	<sql type="condition">
+		<condition><select>select a.id as RefbillID,ExeTransferAmt from tblSalesOutStock a,tblTransferSale4 b where b.id=@ValueofDB:tblTransferSale4_id and a.BillNo=b.RefBillNo</select></condition>	
+		<!--更新销售出库单累计收款金额-->
+		<exec condition="'@SqlReturn:RefbillID'!='null'">
+			<sql type="procedure">{call proc_SalesReceiveAboutRec(@SqlReturn:RefbillID,tblSalesOutStock,@SqlReturn:ExeTransferAmt,delete,@MEM:DigitsAmount,retCode,retVal)}</sql>
+		</exec>
+		<!--更新采购入库单累计付款金额-->
+		<exec condition="true">
+			<sql type="procedure">{call proc_iterateExeProc(select l.id as RefbillID@SPFieldLink:ExeBalAmt as ExeBalAmt from tblTransferSaleDet4 k join tblBuyInStock l on k.RefbillID=l.BillNo where k.f_ref='@ValueofDB:tblTransferSale4_id',proc_BuyPayAboutPay,@RefbillID@ParamLink:'tblBuyInStock'@ParamLink:@ExeBalAmt@ParamLink:'delete'@ParamLink:@MEM:DigitsAmount,retCode,retVal)}</sql>
+		</exec>	 
+	</sql>
+</define>
+<!--===========================================================以上代码：应收转应付==========================================================-->		
+
+
+
+
+<!--============================================================应收调账单========================================================-->	
+<define name="tblAccAdjust_Add">
+	<sql type="condition"><!--调账金额必须大于0-->
+		<exec condition="@ValueofDB:tblAccAdjust_TotalAmount&lt;=0">					
+			<error>common.AdjustAmount.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表如果出现重复的关联单据，给出错误提示-->
+		<condition><select>select COUNT(0) as billC from tblAccAdjustDet where f_ref=@ValueofDB:tblAccAdjust_id group by RefBillID having COUNT(0)&gt;1</select></condition>
+		<exec condition="@SqlReturn:billC&gt;0">
+			<error>common.sameBill.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表的本次调账金额小于等于0，给出错误提示-->
+		<condition><select>select RefbillNo from tblAccAdjustDet where f_ref=@ValueofDB:tblAccAdjust_id and Amount&lt;=0</select></condition>
+		<exec condition="'@SqlReturn:RefbillNo'!='null'">
+			<error>common.AdjustDetAmount.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--调账金额必须大于等于明细表本次调账金额合计，否则给出错误提示-->
+		<condition><select>select isnull(dbo.getDigits('tblPayAdjustDet','Amount',sum(Amount)),0) as SumDetAmt from tblAccAdjustDet where f_ref=@ValueofDB:tblAccAdjust_id</select></condition>
+		<exec condition="@ValueofDB:tblAccAdjust_TotalAmount&lt;@SqlReturn:SumDetAmt">
+			<error>common.AdjustLettDetAmt.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--单据日期在引用的单据之前，给出错误提示(销售出库)-->
+		<condition><select>SELECT a.BillDate AS QuoteDate, len(isnull(a.BillDate,'')) as QuoteDateLen FROM tblSalesOutStock a JOIN tblAccAdjustDet b ON a.id=b.RefBillID WHERE b.f_ref=@ValueofDB:tblAccAdjust_id</select></condition>
+		<exec condition="@SqlReturn:QuoteDateLen &gt; 0 &amp;&amp;'@ValueofDB:tblAccAdjust_BillDate' &lt; '@SqlReturn:QuoteDate'">			
+			<error>common.billDateLessByQuoteDate.error,@ValueofDB:tblAccAdjust_BillDate,@SqlReturn:QuoteDate</error>       
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition>
+           <select>select 'Exists' as ExistsErrorType0 from tblBillAccSetup a where a.MainType='tblAccAdjustLess' and a.SubCode=@ValueofDB:tblAccAdjust_SubCode</select>
+           <select>select 'Exists' as ExistsErrorType1 from tblBillAccSetup a where a.MainType='tblAccAdjustMore' and a.SubCode=@ValueofDB:tblAccAdjust_SubCode</select>
+        </condition>
+		<!--未选择调账类型则后台更新应付调减默认为采购优惠应付调增的默认为应付增加-->
+		<exec condition="('@ValueofDB:tblAccAdjust_AdjustType'=='0'&amp;&amp;('@ValueofDB:tblAccAdjust_SubCode'==''||'@SqlReturn:ExistsErrorType0'!='Exists'))">
+			<sql>update tblAccAdjust set SubCode='671106' where id=@ValueofDB:tblAccAdjust_id</sql>
+		</exec>
+		<exec condition="('@ValueofDB:tblAccAdjust_AdjustType'=='1' &amp;&amp;('@ValueofDB:tblAccAdjust_SubCode'==''||'@SqlReturn:ExistsErrorType1'!='Exists'))">
+			<sql>update tblAccAdjust set SubCode='630107' where id=@ValueofDB:tblAccAdjust_id</sql>
+		</exec>	
+		<exec condition="true">
+			<sql>update tblAccAdjust set CertificateNo='' where id=@ValueofDB:tblAccAdjust_id</sql>
+		</exec>
+		<exec condition="'@MEM:tblAccAdjust_IsStatart' == '0'">
+			<sql type="define">tblAccAdjust_Add_One</sql>
+		</exec>
+	</sql>
+</define>
+		
+<define name="tblAccAdjust_Add_One">
+	<sql type="condition">
+    <!--如果启用“自动产生凭证”，则自动插入凭证-->
+    <exec condition="'@MEM:autoGenerateAcc'=='true'"><sql type="certificate">tblAccAdjust</sql></exec>
+		<exec condition="true">
+			<!-- 往来单位明细 （1应付 2应付 3预付 4预收）-->
+			<sql type="procedure">{call proc_insertComIni(@ValueofDB:tblAccAdjust_id,@ValueofDB:tblAccAdjust_CompanyCode,2,@ValueofDB:tblAccAdjust_BillDate,Period=@ValueofDB:tblAccAdjust_Period@SPFieldLink:PeriodYear=@ValueofDB:tblAccAdjust_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblAccAdjust_PeriodMonth@SPFieldLink:ReceiveTotalLend=0@SPFieldLink:ReceiveTotalDebit=(case when @ValueofDB:tblAccAdjust_AdjustType='0' then -1 else 1 end)*@ValueofDB:tblAccAdjust_TotalAmount@ParamNum:@SPFieldLink:RelationDocID=@ValueofDB:tblAccAdjust_id@SPFieldLink:Currency=@ValueofDB:tblAccAdjust_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblAccAdjust_CurrencyRate@SPFieldLink:createBy=@ValueofDB:tblAccAdjust_createBy@SPFieldLink:createTime=@ValueofDB:tblAccAdjust_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblAccAdjust_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblAccAdjust_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblAccAdjust_SCompanyID@SPFieldLink:FcRecTotalCredit=0@SPFieldLink:FcRecTotalDebit=(case when @ValueofDB:tblAccAdjust_AdjustType='0' then -1 else 1 end)*@ValueofDB:tblAccAdjust_CurTotalAmount@ParamNum:@SPFieldLink:BillType=tblAccAdjust@SPFieldLink:BillNo=@ValueofDB:tblAccAdjust_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblAccAdjust_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblAccAdjust_DepartmentCode@SPFieldLink:Remark=@ValueofDB:tblAccAdjust_Remark,retCode,retVal)}</sql>
+			<!--更新明细表中销售出库单的待收款金额,调价后金额-->
+			<sql>update tblSalesOutStock set NeedReturnAmt=NeedReturnAmt+(case when @ValueofDB:tblAccAdjust_AdjustType='0' then -1 else 1 end)*k.Amount,AfterChangeAmt=AfterChangeAmt+(case when @ValueofDB:tblAccAdjust_AdjustType='0' then -1 else 1 end)*k.Amount,ChangeAmt=ChangeAmt+(case when @ValueofDB:tblAccAdjust_AdjustType='0' then -1 else 1 end)*k.Amount,NoInvoiceAmount=NoInvoiceAmount+(case when @ValueofDB:tblAccAdjust_AdjustType='0' then -1 else 1 end)*k.Amount from tblAccAdjustDet k where k.f_ref=@ValueofDB:tblAccAdjust_id and k.RefBillID=tblSalesOutStock.id</sql>
+			<!--更新明细表中销售出库单的明细表调价后金额-->
+			<sql>update tblSalesOutStockDet set AfterChangeAmt=AfterChangeAmt+case when (select sum(TaxAmount) from tblSalesOutStockDet t where t.f_ref=tblSalesOutStockDet.f_ref)=0 then 0 else dbo.getDigits('tblSalesOutStockDet','AfterChangeAmt',((case when @ValueofDB:tblAccAdjust_AdjustType='0' then -1 else 1 end)*k.Amount)*TaxAmount/(select sum(TaxAmount) from tblSalesOutStockDet t where t.f_ref=tblSalesOutStockDet.f_ref)) end from tblAccAdjustDet k where k.f_ref=@ValueofDB:tblAccAdjust_id and k.RefBillID=tblSalesOutStockDet.f_ref</sql>
+		 </exec>
+	</sql>				 		    
+</define>
+<define name="tblAccAdjust_Del">
+	<sql type="condition">
+		<exec condition="'@MEM:tblAccAdjust_IsStatart' == '0'">
+			<sql type="define">tblAccAdjust_Del_One</sql>
+		</exec>
+	</sql>	
+</define>
+
+<define name="tblAccAdjust_Del_One">
+	<sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblAccAdjust_id and  workFlowNodeName='finish'</select></condition>
+		<exec condition="&quot;@SqlReturn:OrderNo&quot;!=&quot;null&quot;">	
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>                  
+		</exec>
+	</sql>
+	<sql type="condition"><!-- 删除往来明细:修改类型（1应付 2应收 3预付 4预收） -->
+		<condition><select>select id as IniId from tblCompanyIni where relationDocID=@ValueofDB:tblAccAdjust_id</select></condition>
+		<exec condition="true">
+			<sql type="procedure">{call proc_deleteComIni(@SqlReturn:IniId,2,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--更新明细表中采购入库单的待付款金额,调价后金额-->
+		<condition><select>select AdjustType from tblAccAdjust where id=@ValueofDB:tblAccAdjust_id</select></condition>
+		<exec condition="true">
+			<sql>update tblSalesOutStock set NeedReturnAmt=NeedReturnAmt-(case when @SqlReturn:AdjustType='0' then -1 else 1 end)*k.Amount,AfterChangeAmt=AfterChangeAmt-(case when @SqlReturn:AdjustType='0' then -1 else 1 end)*k.Amount,ChangeAmt=ChangeAmt-(case when @SqlReturn:AdjustType='0' then -1 else 1 end)*k.Amount,NoInvoiceAmount=NoInvoiceAmount-(case when @SqlReturn:AdjustType='0' then -1 else 1 end)*k.Amount from tblAccAdjustDet k where k.f_ref=@ValueofDB:tblAccAdjust_id and k.RefBillID=tblSalesOutStock.id</sql> 
+			<!--更新明细表中销售出库单的明细表调价后金额-->
+			<sql>update tblSalesOutStockDet set AfterChangeAmt=AfterChangeAmt-case when (select sum(TaxAmount) from tblSalesOutStockDet t where t.f_ref=tblSalesOutStockDet.f_ref)=0 then 0 else dbo.getDigits('tblSalesOutStockDet','AfterChangeAmt',((case when @SqlReturn:AdjustType='0' then -1 else 1 end)*k.Amount)*TaxAmount/(select sum(TaxAmount) from tblSalesOutStockDet t where t.f_ref=tblSalesOutStockDet.f_ref)) end from tblAccAdjustDet k where k.f_ref=@ValueofDB:tblAccAdjust_id and k.RefBillID=tblSalesOutStockDet.f_ref</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<exec condition=" '@MEM:autoGenerateAcc'=='true'"><!--启用“自动产生凭证”时，删除凭证审核流或者减少科目余额，删除凭证信息-->
+			<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblAccAdjust_id,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+</define>	
+<!--======================================================应付调帐单==========================================================-->	
+<define name="tblPayAdjust_Add">
+	<sql type="condition"><!--调账金额必须大于0-->
+		<exec condition="@ValueofDB:tblPayAdjust_TotalAmount&lt;=0">					
+			<error>common.AdjustAmount.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表如果出现重复的关联单据，给出错误提示-->
+		<condition><select>select COUNT(0) as billC from tblPayAdjustDet where f_ref=@ValueofDB:tblPayAdjust_id group by RefBillID having COUNT(0)&gt;1</select></condition>
+		<exec condition="@SqlReturn:billC&gt;0">
+			<error>common.sameBill.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表的本次调账金额小于等于0，给出错误提示-->
+		<condition><select>select RefbillNo from tblPayAdjustDet where f_ref=@ValueofDB:tblPayAdjust_id and Amount&lt;=0</select></condition>
+		<exec condition="'@SqlReturn:RefbillNo'!='null'">
+			<error>common.AdjustDetAmount.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--调账金额必须大于等于明细表本次调账金额合计，否则给出错误提示-->
+		<condition><select>select dbo.getDigits('tblPayAdjustDet','Amount',isnull(sum(Amount),0)) as SumDetAmt from tblPayAdjustDet where f_ref=@ValueofDB:tblPayAdjust_id</select></condition>
+		<exec condition="@ValueofDB:tblPayAdjust_TotalAmount&lt;@SqlReturn:SumDetAmt">
+			<error>common.AdjustLettDetAmt.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--单据日期在引用的单据之前，给出错误提示(采购入库)-->
+		<condition><select>SELECT a.BillDate AS QuoteDate, len(isnull(a.BillDate,'')) as QuoteDateLen FROM tblBuyInStock a JOIN tblPayAdjustDet b ON a.id=b.RefBillID WHERE b.f_ref=@ValueofDB:tblPayAdjust_id</select></condition>
+		<exec condition="@SqlReturn:QuoteDateLen &gt; 0 &amp;&amp;'@ValueofDB:tblPayAdjust_BillDate' &lt; '@SqlReturn:QuoteDate'">			
+			<error>common.billDateLessByQuoteDate.error,@ValueofDB:tblPayAdjust_BillDate,@SqlReturn:QuoteDate</error>       
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition>
+          <select>select 'Exists' as ExistsErrorType0 from tblBillAccSetup a where a.MainType='tblPayAdjustLess' and a.SubCode=@ValueofDB:tblPayAdjust_SubCode</select>
+          <select>select 'Exists' as ExistsErrorType1 from tblBillAccSetup a where a.MainType='tblPayAdjustMore' and a.SubCode=@ValueofDB:tblPayAdjust_SubCode</select>
+        </condition>
+		<!--未选择调账类型则后台更新应付调减默认为采购优惠应付调增的默认为应付增加-->
+		<exec condition="('@ValueofDB:tblPayAdjust_AdjustType'=='0'&amp;&amp;('@ValueofDB:tblPayAdjust_SubCode'==''||'@SqlReturn:ExistsErrorType0'!='Exists'))">
+			<sql>update tblPayAdjust set SubCode='630108' where id=@ValueofDB:tblPayAdjust_id</sql>
+		</exec>
+		<exec condition="('@ValueofDB:tblPayAdjust_AdjustType'=='1' &amp;&amp;('@ValueofDB:tblPayAdjust_SubCode'==''||'@SqlReturn:ExistsErrorType1'!='Exists'))">
+			<sql>update tblPayAdjust set SubCode='671105' where id=@ValueofDB:tblPayAdjust_id</sql>
+		</exec>
+		<exec condition="true">
+			<sql>update tblPayAdjust set CertificateNo='' where id=@ValueofDB:tblPayAdjust_id</sql>
+		</exec>
+		<exec condition="'@MEM:tblPayAdjust_IsStatart' == '0'">
+			<sql type="define">tblPayAdjust_Add_One</sql>
+		</exec>
+	</sql>
+</define>
+<define name="tblPayAdjust_Add_One">
+	<sql type="condition">
+		<!--如果启用“自动产生凭证”，则自动插入凭证-->
+		<exec condition="'@MEM:autoGenerateAcc'=='true'"><sql type="certificate">tblPayAdjust</sql></exec>
+		<exec condition="true">
+			<!-- 往来单位明细 （1应付 2应付 3预付 4预收）-->
+			<sql type="procedure">{call proc_insertComIni(@ValueofDB:tblPayAdjust_id,@ValueofDB:tblPayAdjust_CompanyCode,1,@ValueofDB:tblPayAdjust_BillDate,Period=@ValueofDB:tblPayAdjust_Period@SPFieldLink:PeriodYear=@ValueofDB:tblPayAdjust_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblPayAdjust_PeriodMonth@SPFieldLink:PayTotalDebit=0@SPFieldLink:PayTotalLend=(case when @ValueofDB:tblPayAdjust_AdjustType='0' then -1 else 1 end)*@ValueofDB:tblPayAdjust_TotalAmount@ParamNum:@SPFieldLink:RelationDocID=@ValueofDB:tblPayAdjust_id@SPFieldLink:Currency=@ValueofDB:tblPayAdjust_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblPayAdjust_CurrencyRate@SPFieldLink:createBy=@ValueofDB:tblPayAdjust_createBy@SPFieldLink:createTime=@ValueofDB:tblPayAdjust_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblPayAdjust_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblPayAdjust_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblPayAdjust_SCompanyID@SPFieldLink:FcPayTotalCredit=(case when @ValueofDB:tblPayAdjust_AdjustType='0' then -1 else 1 end)*@ValueofDB:tblPayAdjust_CurTotalAmount@ParamNum:@SPFieldLink:FcPayTotalDebit=0@SPFieldLink:BillType=tblPayAdjust@SPFieldLink:BillNo=@ValueofDB:tblPayAdjust_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblPayAdjust_EmployeeID@SPFieldLink:DepartmentCode=@ValueofDB:tblPayAdjust_DepartmentCode@SPFieldLink:Remark=@ValueofDB:tblPayAdjust_Remark,retCode,retVal)}</sql>
+			<!--更新明细表中采购入库单的待付款金额-->
+			<sql>update tblBuyInStock set NeedPayAmt=NeedPayAmt+(case when @ValueofDB:tblPayAdjust_AdjustType='0' then -1 else 1 end)*k.Amount,AfterChangeAmt=AfterChangeAmt+(case when @ValueofDB:tblPayAdjust_AdjustType='0' then -1 else 1 end)*k.Amount,ChangeAmt=ChangeAmt+(case when @ValueofDB:tblPayAdjust_AdjustType='0' then -1 else 1 end)*k.Amount from tblPayAdjustDet k where k.f_ref=@ValueofDB:tblPayAdjust_id and k.RefBillID=tblBuyInStock.id</sql>
+		</exec>
+	</sql>				 		    
+</define>
+<define name="tblPayAdjust_Del">
+	<sql type="condition"> 
+		<exec condition="'@MEM:tblPayAdjust_IsStatart' == '0'">
+			<sql type="define">tblPayAdjust_Del_One</sql>
+		</exec>
+	</sql>
+</define>
+
+<define name="tblPayAdjust_Del_One">
+	<sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblPayAdjust_id and  workFlowNodeName='finish'</select></condition>
+		<exec condition="&quot;@SqlReturn:OrderNo&quot;!=&quot;null&quot;">	
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>                  
+		</exec>
+	</sql>
+	<sql type="condition"><!-- 删除往来明细:修改类型（1应付 2应收 3预付 4预收） -->
+		<condition><select>select id as IniId from tblCompanyIni where relationDocID=@ValueofDB:tblPayAdjust_id</select></condition>
+		<exec condition="true">
+			<sql type="procedure">{call proc_deleteComIni(@SqlReturn:IniId,1,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--更新明细表中采购入库单的待付款金额-->
+		<condition><select>select AdjustType from tblPayAdjust where id=@ValueofDB:tblPayAdjust_id</select></condition>
+		<exec condition="true">
+			<sql>update tblBuyInStock set NeedPayAmt=NeedPayAmt-(case when @SqlReturn:AdjustType='0' then -1 else 1 end)*k.Amount,AfterChangeAmt=AfterChangeAmt-(case when @SqlReturn:AdjustType='0' then -1 else 1 end)*k.Amount,ChangeAmt=ChangeAmt-(case when @SqlReturn:AdjustType='0' then -1 else 1 end)*k.Amount from tblPayAdjustDet k where k.f_ref=@ValueofDB:tblPayAdjust_id and k.RefBillID=tblBuyInStock.id</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<exec condition=" '@MEM:autoGenerateAcc'=='true'"><!--启用“自动产生凭证”时，删除凭证审核流或者减少科目余额，删除凭证信息-->
+		  <sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblPayAdjust_id,retCode,retVal)}</sql>	
+		</exec>
+	</sql>
+</define>		
+<!--====================================================以上代码：应付调帐单=================================================-->	
+
+<!--========================================================反开账，年结操作=================================================-->	
+
+<!--=======反开账页面不管是否勾选任何选项，先执行此define======= -->
+<define name="DeOpenAcc">
+	<!--暂时无内容，程序提供此接口，后续使用-->
+</define> 
+	
+<!--===== 反开账操作 删除基本信息====== -->
+<define name="DeOpenAccBase">
+	<sql type="procedure">{call proc_DeOpenAccBase(retCode,retVal)}</sql>
+</define>
+	
+<!--======= 反开账操作 删除期初数据=====  -->
+<define name="DeOpenAccIni">
+	<sql type="procedure">{call proc_DeOpenAccIni(retCode,retVal)}</sql>
+</define>
+		
+<!--======= 反开账，年结操作 删除单据草稿数据====== -->
+<define name="DeOpenAccDraft">
+	<sql type="procedure">{call DeOpenAccDraft(retCode,retVal)}</sql>
+</define>
+<!--===== 反开账操作 删除单据非草稿数据======  -->
+<define name="DeOpenAccBill">
+	<sql type="procedure">{call DeOpenAccBill(retCode,retVal)}</sql>
+</define>
+
+<!--===== 删除单据功能:删除数据前的操作======  -->
+<define name="DelBillBefore">
+	<sql type="condition"><!--完整输入备份数据库的地址后，执行备份删除数据的动作-->
+		<exec condition="'@ValueofDB:SERVER'.length&gt;0&amp;&amp;'@ValueofDB:UID'.length&gt;0&amp;&amp;'@ValueofDB:PWD'.length&gt;0&amp;&amp;'@ValueofDB:DataBase'.length&gt;0">
+			<sql type="procedure">{call CopyBillToOtherDataBase(@ValueofDB:SERVER,@ValueofDB:UID,@ValueofDB:PWD,@ValueofDB:DataBase,@ValueofDB:period,@ValueofDB:periodYear,@ValueofDB:SCompanyID,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+</define>
+
+<!--=================================================以上代码：反开账，年结操作===============================================-->
+
+
+<!--费用类型不能重复增加 -->
+<define name="tblFeeType_Add">
+<sql type="condition">
+		<!--本币汇兑单的删除-->
+	 <condition>
+		<select>select count(SubCode) as coutcode from tblFeeType where scompanyid=@Sess:SCompanyID and subCode=@ValueofDB:tblFeeType_SubCode</select>
+        </condition>
+	  <exec condition="@SqlReturn:coutcode &gt;=2">
+	  <error>tblFeeType.repeat.error</error> 
+	  </exec>
+	  </sql>
+</define>
+
+
+	<!--分支机构开帐，总公司开帐显示-->
+	<define name="OpenAcc">
+	</define> 
+	
+	
+	<!--分支机构月结，总公司月结显示-->
+	<define name="CloseAcc">
+		
+	</define>
+		<!--分支机构全反月结，总公司反月结显示-->
+	<define name="DeCloseAcc">
+		
+	</define>
+	
+	<!--判断收入类型不能删除修改-->
+<define name="tblInComeType_del">
+	<sql type="condition"> 	
+		<condition>
+			<select>select IncomeCode as Code  from tblIncomeDetl left join tblInComeType on tblIncomeDetl.IncomeCode=tblInComeType.SubCode  where tblInComeType.id=@ValueofDB:tblInComeType_id</select>
+		</condition>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="('@SqlReturn:Code'!='null'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:Code'!='null'&amp;&amp;'@SqlReturn:Code'!='@ValueofDB:tblInComeType_SubCode'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.type.error</error> 
+		</exec>
+	</sql>
+</define>
+
+<!--收入类型不能重复增加 -->
+<define name="tblInComeType_Add">
+<sql type="condition">
+		<!--本币汇兑单的删除-->
+	 <condition>
+		<select>select count(SubCode) as coutcode from tblInComeType where scompanyid=@Sess:SCompanyID and subCode=@ValueofDB:tblInComeType_SubCode</select>
+        </condition>
+	  <exec condition="@SqlReturn:coutcode &gt;=2">
+	  <error>tblFeeType.repeat.error</error> 
+	  </exec>
+	  </sql>
+</define>
+
+<!--判断调价类型不能删除修改-->
+<define name="tblPriceType_del">
+	<sql type="condition"> 	
+		<condition>
+			<select>select ChangeType as Code  from tblBuychange left join tblPriceType on tblPriceType.AccCode=tblBuychange.ChangeType where tblPriceType.id=@ValueofDB:tblPriceType_id</select>		
+			<select>select ChangeType as CodeSales  from tblsaleschange left join tblPriceType on tblPriceType.AccCode=tblsaleschange.ChangeType where tblPriceType.id=@ValueofDB:tblPriceType_id</select>
+			<select>select tblPriceType.SubType,tblPriceType.AccCode as CodeStore from tblAdjustPrice join tblPriceType 
+on tblAdjustPrice.AdjustPriceType=tblPriceType.id where tblPriceType.id=@ValueofDB:tblPriceType_id and tblPriceType.SCompanyID=@Sess:SCompanyID</select>
+	 <select>select tblPriceType.AccCode as BuyCode from  tblPriceType where tblPriceType.id=@ValueofDB:tblPriceType_id and tblPriceType.AccCode='630106'</select>
+	 	 <select>select tblPriceType.AccCode as SalesCode from  tblPriceType where tblPriceType.id=@ValueofDB:tblPriceType_id and tblPriceType.AccCode='671108'</select>
+	 	 <select>select id as StoreId,tblPriceType.AccCode as StorePriceCode from  tblPriceType where tblPriceType.id=@ValueofDB:tblPriceType_id</select>
+		</condition>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="('@SqlReturn:CodeStore'!='null'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:CodeStore'!='null'&amp;&amp;'@SqlReturn:CodeStore'!='@ValueofDB:tblPriceType_AccCode'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.type.error</error> 
+		</exec>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="('@SqlReturn:Code'!='null'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:Code'!='null'&amp;&amp;'@SqlReturn:Code'!='@ValueofDB:tblPriceType_AccCode'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.type.error</error> 
+		</exec>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="('@SqlReturn:CodeSales'!='null'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:CodeSales'!='null'&amp;&amp;'@SqlReturn:CodeSales'!='@ValueofDB:tblPriceType_AccCode'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.type.error</error> 
+		</exec>
+		<!-- 不允许删除系统默认类型-->
+		<exec condition="('@SqlReturn:BuyCode'=='630106'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:BuyCode'=='630106'&amp;&amp;'@ValueofDB:tblPriceType_AccCode'!='630106'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.defaulttype.error</error> 
+		</exec>
+		<!-- 不允许删除系统默认类型-->
+			<exec condition="('@SqlReturn:SalesCode'=='671108'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:SalesCode'=='671108'&amp;&amp;'@ValueofDB:tblPriceType_AccCode'!='671108'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.defaulttype.error</error> 
+		</exec>
+			<!-- 不允许删除系统默认类型-->
+			<exec condition="('@SqlReturn:StoreId'=='bed5588782d945b58e38a3191d2e'&amp;&amp;'@Sess:BillOper'=='delete')">
+			<error>modifyType.defaulttype.error</error> 
+		</exec>
+	</sql>
+</define>
+
+<!--调价类型不能重复增加 -->
+<define name="tblPriceType_Add">
+<sql type="condition">
+		<!--本币汇兑单的删除-->
+	 <condition>
+		<select>select count(AccCode) as coutcode from tblPriceType where scompanyid=@Sess:SCompanyID and AccCode=@ValueofDB:tblPriceType_AccCode</select>
+        </condition>
+	  <exec condition="@SqlReturn:coutcode &gt;=2">
+	  <error>tblFeeType.repeat.error</error> 
+	  </exec>
+	  </sql>
+</define>
+	
+<!--判断入库类型不能删除修改-->
+<define name="tblInType_del">
+	<sql type="condition"> 	
+		<condition>
+			<select>select OtherInType as Code  from tblOtherIn left join tblInType on tblInType.SubCode=tblOtherIn.OtherInType where tblInType.id=@ValueofDB:tblInType_id</select>
+			<select>select tblInType.SubCode  from  tblInType where tblInType.id=@ValueofDB:tblInType_id and tblInType.SubCode='190101'</select>
+		</condition>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="('@SqlReturn:Code'!='null'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:Code'!='null'&amp;&amp;'@SqlReturn:Code'!='@ValueofDB:tblInType_SubCode'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.type.error</error> 
+		</exec>
+			<!-- 不允许删除系统默认类型-->
+		<exec condition="('@SqlReturn:SubCode'=='190101'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:SubCode'=='190101'&amp;&amp;'@ValueofDB:tblInType_SubCode'!='190101'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.defaulttype.error</error> 
+		</exec>
+	</sql>
+</define>
+
+<!--入库类型不能重复增加 -->
+<define name="tblInType_Add">
+<sql type="condition">
+		<!--本币汇兑单的删除-->
+	 <condition>
+		<select>select count(SubCode) as coutcode from tblInType where scompanyid=@Sess:SCompanyID and subCode=@ValueofDB:tblInType_SubCode</select>
+        </condition>
+	  <exec condition="@SqlReturn:coutcode &gt;=2">
+	  <error>tblFeeType.repeat.error</error> 
+	  </exec>
+	  </sql>
+</define>
+	
+<!--判断出库类型不能删除修改-->
+<define name="tblOutType_del">
+	<sql type="condition"> 	
+		<condition>
+	<select>select OutType as Code  from tblOtherOut left join tblOutType on tblOutType.SubCode=tblOtherOut.OutType where tblOutType.id=@ValueofDB:tblOutType_id</select>
+	<select>select tblOutType.SubCode  from  tblOutType where tblOutType.id=@ValueofDB:tblOutType_id and tblOutType.SubCode='190101'</select>
+		</condition>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="('@SqlReturn:Code'!='null'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:Code'!='null'&amp;&amp;'@SqlReturn:Code'!='@ValueofDB:tblOutType_SubCode'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.type.error</error> 
+		</exec>
+		<!-- 不允许删除系统默认类型-->
+		<exec condition="('@SqlReturn:SubCode'=='190101'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:SubCode'=='190101'&amp;&amp;'@ValueofDB:tblOutType_SubCode'!='190101'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.defaulttype.error</error> 
+		</exec>
+	</sql>
+</define>
+
+<!--出库类型不能重复增加 -->
+<define name="tblOutType_Add">
+<sql type="condition">
+		<!--本币汇兑单的删除-->
+	 <condition>
+		<select>select count(SubCode) as coutcode from tblOutType where scompanyid=@Sess:SCompanyID and subCode=@ValueofDB:tblOutType_SubCode</select>
+        </condition>
+	  <exec condition="@SqlReturn:coutcode &gt;=2">
+	  <error>tblFeeType.repeat.error</error> 
+	  </exec>
+	  </sql>
+</define>
+
+<!--判断报损类型不能删除修改-->
+<define name="tblCheckLessType_del">
+	<sql type="condition"> 	
+		<condition>
+			<select>select tblCheck.SubCode as Code from tblCheck left join tblCheckLessType on tblCheckLessType.SubCode=tblCheck.SubCode where tblCheckLessType.id=@ValueofDB:tblCheckLessType_id</select>
+			<select>select tblCheckLessType.SubCode  from  tblCheckLessType where tblCheckLessType.id=@ValueofDB:tblCheckLessType_id and tblCheckLessType.SubCode='190101'</select>
+		</condition>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="('@SqlReturn:Code'!='null'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:Code'!='null'&amp;&amp;'@SqlReturn:Code'!='@ValueofDB:tblCheckLessType_SubCode'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.type.error</error> 
+		</exec>
+			<!-- 不允许删除系统默认类型-->
+		<exec condition="('@SqlReturn:SubCode'=='190101'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:SubCode'=='190101'&amp;&amp;'@ValueofDB:tblCheckLessType_SubCode'!='190101'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.defaulttype.error</error> 
+		</exec>
+	</sql>
+</define>
+<!--报损类型不能重复增加 -->
+<define name="tblCheckLessType_Add">
+<sql type="condition">
+		<!--本币汇兑单的删除-->
+	 <condition>
+		<select>select count(SubCode) as coutcode from tblCheckLessType where scompanyid=@Sess:SCompanyID and subCode=@ValueofDB:tblCheckLessType_SubCode</select>
+        </condition>
+	  <exec condition="@SqlReturn:coutcode &gt;=2">
+	  <error>tblFeeType.repeat.error</error> 
+	  </exec>
+	  </sql>
+</define>
+	<!--判断报溢类型不能删除修改-->
+<define name="tblCheckMoreType_del">
+	<sql type="condition"> 	
+		<condition>
+			<select>select tblCheckMore.SubCode as Code from tblCheckMore left join tblCheckMoreType on tblCheckMoreType.SubCode=tblCheckMore.SubCode where tblCheckMoreType.id=@ValueofDB:tblCheckMoreType_id</select>
+			<select>select SubCode  from  tblCheckMoreType where tblCheckMoreType.id=@ValueofDB:tblCheckMoreType_id and tblCheckMoreType.SubCode='190101'</select>
+		</condition>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="('@SqlReturn:Code'!='null'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:Code'!='null'&amp;&amp;'@SqlReturn:Code'!='@ValueofDB:tblCheckMoreType_SubCode'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.type.error</error> 
+		</exec>
+				<!-- 不允许删除系统默认类型-->
+		<exec condition="('@SqlReturn:SubCode'=='190101'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:SubCode'=='190101'&amp;&amp;'@ValueofDB:tblCheckMoreType_SubCode'!='190101'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.defaulttype.error</error> 
+		</exec>
+	</sql>
+</define>
+<!--报溢类型不能重复增加 -->
+<define name="tblCheckMoreType_Add">
+<sql type="condition">
+		<!--本币汇兑单的删除-->
+	 <condition>
+		<select>select count(SubCode) as coutcode from tblCheckMoreType where scompanyid=@Sess:SCompanyID and subCode=@ValueofDB:tblCheckMoreType_SubCode</select>
+        </condition>
+	  <exec condition="@SqlReturn:coutcode &gt;=2">
+	  <error>tblFeeType.repeat.error</error> 
+	  </exec>
+	  </sql>
+</define>
+	<!--判断组装类型不能删除修改-->
+<define name="tblGoodsAssemblyType_del">
+	<sql type="condition"> 	
+		<condition>
+			<select>select groupType as Code  from tblGoodsAssembly left join tblGoodsAssemblyType on tblGoodsAssemblyType.SubCode=tblGoodsAssembly.groupType where tblGoodsAssemblyType.id=@ValueofDB:tblGoodsAssemblyType_id</select>
+			
+			<select>select groupType as SplitCode  from tblGoodsAssemblySplit left join tblGoodsAssemblyType on tblGoodsAssemblyType.SubCode=tblGoodsAssemblySplit.groupType where tblGoodsAssemblyType.id=@ValueofDB:tblGoodsAssemblyType_id</select>
+			<select>select tblGoodsAssemblyType.SubCode  from  tblGoodsAssemblyType where tblGoodsAssemblyType.id=@ValueofDB:tblGoodsAssemblyType_id and tblGoodsAssemblyType.SubCode='2211'</select>
+		</condition>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="('@SqlReturn:Code'!='null'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:Code'!='null'&amp;&amp;'@SqlReturn:Code'!='@ValueofDB:tblGoodsAssemblyType_SubCode'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.type.error</error> 
+		</exec>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="('@SqlReturn:SplitCode'!='null'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:SplitCode'!='null'&amp;&amp;'@SqlReturn:SplitCode'!='@ValueofDB:tblGoodsAssemblyType_SubCode'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.type.error</error> 
+		</exec>
+			<!-- 不允许删除系统默认类型-->
+		<exec condition="('@SqlReturn:SubCode'=='2211'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:SubCode'=='2211'&amp;&amp;'@ValueofDB:tblGoodsAssemblyType_SubCode'!='2211'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.defaulttype.error</error> 
+		</exec>
+	</sql>
+</define>
+<!--组装类型不能重复增加 -->
+<define name="tblGoodsAssemblyType_Add">
+<sql type="condition">
+		<!--本币汇兑单的删除-->
+	 <condition>
+		<select>select count(SubCode) as coutcode from tblGoodsAssemblyType where scompanyid=@Sess:SCompanyID and subCode=@ValueofDB:tblGoodsAssemblyType_SubCode</select>
+        </condition>
+	  <exec condition="@SqlReturn:coutcode &gt;=2">
+	  <error>tblFeeType.repeat.error</error> 
+	  </exec>
+	  </sql>
+</define>
+<!--判断拆装类型不能删除修改-->
+<define name="tblSplitFormType_del">
+	<sql type="condition"> 	
+		<condition>
+			<select>select groupType as Code  from tblGoodsSplitForm left join tblSplitFormType on tblSplitFormType.SubCode=tblGoodsSplitForm.groupType where tblSplitFormType.id=@ValueofDB:tblSplitFormType_id</select>
+			<select>select tblSplitFormType.SubCode  from  tblSplitFormType where tblSplitFormType.id=@ValueofDB:tblSplitFormType_id and tblSplitFormType.SubCode='2211'</select>
+		</condition>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="('@SqlReturn:Code'!='null'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:Code'!='null'&amp;&amp;'@SqlReturn:Code'!='@ValueofDB:tblSplitFormType_SubCode'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.type.error</error> 
+		</exec>
+			<!-- 不允许删除系统默认类型-->
+		<exec condition="('@SqlReturn:SubCode'=='2211'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:SubCode'=='2211'&amp;&amp;'@ValueofDB:tblSplitFormType_SubCode'!='2211'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.defaulttype.error</error> 
+		</exec>
+	</sql>
+</define>
+<!--拆装类型不能重复增加 -->
+<define name="tblSplitFormType_Add">
+<sql type="condition">
+		<!--本币汇兑单的删除-->
+	 <condition>
+		<select>select count(SubCode) as coutcode from tblSplitFormType where scompanyid=@Sess:SCompanyID and subCode=@ValueofDB:tblSplitFormType_SubCode</select>
+        </condition>
+	  <exec condition="@SqlReturn:coutcode &gt;=2">
+	  <error>tblFeeType.repeat.error</error> 
+	  </exec>
+	  </sql>
+</define>
+
+<!--判断费用类型不能删除修改-->
+<define name="tblFeeType_del">
+	<sql type="condition"> 	
+		<condition>
+			<select>select ExpenseCode as Code from tblExpenseDet left join tblFeeType on tblFeeType.SubCode=tblExpenseDet.ExpenseCode where tblFeeType.id=@ValueofDB:tblFeeType_id</select>
+		</condition>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="('@SqlReturn:Code'!='null'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:Code'!='null'&amp;&amp;'@SqlReturn:Code'!='@ValueofDB:tblFeeType_SubCode'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.type.error</error> 
+		</exec>
+	</sql>
+</define>
+
+<!--判断分摊类型不能删除修改-->
+<define name="tblPrecessCostType_del">
+	<sql type="condition"> 	
+		<condition>
+			<select>select tblPrecessCostType.SubCode as Code from tblPrecessCostType  where (tblPrecessCostType.SubCode in (select CostType from tblOutPrecessCost) or tblPrecessCostType.SubCode in (select CostType from tblProduceCost)) and tblPrecessCostType.id=@ValueofDB:tblPrecessCostType_id</select>
+		</condition>
+		<!-- 已经使用的财务类型不能删除，已经使用的财务类型不能修改科目代码 -->
+		<exec condition="('@SqlReturn:Code'!='null'&amp;&amp;'@Sess:BillOper'=='delete')||('@SqlReturn:Code'!='null'&amp;&amp;'@SqlReturn:Code'!='@ValueofDB:tblPrecessCostType_SubCode'&amp;&amp;'@Sess:BillOper'=='update')">
+			<error>modifyType.type.error</error> 
+		</exec>
+	</sql>
+</define>
+
+<!--分摊类型不能重复增加 -->
+<define name="tblPrecessCostType_Add">
+<sql type="condition">
+		<!--本币汇兑单的删除-->
+	 <condition>
+		<select>select count(SubCode) as coutcode from tblPrecessCostType where scompanyid=@Sess:SCompanyID and subCode=@ValueofDB:tblPrecessCostType_SubCode</select>
+        </condition>
+	  <exec condition="@SqlReturn:coutcode &gt;=2">
+	  <error>tblFeeType.repeat.error</error> 
+	  </exec>
+	  </sql>
+</define>
+
+<!--存货核算方式删除前-->
+<define name="tblGoodsAccProp_delete_before">
+	<sql type="condition">
+		<condition>
+			<select>select 'true' as Result from tblGoods where CostMethod=@ValueofDB:tblGoodsAccProp_id</select>
+			<select>select AccCode oldAccCode,IncomeAccCode oldIncomeAccCode,ExpendAccCode oldExpendAccCode from tblGoodsAccProp where id=@ValueofDB:tblGoodsAccProp_id  </select>
+		</condition>
+		<exec condition="'@SqlReturn:Result'=='true' &amp;&amp;( '@ValueofDB:AccCode' != '@SqlReturn:oldAccCode' || '@ValueofDB:IncomeAccCode' != '@SqlReturn:oldIncomeAccCode' || '@ValueofDB:ExpendAccCode' != '@SqlReturn:oldExpendAccCode')">
+			<error>此类型已关联商品，不能修改科目字段</error> 
+		</exec>
+	</sql>
+</define>
+
+
+<!--收款单状态激活-->
+<define name="ReceiveStatusStop_reverse">
+<sql type="condition">
+<condition>
+</condition>
+<exec condition="true">
+<sql>update tblSaleReceive set Statusid=0 where id=@ValueofDB:tblSaleReceive_id</sql>
+</exec>
+</sql>
+</define>
+	<!--收款单状态完成-->
+<define name="ReceiveStatus_finish">
+<sql type="condition">
+<condition>
+</condition>
+<exec condition="true">
+<sql>update tblSaleReceive set Statusid=1 where id=@ValueofDB:tblSaleReceive_id</sql>
+</exec>
+</sql>
+</define>
+
+<!--付款单状态激活-->
+<define name="PayStatusStop_reverse">
+<sql type="condition">
+<condition>
+</condition>
+<exec condition="true">
+<sql>update tblPay set Statusid=0 where id=@ValueofDB:tblPay_id</sql>
+</exec>
+</sql>
+</define>
+	<!--付款单状态完成-->
+<define name="PayStatus_finish">
+<sql type="condition">
+<condition>
+</condition>
+<exec condition="true">
+<sql>update tblPay set Statusid=1 where id=@ValueofDB:tblPay_id</sql>
+</exec>
+</sql>
+</define>
+<!--=================================================OA审核流推送过来的费用支出单======================================================-->
+
+
+<!--=================================================其它付款单======================================================-->
+<define name="tblExpense_Add">
+	<sql type="condition">
+		<!--选择的结算账户为往来科目，则必须选择往来单位及勾选启用往来核算-->
+		<exec condition="('@ValueofDB:tblExpensed_SubCode'=='2202')&amp;&amp;('@ValueofDB:tblExpensed_CheckCompany'!='1,'||'@ValueofDB:tblExpensed_CompanyCode'=='')">
+			<error>tblExpensed.CheckCompany.error</error> 
+		</exec>
+		<!--勾选了启用往来核算，则结算账户不能为现金银行科目-->
+		<exec condition="'@ValueofDB:tblExpensed_CheckCompany'=='1,'&amp;&amp;('@ValueofDB:tblExpensed_SubCode'.indexOf('1001')==0||'@ValueofDB:tblExpensed_SubCode'.indexOf('1002')==0)">
+			<error>tblCashBank.SelectCompany.error</error> 
+		</exec>
+		<!--勾选了启用往来核算，则必须选择往来单位-->
+		<exec condition="'@ValueofDB:tblExpensed_CheckCompany'=='1,'&amp;&amp;'@ValueofDB:tblExpensed_CompanyCode'==''">
+			<error>tblExpensed.CCSelectCompany.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--如果启用了部门核算，则明细表部门和主表制单人的部门的一级部门必须是相同的-->
+		<condition>
+			<select>select DepartmentCode as CreateDeptCode from tblEmployee where id=@ValueofDB:tblExpensed_createBy</select>
+			<select>select count(0) as deptError from tblExpenseDet where @MEM:openDeptAcc='true' and f_ref=@ValueofDB:tblExpensed_id and substring(DepartmentCode,1,5)!=substring(@SqlReturn:CreateDeptCode,1,5)</select>
+		</condition>
+		<exec condition="@SqlReturn:deptError&gt;0">
+			<error>common.deptDif.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--选择的结算账户为往来科目，则必须选择相应的往来单位-->
+		<condition><select>select ClientFlag from tblCompany where classCode=@ValueofDB:tblExpensed_CompanyCode</select></condition>
+		<exec condition="@SqlReturn:ClientFlag==2&amp;&amp;'@ValueofDB:tblExpensed_SubCode'=='2202'">
+			<error>tblExpense.selectCompany2.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表的金额小于0给出错误提示-->
+		<condition><select>select count(0) as AmtNeC from tblExpenseDet where f_ref=@ValueofDB:tblExpensed_id and Amt&lt;=0</select></condition>
+		<exec condition="@SqlReturn:AmtNeC&gt;0">
+			<error>tblExpense.add.DetLessZero</error> 
+		</exec>
+	</sql>
+	
+	<!--存在支出类型未填写的明细记录给出错误提示
+	<sql type="condition">
+		<condition><select>select count(0) as AmtNeC from tblExpenseDet where f_ref=@ValueofDB:tblExpensed_id and isnull(SubCode,'')=''</select></condition>
+		<exec condition="@SqlReturn:AmtNeC&gt;0">
+			<error>存在支出类型未填写的明细记录</error> 
+		</exec>
+	</sql>-->
+	
+	<sql type="condition"><!--明细表的金额合计必须与主表相等-->
+		<condition><select>select dbo.getDigits('tblExpenseDet','Amt',sum(Amt)) as SumDetAmt from tblExpenseDet where f_ref=@ValueofDB:tblExpensed_id</select></condition>
+		<exec condition=" @SqlReturn:SumDetAmt != @ValueofDB:tblExpensed_BillAmt">				
+			<error>common.mainDetilAmt.NotEqual.error,@ValueofDB:tblExpensed_BillAmt,@SqlReturn:SumDetAmt</error>                  
+		</exec>
+	</sql>
+	<sql type="condition"><!--检查账户是否出现负数:@Sess:NoAccNegative为系统配置是否启用账户余额负数控制  单账户-->
+		<condition>
+			<select>SELECT e.zh_CN AS AccountName FROM tblAccBalance b JOIN (SELECT a.SubCode,a.Nyear,MAX(a.Period) Period FROM tblAccBalance a JOIN (SELECT MAX(Nyear) Nyear FROM tblAccBalance WHERE SubCode = @ValueofDB:SubCode AND Nyear&gt;=@ValueofDB:PeriodYear) b ON a.Nyear = b.Nyear WHERE a.SubCode = @ValueofDB:SubCode GROUP BY a.SubCode,a.Nyear) c ON b.Period = c.Period AND b.Nyear = c.Nyear JOIN tblAccTypeInfo d ON d.AccNumber=@ValueofDB:SubCode JOIN tblLanguage e ON d.AccName = e.id WHERE b.SubCode=@ValueofDB:SubCode AND (b.PeriodBalaBase - @ValueofDB:BillAmt)&lt;0 AND (b.SubCode like '1001%' or b.SubCode like '1002%')</select>
+		</condition>
+		<exec condition="&quot;@SqlReturn:AccountName&quot;.length != 0 &amp;&amp; &quot;@SqlReturn:AccountName&quot; != &quot;null&quot; &amp;&amp; &quot;@MEM:NoAccNegative&quot; == &quot;true&quot;">
+			<error>AccNegative.Account.error,@SqlReturn:AccountName</error>                     
+		</exec>	
+	</sql>
+	<sql type="condition"><!--外币判断，暂不处理-->
+		<condition><select>select AccNumber,AccName,IsForCur,Currency as CURD from tblAccTypeInfo where AccNumber=@ValueofDB:tblExpensed_SubCode and SCompanyID=@Sess:SCompanyID</select></condition>
+		<exec condition="'@ValueofDB:tblExpensed_Currency'.length != 0 &amp;&amp; '@ValueofDB:tblExpensed_Currency' != '@SqlReturn:CURD'">
+		<!--选择的付款帐户不是该币种对应的帐户-->
+			<error>tblAccTypeInfo.SelectCurType.error</error> 
+		</exec>	
+		<exec condition="'@ValueofDB:tblExpensed_Currency'.length == 0 &amp;&amp; ( '@SqlReturn:CURD'.length != 0 &amp;&amp; '@SqlReturn:CURD' !=' '  &amp;&amp; '@SqlReturn:CURD' != 'null' &amp;&amp; '@SqlReturn:CURD' != 'NULL') ">
+		<!--选择的付款帐户不是该币种对应的帐户-->
+			<error>tblAccTypeInfo.SelectCurType.error</error> 
+		</exec>	 
+		 <!--如果是本位币帐户，不用录入汇率-->	
+	 <exec condition=" ('@ValueofDB:tblExpensed_Currency'.length == 0 &amp;&amp; @ValueofDB:tblExpensed_CurrencyRate &gt; 0 &amp;&amp; @ValueofDB:tblExpensed_CurrencyRate!=1)">		
+     <error>CurrencyRate.putErrors.error</error> 
+	 </exec>
+	</sql>	  
+	<sql type="condition">
+		<exec condition="true">
+			<!-- 导入时如果外币为空则设置默认值 -->
+			<sql>update tblExpensed set CertificateNo='' where id=@ValueofDB:tblExpensed_id</sql>
+		  <sql>update tblExpensed set CurrencyRate=0 where CurrencyRate is null and id=@ValueofDB:tblExpensed_id</sql>
+		  <sql>update tblExpensed set Currency='' where Currency is null and id=@ValueofDB:tblExpensed_id</sql>
+			<sql>update tblExpensed set AlreadyPayAmt=0,NeedPayAmt=(case when @ValueofDB:tblExpensed_CheckCompany='1,' then BillAmt else 0 end) where id=@ValueofDB:tblExpensed_id</sql>
+		</exec>
+		<exec condition="'@MEM:tblExpensed_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblExpensed_Add_One</sql>
+		</exec>
+	</sql>	
+</define>
+
+
+<!-- 费用支出-生成出纳明细-->
+<define name="tblExpense_genCashier">
+	<!--生成出纳明细-->
+	<sql type="condition">
+		<condition>
+			<select>select isnull(Max(No),0)+1 as maxNo from tblCashierAccount where PeriodYear=DATEPART(YEAR,@ValueofDB:BillDate) and PeriodMonth = DATEPART(MONTH,@ValueofDB:BillDate)</select>				
+			<select>select SubCode  from tblExpensed where id = @ValueofDB:id and (SubCode like '1001%' or SubCode like '1002%')</select>
+		</condition>					
+		<exec condition="'@SqlReturn:SubCode' != 'null' &amp;&amp; '@SqlReturn:SubCode' != ''">
+			<sql>
+				declare @ret int,@row int ,@rows int,@detID varchar(50),@accCode varchar(50),@amt numeric(14,2),@refAcc varchar(50)
+				set @ret = @SqlReturn:maxNo			
+				declare @tab table(
+					num int identity(1,1),
+					detID varchar(50),
+					refCode varchar(50),
+					amt numeric(14,2)
+				)				
+				set @row = 1 
+				
+				insert into @tab(detID,refCode,amt) select id,SubCode,Amt from tblExpenseDet where f_ref = @ValueofDB:id
+				set @rows = @@ROWCOUNT
+				while(@row&lt;=@rows)
+				begin
+					select @detID=detID,@refAcc=refCode from @tab where num = @row
+										
+					insert into tblCashierAccount(id,BillDate,No,CredType,CredNo,PeriodYear,PeriodMonth,AccCode,RefAcc,DebitAmount,LendAmount,EmployeeID,RecordComment,Currency,BillID,BillType,createBy,createTime)
+					select ('E' + CONVERT(nvarchar(13),REPLACE(CONVERT(decimal(18,8),GETDATE()),'.','')) + RIGHT(NEWID(),12)) as id,
+					@ValueofDB:BillDate as BillDate,(@SqlReturn:maxNo+@row) as No,'记' as CredType,0 as CredNo,DATEPART(YEAR,@ValueofDB:BillDate) as pYear,DATEPART(Month,@ValueofDB:BillDate) as pMonth,
+					@SqlReturn:SubCode as AccCode,@refAcc as RefAcc,0.0 as Debit,Amt as lend,
+					@ValueofDB:createBy as EmployeeID,@ValueofDB:Remark as RecordComment,'RMB' as Currency,@ValueofDB:id as billID,'tblExpensed' as BillType,@ValueofDB:createBy,@ValueofDB:createTime from tblExpenseDet where id = @detID
+					set @row = @row + 1
+				end							
+			</sql>
+		</exec>
+	</sql>
+</define>
+
+<define name="tblExpensed_Add_One">
+	<sql type="condition">
+		<condition><select>select count(0) as AmtNeC from tblExpenseDet where f_ref=@ValueofDB:tblExpensed_id and isnull(SubCode,'')=''</select></condition>
+		<exec condition="@SqlReturn:AmtNeC&gt;0">
+			<error>存在支出类型未填写的明细记录</error> 
+		</exec>
+	</sql>
+    <sql type="condition">
+    <exec condition="'@MEM:autoGenerateAcc'=='true'">
+		<sql type="certificate">tblExpensed</sql>
+		<sql>update tblAccDetail set RecordComment=a.remark from tblExpenseDet a join tblAccDetail b on a.SubCode=b.AccCode and a.f_ref=b.RefBillID
+and b.RefBillID=@ValueofDB:id</sql>
+	</exec>
+    <exec condition="true">
+			<!--将开票金额与未开票金额更新为初始值-->
+			<sql>update tblExpensed set tblExpensed.NotInvoiceAmount=tblExpensed.BillAmt,tblExpensed.InvoiceAmount=0,tblExpensed.InvoiceStatus='False' where tblExpensed.id =@ValueofDB:tblExpensed_id</sql>
+		</exec>
+		<!--如果启用了往来核算,则影响往来明细-->
+		<exec condition="'@ValueofDB:tblExpensed_CheckCompany'=='1,'">
+			<sql type="define">tblExpensed_Add_Company</sql>
+		</exec>
+	</sql>	
+	<sql type="condition"><!--如果追踪单号不为空，则向追踪单号表中插入数据-->
+	 	<exec condition="&quot;@ValueofDB:TrackNo&quot;!=&quot;&quot;&amp;&amp;&quot;@ValueofDB:TrackNo&quot;!=&quot;null&quot;">			  
+			<sql>insert into tblTrackBill (id,RelationID,BillNo,BillType,BillDate,TrackNo,createby,lastupdateBy,createTime,lastupdateTime,ScompanyID)(select subString(cast(newid() as varchar(36)),1,30) as id ,id AS RelationID,BillNo,'tblExpensed',BillDate,TrackNo,createby,lastupdateBy,createTime,lastupdateTime,ScompanyID from tblExpensed where id =@ValueofDB:tblExpensed_id)</sql>	
+     	</exec>
+	</sql>
+	
+	<!--计算门头费-->
+	<!-- 1:门头费-->
+	<!-- 2:公司支付-->
+	<!-- 3:配件支付-->
+	<sql type="condition">
+		<condition>
+			<select> select isnull(SUM(tblExpenseDet.amt),0) as mAmount 
+					from tblExpenseDet
+					inner join tblExpenses on tblExpenseDet.FeeType = tblExpenses.Subclass 
+					where tblExpenses.Parentclass ='1' and  tblExpenseDet.f_ref=@ValueofDB:id
+			</select>
+			<select> select isnull(SUM(tblExpenseDet.amt),0) as gAmount 
+					from tblExpenseDet
+					inner join tblExpenses on tblExpenseDet.FeeType = tblExpenses.Subclass 
+					where tblExpenses.Parentclass ='2' and  tblExpenseDet.f_ref=@ValueofDB:id
+			</select>
+			<select> select isnull(SUM(tblExpenseDet.amt),0) as pAmount 
+					from tblExpenseDet
+					inner join tblExpenses on tblExpenseDet.FeeType = tblExpenses.Subclass 
+					where tblExpenses.Parentclass ='3' and  tblExpenseDet.f_ref=@ValueofDB:id
+			</select>
+			
+			
+		</condition>
+				
+		<exec condition="@SqlReturn:mAmount&gt;0">
+			<sql type="procedure">{call proc_DoorFeeDetails(@a_createBy=@ValueofDB:tblExpensed_createBy,
+												   @a_lastUpdateBy=@ValueofDB:tblExpensed_lastUpdateBy ,
+												   @a_createTime=@ValueofDB:tblExpensed_createTime,
+												   @a_lastUpdateTime=@ValueofDB:tblExpensed_lastUpdateTime,
+												   @a_Companycode=@ValueofDB:tblExpensed_CompanyCode,
+												   @a_ItemType=Advertisement,
+												   @a_InMoney=0,
+												   @a_outMoney=@SqlReturn:mAmount,
+												   @a_billId=@ValueofDB:id,
+												   @a_billType=tblExpensed,
+												   @a_billNo=@ValueofDB:tblExpensed_BillNo,
+												   @a_billDate=@ValueofDB:tblExpensed_BillDate,
+												   @a_opt=add,@retCode=retCode,@retVal=retVal)}
+			</sql>
+		</exec>
+		
+		<exec condition="@SqlReturn:gAmount&gt;0">
+			<sql type="procedure">{call proc_DoorFeeDetails(@a_createBy=@ValueofDB:tblExpensed_createBy,
+												   @a_lastUpdateBy=@ValueofDB:tblExpensed_lastUpdateBy ,
+												   @a_createTime=@ValueofDB:tblExpensed_createTime,
+												   @a_lastUpdateTime=@ValueofDB:tblExpensed_lastUpdateTime,
+												   @a_Companycode=@ValueofDB:tblExpensed_CompanyCode,
+												   @a_ItemType=PaymentProportion,
+												   @a_InMoney=0,
+												   @a_outMoney=@SqlReturn:gAmount,
+												   @a_billId=@ValueofDB:id,
+												   @a_billType=tblExpensed,
+												   @a_billNo=@ValueofDB:tblExpensed_BillNo,
+												   @a_billDate=@ValueofDB:tblExpensed_BillDate,
+												   @a_opt=add,@retCode=retCode,@retVal=retVal)}
+			</sql>
+		</exec>
+		
+		<exec condition="@SqlReturn:pAmount&gt;0">
+			<sql type="procedure">{call proc_DoorFeeDetails(@a_createBy=@ValueofDB:tblExpensed_createBy,
+												   @a_lastUpdateBy=@ValueofDB:tblExpensed_lastUpdateBy ,
+												   @a_createTime=@ValueofDB:tblExpensed_createTime,
+												   @a_lastUpdateTime=@ValueofDB:tblExpensed_lastUpdateTime,
+												   @a_Companycode=@ValueofDB:tblExpensed_CompanyCode,
+												   @a_ItemType=Parts,
+												   @a_InMoney=0,
+												   @a_outMoney=@SqlReturn:pAmount,
+												   @a_billId=@ValueofDB:id,
+												   @a_billType=tblExpense,
+												   @a_billNo=@ValueofDB:tblExpensed_BillNo,
+												   @a_billDate=@ValueofDB:tblExpensed_BillDate,
+												   @a_opt=add,@retCode=retCode,@retVal=retVal)}
+			</sql>
+		</exec>
+		
+		
+	</sql>
+	
+	<!--插入出纳明细-->
+	<sql type="condition">
+		<exec condition="true">
+			<sql type="define">tblExpense_genCashier</sql>
+		</exec>
+	</sql>
+
+</define>
+<!--===========如果启用了往来核算,则影响往来明细===========-->
+<define name="tblExpensed_Add_Company">
+	<sql type="condition">
+		<condition>
+			<select>select ClientFlag from tblCompany where classCode=@ValueofDB:tblExpensed_CompanyCode</select>
+			<select>select DepartmentCode as CreateDeptCode from tblEmployee where id=@ValueofDB:tblExpensed_createBy</select>
+		</condition>
+		<!--如果是客户，则往来单位的应收减少 （1应付 2应收 3预付 4预收）-->
+		<exec condition="@SqlReturn:ClientFlag==2">
+			<sql type="procedure">{call proc_insertComIni(1@ValueofDB:tblExpensed_id,@ValueofDB:tblExpensed_CompanyCode,2,@ValueofDB:tblExpensed_BillDate,Period=@ValueofDB:tblExpensed_Period@SPFieldLink:PeriodYear=@ValueofDB:tblExpensed_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblExpensed_PeriodMonth@SPFieldLink:ReceiveTotalDebit=-@ValueofDB:tblExpensed_BillAmt@ParamNum:@SPFieldLink:ReceiveTotalLend=0@SPFieldLink:RelationDocID=@ValueofDB:tblExpensed_id@SPFieldLink:createBy=@ValueofDB:tblExpensed_createBy@SPFieldLink:createTime=@ValueofDB:tblExpensed_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblExpensed_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblExpensed_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblExpensed_SCompanyID@SPFieldLink:Currency=@ValueofDB:tblExpensed_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblExpensed_CurrencyRate@SPFieldLink:FcRecTotalDebit=-@ValueofDB:tblExpensed_FcBillAmt@ParamNum:@SPFieldLink:FcRecTotalCredit=0@SPFieldLink:BillType=tblExpensed@SPFieldLink:BillNo=@ValueofDB:tblExpensed_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblExpensed_createBy@SPFieldLink:DepartmentCode=@SqlReturn:CreateDeptCode@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark=@ValueofDB:tblExpensed_Remark,retCode,retVal)}</sql>
+		</exec>
+		<!--如果是非客户，则往来单位的应付增加 （1应付 2应收 3预付 4预收）-->
+		<exec condition="@SqlReturn:ClientFlag!=2">
+			<sql type="procedure">{call proc_insertComIni(2@ValueofDB:tblExpensed_id,@ValueofDB:tblExpensed_CompanyCode,1,@ValueofDB:tblExpensed_BillDate,Period=@ValueofDB:tblExpensed_Period@SPFieldLink:PeriodYear=@ValueofDB:tblExpensed_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblExpensed_PeriodMonth@SPFieldLink:PayTotalDebit=0@ParamNum:@SPFieldLink:PayTotalLend=@ValueofDB:tblExpensed_BillAmt@SPFieldLink:RelationDocID=@ValueofDB:tblExpensed_id@SPFieldLink:createBy=@ValueofDB:tblExpensed_createBy@SPFieldLink:createTime=@ValueofDB:tblExpensed_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblExpensed_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblExpensed_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblExpensed_SCompanyID@SPFieldLink:Currency=@ValueofDB:tblExpensed_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblExpensed_CurrencyRate@SPFieldLink:FcPayTotalDebit=0@SPFieldLink:FcPayTotalCredit=@ValueofDB:tblExpensed_FcBillAmt@ParamNum:@SPFieldLink:BillType=tblExpensed@SPFieldLink:BillNo=@ValueofDB:tblExpensed_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblExpensed_createBy@SPFieldLink:DepartmentCode=@SqlReturn:CreateDeptCode@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark=@ValueofDB:tblExpensed_Remark,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+</define>
+<!--========删除费用分摊单=========-->
+<define name="tblExpense_Del">
+	<sql type="condition">
+		<exec condition="'@MEM:tblExpensed_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblExpense_Del_One</sql>
+		</exec> 
+	</sql>		  
+</define>
+<define name="tblExpense_Del_One">
+<!--====判断是否存在关联出纳明细-=====-->
+<sql type="condition">
+	<condition>
+		<select>select id as CasherID from tblCashierAccount where BillType = 'tblExpensed' and BillID = @ValueofDB:id</select>
+	</condition>
+	<exec condition="'@SqlReturn:CasherID'!='null' &amp;&amp; '@SqlReturn:CasherID'!=''">
+		<error>已导出出纳明细，不允许此操作</error>		
+	</exec>
+</sql>
+<!--=============查询是否存在关联表，如果有提出错误提示===========-->
+<sql type="condition"><!--由职员工资设定表生成的费用单不允许进行操作-->
+	<condition><select>select RefBillID as RefHREmployeeWage from tblExpensed where id=@ValueofDB:tblExpensed_id</select></condition>
+	<exec condition="'@SqlReturn:RefHREmployeeWage'.length &gt; 0">	
+		<error>tblExpensed.del.error.HREmployeeWage</error>                  
+	</exec>
+</sql>
+<sql type="condition"><!--存在关联付款单不允许进行操作 -->
+	<condition><select>select a.BillNo as RefPayNo from tblPay a,tblPayDet b where a.id=b.f_ref and b.RefBillID=@ValueofDB:tblExpensed_id and a.workFlowNodeName!='print'</select></condition>
+	<exec condition="'@SqlReturn:RefPayNo'!='null'">
+		<error>PayBill.BillNo.error,@SqlReturn:RefPayNo</error> 
+	</exec>
+</sql>
+<sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+	<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblExpensed_id and workFlowNodeName='finish'</select></condition>
+	<exec condition="'@SqlReturn:OrderNo'!='null'">	
+		<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>                  
+	</exec>
+</sql>
+<sql type="condition"><!--存在对应的采购开票单-->
+	<condition>
+		<select>SELECT a.BillNo AS InfoBillNo FROM tblBuyInvoiceInfo a JOIN tblBuyInfoDet b ON a.id = b.f_ref WHERE b.RefBillID = @ValueofDB:id and a.workFlowNodeName!='print'</select>
+	</condition>
+	<exec condition="'@SqlReturn:InfoBillNo'!='null'">
+		<error>InfoBill.BillNo.error,@SqlReturn:InfoBillNo</error>
+	</exec>
+</sql>
+<!--删除凭证-->
+<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblExpensed_id,retCode,retVal)}</sql>
+<sql type="condition"><!--判断如果启用往来核算，则删除往来明细-->
+	<condition><select>select CheckCompany from tblExpensed where id=@ValueofDB:tblExpensed_id</select></condition>
+	<exec condition="'@SqlReturn:CheckCompany'=='1,'">
+		<sql type="define">tblExpense_Del_Company</sql>
+	</exec>
+</sql>	
+<sql type="condition">
+	<exec condition="true">
+		<sql>delete from tblTrackBill where RelationID = @ValueofDB:tblExpensed_id</sql>
+	</exec>
+</sql>		
+
+<!-- 删除门头费-->
+<sql type="condition">
+	<exec condition="true">
+		<sql type="procedure">{call proc_DoorFeeDetails(@a_billId=@ValueofDB:id,@a_billType=tblExpensed,@a_opt=del,@retCode=retCode,@retVal=retVal)}
+		</sql>
+	</exec>
+</sql>
+	
+
+</define>
+<define name="tblExpense_Del_Company">
+<sql type="condition">
+	<condition><select>select id as IniId,case when ReceiveTotalDebit!=0 then 2 else 1 end ComType from tblCompanyIni where relationDocID=@ValueofDB:tblSalesOutStock_id</select></condition>
+	<exec condition="true"><!-- 删除往来明细:修改类型（1应付 2应收 3预付 4预收） -->
+		<sql type="procedure">{call proc_deleteComIni(@SqlReturn:IniId,@SqlReturn:ComType,retCode,retVal)}</sql>
+	</exec>
+</sql>
+</define>
+<!--===================================================以上代码：其它付款单======================================================-->
+
+<!--=======================================================其他收款单========================================================-->
+<define name="tblIncome_Add">
+	<!--生成银企直联子账户余额--> 
+	<sql type="condition">
+			<condition>
+		
+				<select>select substring(REPLACE(newId(),'-',''),0,30) as newId</select>
+				<select>Select CONVERT(varchar(100), GETDATE(), 20) as lastUpTime</select>
+				<select>select COUNT(*) as num from tblSubAccountBalance where subAccountNo = @ValueofDB:subAccount  and companyCode = @ValueofDB:CompanyCode</select>
+
+			</condition>
+			
+			<!--子账户不存在在子账户中增加子账户--> 	
+			<exec condition="@SqlReturn:num == 0">
+				<sql>insert into tblSubAccountBalance (id,createBy,subAccountNo,companyCode,balance,AccountNo,lastUpdateTime) 
+					values(@SqlReturn:newId,@Sess:UserId,@ValueofDB:subAccount,@ValueofDB:CompanyCode,@ValueofDB:BillAmt,@ValueofDB:AccountNo,@SqlReturn:lastUpTime)
+				</sql>		
+			</exec>
+			<!--子账户存在增加子账户余额--> 	
+			<exec condition="@SqlReturn:num == 1">
+				<sql>
+					update tblSubAccountBalance set balance = balance + @ValueofDB:BillAmt 
+where subAccountNo = @ValueofDB:subAccount and CompanyCode = @ValueofDB:CompanyCode
+				</sql>		
+			</exec>
+		</sql>
+	<sql type="condition">
+		<!--选择的结算账户为往来科目，则必须勾选启用往来核算-->
+		<exec condition="('@ValueofDB:tblIncome_SubCode'=='1122')&amp;&amp;('@ValueofDB:tblExpensed_CheckCompany'!='1,'||'@ValueofDB:tblIncome_CompanyCode'=='')">
+			<error>tblExpensed.CheckCompany.error</error> 
+		</exec>
+		<!--勾选了启用往来核算，则结算账户不能为现金银行科目-->
+		<exec condition="'@ValueofDB:tblIncome_CheckCompany'=='1,'&amp;&amp;('@ValueofDB:tblIncome_SubCode'.indexOf('1001')==0||'@ValueofDB:tblIncome_SubCode'.indexOf('1002')==0)">
+			<error>tblCashBank.SelectCompany.error</error> 
+		</exec>
+		<!--勾选了启用往来核算，则必须选择往来单位-->
+		<exec condition="'@ValueofDB:tblIncome_CheckCompany'=='1,'&amp;&amp;'@ValueofDB:tblIncome_CompanyCode'==''">
+			<error>tblExpensed.CCSelectCompany.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--如果启用了部门核算，则明细表部门和主表制单人的部门的一级部门必须是相同的-->
+		<condition>
+			<select>select DepartmentCode as CreateDeptCode from tblEmployee where id=@ValueofDB:tblIncome_createBy</select>
+			<select>select count(0) as deptError from tblIncomeDetl where @MEM:openDeptAcc='true' and f_ref=@ValueofDB:tblIncome_id and substring(DepartmentCode,1,5)!=substring(@SqlReturn:CreateDeptCode,1,5)</select>
+		</condition>
+		<exec condition="@SqlReturn:deptError&gt;0">
+			<error>common.deptDif.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--选择的结算账户为往来科目，则必须选择相应的往来单位-->
+		<condition><select>select ClientFlag from tblCompany where classCode=@ValueofDB:tblIncome_CompanyCode</select></condition>
+		<exec condition="@SqlReturn:ClientFlag==1&amp;&amp;'@ValueofDB:tblIncome_SubCode'.indexOf('1122')==0">
+			<error>tblExpense.selectCompany1.error</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表的金额小于0给出错误提示-->
+		<condition><select>select count(0) as AmtNeC from tblIncomeDetl where f_ref=@ValueofDB:tblIncome_id and Amt&lt;=0</select></condition>
+		<exec condition="@SqlReturn:AmtNeC&gt;0">
+			<error>tblIncome.add.DetLessZero</error> 
+		</exec>
+	</sql>
+	
+	<sql type="condition"><!--存在收入类型未填的明细给出错误提示-->
+		<condition><select>select count(0) as AmtNeC from tblIncomeDetl where f_ref=@ValueofDB:tblIncome_id and isnull(SubCode,'')=''</select></condition>
+		<exec condition="@SqlReturn:AmtNeC&gt;0">
+			<error>存在收入类型未填写的明细</error> 
+		</exec>
+	</sql>
+	
+	<sql type="condition"><!--明细表的金额合计必须与主表相等-->
+		<condition><select>select dbo.getDigits('tblIncomeDetl','Amt',sum(Amt)) as SumDetAmt from tblIncomeDetl where f_ref=@ValueofDB:tblIncome_id</select></condition>
+		<exec condition=" @SqlReturn:SumDetAmt != @ValueofDB:tblIncome_BillAmt">				
+			<error>common.mainDetilAmt.NotEqual.error,@ValueofDB:tblIncome_BillAmt,@SqlReturn:SumDetAmt</error>                  
+		</exec>
+	</sql>
+	<sql type="condition"><!--外币代码，暂不处理-->
+	<condition><select>select AccNumber,AccName,IsForCur,Currency as CURD from tblAccTypeInfo where AccNumber=@ValueofDB:tblIncome_SubCode and SCompanyID=@ValueofDB:tblIncome_SCompanyID</select></condition>
+		 <exec condition="'@ValueofDB:tblIncome_Currency'.length !=0 &amp;&amp; '@ValueofDB:tblIncome_Currency' != '@SqlReturn:CURD'">
+		  <!--选择的收款帐户不是该币种对应的帐户-->
+			<error>tblAccTypeInfo.ReceSelectCurType.error</error> 
+			</exec>	
+		<exec condition="'@ValueofDB:tblIncome_Currency'.length == 0 &amp;&amp; ( '@SqlReturn:CURD'.length != 0 &amp;&amp; '@SqlReturn:CURD' !=' '  &amp;&amp; '@SqlReturn:CURD' != 'null' &amp;&amp; '@SqlReturn:CURD' != 'NULL') ">
+			  <!--选择的收款帐户不是该币种对应的帐户-->
+			<error>tblAccTypeInfo.ReceSelectCurType.error</error> 
+			</exec>	 
+			 <!--如果是本位币帐户，不用录入汇率-->	
+	 <exec condition=" ('@ValueofDB:tblIncome_Currency'.length == 0 &amp;&amp; @ValueofDB:tblIncome_CurrencyRate &gt; 0 &amp;&amp; @ValueofDB:tblIncome_CurrencyRate!=1)">		
+     <error>CurrencyRate.putErrors.error</error> 
+	 </exec>
+	</sql>	  
+	<sql type="condition">
+		<exec condition="true">
+			<!--导入时如果外币为空则设置默认值-->
+			<sql>update tblIncome set CertificateNo='' where id=@ValueofDB:tblIncome_id</sql>
+			<sql>update tblIncome set CurrencyRate=0 where CurrencyRate is null and id=@ValueofDB:tblIncome_id</sql>
+		  <sql>update tblIncome set Currency='' where Currency is null and id=@ValueofDB:tblIncome_id</sql>
+			<sql>update tblIncome set TotalAlrAccAmt=0,NeedReturnAmt=(case when @ValueofDB:tblIncome_CheckCompany='1,' then BillAmt else 0 end) where id=@ValueofDB:tblIncome_id</sql>
+		</exec>
+		<exec condition="'@MEM:tblIncome_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblIncome_Add_One</sql>
+		</exec>
+	</sql>
+</define>
+
+<define name="tblIncome_Add_One">	  
+	<sql type="condition">
+    <exec condition="'@MEM:autoGenerateAcc'=='true'"><sql type="certificate">tblIncome</sql></exec>
+    <exec condition="true">
+			<!--将开票金额与未开票金额更新为初始值-->
+			<sql>update tblIncome set tblIncome.NotInvoiceAmount=tblIncome.BillAmt,tblIncome.InvoiceAmount=0,tblIncome.InvoiceStatus='False' where tblIncome.id =@ValueofDB:tblIncome_id</sql>
+		</exec>
+		<!-- 如果启用往来核算，则插入往来明细 -->  
+		<exec condition="'@ValueofDB:tblIncome_CheckCompany'=='1,'">
+			<sql type="define">tblIncome_Add_Company</sql>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<exec condition="true"><!--其他收入-生成出纳明细-->
+			<sql type="define">tblIncome_genCashier</sql>
+		</exec>
+	</sql>
+</define>
+
+<!-- 其他收入-生成出纳明细-->
+<define name="tblIncome_genCashier">
+	<!--生成出纳明细-->
+	<sql type="condition">
+		<condition>
+			<select>select isnull(Max(No),0)+1 as maxNo from tblCashierAccount where PeriodYear=DATEPART(YEAR,@ValueofDB:BillDate) and PeriodMonth = DATEPART(MONTH,@ValueofDB:BillDate)</select>				
+			<select>select SubCode from tblIncome where id = @ValueofDB:id and (SubCode like '1001%' or SubCode like '1002%')</select>
+		</condition>					
+		<exec condition="'@SqlReturn:SubCode' != 'null' &amp;&amp; '@SqlReturn:SubCode' != ''">
+			<sql>
+				declare @ret int,@row int ,@rows int,@detID varchar(50),@accCode varchar(50),@amt numeric(14,2),@refAcc varchar(50)
+				set @ret = @SqlReturn:maxNo			
+				declare @tab table(
+					num int identity(1,1),
+					detID varchar(50),
+					refCode varchar(50),
+					amt numeric(14,2)
+				)				
+				set @row = 1 
+				
+				insert into @tab(detID,refCode,amt) select id,SubCode,Amt from tblIncomeDetl where f_ref = @ValueofDB:id
+				set @rows = @@ROWCOUNT
+				while(@row&lt;=@rows)
+				begin
+					select @detID=detID,@refAcc=refCode from @tab where num = @row
+										
+					insert into tblCashierAccount(id,BillDate,No,CredType,CredNo,PeriodYear,PeriodMonth,AccCode,RefAcc,DebitAmount,LendAmount,EmployeeID,RecordComment,Currency,BillID,BillType,createBy,createTime)
+					select ('I' + CONVERT(nvarchar(13),REPLACE(CONVERT(decimal(18,8),GETDATE()),'.','')) + RIGHT(NEWID(),12)) as id,
+					@ValueofDB:BillDate as BillDate,(@SqlReturn:maxNo+@row) as No,'记' as CredType,0 as CredNo,DATEPART(YEAR,@ValueofDB:BillDate) as pYear,DATEPART(Month,@ValueofDB:BillDate) as pMonth,
+					@SqlReturn:SubCode as AccCode,@refAcc as RefAcc,Amt as Debit,0.0 as lend,
+					@ValueofDB:EmployeeID as EmployeeID,@ValueofDB:Remark as RecordComment,'RMB' as Currency,@ValueofDB:id as billID,'tblIncome' as BillType,@ValueofDB:createBy,@ValueofDB:createTime from tblIncomeDetl where id = @detID
+					set @row = @row + 1
+				end							
+			</sql>
+		</exec>
+	</sql>
+</define>
+
+<define name="tblIncome_Add_Company">
+	<sql type="condition">
+		<condition>
+			<select>select ClientFlag from tblCompany where ClassCode=@ValueofDB:tblIncome_CompanyCode</select>
+			<select>select DepartmentCode as CreateDeptCode from tblEmployee where id=@ValueofDB:tblIncome_createBy</select>
+		</condition>
+		<!--如果选择的是供应商，则往来单位的应付减少 往来单位明细 （1应付 2应收 3预付 4预收）-->
+		<exec condition="@SqlReturn:ClientFlag==1">
+ 			<sql type="procedure">{call proc_insertComIni(1@ValueofDB:tblIncome_id,@ValueofDB:tblIncome_CompanyCode,1,@ValueofDB:tblIncome_BillDate,Period=@ValueofDB:tblIncome_Period@SPFieldLink:PeriodYear=@ValueofDB:tblIncome_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblIncome_PeriodMonth@SPFieldLink:PayTotalDebit=0@SPFieldLink:PayTotalLend=-@ValueofDB:tblIncome_BillAmt@ParamNum:@SPFieldLink:RelationDocID=@ValueofDB:tblIncome_id@SPFieldLink:Currency=@ValueofDB:tblIncome_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblIncome_CurrencyRate@SPFieldLink:FcPayTotalDebit=0@SPFieldLink:FcPayTotalCredit=-@ValueofDB:tblIncome_FcBillAmt@ParamNum:@SPFieldLink:createBy=@ValueofDB:tblIncome_createBy@SPFieldLink:createTime=@ValueofDB:tblIncome_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblIncome_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblIncome_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblIncome_SCompanyID@SPFieldLink:BillType=tblIncome@SPFieldLink:BillNo=@ValueofDB:tblIncome_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblIncome_createBy@SPFieldLink:DepartmentCode=@SqlReturn:CreateDeptCode@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark=@ValueofDB:tblIncome_Remark,retCode,retVal)}</sql>
+ 		</exec>
+		<!--如果选择非供应商，则往来单位的应收增加 往来单位明细 （1应付 2应收 3预付 4预收）-->
+		<exec condition="@SqlReturn:ClientFlag!=1">
+ 			<sql type="procedure">{call proc_insertComIni(1@ValueofDB:tblIncome_id,@ValueofDB:tblIncome_CompanyCode,2,@ValueofDB:tblIncome_BillDate,Period=@ValueofDB:tblIncome_Period@SPFieldLink:PeriodYear=@ValueofDB:tblIncome_PeriodYear@SPFieldLink:PeriodMonth=@ValueofDB:tblIncome_PeriodMonth@SPFieldLink:ReceiveTotalDebit=@ValueofDB:tblIncome_BillAmt@SPFieldLink:ReceiveTotalLend=0@ParamNum:@SPFieldLink:RelationDocID=@ValueofDB:tblIncome_id@SPFieldLink:Currency=@ValueofDB:tblIncome_Currency@SPFieldLink:CurrencyRate=@ValueofDB:tblIncome_CurrencyRate@SPFieldLink:FcRecTotalDebit=@ValueofDB:tblIncome_FcBillAmt@SPFieldLink:FcRecTotalCredit=0@ParamNum:@SPFieldLink:createBy=@ValueofDB:tblIncome_createBy@SPFieldLink:createTime=@ValueofDB:tblIncome_createTime@SPFieldLink:lastUpdateBy=@ValueofDB:tblIncome_lastUpdateBy@SPFieldLink:lastUpdateTime=@ValueofDB:tblIncome_lastUpdateTime@SPFieldLink:SCompanyID=@ValueofDB:tblIncome_SCompanyID@SPFieldLink:BillType=tblIncome@SPFieldLink:BillNo=@ValueofDB:tblIncome_BillNo@SPFieldLink:EmployeeID=@ValueofDB:tblIncome_createBy@SPFieldLink:DepartmentCode=@SqlReturn:CreateDeptCode@SPFieldLink:DiscountAmount=0@SPFieldLink:Remark=@ValueofDB:tblIncome_Remark,retCode,retVal)}</sql>
+ 		</exec>
+	</sql>
+</define>
+
+<!--==========其他收款单 删除=============-->
+<define name="tblIncome_Del">
+	<sql type="condition">
+		<exec condition="'@MEM:tblIncome_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">tblIncome_Del_One</sql>
+		</exec>
+	</sql>	 
+</define>		  
+<define name="tblIncome_Del_One">
+	<sql type="condition"><!--存在关联收款单不允许进行操作 -->
+		<condition><select>select a.BillNo as ReBillNo from tblSaleReceive a,tblSaleReceiveDet b where a.id=b.f_ref and b.RefBillID=@ValueofDB:tblIncome_id and a.workFlowNodeName!='print'</select></condition>
+		<exec condition="'@SqlReturn:ReBillNo'!='null'">
+			<error>DelBill.ReBillNo.error,@SqlReturn:ReBillNo</error> 
+		</exec>
+	</sql>
+	<sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+		<condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblIncome_id and workFlowNodeName='finish'</select></condition>
+		<exec condition="'@SqlReturn:OrderNo'!='null'">	
+			<error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>                  
+		</exec>
+	</sql>
+	<sql type="condition"><!--存在对应的销售开票单-->
+	<condition>
+		<select>SELECT a.BillNo AS InfoBillNo FROM tblSalesInvoiceInfo a JOIN tblSalesInfoDet b ON a.id = b.f_ref WHERE b.RefBillID = @ValueofDB:id and a.workFlowNodeName!='print'</select>
+	</condition>
+	<exec condition="'@SqlReturn:InfoBillNo'!='null'">
+		<error>SaleInvoBill.BillNo.error,@SqlReturn:InfoBillNo</error>
+	</exec>
+</sql>
+	<sql type="condition"> 
+		<condition><select>select CheckCompany from tblIncome where id=@ValueofDB:tblIncome_id</select></condition>
+		<!--删除凭证审核流或者减少科目余额，删除凭证信息-->	
+		<exec condition="true">		
+			<sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblIncome_id,retCode,retVal)}</sql>
+		</exec>
+		<!--启用往来核算-->
+		<exec condition="'@SqlReturn:CheckCompany'=='1,'">
+			<sql type="define">tblIncome_Del_Company</sql>
+		</exec>
+	</sql>
+	<sql type="condition"><!--查询其他收入单是否产生出纳明细-->
+		<condition>
+			<select>select id as CashierID from tblCashierAccount where BillType = 'tblIncome' and BillID = @ValueofDB:id</select>
+		</condition>
+		<exec condition="'@SqlReturn:CashierID' != 'null' &amp;&amp; '@SqlReturn:CashierID' != ''">
+			<sql>delete from tblCashierAccount where id = @SqlReturn:CashierID </sql>
+	
+		</exec>
+	</sql>
+	<sql type="condition">  <!-- 修改子账户余额-->
+		<exec condition="true">
+			<sql>update tblSubAccountBalance set balance = balance - @ValueofDB:BillAmt
+ where subAccountNo = @ValueofDB:subAccount and CompanyCode = @ValueofDB:CompanyCode</sql>
+		</exec>
+	</sql>
+</define>
+
+<define name="tblIncome_Del_Company">
+	<sql type="condition">
+		<condition><select>select id as IniId,case when ReceiveTotalDebit!=0 then 2 else 1 end ComType from tblCompanyIni where relationDocID=@ValueofDB:tblIncome_id</select></condition>
+		<exec condition="true"><!-- 删除往来明细:修改类型（1应付 2应收 3预付 4预收） -->
+			<sql type="procedure">{call proc_deleteComIni(@SqlReturn:IniId,@SqlReturn:ComType,retCode,retVal)}</sql>
+		</exec>
+	</sql>
+</define>
+<!--======================================================以上代码：其他收款单========================================================-->
+
+<!--=========================================================现金银行转账单=======================================================-->
+<define name="tblUserTransAcc_Add">
+    <sql type="condition"><!-- 转入账户和转出账户不可以是同一个现金银行帐户 -->
+        <condition><select>select count(0) as AccC from tblUserTransAccDet where f_ref=@ValueofDB:tblUserTransAcc_id and ReceiveBankNo=@ValueofDB:PayBankID</select></condition>
+        <exec condition="@SqlReturn:AccC&gt;0">
+            <error>tblUserTransAcc.add.repeatPayAccount</error> 
+        </exec>
+    </sql>
+    <sql type="condition"><!-- 转入金额小于等于0，给出错误提示 -->
+        <condition><select>select count(0) as AmtC from tblUserTransAccDet where f_ref=@ValueofDB:tblUserTransAcc_id and ReceiveAmt&lt;=0</select></condition>
+        <exec condition="@SqlReturn:AmtC&gt;0">
+            <error>ReceiveBank.Bill.error</error> 
+        </exec>
+    </sql>
+    <sql type="condition"><!--存在收入类型未填的明细给出错误提示-->
+        <condition><select>select count(0) as AmtNeC from tblUserTransAccDet where f_ref=@ValueofDB:tblUserTransAcc_id and isnull(ReceiveBankNo,'')=''</select></condition>
+        <exec condition="@SqlReturn:AmtNeC&gt;0">
+            <error>存在转入账户未填写的明细</error> 
+        </exec>
+    </sql>
+    <sql type="condition"><!--总金额与明细表合计金额不相等，给出错误提示-->
+        <condition><select>select dbo.getDigits('tblUserTransAccDet','ReceiveAmt',sum(ReceiveAmt)) as SumDetAmt from tblUserTransAccDet where f_ref=@ValueofDB:tblUserTransAcc_id</select></condition>
+        <exec condition=" @SqlReturn:SumDetAmt != @ValueofDB:tblUserTransAcc_PayAmt">               
+            <error>common.mainDetilAmt.NotEqual.error,@ValueofDB:tblUserTransAcc_PayAmt,@SqlReturn:SumDetAmt</error>       
+        </exec> 
+    </sql>
+    <sql type="condition"><!--检查账户是否出现负数:@Sess:NoAccNegative为系统配置是否启用账户余额负数控制  单账户-->
+        <condition>
+            <select>SELECT e.zh_CN AS AccountName FROM tblAccBalance b JOIN (SELECT a.SubCode,a.Nyear,MAX(a.Period) Period FROM tblAccBalance a JOIN (SELECT MAX(Nyear) Nyear FROM tblAccBalance WHERE SubCode = @ValueofDB:PayBankID AND Nyear&gt;=@ValueofDB:PeriodYear) b ON a.Nyear = b.Nyear WHERE a.SubCode = @ValueofDB:PayBankID GROUP BY a.SubCode,a.Nyear) c ON b.Period = c.Period AND b.Nyear = c.Nyear JOIN tblAccTypeInfo d ON d.AccNumber=@ValueofDB:PayBankID JOIN tblLanguage e ON d.AccName = e.id WHERE b.SubCode=@ValueofDB:PayBankID AND (b.PeriodBalaBase - @ValueofDB:PayAmt)&lt;0 AND (b.SubCode like '1001%' or b.SubCode like '1002%')</select>
+        </condition>
+        <exec condition="&quot;@SqlReturn:AccountName&quot;.length != 0 &amp;&amp; &quot;@SqlReturn:AccountName&quot; != &quot;null&quot; &amp;&amp; &quot;@MEM:NoAccNegative&quot; == &quot;true&quot;">
+            <error>AccNegative.Account.error,@SqlReturn:AccountName</error>                     
+        </exec> 
+    </sql>
+    <sql type="condition"><!--外币代码暂不处理-->
+        <condition>
+        <!--检查明细表中选择的帐户是否跟主表中选择的帐户为同一核算币种的-->        
+        <select>select tblUserTransAccDet.ReceiveBankNo,tblAccTypeInfo.Currency from tblUserTransAccDet left join tblAccTypeInfo on tblAccTypeInfo.AccNumber=tblUserTransAccDet.ReceiveBankNo where tblAccTypeInfo.Currency != (select tblAccTypeInfo.Currency from tblUserTransAcc left join tblAccTypeInfo on tblAccTypeInfo.AccNumber=tblUserTransAcc.PayBankID where tblUserTransAcc.id=@ValueofDB:tblUserTransAcc_id) and tblUserTransAccDet.f_ref = @ValueofDB:tblUserTransAcc_id and tblAccTypeInfo.ScompanyID=@Sess:SCompanyID</select>
+        <!--检查表头账户的币种核算，与所选的币种不是同一核算币种的-->        
+        <select>select tblUserTransAcc.PayBankID as NoSameCodePay from tblUserTransAcc left join tblAccTypeInfo on tblAccTypeInfo.AccNumber=tblUserTransAcc.PayBankID where (tblAccTypeInfo.Currency!=tblUserTransAcc.Currency) and tblUserTransAcc.id = @ValueofDB:tblUserTransAcc_id</select>
+        <!--检查明细表明细账户的币种核算，与所选的币种不是同一核算币种的-->        
+        <select>select tblUserTransAccDet.ReceiveBankNo as NoSameCodeRec from tblUserTransAccDet join tblUserTransAcc on tblUserTransAcc.id=tblUserTransAccDet.f_ref left join tblAccTypeInfo on tblAccTypeInfo.AccNumber=tblUserTransAccDet.ReceiveBankNo where (tblAccTypeInfo.Currency!=tblUserTransAcc.Currency) and tblUserTransAccDet.f_ref = @ValueofDB:tblUserTransAcc_id</select>
+        <select>select count(0) as ErrorDataC from tblUserTransAccDet where (len(ReceiveBankID)=0 and ReceiveAmt!=0) or (len(ReceiveBankID)!=0 and ReceiveAmt=0)</select>
+        </condition>
+        <!--存在明细跟主表选择的帐户不为同一核算的币种时报错-->
+        <exec condition="'@SqlReturn:ReceiveBankNo' != 'null' &amp;&amp; '@SqlReturn:ReceiveBankNo'.length != 0">       
+            <error>Currency.DoubleError.error,@SqlReturn:ReceiveBankNo</error> 
+        </exec>
+      <!--存在表头账户的币种核算，与所选的币种不是同一核算币种的-->
+        <exec condition="'@SqlReturn:NoSameCodePay' != 'null' &amp;&amp; '@SqlReturn:NoSameCodePay'.length != 0">       
+            <error>Currency.Transferout.error</error> 
+        </exec>
+        <!--存在明细表明细账户的币种核算，与所选的币种不是同一核算币种的-->  
+        <exec condition="'@SqlReturn:NoSameCodeRec' != 'null' &amp;&amp; '@SqlReturn:NoSameCodeRec'.length != 0">       
+            <error>Currency.TransferIn.error</error> 
+        </exec>
+        <!--如果是外币帐户，必须录入汇率-->   
+        <exec condition=" ('@ValueofDB:tblUserTransAcc_Currency'.length != 0 &amp;&amp; @ValueofDB:tblUserTransAcc_CurrencyRate &lt;= 0 )">       
+            <error>CurrencyRate.InputError.error</error> 
+        </exec>
+      <!--如果是本位币帐户，不用录入汇率-->    
+        <exec condition=" ('@ValueofDB:tblUserTransAcc_Currency'.length == 0 &amp;&amp; @ValueofDB:tblUserTransAcc_CurrencyRate &gt; 0 &amp;&amp; @ValueofDB:tblUserTransAcc_CurrencyRate!=1)">       
+            <error>CurrencyRate.putErrors.error</error> 
+        </exec>
+    </sql>  
+    <sql type="condition">
+			<exec condition="true">
+				<sql>update tblUserTransAcc set CertificateNo='' where id=@ValueofDB:tblUserTransAcc_id</sql>
+			</exec>
+			<exec condition="'@MEM:tblUserTransAcc_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+				<sql type="define">tblUserTransAcc_Add_One</sql>
+			</exec>
+    </sql>  
+</define>
+<define name="tblUserTransAcc_Add_One">
+    <sql type="condition">
+        <exec condition="'@MEM:autoGenerateAcc'=='true'"><sql type="certificate">tblUserTransAcc</sql></exec>
+    </sql>
+	<sql type="condition"><!-- 现金银行转账-生成出纳明细-->
+        <exec condition="true">
+			<sql type="define">tblUserTransAcc_genCashier</sql>
+	   </exec>
+    </sql>   
+</define>
+
+
+<!-- 现金银行转账-生成出纳明细-->
+<define name="tblUserTransAcc_genCashier">
+	<!--生成出纳明细-->
+	<sql type="condition">
+		<condition>
+			<select>select isnull(Max(No),0)+1 as maxNo from tblCashierAccount where PeriodYear=DATEPART(YEAR,@ValueofDB:BillDate) and PeriodMonth = DATEPART(MONTH,@ValueofDB:BillDate)</select>				
+			<select>select PayBankID as SubCode from tblUserTransAcc where id = @ValueofDB:id and (PayBankID like '1001%' or PayBankID like '1002%')</select>
+		</condition>					
+		<exec condition="'@SqlReturn:SubCode' != 'null' &amp;&amp; '@SqlReturn:SubCode' != ''">
+			<sql>
+				declare @ret int,@row int ,@rows int,@detID varchar(50),@accCode varchar(50),@amt numeric(14,2),@refAcc varchar(50),@r int
+				set @ret = @SqlReturn:maxNo			
+				declare @tab table(
+					num int identity(1,1),
+					detID varchar(50),
+					refCode varchar(50),
+					amt numeric(14,2)
+				)				
+				set @row = 1 
+				set @r = 1
+				insert into @tab(detID,refCode,amt) select id,ReceiveBankNo,ReceiveAmt from tblUserTransAccDet where f_ref = @ValueofDB:id
+				set @rows = @@ROWCOUNT
+				while(@row&lt;=@rows)
+				begin
+					select @detID=detID,@refAcc=refCode from @tab where num = @row
+									
+					insert into tblCashierAccount(id,BillDate,No,CredType,CredNo,PeriodYear,PeriodMonth,AccCode,RefAcc,DebitAmount,LendAmount,EmployeeID,RecordComment,Currency,BillID,BillType,createBy,createTime)
+					select ('I' + CONVERT(nvarchar(13),REPLACE(CONVERT(decimal(18,8),GETDATE()),'.','')) + RIGHT(NEWID(),12)) as id,
+					@ValueofDB:BillDate as BillDate,(@SqlReturn:maxNo+@r) as No,'记' as CredType,0 as CredNo,DATEPART(YEAR,@ValueofDB:BillDate) as pYear,DATEPART(Month,@ValueofDB:BillDate) as pMonth,
+					@SqlReturn:SubCode as AccCode,@refAcc as RefAcc,0.0 as Debit,ReceiveAmt as lend,
+					@ValueofDB:EmployeeID as EmployeeID,@ValueofDB:Remark as RecordComment,'RMB' as Currency,@ValueofDB:id as billID,'tblUserTransAcc' as BillType,@ValueofDB:createBy,@ValueofDB:createTime from tblUserTransAccDet where id = @detID
+					
+					set @r += 1
+					
+					insert into tblCashierAccount(id,BillDate,No,CredType,CredNo,PeriodYear,PeriodMonth,AccCode,RefAcc,DebitAmount,LendAmount,EmployeeID,RecordComment,Currency,BillID,BillType,createBy,createTime)
+					select ('O' + CONVERT(nvarchar(13),REPLACE(CONVERT(decimal(18,8),GETDATE()),'.','')) + RIGHT(NEWID(),12)) as id,
+					@ValueofDB:BillDate as BillDate,(@SqlReturn:maxNo+@r) as No,'记' as CredType,0 as CredNo,DATEPART(YEAR,@ValueofDB:BillDate) as pYear,DATEPART(Month,@ValueofDB:BillDate) as pMonth,
+					@refAcc as AccCode,@SqlReturn:SubCode as RefAcc,ReceiveAmt as Debit,0.0 as lend,
+					@ValueofDB:EmployeeID as EmployeeID,@ValueofDB:Remark as RecordComment,'RMB' as Currency,@ValueofDB:id as billID,'tblUserTransAcc' as BillType,@ValueofDB:createBy,@ValueofDB:createTime from tblUserTransAccDet where id = @detID
+					
+					set @row = @row + 1
+					set @r = @r + 1
+				end							
+			</sql>
+		</exec>
+	</sql>
+</define>
+
+<define name="tblUserTransAcc_Del">
+    <sql type="condition">
+        <exec condition="'@MEM:tblUserTransAcc_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+            <sql type="define">tblUserTransAcc_Del_One</sql>
+        </exec>
+    </sql>
+</define>   
+<define name="tblUserTransAcc_Del_One">
+    <sql type="condition"><!--凭证启用了审核流,判断是否存在关联此单据的凭证已经审核完毕-->
+        <condition><select>select CredTypeID,OrderNo from tblAccMain where @MEM:tblAccMain_IsStatart=1 and RefBillID=@ValueofDB:tblUserTransAcc_id and workFlowNodeName='finish'</select></condition>
+        <exec condition="'@SqlReturn:OrderNo'!='null'"> 
+            <error>DelBill.RefAccMain.error,@SqlReturn:CredTypeID @SqlReturn:OrderNo</error>       
+        </exec>
+    </sql>
+    <!--删除凭证审核流或者减少科目余额，删除凭证信息-->
+    <sql type="procedure">{call proc_delAccAndRefOper(@MEM:tblAccMain_IsStatart,@Sess:BillOper,@ValueofDB:tblUserTransAcc_id,retCode,retVal)}</sql>
+	 <sql type="condition"><!--现金银行转账-是否已导出出纳明细 -->
+		 <condition>
+				<select>select id as CashierID from tblCashierAccount where BillType='tblUserTransAcc' and BillID=@ValueofDB:id</select>
+		</condition>
+		<exec condition="'@SqlReturn:CashierID'!='null' &amp;&amp; '@SqlReturn:CashierID'!=''">
+			已导出出纳明细，不允许此操作
+		</exec>
+    </sql>
+</define>
+<!--======================================================以上代码：现金银行转账单=======================================================--> 
+
+
+<!--===================================================以上代码：月结、年结=======================================================--> 
+
+</defineSqls>

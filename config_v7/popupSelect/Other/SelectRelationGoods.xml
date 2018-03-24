@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectRelationGoods">
+     <table>ViewRelationGoods</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      ViewRelationGoods.detGoodsCode f1,
+      ViewRelationGoods.detNumber f2,
+      ViewRelationGoods.detFullName f3,
+      ViewRelationGoods.detGoodsSpec f4,
+      ViewRelationGoods.detUnitName f5
+from ViewRelationGoods
+     </defineSQL>
+     <classCode></classCode>
+     <condition>(ViewRelationGoods.mainGoodsCode=@ValueofDB:@TABLENAME_GoodsCode)</condition>
+     <changeCond></changeCond>
+     <orderBy>ViewRelationGoods.detNumber</orderBy>
+     <displayFields>
+          <field name="ViewRelationGoods.detNumber" width="85" searchType="match" parentDisplay="false" />
+          <field name="ViewRelationGoods.detFullName" width="150" searchType="match" parentDisplay="true" />
+          <field name="ViewRelationGoods.detGoodsSpec" width="100" searchType="match" parentDisplay="false" />
+          <field name="ViewRelationGoods.detUnitName" width="85" searchType="match" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="ViewRelationGoods.detGoodsCode" parentName="@TABLENAME.RelationGoods" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

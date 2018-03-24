@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="Company">
+     <table>tblCompany</table>
+     <forwardModel>tblCompany&amp;moduleType=3&amp;ClientFlag=3</forwardModel>
+     <relation></relation>
+     <defineSQL>
+  from tblCompany
+     </defineSQL>
+     <classCode>tblCompany.classCode</classCode>
+     <condition></condition>
+     <changeCond>(tblCompany.statusId!='-1' and tblCompany.workFlowNodeName='finish')</changeCond>
+     <orderBy>tblCompany.ComNumber,tblCompany.ComFullName</orderBy>
+     <displayFields>
+          <field name="tblCompany.[tblCompany_2]" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"/>         
+          <field name="tblCompany.PreReceiveTotalRemain" width="100" parentDisplay="false" />
+          <field name="tblCompany.ReceiveTotalRemain" width="100" parentDisplay="false" />
+          <field name="tblCompany.PrePayTotalRemain" width="100" parentDisplay="false" />
+          <field name="tblCompany.PayTotalRemain" width="100" parentDisplay="false" />
+          <field name="tblCompany.ClientFlag" width="80" searchType="equal" parentDisplay="false"/>
+     </displayFields>
+     <saveFields>
+          <field name="tblCompany.classCode" parentName="@TABLENAME.CompanyCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

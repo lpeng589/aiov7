@@ -1,0 +1,43 @@
+/**
+    此js文件用以存放查询编辑页面独用函数，区别于报表和查询，弹出窗页面。
+    文件每次都更新加载，因此公共或静态函数请放在function.js中
+*/
+
+/**
+   用于处理离开未保存的代码
+*/
+
+function changeConfirm(){
+	var allinput = document.getElementsByTagName("input");
+	for(i=0;i<allinput.length ;i++){
+		if(allinput[i].type=="text"){
+			$(allinput[i]).attr("_oldval",allinput[i].value);
+		}else if(allinput[i].type=="password"){
+			$(allinput[i]).attr("_oldval",allinput[i].value);
+		}else if(allinput[i].type=="checkbox"){
+			var _v = allinput[i] ? 'on' : 'off';   
+			$(allinput[i]).attr("_oldval",_v);		
+		}
+	}
+	var alltextarea = document.getElementsByTagName("textarea");
+	for(i=0;i<alltextarea.length;i++){	
+		$(alltextarea[i]).attr("_oldval",alltextarea[i].value);
+	}
+	var allselect = document.getElementsByTagName("select");
+	for(i=0;i<allselect.length;i++){		
+		$(allselect[i]).attr("_oldval",allselect[i].value); 
+	}	
+}
+
+
+
+window.onbeforeunload = function() { 
+	  if(window.save) return; 
+	  if(typeof(thebeforeunload)   ==   "function"){
+	  	thebeforeunload();
+	  }
+	  if(is_form_changed()) { 
+	  	  return "$text.get("common.msg.chanegnosave")";   
+    }   
+}
+

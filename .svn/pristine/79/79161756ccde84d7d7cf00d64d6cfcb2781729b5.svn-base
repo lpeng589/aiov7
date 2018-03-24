@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="popuptblSalesOrder" type="checkBox">
+     <table>tblSalesOrder,tblCompany,tblDepartment,tblEmployee</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblSalesOrder.id f1,
+      tblSalesOrder.BillDate f2,
+      tblSalesOrder.BillNo f3,
+      tblCompany.ComFullName f4,
+      tblDepartment.DeptFullName f5,
+      tblEmployee.EmpFullName f6,
+      tblSalesOrder.TotalTaxAmount f7,
+      tblSalesOrder.CurTotalAmount f8,
+      tblSalesOrder.BackAmount f9,
+      tblSalesOrder.AlrAccAmt f10,
+	  tblSalesOrder.InVoiceType
+  from tblSalesOrder 
+  left join tblCompany on tblSalesOrder.CompanyCode=tblCompany.classCode
+  left join tblDepartment on tblSalesOrder.DepartmentCode=tblDepartment.classCode
+  left join tblEmployee on tblSalesOrder.EmployeeID=tblEmployee.id
+     </defineSQL>
+     <classCode></classCode>
+     <condition>tblSalesOrder.workFlowNodeName ='finish' and LEN(ISNULL(CertificateNo,''))=0 and AccountAmount&gt;0</condition>
+     <changeCond></changeCond>
+     <orderBy>tblSalesOrder.BillDate,tblSalesOrder.BillNo</orderBy>
+     <displayFields>
+          <field name="tblSalesOrder.BillDate" width="90" searchType="scope" parentDisplay="false" orderBy="升"/>
+          <field name="tblSalesOrder.BillNo" width="120" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"/>
+          <field name="tblCompany.ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="false" display="tblSalesOrder.CompanyCode"/>
+          <field name="tblDepartment.DeptFullName" width="80" searchType="match" keySearch="true" parentDisplay="false" display="tblSalesOrder.DepartmentCode"/>
+          <field name="tblEmployee.EmpFullName" width="80" searchType="match" keySearch="true" parentDisplay="false" display="tblSalesOrder.EmployeeID"/>
+          <field name="tblSalesOrder.TotalTaxAmount" width="100" parentDisplay="false" />
+          <field name="tblSalesOrder.CurTotalAmount" width="100" parentDisplay="false" />
+          <field name="tblSalesOrder.BackAmount" width="100" parentDisplay="false" />
+          <field name="tblSalesOrder.AlrAccAmt" width="100" parentDisplay="false" />
+		  <field name="tblSalesOrder.InVoiceType" width="75" searchType="equal" parentDisplay="false" inputType="1" inputValue="InvoiceType"/>
+     </displayFields>
+     <saveFields>
+          <field name="tblSalesOrder.id" parentName="ID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

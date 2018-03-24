@@ -1,0 +1,45 @@
+package com.menyi.email;
+
+import com.menyi.web.util.BaseSearchForm;
+
+/**
+ * <p>Title: </p>
+ *
+ * <p>Description: </p>
+ *
+ * <p>Copyright: Copyright (c) 2008</p>
+ *
+ * <p>Company: ÷‹–¬”Ó</p>
+ *
+ * @author not attributable
+ * @version 1.0
+ */
+public class EMailAccountSearchForm extends BaseSearchForm{
+  
+	private String keyWord;					//πÿº¸◊÷≤È—Ø” œ‰…Ë÷√
+	private String emailStatus;				//” œ‰◊¥Ã¨
+	private String mainAccount;				//∏∏º∂’Àªß
+	
+	
+	public String getEmailStatus() {
+		return emailStatus;
+	}
+	public void setEmailStatus(String emailStatus) {
+		this.emailStatus = emailStatus;
+	}
+	public String getKeyWord() {
+		return keyWord;
+	}
+	public void setKeyWord(String keyWord) {
+		this.keyWord = keyWord;
+	}
+	public String getMainAccount() {
+		return mainAccount;
+	}
+	public void setMainAccount(String mainAccount) {
+		this.mainAccount = mainAccount;
+	}
+	
+	
+	
+}

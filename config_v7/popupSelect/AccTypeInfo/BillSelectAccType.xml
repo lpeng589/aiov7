@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="BillSelectAccType">
+     <table>tblBillAccSetup</table>
+     <forwardModel>tblBillAccSetup</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblBillAccSetup.SubCode f1,
+      tblBillAccSetup.SubType f2
+  from tblBillAccSetup
+     </defineSQL>
+     <classCode></classCode>
+     <remark>回填调账类型</remark>
+     <condition>(tblBillAccSetup.MainType=(case when '@TABLENAME'='tblseqCheck' then 'tblCheck' else '@TABLENAME' end))</condition>
+     <changeCond></changeCond>
+     <orderBy>tblBillAccSetup.SubCode</orderBy>
+     <displayFields>
+          <field name="tblBillAccSetup.SubCode" width="150" searchType="match" keySearch="true" parentDisplay="false" display="tblAccTypeInfo.AccNumber" orderBy="升" />
+          <field name="tblBillAccSetup.SubType" width="200" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.SubCode" />
+     </displayFields>
+     <saveFields>
+          <field name="tblBillAccSetup.SubCode" parentName="@TABLENAME.SubCode" display="tblAccTypeInfo.AccNumber" relationKey="true" hidden="true" orderBy="升" />
+     </saveFields>
+</select>
+</popupSelect>

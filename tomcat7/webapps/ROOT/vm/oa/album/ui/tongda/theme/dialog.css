@@ -1,0 +1,9 @@
+
+#overlay {display: none; z-index: 10000; height:100%;BACKGROUND: #B5C5E0; filter: alpha(opacity=50);LEFT: 0px; POSITION: absolute; TOP: 0px; -moz-opacity:0.5;opacity:0.5;}
+
+.ModalDialog {border: 2px #1e5ca5 solid; background: #fff; padding: 0px;margin: 10px auto; clear: both; position: absolute;  z-index: 10000;display:none;}
+.header {color:#fff;overflow: hidden; font-weight: normal; background: url('images/dialog_bg.png') left -35px repeat-x;height:28px;}
+.header .title {float:left;font-size: 16px;  font-weight: bold;line-height:28px;margin-left:10px;}
+.header .operation {padding-top: 8px;padding-right:5px; float: right; cursor: pointer; text-decoration: none;}
+.body {font-size: 9pt;margin: 0 !important; overflow-y: auto; padding: 10px 5px;}
+.footer {padding: 0; text-align: center; font-size: 12px; margin-bottom: 10px;}

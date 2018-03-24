@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectFeeType_v2"  version="2">
+     <table>tblBillAccSetup</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblBillAccSetup.SubCode f1,
+      tblBillAccSetup.SubType f2
+  from tblBillAccSetup
+     </defineSQL>
+     <classCode></classCode>
+     <remark>显示名为“支出类型”,供费用明细报表使用</remark>
+     <condition>tblBillAccSetup.MainType='tblExpenseDet'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblBillAccSetup.SubCode,tblBillAccSetup.SubType</orderBy>
+     <displayFields>
+          <field name="tblBillAccSetup.SubCode" width="70" searchType="match" parentDisplay="false" orderBy="升" />
+          <field name="tblBillAccSetup.SubType" width="150" searchType="match" parentDisplay="true" display="tblExpenseDet.SubCode" orderBy="升" />
+     </displayFields>
+     <saveFields>
+          <field name="tblBillAccSetup.SubCode" parentName="SubCode" relationKey="false" hidden="true" orderBy="升" />
+     </saveFields>
+</select>
+</popupSelect>

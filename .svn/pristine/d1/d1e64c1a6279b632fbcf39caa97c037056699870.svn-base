@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="tblBuyOutStock_quote_buyinStock">
+     <table>tblBuyInStock,tblEmployee,tblDepartment,tblCompany,tblBuyInStockDet,tblStock,tblGoods,tblProject</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblBuyInStock.id f1,
+      tblBuyInStock.BillDate f2,
+      tblBuyInStock.BillNo f3,
+      tblDepartment.DeptFullName f4,
+      tblEmployee.EmpFullName f5,
+      tblCompany.ComFullName f6,
+      tblStock.StockFullName f7,
+      tblBuyInStock.TotalAmount f8,
+      tblGoods.GoodsNumber f9,
+      tblGoods.GoodsFullName f10,
+      tblGoods.GoodsSpec f11,
+      tblGoods.GoodsFullNamePYM f12,
+      tblProject.ProjectName f13
+  from tblBuyInStock
+	left join tblEmployee on tblEmployee.id=tblBuyInStock.EmployeeID
+	left join tblDepartment on tblDepartment.classCode=tblBuyInStock.DepartmentCode
+	left join tblCompany on tblCompany.classCode=tblBuyInStock.CompanyCode
+	left join tblBuyInStockDet on (tblBuyInStock.id=tblBuyInStockDet.f_ref  and tblBuyInStockDet.id=(select top 1 a.id from tblBuyInStockDet a where a.f_ref=tblBuyInStock.id and a.GoodsCode in (select classCode from tblGoods where 2=2 and tblGoods.GoodsNumber like '%@condition:tblGoods.GoodsNumber%' and tblGoods.GoodsFullName like '%@condition:tblGoods.GoodsFullName%' and tblGoods.GoodsSpec like '@condition:tblGoods.GoodsSpec%') and a.StockCode in (select classCode from tblStock where 2=2 and tblStock.StockFullName like '%@condition:tblStock.StockFullName%')))
+	left join tblStock on tblStock.classCode=tblBuyInStockDet.StockCode
+	left join tblGoods on tblGoods.classCode=tblBuyInStockDet.GoodsCode
+	left join tblProject on tblBuyInStock.ProjectCode=tblProject.id
+     </defineSQL>
+     <classCode></classCode>
+     <remark>采购退货引用采购入库</remark>
+     <condition>(tblBuyInStock.moduleType='@ValueofDB:moduleType' and tblBuyInStock.BillDate&lt;='@ValueofDB:BillDate' and tblBuyInStock.CompanyCode='@ValueofDB:CompanyCode' and (select count(0) from tblBuyInStockDet where f_ref=tblBuyInStock.id and FactInQty&gt;0 )!=0 and tblBuyInStock.workFlowNodeName = 'finish')</condition>
+     <changeCond></changeCond>
+     <hasChild>quote_tblBuyInStockDet</hasChild>
+     <orderBy>tblBuyInStock.BillDate,tblBuyInStock.BillNo</orderBy>
+     <displayFields>
+          <field name="tblBuyInStock.BillDate" width="70" searchType="scope" parentDisplay="false" orderBy="升" />
+          <field name="tblBuyInStock.BillNo" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblDepartment.DeptFullName" width="75" searchType="match" parentDisplay="false" display="@TABLENAME.DepartmentCode" />
+          <field name="tblEmployee.EmpFullName" width="50" searchType="match" parentDisplay="false" display="@TABLENAME.EmployeeID" />
+          <field name="tblCompany.ComFullName" width="200" searchType="match" parentDisplay="false" display="@TABLENAME.CompanyCode" />
+          <field name="tblStock.StockFullName" width="75" searchType="match" parentDisplay="false" display="@TABLENAME.StockCode" />
+          <field name="tblBuyInStock.TotalAmount" width="100" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsNumber" width="120" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullName" width="150" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsSpec" width="150" searchType="match" keySearch="true" parentDisplay="false" />
+          <field name="tblGoods.GoodsFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+          <field name="tblProject.ProjectName" width="100" searchType="match" keySearch="true" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblBuyInStock.id" parentName="@TABLENAME.BuyInID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

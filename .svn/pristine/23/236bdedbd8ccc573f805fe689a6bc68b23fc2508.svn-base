@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SalesOrderGoodsFirst"  type="checkBox" > 
+		<orderBy>tblSalesOrder.BillDate,tblSalesOrder.BillNo</orderBy>
+		<defineSQL>
+from tblSalesOrder 
+ left join tblCompany on tblCompany.classCode=tblSalesOrder.CompanyCode
+ left join tblStock on tblStock.classCode=tblSalesOrder.StockCode 
+ left join tblDepartment on tblDepartment.classCode=tblSalesOrder.DepartmentCode
+ left join tblEmployee on tblEmployee.id=tblSalesOrder.EmployeeID
+      where 1=1  and ((tblSalesOrder.InvoiceType='@ValueofDB:InVoiceType' and tblSalesOrder.CompanyCode='@ValueofDB:CompanyCode' and tblSalesOrder.BillDate&lt;='@ValueofDB:BillDate' and tblSalesOrder.statusId =0 and tblSalesOrder.workFlowNodeName = 'finish'))
+		</defineSQL>
+		<changeCond></changeCond>
+		<displayFields>
+			<field name="tblSalesOrder.BillDate" parentDisplay="false" width="100" searchType="scope" keySearch="true" />
+			<field name="tblSalesOrder.BillNo" display="@TABLENAME.SalesOrderID" parentDisplay="true" width="120" searchType="match" keySearch="true" />
+			<field name="tblCompany.ComFullName" parentDisplay="true" width="100" />
+			<field name="tblEmployee.EmpFullName" parentDisplay="true" width="100" />
+			<field name="tblDepartment.DeptFullName" parentDisplay="true" width="100" />
+			<field name="tblStock.StockFullName" parentDisplay="true" width="100" />
+			<field name="tblSalesOrder.TotalTaxAmount" parentDisplay="true" width="100" />
+		</displayFields>
+		<saveFields>
+			<field name="tblSalesOrder.id" parentName="@TABLENAME.SalesOrderID" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

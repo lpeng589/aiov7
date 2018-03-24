@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectInStocks" type="checkBox" belongTableName="tblStock">
+     <table>tblStock</table>
+     <forwardModel>tblStock</forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblStock.classCode f1,
+      tblStock.StockNumber f2,
+      tblStock.StockFullName f3,
+      tblStock.StockFullNamePYM f4
+  from tblStock noRight
+     </defineSQL>
+     <classCode>tblStock.classCode</classCode>
+     <remark>仓库,因多仓库时明细表要支持多选而保留</remark>
+     <condition>(tblStock.statusid!='-1') and tblStock.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblStock.StockNumber,tblStock.StockFullName</orderBy>
+     <displayFields>
+          <field name="tblStock.StockNumber" asName="tblStockDet.StockNumberDetIn" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblStock.StockFullName" asName="tblStockDet.StockFullNameDetIn" width="100" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.InStockCode" orderBy="升" />
+          <field name="tblStock.StockFullNamePYM" asName="tblStockDet.StockFullNamePYM" width="100" searchType="match" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblStock.classCode" parentName="@TABLENAME.InStockCode" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

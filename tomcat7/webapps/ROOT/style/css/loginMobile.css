@@ -1,0 +1,77 @@
+﻿/* CSS Document */
+body,ul,li{
+	width:100%;
+	margin:0px;
+	list-style:none;
+	padding:0px;
+}
+img {
+	border:0px;
+}
+.Login_win{ 
+	width:438px;
+	height:510px;
+	margin: 50px auto;
+}
+.Login_Ad{
+	width:438px;
+	height:138px;
+	background:url(../images/mobileHome/Login_Ad.png);
+}
+.Login_body{
+	width:438px;
+	height:372px;
+	float:left;
+	background:url(../images/mobileHome/LoginBody_Bg.png);
+}
+.Login_body ul{
+	width:438px;
+	height:211px;
+	background:none;
+	margin:30px 0px -25px 0px;
+	padding:0px;
+}
+.Login_body ul li{
+	background:none;
+	width:438px;
+	margin:0px 0px 28px 0px;
+	text-align:center;
+}
+.Login_body ul li input{
+	font-size:18px;
+	font-family:"微软雅黑", "Microsoft YaHei";
+	color:#8F8F8F;
+	background:#F1F1F1;
+	width:288px;
+	height:30px;
+	border:#DCDCDC 1px solid;
+}
+.Login_body ul li select{
+	font-size:18px;
+	font-family:"微软雅黑", "Microsoft YaHei";
+	color:#8F8F8F;
+	background:#F1F1F1;
+	width:305px;
+	height:40px;
+	border:#DCDCDC 1px solid;
+}
+.Login_body div{
+	text-align:center;
+	width:438px;
+}
+.Login_body table{
+	font-size:14px;
+	color:#F1F1F1;
+	font-family:"微软雅黑", "Microsoft YaHei";
+	margin-bottom:18px;
+}
+.Login_body div button{
+	font-size:20px;
+	font-family:"微软雅黑", "Microsoft YaHei";
+	color:#5E5E5E;
+	width:136px;
+	height:52px;
+	/*cursor:pointer;
+	border:0px;
+	background:url(../images/mobileHome/LoginButton.png);*/
+}

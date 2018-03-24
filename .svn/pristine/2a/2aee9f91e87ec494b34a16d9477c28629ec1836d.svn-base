@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="CurrencyWithRateofPeriod">
+     <table>tblSetExchange</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblSetExchange.RecordExchange f1,
+      tblSetExchange.Currency f2,
+      tblSetExchange.CurrencyName f3
+  from tblSetExchange
+  join(select AccYear,AccPeriod from tblAccPeriod where IsBegin=1)tblAccPeriod on tblSetExchange.PeriodYear=tblAccPeriod.AccYear and tblSetExchange.Period=tblAccPeriod.AccPeriod
+     </defineSQL>
+     <classCode></classCode>
+     <remark>带出开账期间汇率</remark>
+     <condition></condition>
+     <changeCond></changeCond>
+     <orderBy>tblSetExchange.CurrencyName</orderBy>
+     <displayFields>
+          <field name="tblSetExchange.CurrencyName" width="100" searchType="match" parentDisplay="true" display="@TABLENAME.Currency" orderBy="升" />
+          <field name="tblSetExchange.RecordExchange" width="100" parentDisplay="true" display="@TABLENAME.CurrencyRate" />
+     </displayFields>
+     <saveFields>
+          <field name="tblSetExchange.RecordExchange" parentName="@TABLENAME.CurrencyRate" display="@TABLENAME.CurrencyRate" relationKey="false" hidden="false" />
+          <field name="tblSetExchange.Currency" parentName="@TABLENAME.Currency" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

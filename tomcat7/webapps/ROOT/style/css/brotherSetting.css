@@ -1,0 +1,174 @@
+html{color: #333;background: #fff;overflow:hidden;}
+body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,select,legend,button,input,textarea,th,td {margin:0;padding:0;}
+body,button,input,select,textarea {font:12px/1.5 Microsoft Yahei;color:#666;outline:0;}
+em,i{font-style:normal;}
+li{list-style:none;}
+.lf{float:left;display:inline-block;}
+.rf{float:right;display:inline-block;}
+.pr{position:relative;}
+.pa{position:absolute;}
+.clear{clear:both;}
+.x-d{padding:5px 0;overflow:hidden;}
+.x-d>i{display:inline-block;width:55px;text-align:right;line-height:21px;margin-right:5px;height:21px;}
+.x-d .l-cbox{float:left;margin:2px 5px 0 0;}
+.l-cbox{overflow:hidden;display:inline-block;cursor:pointer;}
+.l-cbox>i{float:left;display:inlie-block;margin:0 0 0 2px;}
+.l-cbox>input{float:left;margin:2px 0 0 0;}
+.wrap_dv{width:1000px;}
+.wrap_dv .wrap_lt{float:left;display:inline-block;width:160px;border-right:1px #a1a1a1 solid;height:455px;}
+.wrap_dv .wrap_lt .t_title{margin:10px 0 0 5px;}
+.wrap_dv .wrap_lt .t_title i.w_i{display:inline-block;background:url(/style/images/client/ti_001.gif) no-repeat left top;padding:0 0 0 25px;line-height:21px;}
+.wrap_dv .wrap_lt .ls_u{margin:5px 0 0 0;}
+.wrap_dv .wrap_lt .ls_u .ls_li{line-height:33px;padding:0 0 0 8px;}
+.wrap_dv .wrap_lt .ls_u .ls_li:hover{background:#ebebeb;}
+.wrap_dv .wrap_lt .ls_u .ls_li .w_em{display:inline-block;color:#000;font-size:14px;background:url(/style/images/client/left_bgbar.png) no-repeat 0;padding:0 0 0 15px;cursor: pointer;}
+.wrap_dv .wrap_rt{float:left;display:inline-block;margin:0;}
+.wrap_dv .wrap_rt .rt_iframe{width:830px;height:450px;}
+/*********************分割线  updateExport.jsp  Start  *******************/
+.bga{background:url(/style/images/client/icon_bg24.png) no-repeat 0 0;display:block;width:24px;height:24px;-webkit-transition:ll .3s;;transition:all .3s;}
+.wp_dv{margin:0 0 0 10px;}
+.wp_dv .slt_wdv{display:inline-block;margin:0 0 0 40px;float:left;}
+.wp_dv .slt_wdv .remark{clear:both;text-align:center;line-height:21px;font-size:14px;}
+.wp_dv .bk_dv{float:left;display:inline-block;}
+.wp_dv .bk_dv .left_a{background-position:-24px 0;margin:90px 0 0 0;}
+.wp_dv .bk_dv .right_a{background-position:0 -24px;margin:15px 0 0 0;}
+.wp_dv .bk_dv .upT_a{background-position:-96px 0;margin:60px 0 0 0;}
+.wp_dv .bk_dv .up_a{background-position:-48px 0;margin:7px 0 0 0;}
+.wp_dv .bk_dv .down_a{background-position:-72px -24px;margin:7px 0 0 0;}
+.wp_dv .bk_dv .downD_a{background-position:-120px -24px;margin:7px 0 0 0;}
+.wp_dv .bk_dv .left_a:hover{background-position:0 0;margin:90px 0 0 0;}
+.wp_dv .bk_dv .right_a:hover{background-position:-24px -24px;margin:15px 0 0 0;}
+.wp_dv .bk_dv .upT_a:hover{background-position:-96px -24px;margin:60px 0 0 0;}
+.wp_dv .bk_dv .up_a:hover{background-position:-48px -24px;margin:7px 0 0 0;}
+.wp_dv .bk_dv .down_a:hover{background-position:-72px 0;margin:7px 0 0 0;}
+.wp_dv .bk_dv .downD_a:hover{background-position:-120px 0;margin:7px 0 0 0;}
+.wp_dv .bks{padding:0 5px;}
+.wp_dv .bk_dv .left_slt{border:2px #ebebeb solid;width:130px;height:200px;}
+.wp_dv .bk_dv .right_slt{border:2px #7fcce5 solid;width:130px;height:200px;}
+.wp_dv .bk_dv .note_p{text-align:center;padding:5px 0 0 0;}
+.wp_dv .wp_bk:hover .bk_dv .left_slt{width:130px;height:200px;}
+.wp_dv .wp_bk:hover .bk_dv .pRed{}
+.wp_dv .bk_radio{overflow:hidden;margin:9px 0 0 25px;float:left;display:inline-block;}
+.wp_dv .bk_radio .bk_radio_lt{float:left;display:inline-block;}
+.wp_dv .bk_radio .bk_radio_rt{float:left;display:inline-block;}
+.wp_dv .bk_radio .bk_radio_rt .radio_items{float:left;display:inline-block;margin:0 5px 0 0;}
+.wp_dv .bk_radio .bk_radio_rt .radio_items .radio_inp{float:left;display:inline-block;margin:2px 0 0 0;}
+.wp_dv .bk_radio .bk_radio_rt .radio_items .radio_lb{float:left;display:inline-block;margin:0 0 0 3px;}
+.wp_dv .wp_bk .slt_woy{display:inline-block;margin:0 0 0 25px;}
+.wp_dv .wp_bk .slt_woy .woy_lt{display:inline-block;float:left;}
+.wp_dv .wp_bk .slt_woy .woy_lt .slt{width:120px;border:2px #7fcce5 solid;border-radius:3px;}
+.wp_dv .wp_bk:hover .slt_woy .woy_lt .slt{}
+.wp_dv .wp_bk .slt_woy .woy_rt{display:inline-block;float:left;padding:0 0 0 2px;}
+.wp_dv .wp_bk .slt_woy .woy_rt .add_a{background-position:-144px 0;cursor:pointer;}
+.wp_dv .wp_bk .slt_woy .woy_rt .del_a{background-position:-144px -24px;cursor:pointer;margin:3px 0 0 0;}
+.wp_dv .margin_rt{}
+.wp_dv .wp_bk .slt_woy .note_p{clear:both;text-align:center;width:90%;}
+.wp_bk{margin:0 0 5px 0;}
+.wp_dv .bk_t{margin:0;background:#ebebeb;overflow:hidden;}
+.wp_dv .bk_t i{float:left;display:inline-block;background:url(/style/images/client/brother_bg.png) no-repeat 5px -26px;padding:0 0 0 25px;line-height:35px;}
+.wp_bk:hover .bk_t{background:#7FCCE5;color:#000;}
+.wp_bk .bk_c{overflow:hidden;}
+.wp_bk .bk_c .ddv{padding:15px 0;overflow:hidden;}
+.viewItem{float:left;display:inline-block;position:relative;margin:0 0 0 5px;}
+.viewItem>span{line-height:25px;background:#ffa669;color:#fff;cursor:pointer;padding:3px 18px 3px 15px;position:relative;}
+.viewItem>span:hover{background:#de915b;}
+.viewItem>span b{background:url(/style/images/client/down_s.png) no-repeat 0 0;display:inline-block;width:9px;height:5px;position:absolute;top:11px;right:3px;}
+.viewList{position:absolute;z-index:99;}
+.viewList li{line-height:25px;background:#fff;cursor:pointer;padding:0 5px;border-bottom:1px #f2f2f2 solid;float:none;width:100%;}
+.viewList li:hover{background:#ffa669;color:#fff;}
+/*********************分割线  updateExport.jsp  End  *******************/
+
+/*********************分割线  模板字段设置 Start  *******************/
+.wp_dv .wp_blt{display:inline-block;width:100%;}
+.wp_dv .wp_blt>p{line-height:35px;overflow:hidden;border-top:1px #7FCCE5 solid;border-bottom:1px #7FCCE5 solid;}
+.wp_dv .wp_blt>p em{font-size:12px;float:left;display:inline-block;font-weight:bold;}
+.wp_dv .wp_blt>p i{float:left;display:inline-block;margin:4px 0 0 3px;}
+.blt_head{margin:5px 0 0 10px;}
+.blt_head .head_ul{overflow:hidden;line-height:35px;background:#7FCCE5;}
+.blt_head .head_ul .head_li{float:left;text-align:center;display:inline-block;}
+.blt_head .head_ul .head_li i.char{color:#000;}
+.lw1{width:20px}
+.lw2{width:40px}
+.lw3{width:60px}
+.lw4{width:80px}
+.lw5{width:100px}
+.lw6{width:120px}
+.lw7{width:140px}
+.lw8{width:160px}
+.lw9{width:180px}
+
+.wp_blt .blt_main{}
+.wp_blt .blt_main .c_ul{overflow:hidden;margin:0;line-height:35px;}
+.wp_blt .blt_main .c_ul:nth-child(odd){background:#ebebeb;}
+.wp_blt .blt_main .addField{background:#7FCCE5;}
+.wp_blt .blt_main .addField:nth-child(odd){background:#7FCCE5;}
+.wp_blt .blt_main .c_ul .c_li{float:left;text-align:center;display:inline-block;height:35px;}
+.wp_blt .blt_main .c_ul .c_li i.char{}
+.wp_blt .blt_main .c_ul .c_li select{width:110px;}
+.wp_blt .blt_main .c_ul .c_li .txt_inp{width:70px;}
+.wp_blt .blt_main .c_ul .c_li .txt_inp_small{width:40px;}
+.wp_blt .blt_main .c_ul .c_li .slt{width:100%;}
+/*********************分割线  模板字段设置 End  *******************/
+
+/*********************分割线  字段权限设置 Start  *******************/
+.wp_dv .wp_blt_power{display:inline-block;width:100%;}
+.wp_blt_power .blt_head{}
+.wp_blt_power .blt_head .head_ul{overflow:hidden;}
+.wp_blt_power .blt_head .head_ul .head_li{float:left;text-align:center;}
+.wp_blt_power .blt_head .head_ul .hd_1{width:20px;}
+.wp_blt_power .blt_head .head_ul .hd_2{width:40px;}
+.wp_blt_power .blt_head .head_ul .hd_3{width:100px;}
+.wp_blt_power .blt_head .head_ul .hd_4{width:400px;padding:0 5px;}
+.wp_blt_power .blt_head .head_ul .hd_5{width:120px;}
+.wp_blt_power .blt_head .head_ul .head_li i.char{}
+.wp_blt_power .blt_head .head_ul .head_li .cbox{margin:3px 0 0 0;}
+
+.wp_blt_power .blt_main{margin:0 0 0 10px;}
+.wp_blt_power .blt_main .c_ul{overflow:hidden;line-height:35px;}
+.wp_blt_power .blt_main .c_ul:nth-child(even){background:#ebebeb;}
+.wp_blt_power .blt_main .c_ul .c_li{float:left;text-align:center;}
+.wp_blt_power .blt_main .c_ul .hd_1{width:20px;}
+.wp_blt_power .blt_main .c_ul .hd_2{width:40px;}
+.wp_blt_power .blt_main .c_ul .hd_3{width:100px;}
+.wp_blt_power .blt_main .c_ul .hd_4{width:400px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;padding:0 5px;text-align:left;}
+.wp_blt_power .blt_main .c_ul .hd_5{width:120px;}
+.wp_blt_power .blt_main .c_ul .c_li i.char{line-height:21px;}
+.wp_blt_power .blt_main .c_ul .c_li i.update,.wp_blt_power .blt_main .c_ul .c_li i.del{cursor:pointer;}
+.wp_blt_power .blt_main .c_ul .c_li i.update:hover,.wp_blt_power .blt_main .c_ul .c_li i.del:hover{text-decoration:underline;}
+.wp_blt_power .blt_main .c_ul .c_li .txt_inp{width:70px;}
+.wp_blt_power .blt_main .c_ul .c_li .txt_inp_small{width:40px;}
+.wp_blt_power .blt_main .c_ul .c_li .slt{width:100%;}
+.wp_blt_power .blt_main .c_ul .c_li .cbox{margin:3px 0 0 0;}
+/*********************分割线  字段权限设置 End  *******************/
+/*********************分割线  滚动条 Start  *******************/
+::-webkit-scrollbar {
+	width:6px;
+	height:6px;
+	background:-webkit-gradient(linear,left top,right top,color-stop(0%,rgba(202,202,202,0.07)),color-stop(100%,rgba(229,229,229,0.07)));
+	background:-webkit-linear-gradient(left,rgba(202,202,202,0.07) 0%,rgba(229,229,229,0.07) 100%);
+	background-color:#E5E5E5;
+}
+
+::-webkit-scrollbar-button {}
+::-webkit-scrollbar-button:start:decrement,::-webkit-scrollbar-button:end:increment {
+	width:0;
+	height:0
+}
+::-webkit-scrollbar-track-piece {
+	background-clip:padding-box;
+	background-color:whitesmoke;
+	border:none;
+}
+
+::-webkit-scrollbar-thumb {
+	width:6px;
+	height:6px;
+	overflow:visible;
+	border-radius:5px;
+	background:-webkit-gradient(linear,left top,right top,color-stop(0%,rgba(202,202,202,0.07)),color-stop(100%,rgba(229,229,229,0.07)));
+	background:-webkit-linear-gradient(left,rgba(202,202,202,0.07) 0%,rgba(229,229,229,0.07) 100%);
+	background-color:#E5E5E5;
+
+}
+
+/*********************分割线  滚动条 End  *******************/

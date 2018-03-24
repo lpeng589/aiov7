@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="BuyOrderGoodsFirst"  type="checkBox"  desc="多单引用采购订单一级" > 
+		<orderBy>tblBuyOrder.BillDate,tblBuyOrder.BillNo</orderBy>
+		<defineSQL>
+from tblBuyOrder 
+ left join tblCompany on tblCompany.classCode=tblBuyOrder.CompanyCode
+ left join tblDepartment on tblDepartment.classCode=tblBuyOrder.DepartmentCode
+ left join tblEmployee e1 on e1.id=tblBuyOrder.EmployeeID
+ left join tblEmployee e2 on e2.id=tblBuyOrder.createBy
+      where 1=1  and (tblBuyOrder.InvoiceType='@ValueofDB:InVoiceType' and tblBuyOrder.CompanyCode='@ValueofDB:CompanyCode' and tblBuyOrder.BillDate&lt;='@ValueofDB:BillDate' and tblBuyOrder.statusId = 0 and tblBuyOrder.workFlowNodeName = 'finish')
+		</defineSQL>
+		<displayFields>
+			<field name="tblBuyOrder.BillDate" parentDisplay="false" width="70" searchType="scope" />
+			<field name="tblBuyOrder.BillNo" display="@TABLENAME.BuyOrderID" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblCompany.[tblCompany_1]" parentDisplay="false" width="70" />
+			<field name="tblBuyOrder.TradeType" parentDisplay="false" width="50" searchType="equal" />
+			<field name="tblDepartment.DeptFullName" display="@TABLENAME.DepartmentCode" parentDisplay="false" width="50" />
+			<field name="e1.EmpFullName" display="@TABLENAME.EmployeeID" parentDisplay="false" width="50" />
+			<field name="tblBuyOrder.TotalAmount" parentDisplay="false" width="60" />
+			<field name="tblBuyOrder.TotalTaxAmount" parentDisplay="false" width="60" />
+			<field name="tblBuyOrder.CurTotalAmount" parentDisplay="false" width="60" />
+			<field name="tblBuyOrder.TotalPayAmt" parentDisplay="false" width="60" />
+			<field name="tblBuyOrder.BackAmount" parentDisplay="false" width="60" />
+		</displayFields>
+		<saveFields>
+			<field name="tblBuyOrder.id" parentName="@TABLENAME.BuyOrderID" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

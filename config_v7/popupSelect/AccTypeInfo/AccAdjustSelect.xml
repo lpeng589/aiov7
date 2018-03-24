@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="AccAdjustSelect"  type="checkBox" > 
+		<orderBy>tblSalesOutStock.BillNo,tblCompany.ComFullName</orderBy>
+		<defineSQL>
+from tblSalesOutStock 
+  left join tblCompany on tblSalesOutStock.CompanyCode = tblCompany.classCode
+  left join tblDepartment on tblSalesOutStock.DepartmentCode = tblDepartment.classCode
+  left join tblEmployee on tblSalesOutStock.EmployeeId = tblEmployee.id
+      where 1=1  and (tblSalesOutStock.workFlowNodeName = 'finish' and tblSalesOutStock.BillDate&lt;='@ValueofDB:BillDate' and (tblSalesOutStock.AlrAccAmt &lt; tblSalesOutStock.TotalTaxAmount and tblSalesOutStock.NeedReturnAmt &lt;&gt; 0) and tblSalesOutStock.CompanyCode='@ValueofDB:CompanyCode' and (((select IsStatart from TableInfo_WokFlow where TableName='tblSalesOutStock' and SCompanyID=@Sess:SCompanyID)=1 and tblSalesOutStock.workFlowNodeName != 'notApprove') or (select IsStatart from TableInfo_WokFlow where TableName='tblSalesOutStock' and SCompanyID=@Sess:SCompanyID)=0))
+		</defineSQL>
+		<displayFields>
+			<field name="tblSalesOutStock.BillNo" display="tblAccAdjustDet.RefbillNo" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblSalesOutStock.TotalTaxAmount" display="tblAccAdjustDet.BillAmt" parentDisplay="true" width="80" />
+			<field name="tblSalesOutStock.TotalAlrAccAmt" display="tblAccAdjustDet.SettledAmt" parentDisplay="false" width="80" />
+			<field name="tblSalesOutStock.BackAmount" display="tblAccAdjustDet.BackAmt" parentDisplay="false" width="80" />
+			<field name="tblSalesOutStock.NeedReturnAmt" display="tblAccAdjustDet.WexeBalAmt" parentDisplay="false" width="80" />
+			<field name="tblSalesOutStock.CurTotalAmount" display="tblAccAdjustDet.CurBillAmt" parentDisplay="true" width="80" keySearch="true" />
+			<field name="tblSalesOutStock.CurTotalAlrAccAmt" display="tblAccAdjustDet.CurSettledAmt" parentDisplay="true" width="80" keySearch="true" />
+			<field name="tblSalesOutStock.CurBackAmount" display="tblAccAdjustDet.CurBackAmt" parentDisplay="true" width="80" keySearch="true" />
+			<field name="tblSalesOutStock.CurNeedReturnAmt" display="tblAccAdjustDet.CurWexeBalAmt" parentDisplay="true" width="80" keySearch="true" />
+			<field name="tblEmployee.EmpFullName" display="tblAccAdjust.EmployeeID" parentDisplay="false" width="50" />
+			<field name="tblDepartment.DeptFullName" display="tblAccAdjust.DepartmentCode" parentDisplay="false" width="100" />
+		</displayFields>
+		<saveFields>
+			<field name="tblSalesOutStock.BillNo" parentName="tblAccAdjustDet.RefBillNo" relationKey="true" display="tblAccAdjustDet.RefbillNo" width="0" />
+			<field name="tblSalesOutStock.TotalTaxAmount" parentName="tblAccAdjustDet.BillAmt" display="tblAccAdjustDet.BillAmt" width="0" />
+			<field name="tblSalesOutStock.TotalAlrAccAmt" parentName="tblAccAdjustDet.SettledAmt" hidden="true" display="tblAccAdjustDet.SettledAmt" width="0" />
+			<field name="tblSalesOutStock.BackAmount" parentName="tblAccAdjustDet.BackAmt" hidden="true" display="tblAccAdjustDet.BackAmt" width="0" />
+			<field name="tblSalesOutStock.NeedReturnAmt" parentName="tblAccAdjustDet.WexeBalAmt" hidden="true" display="tblAccAdjustDet.WexeBalAmt" width="0" />
+			<field name="tblSalesOutStock.id" parentName="tblAccAdjustDet.RefBillID" hidden="true" width="0" />
+			<field name="tblSalesOutStock.CurTotalAmount" parentName="tblAccAdjustDet.CurBillAmt" hidden="true" compare="false" parentDisplay="true" keySearch="true" />
+			<field name="tblSalesOutStock.CurTotalAlrAccAmt" parentName="tblAccAdjustDet.CurSettledAmt" hidden="true" compare="false" parentDisplay="true" keySearch="true" />
+			<field name="tblSalesOutStock.CurBackAmount" parentName="tblAccAdjustDet.CurBackAmt" hidden="true" compare="false" parentDisplay="true" keySearch="true" />
+			<field name="tblSalesOutStock.CurNeedReturnAmt" parentName="tblAccAdjustDet.CurWexeBalAmt" hidden="true" compare="false" parentDisplay="true" keySearch="true" />
+		</saveFields>
+	</select>
+</popupSelect>

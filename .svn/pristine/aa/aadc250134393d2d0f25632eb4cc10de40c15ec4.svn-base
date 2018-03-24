@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectOneStock_v2" version="2" belongTableName="tblStock">
+     <table>tblStock</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblStock.classCode f1,
+      tblStock.isCatalog f2,
+      tblStock.StockNumber f3,
+      tblStock.StockFullName f4,
+      tblStock.StockFullNamePYM f5
+  from tblStock
+     </defineSQL>
+     <classCode>tblStock.classCode</classCode>
+     <remark>仓库,单选</remark>
+     <condition>tblStock.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblStock.StockNumber,tblStock.StockFullName</orderBy>
+     <displayFields>
+          <field name="tblStock.StockNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="tblStock.StockFullName" width="100" searchType="match" keySearch="true" parentDisplay="true" display="tblStocks.StockCode" orderBy="升" />
+          <field name="tblStock.StockFullNamePYM" width="100" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblStock.classCode" parentName="StockCode" relationKey="false" hidden="true" />
+          <field name="tblStock.isCatalog" parentName="isCatalog" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SelectdeprecAccCode" > 
+		<classCode>tblAccTypeInfo.classCode</classCode>
+		<orderBy>tblAccTypeInfo.AccNumber</orderBy>
+		<forwardModel>tblAccTypeInfo</forwardModel>
+		<defineSQL>
+from tblAccTypeInfo
+		</defineSQL>
+		<changeCond>(tblAccTypeInfo.statusId!='-1')</changeCond>
+		<displayFields>
+			<field name="tblAccTypeInfo.AccNumber" parentDisplay="false" width="100" searchType="match" keySearch="true" />
+			<field name="tblAccTypeInfo.AccName" parentDisplay="false" width="150" searchType="match" keySearch="true" />
+			<field name="tblAccTypeInfo.AccFullName" display="@TABLENAME.deprecAccCode" parentDisplay="true" width="200" searchType="match" />
+			<field name="tblAccTypeInfo.PyCode" parentDisplay="false" width="50" searchType="match" keySearch="true" hiddenInput="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblAccTypeInfo.AccNumber" parentName="@TABLENAME.deprecAccCode" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

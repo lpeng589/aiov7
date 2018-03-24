@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+        <!--=======================================================  零售单 开 始 ===========================================================-->
+        <define name="fxRetailOrder_Add">
+			
+             <!--不启用审核流-->
+            <sql type="condition">
+                <exec condition="@MEM:fxRetailOrder_IsStatart==0">
+                    <sql type="define">fxRetailOrder_Add_One</sql> 
+                </exec>
+            </sql>
+        </define>
+        
+        <define name="fxRetailOrder_Add_One">
+        			
+        			<!-- 更新当前的 StockCode	, 将fxAgentID存入 StockCode-->
+					<sql type="condition">
+						<exec condition="true">						
+							<sql>
+								UPDATE A SET A.StockCode=B.id FROM fxRetailOrder A,fxAgent B WHERE A.DepartmentCode=B.tblDepartmentCode AND A.id=@ValueofDB:fxRetailOrder_id
+							</sql>
+							<sql>
+								UPDATE B SET B.StockCode=A.StockCode FROM fxRetailOrder A ,fxRetailOrderDet B WHERE A.id=B.f_ref AND A.id=@ValueofDB:fxRetailOrder_id
+							</sql>
+						</exec>	
+					</sql>
+        	
+	     			<sql type="condition">		
+						<exec condition="true"><!--插入出入库明细-->
+							<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:fxRetailOrder_Period,@PeriodYear=@ValueofDB:fxRetailOrder_PeriodYear,@PeriodMonth=@ValueofDB:fxRetailOrder_PeriodMonth,@GoodsCode=fxRetailOrderDet.GoodsCode,@StockCode=fxRetailOrderDet.StockCode,@BillID=@ValueofDB:fxRetailOrder_id,@BillType=fxRetailOrder,@BillDate=@ValueofDB:fxRetailOrder_BillDate,@BillNo=@ValueofDB:fxRetailOrder_BillNo,@OutstoreQty=fxRetailOrderDet.Qty,@OutstorePrice=fxRetailOrderDet.Price,@OutstoreAmount=fxRetailOrderDet.Amount,@createBy=@ValueofDB:fxRetailOrder_createBy,@lastUpdateBy=@ValueofDB:fxRetailOrder_lastUpdateBy,@createTime=@ValueofDB:fxRetailOrder_finishTime,@lastUpdateTime=@MEM:sysLongDate,@SCompanyID=@ValueofDB:fxRetailOrder_SCompanyID,@MRemark=@ValueofDB:fxRetailOrder_Remark,@DRemark=fxRetailOrderDet.Remark,@SourceID=fxRetailOrderDet.id,@CompanyCode=@ValueofDB:fxRetailOrder_fxAgentID,@EmployeeID=@ValueofDB:fxRetailOrder_EmployeeID,@DepartmentCode=@ValueofDB:fxRetailOrder_DepartmentCode,@SalesPrice=fxRetailOrderDet.Price,@SalesAmount=fxRetailOrderDet.Amount,@SalesQty=fxRetailOrderDet.Qty,@Amount=fxRetailOrderDet.Amount,@Price=fxRetailOrderDet.Price,@DiscountAmount=fxRetailOrderDet.Amount,@from=fxRetailOrderDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+						</exec>
+						<exec condition="true"><!--负库存判断-->
+							<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+						</exec>
+					</sql>
+
+							<!--=======启用了价格跟踪，向价格管理表中插入数据================-->
+		        	<sql type="condition">
+							<condition>
+								<select>select id as CPID from tblCustomerPrice where CompanyCode=@ValueofDB:fxRetailOrder_ClientID</select>
+								<select>select lower(substring(replace(newid(),'-',''),1,28)) as NCPID</select>
+							</condition>
+							<!--判断如果价格管理表中没有此客户的记录，插入一条主表记录-->
+							<exec condition="'@SqlReturn:CPID'=='null'">
+								<sql>insert into tblCustomerPrice(id,classCode,workFlowNodeName,CompanyCode,createBy,lastUpdateBy,createTime,lastUpdateTime,statusId,SCompanyID) values (@SqlReturn:NCPID,'','finish',@ValueofDB:fxRetailOrder_ClientID,'1','1',@ValueofDB:fxRetailOrder_createTime,@ValueofDB:fxRetailOrder_lastUpdateTime,0,@ValueofDB:fxRetailOrder_SCompanyID)</sql>
+							</exec>
+							<!--查询在价格管理表中存在的商品，并且修改其最近售价-->
+							<exec condition="'@SqlReturn:CPID'!='null'">
+								<sql>update tblCustomerPriceDet set tblCustomerPriceDet.Price=a.Price from(	select b.id as CDetID, a.Price as Price from fxRetailOrderDet a,tblCustomerPriceDet b where a.f_ref=@ValueofDB:fxRetailOrder_id and b.f_ref=@SqlReturn:CPID and a.goodsCode=b.goodsCode and a.Price&gt;0)a where tblCustomerPriceDet.id=a.CDetID</sql>
+							</exec>
+							<!--查询在价格管理表中不存在的商品，并且插入最近进价-->
+							<exec condition="true">
+								<!--<sql>insert into tblCustomerPriceDet(id,f_ref,GoodsCode,Price,SCompanyID) select a.sdid,@SqlReturn:NCPID,a.GoodsCode,a.Price,a.CSID from(select substring(replace(newid(),'-',''),1,30) as sdid,a.GoodsCode as GoodsCode,a.Price as Price,@ValueofDB:fxRetailOrder_SCompanyID as CSID from fxRetailOrderDet a where a.f_ref=@ValueofDB:fxRetailOrder_id and a.price&gt;0 and (select count(0) from tblCustomerPriceDet b where b.f_ref=(case @SqlReturn:CPID when null then @SqlReturn:NCPID else @SqlReturn:CPID end) and a.goodsCode=b.goodsCode)=0)a</sql>-->
+								<sql>insert into tblCustomerPriceDet(id,f_ref,GoodsCode,Price,SCompanyID) select a.sdid,@SqlReturn:CPID,a.GoodsCode,a.Price,a.CSID from(select substring(replace(newid(),'-',''),1,30) as sdid,a.GoodsCode as GoodsCode,a.Price as Price,@ValueofDB:fxRetailOrder_SCompanyID as CSID from fxRetailOrderDet a where a.f_ref=@ValueofDB:fxRetailOrder_id and a.price&gt;0 and (select count(0) from tblCustomerPriceDet b where b.f_ref=(case @SqlReturn:CPID when null then @SqlReturn:NCPID else @SqlReturn:CPID end) and a.goodsCode=b.goodsCode)=0)a</sql>
+							</exec>		
+					</sql>
+					        	
+        </define>
+        
+        
+        <define name="fxRetailOrder_Delete">
+        	
+            <!--不启用审核流-->
+            <sql type="condition">
+                <exec condition="@MEM:fxRetailOrder_IsStatart==0">
+                    <sql type="define">fxRetailOrder_Del_One</sql> 
+                </exec>
+            </sql>
+        </define>
+        
+        <define name="fxRetailOrder_Del_One">
+            
+            	
+			<sql type="condition">
+				<!--如果启用审核流，则过账时更新分仓库存+未审核字段-->
+				<exec condition="'@MEM:tblSalesOutStock_IsStatart' != '0'">
+					<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=fxRetailOrderDet.GoodsCode,@StockCode=fxRetailOrderDet.StockCode,@BillType=fxRetailOrder,@InstoreQty=0,@OutstoreQty=fxRetailOrderDet.Qty,@from=fxRetailOrderDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+				</exec>
+				<exec condition="true"><!--删除出入库明细-->
+					<sql type="procedure">{call proc_delStockDet(@ValueofDB:fxRetailOrder_id,fxRetailOrder,2,retCode,retVal)}</sql>
+				</exec>
+			</sql>
+            
+            
+        </define>
+    
+    
+</defineSqls>

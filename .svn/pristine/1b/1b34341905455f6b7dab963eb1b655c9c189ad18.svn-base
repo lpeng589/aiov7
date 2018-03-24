@@ -1,0 +1,144 @@
+/* CSS Document */
+body{
+	width:100%;
+	margin:0 auto;
+	padding-left:10px;
+	padding-right:10px;
+	font-size:12px;
+	background:url(../images/login_ky/bg.jpg) no-repeat;
+}
+a:link {
+	text-decoration: none;
+	color:#000;
+}
+a:visited {
+	text-decoration: none;
+	color:#000;
+}
+a:hover {
+	text-decoration:underline;
+	color:#000;
+}
+a:active {
+	text-decoration: none;
+	color:#000;
+}
+img {
+	border:0px;
+}
+li {
+	list-style:none;
+}
+.login_all {
+	width:100%;
+	padding-top:100px;
+}
+.login_min {
+	width:100%;
+}
+
+.login_minleft {
+	float:left;
+	width:60%;
+	border:1px #FF0000 solid;
+	height:340px;
+}
+.login_in {
+	float:left;
+	width:300px;
+	height:340px;
+	border:1px #0000ff solid;
+}
+.login_minright {
+	float:right;
+	height:340px;
+	width:100px;
+	border:1px #cccccc solid;
+}
+.right_bg {
+	padding-left:140px;
+}
+.login_minbg {
+	background:url(../images/login_ky/login_minbg.gif) repeat-y;
+}
+.koron_info {
+	padding:0px;
+	margin:0px;
+	font-size:12px;
+	height:28px;
+	line-height:28px;
+	background: #F1F1F1 url(../images/login_ky/koron_info.gif) no-repeat;
+}
+.koron_info li {
+	float:left;
+	text-align:left;
+}
+.login_into {
+	float:left;
+	width:340px;
+	height:auto;
+	padding:0px;
+	margin:0px;
+}
+.login_into ul {
+	margin:0px;
+	padding:0px;
+}
+.login_into li {
+	float:left;
+	width:280px;
+	height:32px;
+	line-height:32px;
+	color:#666;
+	text-align:right;
+	font-weight:600;
+	font-size:14px;
+	list-style:none;
+}
+.login_info span {
+	width:155px;
+	border:1px solid #FF0000;
+	text-align:left;
+}
+.login_into .intext {
+	BORDER-RIGHT: #88b0cc 1px solid; PADDING-RIGHT: 0px; BORDER-TOP: #88b0cc 1px solid; PADDING-LEFT: 3px; PADDING-BOTTOM: 0px; VERTICAL-ALIGN: middle; BORDER-LEFT: #88b0cc 1px solid; WIDTH: 155px; LINE-HEIGHT: 18px; BORDER-BOTTOM: #88b0cc 1px solid; HEIGHT: 22px; BACKGROUND-COLOR: #e7f2fe
+}
+
+.login_into .intext_hover {
+	BACKGROUND-COLOR: #fffacd
+}
+
+.login_into select {
+	width:155px;
+}
+.login_user {
+	width:200px;
+	text-align:center;
+	padding-left:70px;
+	margin:0px;
+}
+.login_user li {
+	float:left;
+	width:300px;
+	height:33px;
+
+}
+.login_user button {
+	width:113px;
+	height:33px;
+	line-height:33px;
+	border:0px;
+	background:url(../images/login_ky/login_buttonbg.gif) no-repeat;
+	font-size:16px;
+	color:#ffffff;
+	font-weight:600;
+	text-align:center;
+	cursor:pointer;
+}
+.left_gd {
+	height:250px;
+	margin:0px;
+	padding:0px;
+	background:url(../images/login_ky/left_gd.gif) left center no-repeat;
+}
+

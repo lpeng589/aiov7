@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+	<select name="SelectBuyApplicationTota"  type="checkBox" > 
+		<orderBy>tblBuyApplicationTotal.BillDate,tblBuyApplicationTotal.BillNo,tblGoods.GoodsNumber</orderBy>
+		<topPopup>SelectBuyApplicationTotaFirst</topPopup>
+		<defineSQL>
+from tblBuyApplicationTotalDet 
+      join tblBuyApplicationTotal on tblBuyApplicationTotal.id=tblBuyApplicationTotalDet.f_ref and tblBuyApplicationTotal.workFlowNodeName = 'finish' and tblBuyApplicationTotalDet.FinishStatus=0
+      left join tblGoods on tblBuyApplicationTotalDet.GoodsCode=tblGoods.classCode
+      where 1=1 and (tblBuyApplicationTotal.BillDate&lt;='@ValueofDB:BillDate')  and tblBuyApplicationTotal.id='@TOPID'
+      group by tblBuyApplicationTotal.id,tblBuyApplicationTotalDet.GoodsCode,tblGoods.GoodsNumber,tblGoods.GoodsFullName,tblGoods.GoodsSpec,tblGoods.Spec1,tblGoods.Spec2,tblGoods.Spec3,tblGoods.Validity,tblGoods.GoodsFullNamePYM,tblGoods.BarCode,tblGoods.StorehouseGrid,tblBuyApplicationTotalDet.BatchNo,tblBuyApplicationTotalDet.Inch,tblBuyApplicationTotalDet.Hue,tblBuyApplicationTotalDet.yearNO,tblBuyApplicationTotalDet.ProDate,tblBuyApplicationTotalDet.Availably,tblGoods.BaseUnit,tblBuyApplicationTotalDet.SecUnit ,tblBuyApplicationTotalDet.SecQty,tblBuyApplicationTotalDet.BaseQty,tblBuyApplicationTotal.BillDate,tblBuyApplicationTotal.BillNo
+		</defineSQL>
+		<changeCond></changeCond>
+		<displayFields>
+			<field name="tblBuyApplicationTotal.BillDate" parentDisplay="false" width="70" searchType="scope" />
+			<field name="tblBuyApplicationTotal.BillNo" display="@TABLENAME.BuyAppTotalID" parentDisplay="true" width="100" searchType="match" keySearch="true" />
+			<field name="tblGoods.[tblGoods]" parentDisplay="true" width="120" />
+			<field name="tblBuyApplicationTotalDet.BatchNo" parentDisplay="true" width="120" />
+			<field name="tblBuyApplicationTotalDet.Inch" parentDisplay="true" width="70" />
+			<field name="tblBuyApplicationTotalDet.Hue" parentDisplay="true" width="70" />
+			<field name="tblBuyApplicationTotalDet.yearNO" parentDisplay="true" width="70" />
+			<field name="tblBuyApplicationTotalDet.ProDate" parentDisplay="true" width="70" />
+			<field name="tblBuyApplicationTotalDet.Availably" parentDisplay="true" width="70" />
+			<field name="sum(tblBuyApplicationTotalDet.NoOrderQty)" asName="tblBuyApplicationTotalDet.NoOrderQty" display="tblBuyApplicationTotalDet.NoOrderQty" parentDisplay="true" width="100" />
+		</displayFields>
+		<saveFields>
+			<field name="tblGoods.[tblGoods]" parentName="@TABLENAME.tblGoods_GoodsNumber" width="0" />
+			<field name="tblBuyApplicationTotalDet.BatchNo" parentName="@TABLENAME.BatchNo" width="0" />
+			<field name="tblBuyApplicationTotalDet.Inch" parentName="@TABLENAME.Inch" width="0" />
+			<field name="tblBuyApplicationTotalDet.Hue" parentName="@TABLENAME.Hue" width="0" />
+			<field name="tblBuyApplicationTotalDet.yearNO" parentName="@TABLENAME.yearNO" width="0" />
+			<field name="tblBuyApplicationTotalDet.ProDate" parentName="@TABLENAME.ProDate" width="0" />
+			<field name="tblBuyApplicationTotalDet.Availably" parentName="@TABLENAME.Availably" width="0" />
+			<field name="sum(tblBuyApplicationTotalDet.NoOrderQty)" parentName="@TABLENAME.Qty" display="tblBuyApplicationTotalDet.NoOrderQty" width="0" />
+			<field name="tblBuyApplicationTotal.id" parentName="@TABLENAME.BuyAppTotalID" hidden="true" relationKey="true" width="0" />
+			<field name="tblBuyApplicationTotalDet.GoodsCode" parentName="@TABLENAME.GoodsCode" hidden="true" width="0" />
+			<field name="tblBuyApplicationTotalDet.SecUnit" parentName="@TABLENAME.SecUnit" width="0" />
+			<field name="tblBuyApplicationTotalDet.SecQty" parentName="@TABLENAME.SecQty" width="0" />
+			<field name="tblBuyApplicationTotalDet.BaseQty" parentName="@TABLENAME.BaseQty" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

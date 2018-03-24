@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="BuyInvoiceInfoSelect1" type="checkBox">
+     <table>tblBuyInStock</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>
+  from ViewBuyInvoiceSelectBillNo as tblBuyInStock
+     </defineSQL>
+     <classCode></classCode>
+     <remark>采购开票明细关联单据</remark>
+     <condition>tblBuyInStock.CompanyCode='@ValueofDB:@TABLENAME_CompanyCode'</condition>
+     <changeCond>((tblBuyInStock.InVoiceType=2 or tblBuyInStock.InVoiceType=1) and tblBuyInStock.BillDate&lt;='@ValueofDB:BillDate' and tblBuyInStock.NoInvoiceAmount!=0 and tblBuyInStock.WorkFlowNodeName='finish')</changeCond>
+     <orderBy>tblBuyInStock.BillDate,tblBuyInStock.BillNo</orderBy>
+     <displayFields>
+          <field name="tblBuyInStock.BillNo" asName="tblBuyInfoDet.RefBillNo" width="100" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.RefBillNo" orderBy="升" />
+          <field name="tblBuyInStock.BillDate" width="70" searchType="scope" parentDisplay="false" display="tblBuyInStock.BillDate" orderBy="升" />
+          <field name="tblBuyInStock.ComFullName" width="200" searchType="match" keySearch="true" parentDisplay="false" display="tblBuyInStock.CompanyCode" />
+          <field name="tblBuyInStock.TotalAmount" asName="tblBuyInStock.TotalAmount" width="100" parentDisplay="false" display="tblBuyInStock.TotalAmount" />
+          <field name="tblBuyInStock.TotalCoTaxAmt" width="100" parentDisplay="false" display="tblBuyInStock.TotalCoTaxAmt" />
+          <field name="tblBuyInStock.AfterChangeAmt" width="100" parentDisplay="true" display="tblBuyInStock.AfterChangeAmt" />
+          <field name="tblBuyInStock.InvoiceAmount" width="100" parentDisplay="true" display="@TABLENAME.InvoiceAmount" />
+          <field name="tblBuyInStock.NoInvoiceAmount" width="100" parentDisplay="true" display="@TABLENAME.ExeBalAmt" />
+     </displayFields>
+     <saveFields>
+          <field name="tblBuyInStock.BillNo" parentName="@TABLENAME.RefBillNo" display="@TABLENAME.RefBillNo" relationKey="true" hidden="false" orderBy="升" />
+          <field name="tblBuyInStock.ComFullName" parentName="tblBuyInfoDet.tblCompany_ComFullName" display="tblCompany.ComFullName" relationKey="false" hidden="true" />
+          <field name="tblBuyInStock.AfterChangeAmt" parentName="@TABLENAME.BillAmt" display="tblBuyInStock.AfterChangeAmt" relationKey="false" hidden="false" />
+          <field name="tblBuyInStock.InvoiceAmount" parentName="@TABLENAME.InvoiceAmount" display="@TABLENAME.InvoiceAmount" relationKey="false" hidden="false" />
+          <field name="tblBuyInStock.NoInvoiceAmount" parentName="@TABLENAME.ExeBalAmt" display="@TABLENAME.ExeBalAmt" relationKey="false" hidden="false" />
+          <field name="tblBuyInStock.classCode" parentName="@TABLENAME.CompanyCode" display="tblCompany.classCode" relationKey="false" hidden="false" />
+          <field name="tblBuyInStock.id" parentName="@TABLENAME.RefBillID" display="tblBuyInStock.id" relationKey="false" hidden="true" />
+          <field name="tblBuyInStock.BillType" parentName="@TABLENAME.BillType" display="tblBuyInStock.id" relationKey="false" hidden="true" />
+          <field name="tblBuyInStock.NeedPayAmt" parentName="@TABLENAME.NeedPayAmt" display="@TABLENAME.NeedPayAmt" relationKey="false" hidden="false" />
+     </saveFields>
+</select>
+</popupSelect>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<!--
+displayFields 中的字段全都是会显示在弹出页面的字段
+   parentDisplay为true表示该字段需在主表界面显示，但不一定会保存在主表，由saveFields决定，
+   如果在主表显示，并配有display则主表显示字段对应的标签名取display的字段名，
+   searchType no:不作为查询条件，equal：等于，match：模糊查询,scope：区间查询
+saveFields 中的字段全都是必须在主表保存的字段
+   其中必须有且仅有一个relationKey="true"的字段。该字段表示的是关联字段，关联查询通过这个字段建立
+   关联关系，该关联字段在主表是否显示由hidden属性决定，如果为true表示隐藏，界面不显示，通过隐藏变
+   量传递值。
+   其它非关联字段，在主表必须存在，且可录入。
+
+-->
+<!--CRM客户管理意向客户引用目标客户-->
+<select name = "quote_crmAimToWill">
+		<table>tblCMAimClient</table>
+		<relation></relation>
+		<condition></condition>
+		<displayFields>
+			<field name="tblCMAimClient.UserName" width="200" searchType="match"  parentDisplay="true"  />
+			<field name="tblCMAimClient.BirthDay" width="200" searchType="match"  parentDisplay="true"  />
+			<field name="tblCMAimClient.Phone"  width="200" searchType="match"   parentDisplay="true"/>
+			<field name="tblCMAimClient.Mobile" width="200" searchType="match"   parentDisplay="true" />
+			<field name="tblCMAimClient.Email" width="200" searchType="match"   parentDisplay="true" />
+			<field name="tblCMAimClient.QQ" width="200" searchType="match"   parentDisplay="false" />			
+		</displayFields>
+		<saveFields>
+		  <field name="tblCMAimClient.id" relationKey="true" parentName="tblCMWillClient.id" hidden="true"/>
+		</saveFields>
+</select>
+<!--CRM客户管理成交客户引用意向客户-->
+<select name = "quote_crmWillToComplete">
+		<table>tblCMWillClient</table>
+		<relation></relation>
+		<condition></condition>
+		<displayFields>
+			<field name="tblCMWillClient.UserName" width="200" searchType="match"  parentDisplay="true"  />
+			<field name="tblCMWillClient.BirthDay" width="200" searchType="match"  parentDisplay="true"  />
+			<field name="tblCMWillClient.Phone"  width="200" searchType="match"   parentDisplay="true"/>
+			<field name="tblCMWillClient.Mobile" width="200" searchType="match"   parentDisplay="true" />
+			<field name="tblCMWillClient.Email" width="200" searchType="match"   parentDisplay="true" />
+			<field name="tblCMWillClient.QQ" width="200" searchType="match"   parentDisplay="false" />			
+		</displayFields>
+		<saveFields>
+		  <field name="tblCMWillClient.id" relationKey="true" parentName="tblCMCompleteClient.id" hidden="true"/>
+		</saveFields>
+</select>
+<!--CRM客户管理放弃客户引用目标客户-->
+<select name = "quote_crmAimToAbandon">
+		<table>tblCMAimClient</table>
+		<relation></relation>
+		<condition></condition>
+		<displayFields>
+			<field name="tblCMAimClient.UserName" width="200" searchType="match"  parentDisplay="true"  />
+			<field name="tblCMAimClient.BirthDay" width="200" searchType="match"  parentDisplay="true"  />
+			<field name="tblCMAimClient.Phone"  width="200" searchType="match"   parentDisplay="true"/>
+			<field name="tblCMAimClient.Mobile" width="200" searchType="match"   parentDisplay="true" />
+			<field name="tblCMAimClient.Email" width="200" searchType="match"   parentDisplay="true" />
+			<field name="tblCMAimClient.QQ" width="200" searchType="match"   parentDisplay="false" />			
+		</displayFields>
+		<saveFields>
+		  <field name="tblCMAimClient.id" relationKey="true" parentName="tblCMAbandonClient.id" hidden="true"/>
+		</saveFields>
+</select>
+<!--CRM客户管理意向代理引用目标代理-->
+<select name = "quote_crmAimToWill_Agent">
+		<table>tblCMAimAgent</table>
+		<relation></relation>
+		<condition></condition>
+		<displayFields>
+			<field name="tblCMAimAgent.UserName" width="200" searchType="match"  parentDisplay="true"  />
+			<field name="tblCMAimAgent.BirthDay" width="200" searchType="match"  parentDisplay="true"  />
+			<field name="tblCMAimAgent.Phone"  width="200" searchType="match"   parentDisplay="true"/>
+			<field name="tblCMAimAgent.Mobile" width="200" searchType="match"   parentDisplay="true" />
+			<field name="tblCMAimAgent.Email" width="200" searchType="match"   parentDisplay="true" />
+			<field name="tblCMAimAgent.QQ" width="200" searchType="match"   parentDisplay="false" />			
+		</displayFields>
+		<saveFields>
+		  <field name="tblCMAimAgent.id" relationKey="true" parentName="tblCMWillAgent.id" hidden="true"/>
+		</saveFields>
+</select>
+<!--CRM客户管理签约代理引用意向代理-->
+<select name = "quote_crmWillToComplete_Agent">
+		<table>tblCMWillAgent</table>
+		<relation></relation>
+		<condition></condition>
+		<displayFields>
+			<field name="tblCMWillAgent.UserName" width="200" searchType="match"  parentDisplay="true"  />
+			<field name="tblCMWillAgent.BirthDay" width="200" searchType="match"  parentDisplay="true"  />
+			<field name="tblCMWillAgent.Phone"  width="200" searchType="match"   parentDisplay="true"/>
+			<field name="tblCMWillAgent.Mobile" width="200" searchType="match"   parentDisplay="true" />
+			<field name="tblCMWillAgent.Email" width="200" searchType="match"   parentDisplay="true" />
+			<field name="tblCMWillAgent.QQ" width="200" searchType="match"   parentDisplay="false" />			
+		</displayFields>
+		<saveFields>
+		  <field name="tblCMWillAgent.id" relationKey="true" parentName="tblCMCompleteAgent.id" hidden="true"/>
+		</saveFields>
+</select>
+<!--CRM客户管理放弃代理引用目标代理-->
+<select name = "quote_crmAimToAbandon_Agent">
+		<table>tblCMAimAgent</table>
+		<relation></relation>
+		<condition></condition>
+		<displayFields>
+			<field name="tblCMAimAgent.UserName" width="200" searchType="match"  parentDisplay="true"  />
+			<field name="tblCMAimAgent.BirthDay" width="200" searchType="match"  parentDisplay="true"  />
+			<field name="tblCMAimAgent.Phone"  width="200" searchType="match"   parentDisplay="true"/>
+			<field name="tblCMAimAgent.Mobile" width="200" searchType="match"   parentDisplay="true" />
+			<field name="tblCMAimAgent.Email" width="200" searchType="match"   parentDisplay="true" />
+			<field name="tblCMAimAgent.QQ" width="200" searchType="match"   parentDisplay="false" />			
+		</displayFields>
+		<saveFields>
+		  <field name="tblCMAimAgent.id" relationKey="true" parentName="tblCMAbandonAgent.id" hidden="true"/>
+		</saveFields>
+</select>
+<!--我的资料夹的部门弹出- -->
+<select name = "MyDocuDepartAcc">
+	<table>tblDepartment</table>
+	<relation></relation>
+	<condition>tblDepartment.workFlowNodeName='finish'</condition>
+	<displayFields>
+	    <field name="tblDepartment.DeptCode"  display="tblDepartment.DeptCode" width="200" searchType="match"  parentDisplay="flase" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" width="200" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+	<saveFields>
+	  <field name="tblDepartment.DeptCode" parentName="OAMyDocuments.DepartmentCode" relationKey="true" hidden="true"/>
+	</saveFields>
+</select>
+<!--我的资料夹的部门弹出-->
+
+<!--上门服务联系人弹出- -->
+<select name = "ServiceClientPop">
+	<table>tblCMCompleteClient</table>
+	<relation></relation>
+	<condition></condition>
+	<displayFields>
+	    <field name="tblCMCompleteClient.UserName"  display="tblCallServiceHome.clientname" width="200" searchType="match"  parentDisplay="true" />
+		<field name="tblCMCompleteClient.Email" width="200" searchType="match" parentDisplay="false" />
+		</displayFields>
+	<saveFields>
+	  <field name="tblCMCompleteClient.UserName" parentName="tblCallServiceHome.clientname" relationKey="true" hidden="false"/>
+	</saveFields>
+</select>
+<!--上门服务联系人弹出- -->
+</popupSelect>

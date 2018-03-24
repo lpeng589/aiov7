@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSalesBuyAccount">
+     <table>tblAccTypeInfo</table>
+     <forwardModel></forwardModel>
+     <defParentCode>00001</defParentCode>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblAccTypeInfo.AccNumber f1,
+      tblAccTypeInfo.AccName f2,
+      tblAccTypeInfo.AccFullName f3,
+      tblAccTypeInfo.PyCode f4,
+      tblAccTypeInfo.classCode f5
+	  from tblAccTypeInfo
+     </defineSQL>
+     <classCode>tblAccTypeInfo.classCode</classCode>
+     <remark>全部科目,默认只显示现金银行,不回填,供收款单、付款单的列表与明细表使用</remark>
+     <condition>tblAccTypeInfo.statusId!='-1'  and tblAccTypeInfo.AccNumber not in ('1122','1123','2202','2203')</condition>
+     <changeCond></changeCond>
+     <orderBy>tblAccTypeInfo.AccNumber,tblAccTypeInfo.AccName</orderBy>
+     <displayFields>
+          <field name="tblAccTypeInfo.AccNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升"  defaultValue="100"/>
+          <field name="tblAccTypeInfo.AccName" asName="AccTypeInfo.AccName" width="150" searchType="match" keySearch="true" parentDisplay="true" display="@TABLENAME.Account" orderBy="升" />
+          <field name="tblAccTypeInfo.AccFullName" width="200" searchType="match" parentDisplay="false" />
+          <field name="tblAccTypeInfo.PyCode" width="50" searchType="match" keySearch="true" parentDisplay="false" hiddenInput="true" />
+     </displayFields>
+     <saveFields>
+     </saveFields>
+</select>
+</popupSelect>

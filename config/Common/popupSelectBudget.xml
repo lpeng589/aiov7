@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<!---用途管理信息表关联会计科目-->
+	<select name="SelectAccNumber">
+	<table>tblAccTypeInfo</table>
+	<classCode>tblAccTypeInfo.classcode</classCode>
+	<relation></relation>
+	<condition>tblAccTypeInfo.statusId!='-1'</condition>
+	<!--<saveParentFlag>true</saveParentFlag>-->
+	<displayFields>
+	<field name="tblAccTypeInfo.AccNumber" display="@TABLENAME.accCode"  width="100" searchType="equal" parentDisplay="true" keySearch="true"/>
+	<field name="tblAccTypeInfo.AccName"  width="100" searchType="match" parentDisplay="true" keySearch="true"/>
+	</displayFields>
+	<saveFields>
+	<field name="tblAccTypeInfo.AccNumber" parentName="@TABLENAME.accCode" relationKey="true" hidden="false"/>
+		
+	</saveFields>
+	</select>	
+	
+	<select name="asSelectAccNumber">
+	<table>tblAccTypeInfo</table>
+	<classCode>tblAccTypeInfo.classcode</classCode>
+	<relation></relation>
+	<condition>tblAccTypeInfo.statusId!='-1'</condition>
+	<!--<saveParentFlag>true</saveParentFlag>-->
+	<displayFields>
+	<field name="tblAccTypeInfo.AccNumber" width="100" searchType="equal" parentDisplay="false" keySearch="true"/>
+	<field name="tblAccTypeInfo.AccName" width="100" searchType="match" parentDisplay="true" keySearch="true"/>
+	<field name="tblAccTypeInfo.AccFullName" width="100" searchType="match" parentDisplay="true" keySearch="true"/>
+	</displayFields>
+	<saveFields>
+	</saveFields>
+	</select>
+	
+	<!--预算项目设置选择预算期间-->
+	<select name="SelectPeriodInfo">
+	<table>tblBudgetPeriod</table>
+	<relation></relation>
+	<condition>tblBudgetPeriod.statusId!='-1'</condition>
+	<displayFields>
+	<field name="tblBudgetPeriod.periodType" width="100" searchType="equal" parentDisplay="false" keySearch="false"/>
+	<field name="tblBudgetPeriod.periodYear" width="100" searchType="equal" parentDisplay="true" keySearch="false"/>
+	<field name="tblBudgetPeriod.periodVal" width="100" searchType="equal" parentDisplay="true" keySearch="false"/>
+	<field name="(case when 1=1 and ''='@ValueofDB:parentCode' then tblBudgetPeriod.fee else (select a.Fee from tblBudgetItem a join tblBudgetPeriod b on a.PeriodID = b.id where 1=1 and a.ItemID = '@ValueofDB:parentCode') end)" asName="tblBudgetPeriod.fee" display="tblBudgetPeriod.fee" width="100" parentDisplay="true" keySearch="false"/>
+	<field name="(case when 1=1 and ''='@ValueofDB:parentCode' then tblBudgetPeriod.usableFee else (select a.usableFee from tblBudgetItem a join tblBudgetPeriod b on a.PeriodID = b.id where 1=1 and a.ItemID = '@ValueofDB:parentCode') end)" asName="tblBudgetPeriod.usableFee" display="tblBudgetPeriod.usableFee" width="100" parentDisplay="true" keySearch="false"/>
+	</displayFields>
+	<saveFields>
+	<field name="tblBudgetPeriod.id" parentName="tblBudgetItem.PeriodID" relationKey="true" hidden="true"/>
+	</saveFields>
+	</select>
+	
+	<select name="asSelectPeriodInfo">
+	<table>tblBudgetPeriod</table>
+	<relation></relation>
+	<condition>tblBudgetPeriod.statusId!='-1'</condition>
+	<displayFields>
+	<field name="tblBudgetPeriod.periodType" width="100" searchType="equal" parentDisplay="false" keySearch="true"/>
+	<field name="tblBudgetPeriod.periodYear" width="100" searchType="equal" parentDisplay="true" keySearch="true"/>
+	<field name="tblBudgetPeriod.periodVal" width="100" searchType="equal" parentDisplay="true" keySearch="true"/>
+	<field name="tblBudgetPeriod.fee" width="100" parentDisplay="false" keySearch="true"/>
+	</displayFields>
+	<saveFields>
+	</saveFields>
+	</select>
+	<!--预算项目设置选择项目-->
+	<select name="SelectItemInfo">
+	<table>tblItem</table>
+	<classCode></classCode>
+	<relation></relation>
+	<condition></condition>
+	<changeCond>tblItem.statusId!='-1' and (('1'='1'+'@ValueofDB:parentCode' and len(tblItem.classCode) =5) or tblItem.classCode like replace('@ValueofDB:parentCode'' _____',''' ',''))</changeCond>
+	<saveParentFlag>true</saveParentFlag>
+	<displayFields>
+	<field name="tblItem.ItemName" display="@TABLENAME.ItemID" width="200" searchType="match" parentDisplay="true" keySearch="true"/>
+	</displayFields>
+	<saveFields>
+	<field name="tblItem.classCode" parentName="@TABLENAME.ItemID" relationKey="true" hidden="true"/>
+	</saveFields>
+	</select>	
+	
+	<select name="asSelectItemInfo">
+	<table>tblItem</table>
+	<classCode>tblItem.classCode</classCode>
+	<relation></relation>
+	<condition>tblItem.statusId!='-1'</condition>
+	<saveParentFlag>true</saveParentFlag>
+	<displayFields>
+	<field name="tblItem.ItemName" width="100" searchType="match" parentDisplay="true" keySearch="true"/>
+	</displayFields>
+	<saveFields>
+	</saveFields>
+	</select>
+	
+	<select name="asSelectItemInfoBox" type="checkBox">
+	<table>tblItem</table>
+	<classcode>tblItem.classCode</classcode>
+	<relation></relation>
+	<condition>tblItem.statusId!='-1'</condition>
+	<saveParentFlag>true</saveParentFlag>
+	<displayFields>
+	<field name="tblItem.ItemName" width="100" searchType="match" parentDisplay="true" keySearch="true"/>
+	</displayFields>
+	<saveFields>
+	</saveFields>
+	</select>
+	
+	<!--预算部门设置弹出窗口-->	
+	<select name = "SelectBudgetPeriod" >
+		<table>tblBudgetPeriod </table>
+		<defineSQL>
+			select 
+				tblBudgetPeriod.id f1,
+				tblBudgetPeriod.periodType f2,
+				tblBudgetPeriod.periodYear f3,
+				tblBudgetPeriod.periodVal f4,
+				tblBudgetPeriod.saleAmt f5,
+	 			tblBudgetPeriod.Coeff f6,
+				tblBudgetPeriod.fee f7,
+				case when len('@ValueofDB:DepartmentCode')=5 then tblBudgetPeriod.usableFee else (select usableFee from tblBudgetDept where DepartmentCode=substring('@ValueofDB:DepartmentCode',1,len('@ValueofDB:DepartmentCode')-5) and tblBudgetDept.PeriodID=tblBudgetPeriod.id)end f8
+				from tblBudgetPeriod 
+		  </defineSQL>
+		<relation></relation>
+		<saveParentFlag>true</saveParentFlag> 
+		<condition> tblBudgetPeriod.statusId ='0'</condition>
+		<changeCond>tblBudgetPeriod.periodYear>=@Sess:NowYear and tblBudgetPeriod.periodVal>=(case tblBudgetPeriod.periodType when 1 then @Sess:NowYear when 2 then (case @Sess:NowPeriod when 1 then 1 when 2 then 1 when 3 then 1 when 4 then 2 when 5 then 2 when 6 then 2 when 7 then 3 when 8 then 3 when 9 then 3 else 4 end) else @Sess:NowPeriod end)</changeCond>
+		<displayFields>
+		<field name="tblBudgetPeriod.periodType" width="70" searchType="equal" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetPeriod.periodYear" width="70" searchType="match" parentDisplay="true" keySearch="true" />	
+		<field name="tblBudgetPeriod.periodVal"  display="@TABLENAME.PeriodID" width="70" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblBudgetPeriod.saleAmt" width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetPeriod.Coeff"  width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetPeriod.fee" width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="case when len('@ValueofDB:DepartmentCode')=5 then tblBudgetPeriod.usableFee else (select usableFee from tblBudgetDept where DepartmentCode=substring('@ValueofDB:DepartmentCode',1,len('@ValueofDB:DepartmentCode')-5) and tblBudgetDept.PeriodID=tblBudgetPeriod.id)end" display="tblBudgetPeriod.usableFee" asName="tblBudgetPeriod.usableFee" width="70" searchType="match" parentDisplay="true" keySearch="false" />
+		</displayFields>
+		<saveFields>
+		<field name="tblBudgetPeriod.id" parentName="@TABLENAME.PeriodID" relationKey="true" hidden="true"/>
+		</saveFields>	
+	</select>
+	
+	<!--预算申请单期间选择弹出窗口-->	
+	<select name = "SelectAppPeriod" >
+		<table>tblBudgetPeriod </table>
+		<relation></relation>
+		<saveParentFlag>true</saveParentFlag> 
+		<condition> tblBudgetPeriod.statusId ='0'</condition>
+		<changeCond>tblBudgetPeriod.periodYear>=@Sess:NowYear and  (case tblBudgetPeriod.periodType when 1 then tblBudgetPeriod.periodYear when 2 then (case tblBudgetPeriod.periodVal when '1' then 1 when '2' then 1 when '3' then 1 when '4'then 2 when '5' then 2 when '6'then 2 when '7'then 3 when '8' then 3 when '9' then 3 else 4 end) else tblBudgetPeriod.periodVal end) >=(case tblBudgetPeriod.periodType when 1 then @Sess:NowYear when 2 then (case @Sess:NowPeriod when '1' then 1 when '2' then 1 when '3' then 1 when '4'then 2 when '5' then 2 when '6'then 2 when '7'then 3 when '8' then 3 when '9' then 3 else 4 end) else @Sess:NowPeriod end)</changeCond>
+		<displayFields>
+		<field name="tblBudgetPeriod.periodType" width="70" searchType="equal" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetPeriod.periodYear" width="70" searchType="match" parentDisplay="true" keySearch="true" />	
+		<field name="tblBudgetPeriod.periodVal"  display="@TABLENAME.PeriodID" width="70" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblBudgetPeriod.saleAmt" width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetPeriod.Coeff" width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetPeriod.fee" width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetPeriod.usableFee" width="70" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblBudgetPeriod.id" parentName="@TABLENAME.PeriodID" relationKey="true" hidden="true"/>
+		</saveFields>	
+	</select>
+
+	<!--预算申请选择项目弹出窗口-->	
+	<select name = "SelecttblBudgetItem">
+		<table>tblItem,tblBudgetItem ,tblBudgetPeriod</table>
+		<relation>on tblBudgetItem.ItemID = tblItem.classCode on tblBudgetItem.PeriodID = tblBudgetPeriod.id </relation>
+		<condition> tblBudgetPeriod.statusId ='0' and tblBudgetPeriod.periodYear ='@ValueofDB:tblBudgetPeriod_periodYear' and tblBudgetPeriod.periodVal = '@ValueofDB:tblBudgetPeriod_periodVal'</condition>
+		<changeCond>tblBudgetPeriod.periodYear>=@Sess:NowYear and  (case tblBudgetPeriod.periodType when 1 then tblBudgetPeriod.periodYear when 2 then (case tblBudgetPeriod.periodVal when '1' then 1 when '2' then 1 when '3' then 1 when '4'then 2 when '5' then 2 when '6'then 2 when '7'then 3 when '8' then 3 when '9' then 3 else 4 end) else tblBudgetPeriod.periodVal end) >=(case tblBudgetPeriod.periodType when 1 then @Sess:NowYear when 2 then (case @Sess:NowPeriod when '1' then 1 when '2' then 1 when '3' then 1 when '4'then 2 when '5' then 2 when '6'then 2 when '7'then 3 when '8' then 3 when '9' then 3 else 4 end) else @Sess:NowPeriod end)</changeCond>
+		<saveParentFlag>true</saveParentFlag> 
+		<classCode>tblItem.classCode</classCode>
+		<displayFields>
+        <field name="tblBudgetPeriod.periodType"  width="70" searchType="equal" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetPeriod.periodYear"  width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetPeriod.periodVal"  width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblItem.ItemName" display="@TABLENAME.BudgetItemID"  width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblBudgetItem.Fee"  width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetItem.usableFee"  width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblBudgetItem.id" parentName="@TABLENAME.BudgetItemID" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+		<!--预算申请选择项目弹出窗口-->	
+	<select name = "ReportSelecttblBudgetItem">
+		<table>tblItem,tblBudgetItem ,tblBudgetPeriod</table>
+		<relation>on tblBudgetItem.ItemID = tblItem.classCode on tblBudgetItem.PeriodID = tblBudgetPeriod.id  </relation>
+		<condition> tblBudgetPeriod.statusId ='0'</condition>
+		<changeCond>tblBudgetPeriod.periodYear>=@Sess:NowYear and  (case tblBudgetPeriod.periodType when 1 then tblBudgetPeriod.periodYear when 2 then (case tblBudgetPeriod.periodVal when '1' then 1 when '2' then 1 when '3' then 1 when '4'then 2 when '5' then 2 when '6'then 2 when '7'then 3 when '8' then 3 when '9' then 3 else 4 end) else tblBudgetPeriod.periodVal end) >=(case tblBudgetPeriod.periodType when 1 then @Sess:NowYear when 2 then (case @Sess:NowPeriod when '1' then 1 when '2' then 1 when '3' then 1 when '4'then 2 when '5' then 2 when '6'then 2 when '7'then 3 when '8' then 3 when '9' then 3 else 4 end) else @Sess:NowPeriod end)</changeCond>
+		<saveParentFlag>true</saveParentFlag> 
+		<classCode>tblItem.classCode</classCode>
+		<displayFields>
+		<field name="tblBudgetPeriod.periodType"  width="70" searchType="equal" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetPeriod.periodYear"  width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetPeriod.periodVal"  width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblItem.ItemName"   width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblBudgetItem.Fee"  width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetItem.usableFee"  width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+	<!--部门期间选择报表选择期间年弹出窗口-->	
+	<select name = "ReportSelectBudgetPeriod" >
+		<table>tblBudgetPeriod </table>
+		<relation></relation>
+		<orderBy>tblBudgetPeriod.periodVal desc</orderBy>
+		<saveParentFlag>true</saveParentFlag> 
+		<condition></condition>
+		<displayFields>
+		<field name="tblBudgetPeriod.periodType" width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetPeriod.periodYear" width="70" searchType="match" parentDisplay="true" keySearch="true" />	
+		<field name="tblBudgetPeriod.periodVal" width="70" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		</saveFields>	
+	</select>
+	<!--预算部门报表选择期间弹出窗口-->	
+	<select name = "ReportSelectBudgetPeriod_one" >
+		<table>tblBudgetPeriod </table>
+		<relation></relation>
+		<orderBy>tblBudgetPeriod.periodVal desc</orderBy>
+		<saveParentFlag>true</saveParentFlag> 
+		<condition></condition>
+		<displayFields>
+		<field name="tblBudgetPeriod.periodType" width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetPeriod.periodYear" width="70" searchType="match" parentDisplay="false" keySearch="true" />	
+		<field name="tblBudgetPeriod.periodVal" width="70" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		</saveFields>	
+	</select>
+	
+    <!--预算申请择用途弹出窗口-->	
+	<select name = "SelecttblUse">
+		<table>tblUse</table>
+		<relation></relation>
+		<saveParentFlag>true</saveParentFlag> 
+		<classCode>tblUse.classCode</classCode>
+		<displayFields>
+		<field name="tblUse.UseName" display="@TABLENAME.UseID" width="70" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblUse.UseDetail"  width="224" searchType="match" parentDisplay="false" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblUse.classCode" parentName="@TABLENAME.UseID" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	    <!--预算申请择用途弹出窗口-->	
+	<select name = "ReportSelecttblUse">
+		<table>tblUse</table>
+		<relation></relation>
+		<saveParentFlag>true</saveParentFlag> 
+		<classCode>tblUse.classCode</classCode>
+		<displayFields>
+		<field name="tblUse.UseName" display="@TABLENAME.UseID" width="70" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblUse.UseDetail"  width="224" searchType="match" parentDisplay="false" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+<!--通用型选择部门弹出窗口-->	
+	<select name = "SelectDepartment">
+		<table>tblDepartment</table>
+		<relation></relation>
+		<saveParentFlag>true</saveParentFlag> 
+		<classCode>tblDepartment.classCode</classCode>
+		<condition>(tblDepartment.statusid!='-1') and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblDepartment.DeptCode" width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" display="@TABLENAME.DepartmentCode" width="70" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblDepartment.DeptFullNamePYM" hiddenInput="true" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblDepartment.classCode" parentName="@TABLENAME.DepartmentCode" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	<!--预算部门统计部门弹出窗口，复选框-->	
+	<select name = "reportSelectDepartment" type = "checkBox">
+		<table>tblDepartment</table>
+		<relation></relation>
+		<saveParentFlag>true</saveParentFlag> 
+		<classCode>tblDepartment.classCode</classCode>
+		<condition>(tblDepartment.statusid!='-1') and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblDepartment.DeptCode" width="70" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullName"  width="70" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+	
+	
+	
+	<!-- 选择预算部门-->
+	<select name = "SelectBudgetDepartment">
+		<table>tblBudgetDept,tblDepartment,tblBudgetPeriod</table>
+		<forwardModel>tblBudgetDept</forwardModel>
+		<saveParentFlag>true</saveParentFlag>
+		<relation>
+		tblBudgetDept.DepartmentCode=tblDepartment.classCode and
+		tblBudgetDept.PeriodID=tblBudgetPeriod.id
+		</relation>
+		<classCode></classCode>
+		<condition>tblDepartment.statusid!='-1' and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblDepartment.DeptFullName" display="@TABLENAME.DeptID" width="75" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblBudgetPeriod.periodYear" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblBudgetPeriod.periodVal" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblBudgetDept.usableFee" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblBudgetDept.id" parentName="@TABLENAME.DeptID" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	
+	<!--选择预算部门内的职员-->		
+	<select name = "SelectBudgetEmployee">
+		<table>tblBudgetDept,tblEmployee,tblDepartment,tblBudgetPeriod</table>
+		<relation>
+			tblBudgetDept.DepartmentCode=tblEmployee.DepartmentCode and
+			tblBudgetDept.DepartmentCode=tblDepartment.classCode and 
+			tblBudgetDept.PeriodID=tblBudgetPeriod.id
+		</relation>
+		<condition>(tblBudgetPeriod.periodVal='@ValueofDB:tblBudgetPeriod_periodVal' and tblBudgetPeriod.periodYear='@ValueofDB:tblBudgetPeriod_periodYear' and tblDepartment.DeptFullName='@ValueofDB:tblDepartment_DeptFullName' and tblEmployee.SCompanyID='@Sess:SCompanyID' and tblEmployee.statusId!='-1' or tblEmployee.id='1')  and tblEmployee.workFlowNodeName='finish'  and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName"  display="@TABLENAME.EmployeeID" width="65" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullNamePYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.TitleID" width="65" inputType="1" inputValue="duty" searchType="equal" parentDisplay="false"  keySearch="true"/>
+		<field name="tblDepartment.DeptFullName" width="75" popSelect="PoPupSelectDepartment" searchType="match" keySearch="true" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullNamePYM" asName="ViewtblStocks.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetPeriod.periodYear" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblBudgetPeriod.periodVal" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" relationKey="true" hidden="true"/>
+		<field name="tblBudgetDept.id" parentName="@TABLENAME.DeptID" />
+		<field name="tblDepartment.DeptFullName" parentName="tblDepartment.tblDepartment_DeptFullName" />
+		<field name="tblBudgetPeriod.periodYear" parentName="tblBudgetPeriod.tblBudgetPeriod_periodYear" />
+		<field name="tblBudgetPeriod.periodVal" parentName="tblBudgetPeriod.tblBudgetPeriod_periodVal" />
+		</saveFields>
+	</select>
+
+<!--预算申请期间设置-->
+		<select name="SelectPeriodInfo1">
+	<table>tblBudgetPeriod</table>
+	<relation></relation>
+	<condition>tblBudgetPeriod.statusId!='-1'</condition>
+	<displayFields>
+	<field name="tblBudgetPeriod.periodType" width="100" searchType="equal" parentDisplay="true" keySearch="false"/>
+	<field name="tblBudgetPeriod.periodYear" width="100" searchType="equal" parentDisplay="true" keySearch="false"/>
+	<field name="tblBudgetPeriod.periodVal" width="100" searchType="equal" parentDisplay="true" keySearch="false"/>
+	<field name="tblBudgetPeriod.fee" width="100" parentDisplay="true" keySearch="false"/>
+	<field name="tblBudgetPeriod.usableFee" width="100" parentDisplay="true" keySearch="false"/>
+	</displayFields>
+	<saveFields>
+	<field name="tblBudgetPeriod.id" parentName="tblBudgetApp.PeriodID" relationKey="true" hidden="true"/>
+	</saveFields>
+	</select>
+	<!--选择预算申请单编号-->		
+	<select name = "SelectBudgetApp" type = "checkBox">
+		<table>tblBudgetApp,tblUse,tblBudgetItem,tblItem,tblEmployee</table>
+		<relation>tblBudgetApp.UseID=tblUse.classCode and tblBudgetApp.BudgetItemID=tblBudgetItem.id and tblBudgetItem.ItemID=tblItem.classCode and tblBudgetApp.EmployeeID=tblEmployee.id</relation>
+		<orderBy>tblBudgetApp.BillNo desc</orderBy>
+		<condition>tblBudgetApp.workFlowNodeName='finish'</condition>
+		<displayFields>
+			<field name="tblBudgetApp.BillNo" display="@TABLENAME.BudgetAppID" width="180" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblUse.UseName"   width="100" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblItem.ItemName" width="100" searchType="match" parentDisplay="true" keySearch="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblBudgetApp.id" parentName="@TABLENAME.BudgetAppID" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+
+	<!--申请单申请人选择报表设置通用型弹出框
+		<select name = "ReportSelectEmployee" type = "checkBox">
+		<table>tblEmployee,tblDepartment</table>
+		<forwardModel>tblEmployee</forwardModel>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+		<condition>(tblDepartment.DeptFullName='@ValueofDB:tblDepartment_DeptFullName' and tblEmployee.SCompanyID='@Sess:SCompanyID' and tblEmployee.statusId!='-1' or tblEmployee.id='1')</condition>
+		<displayFields>
+			<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblEmployee.EmpFullName"  width="120" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblEmployee.TitleID" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false" />
+			<field name="tblDepartment.DeptFullName" width="120" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>-->
+
+	<!--选择所有预算申请部门-->
+	<select name = "SelectAppDeptALL" type="checkBox">
+		<table>tblBudgetApp,tblDepartment</table>
+		 <relation>tblBudgetApp.DepartmentCode=tblDepartment.classCode</relation>		
+		<saveParentFlag>true</saveParentFlag> 
+		<classCode>tblDepartment.classCode</classCode>
+		<condition>tblDepartment.statusid!='-1' AND  tblBudgetApp.ID IN (SELECT MAX(ID) FROM tblBudgetApp GROUP BY DepartmentCode) </condition>
+		<displayFields>
+		<field name="tblDepartment.DeptCode" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblDepartment.DeptFullName" display="@TABLENAME.DeptFullName" width="75" searchType="match" parentDisplay="true" keySearch="true"/>
+		<field name="tblDepartment.DeptFullNamePYM" hiddenInput="true" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		</displayFields>
+		<saveFields>			
+		</saveFields>
+	</select>
+<!--选择所有预算申请职员-->
+	<select name = "SelectAPPEmployeeALL" type="checkBox">
+		<table>tblBudgetApp,tblEmployee,tblDepartment</table>
+		<relation>
+			tblBudgetApp.EmployeeID=tblEmployee.id and
+			tblEmployee.DepartmentCode=tblDepartment.classCode
+		</relation>
+		<condition>(tblDepartment.DeptFullName='@ValueofDB:tblDepartment_DeptFullName' and tblEmployee.SCompanyID='@Sess:SCompanyID' and tblEmployee.statusId!='-1' or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish'  and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName"  display="@TABLENAME.EmpFullName" width="65" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullNamePYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.TitleID" width="65" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false"  keySearch="true"/>
+		<field name="tblDepartment.DeptFullName"  width="75" popSelect="PoPupSelectDepartment" searchType="match" keySearch="true" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullNamePYM" asName="ViewtblStocks.DeptFullNamePYM"  hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+	
+	<!--会计科目选择弹出窗口代码-->
+		
+	 <select name = "BudgetCollarAccInfo">
+		<table>tblAccTypeInfo</table>
+		<relation></relation>	
+		<classCode>tblAccTypeInfo.classCode</classCode>
+		<defParentCode>00001</defParentCode>
+		<changeCond>(tblAccTypeInfo.statusId!='-1' and tblAccTypeInfo.AccNumber not in ('1123','1122','2203'))</changeCond>
+		<orderBy>tblAccTypeInfo.AccNumber</orderBy>
+		<displayFields>
+			<field name="tblAccTypeInfo.AccNumber"  width="100" searchType="match"  parentDisplay="false" defaultValue="100" keySearch="true" />
+			<field name="tblAccTypeInfo.AccName"  display="@TABLENAME.SubCode" width="150" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblAccTypeInfo.AccFullName"  width="200" searchType="match" parentDisplay="false" />
+			<field name="tblAccTypeInfo.PyCode" width="50" searchType="match" parentDisplay="false" keySearch="true" hiddenInput="true" />
+		</displayFields>
+		<saveFields>
+		  <field name="tblAccTypeInfo.AccNumber" parentName="@TABLENAME.SubCode" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>	
+	
+	
+	<!--通用型选择职员弹出窗口:表中同时存在部门字段的时候可以用-->	
+	<select name = "SelectReportEmployees">
+		<table>tblEmployee,tblDepartment</table>
+		<forwardModel>tblEmployee</forwardModel>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+		<condition>(tblDepartment.DeptFullName='@ValueofDB:tblDepartment_DeptFullName' and tblEmployee.SCompanyID='@Sess:SCompanyID' and tblEmployee.statusId!='-1' or tblEmployee.id='1') and tblEmployee.workFlowNodeName='finish'  and tblDepartment.workFlowNodeName='finish'</condition>
+		<displayFields>
+		<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		<field name="tblEmployee.EmpFullName" popSelect="PoPupSelectsuoEmployee" display="@TABLENAME.EmployeeID" width="65" searchType="match" parentDisplay="true" keySearch="true" />
+		<field name="tblEmployee.EmpFullNamePYM" hiddenInput="true" width="80" searchType="match" parentDisplay="false" keySearch="true"/>
+		<field name="tblEmployee.TitleID" width="65" searchType="equal" parentDisplay="false"  keySearch="true"/>
+		<field name="tblDepartment.DeptFullName"  width="75" popSelect="PoPupSelectDepartment" searchType="match" keySearch="true" parentDisplay="false" />
+		<field name="tblDepartment.DeptFullNamePYM" asName="ViewtblStocks.DeptFullNamePYM"  hiddenInput="true" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+		</displayFields>
+		<saveFields>
+		<field name="tblEmployee.EmpNumber" parentName="@TABLENAME.EmpNumber"/>
+		<field name="tblEmployee.id" parentName="@TABLENAME.EmployeeID" relationKey="true" hidden="true"/>
+		<field name="tblEmployee.DepartmentCode" parentName="@TABLENAME.DepartmentCode" />
+		<field name="tblDepartment.DeptFullName" parentName="tblDepartment.tblDepartment_DeptFullName" />
+		</saveFields>
+	</select>
+	
+	
+	<!-- 凭证管理选择审核人 -->
+	<select name = "SelectEmployee_approver">
+		<table>tblEmployee,tblDepartment</table>
+		<forwardModel>tblEmployee</forwardModel>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+		<condition>(tblDepartment.DeptFullName='@ValueofDB:tblDepartment_DeptFullName' and tblEmployee.SCompanyID='@Sess:SCompanyID' and tblEmployee.statusId!='-1' or tblEmployee.id='1')</condition>
+		<displayFields>
+			<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblEmployee.EmpFullNamePYM" width="80" hiddenInput="true" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblEmployee.EmpFullName"  display="@TABLENAME.approver" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblEmployee.TitleID" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false"/>
+			<field name="tblDepartment.DeptFullName" width="120" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+			<field name="tblEmployee.id" parentName="@TABLENAME.approver" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	
+	<!-- 凭证管理选择过账人 -->
+	<select name = "SelectEmployee_PostingUser">
+		<table>tblEmployee,tblDepartment</table>
+		<forwardModel>tblEmployee</forwardModel>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+		<condition>(tblDepartment.DeptFullName='@ValueofDB:tblDepartment_DeptFullName' and tblEmployee.SCompanyID='@Sess:SCompanyID' and tblEmployee.statusId!='-1' or tblEmployee.id='1')</condition>
+		<displayFields>
+			<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblEmployee.EmpFullNamePYM" width="80" hiddenInput="true" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblEmployee.EmpFullName"  display="@TABLENAME.PostingUser" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblEmployee.TitleID" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false"/>
+			<field name="tblDepartment.DeptFullName" width="120" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+			<field name="tblEmployee.id" parentName="@TABLENAME.PostingUser" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+	
+	<!-- 凭证管理选择复核人 -->
+	<select name = "SelectEmployee_ReviewUser">
+		<table>tblEmployee,tblDepartment</table>
+		<forwardModel>tblEmployee</forwardModel>
+		<relation>tblEmployee.DepartmentCode=tblDepartment.classCode</relation>
+		<condition>(tblDepartment.DeptFullName='@ValueofDB:tblDepartment_DeptFullName' and tblEmployee.SCompanyID='@Sess:SCompanyID' and tblEmployee.statusId!='-1' or tblEmployee.id='1')</condition>
+		<displayFields>
+			<field name="tblEmployee.EmpNumber" width="100" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblEmployee.EmpFullNamePYM" width="80" hiddenInput="true" searchType="match" parentDisplay="false" keySearch="true" />
+			<field name="tblEmployee.EmpFullName"  display="@TABLENAME.ReviewUser" width="120" searchType="match" parentDisplay="true" keySearch="true" />
+			<field name="tblEmployee.TitleID" width="100" searchType="equal" inputType="1" inputValue="duty" parentDisplay="false"/>
+			<field name="tblDepartment.DeptFullName" width="120" popSelect="PoPupSelectDepartment" searchType="match" parentDisplay="false" />
+		</displayFields>
+		<saveFields>
+			<field name="tblEmployee.id" parentName="@TABLENAME.ReviewUser" relationKey="true" hidden="true"/>
+		</saveFields>
+	</select>
+</popupSelect>

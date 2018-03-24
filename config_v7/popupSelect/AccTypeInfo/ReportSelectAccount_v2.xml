@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectAccount_v2" version="2">
+     <table>tblAccTypeInfo,ViewTypeInfoBalance</table>
+     <forwardModel></forwardModel>
+     <defParentCode>00001</defParentCode>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      ViewTypeInfoBalance.AccNumber f1,
+      ViewTypeInfoBalance.AccName f2,
+	  ViewTypeInfoBalance.classCode
+  from tblAccTypeInfo 
+  left join ViewTypeInfoBalance noRight on tblAccTypeInfo.AccNumber=ViewTypeInfoBalance.AccNumber
+     </defineSQL>
+     <classCode>tblAccTypeInfo.classCode</classCode>
+     <remark>现金与银行,回填AccNumber,供费用明细报表使用</remark>
+     <condition>(ViewTypeInfoBalance.AccNumber !='1012' and ViewTypeInfoBalance.Period =-1 and ViewTypeInfoBalance.classCode is not null)</condition>
+     <changeCond></changeCond>
+     <orderBy>ViewTypeInfoBalance.AccNumber,ViewTypeInfoBalance.AccName</orderBy>
+     <displayFields>
+          <field name="ViewTypeInfoBalance.AccNumber" width="100" searchType="match" keySearch="true" parentDisplay="false" orderBy="升" />
+          <field name="ViewTypeInfoBalance.AccName" width="180" searchType="match" keySearch="true" parentDisplay="true" orderBy="升" />
+     </displayFields>
+     <saveFields>
+          <field name="ViewTypeInfoBalance.AccNumber" parentName="AccNumber" relationKey="false" hidden="true" orderBy="升" />
+     </saveFields>
+</select>
+</popupSelect>

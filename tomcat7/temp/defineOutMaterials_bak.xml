@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+<define name="PDOutMaterials_Import">
+	<sql type="condition">
+		<condition>
+			
+		</condition>
+		<exec condition=" true ">
+			<sql>
+				declare @workOrderId varchar(100),@GoodsCode varchar(100),@StockCode varchar(100),@CompanyCode varchar(100),@WOClassType varchar(10),@WorkShop varchar(100),@prodQty numeric(18,8),@Qty numeric(18,8),@BomId varchar(100)
+				declare @ppId varchar(100),@BillNo int,@BillNoStr varchar(100),@BatchNo  varchar(100)
+				declare @periodStr varchar(10),@period int ,@periodYear int
+				
+				
+				declare ppCur cursor local for
+				
+				select a.TrackNo,a.GoodsCode,a.StockCode,a.period,a.periodYear,b.CompanyCode,b.WorkShop,
+				b.WOClassType,b.Qty,b.BomId,sum(a.instoreQty),a.BatchNo
+				from tblStockDet a 
+				join PDWorkOrder b on a.TrackNo=b.id 
+				where isnull(BillID,'')='' and InstoreQty&gt;0 and periodYear&gt;-1 and b.statusId != 2  and isnull(PDOutMateID,'') = ''
+				group by a.TrackNo,a.GoodsCode,a.StockCode,a.period,a.periodYear,b.CompanyCode,b.WorkShop,b.WOClassType,b.Qty,b.BomId,a.BatchNo
+				
+				open ppCur
+				fetch ppCur into @workOrderId,@GoodsCode,@StockCode,@period,@periodYear,@CompanyCode,@WorkShop,@WOClassType,@prodQty,@BomId,@Qty,@BatchNo
+				while @@FETCH_STATUS=0
+				begin
+				
+				--delete PDOutMaterials where PDWorkOrderID = @workOrderId
+				
+				set @ppId = SUBSTRING(convert(varchar(40),newid()),1,30)
+					
+				select @billNo	=billNo+1 from tblBillNo where 	[key]='PDOutMaterials_BillNo'
+				update tblBillNo set billNo=@billNo  where 	[key]='PDOutMaterials_BillNo'
+				set @billNoStr = 'OM'+right('10000000000000'+convert(varchar(100),@billNo), 10)
+				
+				set @periodStr = convert(varchar(4),@periodYear)+'-'+right('000'+convert(varchar(2),@period),2)
+				if @periodStr = CONVERT(varchar(7),getdate(),120)
+				begin
+					set @periodStr=CONVERT(varchar(10),getdate(),120)
+				end
+				else
+				begin
+					set @periodStr=@periodStr+'-28'
+				end
+				
+				--更新库存表中该商品的发料状态
+				update tblStockDet set PDOutMateID=@ppId where isnull(PDOutMateID,'')='' and Period=@period and PeriodYear=@periodYear and InstoreQty&gt;0 and TrackNo=@workOrderId and StockCode=@StockCode and GoodsCode=@GoodsCode and BatchNo=@BatchNo
+				
+				INSERT INTO [PDOutMaterials]([id],[classCode],[isCatalog],[BillNo],[BillDate],[StockCode],[InStockCode],[DepartmentCode],[EmployeeID],[BillAmt],[CheckPersont],[Period],[PeriodMonth],[PeriodYear],[Remark],[Attachment],[PDWorkOrderID],[createBy],[lastUpdateBy],[createTime],[lastUpdateTime],[statusId],[SCompanyID],[finishTime],[printCount],[workFlowNode],[workFlowNodeName],[checkPersons],[GoodsCode],[CompanyCode],[WorkShop],[IsOwe],[WOClassType],[Qty])
+				values(@ppId,'',0,@billNoStr,@periodStr,'',@StockCode,(select DepartmentCode from tblEmployee where id=@Sess:UserId),@Sess:UserId,0,'',@period,@period,@periodYear,'','',@workOrderId,@Sess:UserId,@Sess:UserId,CONVERT(varchar(19),getdate(),120),CONVERT(varchar(19),getdate(),120),0,'00001',CONVERT(varchar(19),getdate(),120),0,'0','notApprove','',@GoodsCode,@CompanyCode,@WorkShop,2,@WOClassType,@prodQty)
+				
+				INSERT INTO [PDOutMaterialsDet]([f_ref],[StockCode],[InStockCode],[GoodsCode],[BatchNo],[Inch],[color],[Hue],[yearNO],[ProDate],[Availably],[Qty],[Price],[Amt],[SecUnit],[UnitIntQty],[UnitBaseQty],[UnitQty],[UnitPrice],[SourceID],[CheckBarCode],[BaseQty],[SecQty],[Remark],[PDWorkOrderID],[IssueQty],[DeQty],[ShQty],[OutQty],[RGoodsCode],[Seq],[MGoodsCode],[isClient],[bomId])
+				select @ppId,b.StockCode,@StockCode,GoodsCode,'','','','','','','',a.qty*@Qty,0,0,'',0,0,0,0,'','',0,0,'',@workOrderId,a.qty*@Qty,0,a.qty*@Qty,a.qty*@Qty,'','',GoodsCode,2,@BomId from PDBomDet a join tblGoods b on a.GoodsCode=b.classCode where f_ref=@BomId and a.goodscode not like '00002%'
+				
+				insert into OAMyWorkFlow(id,billNo,applyDate,applyBy,department,applyType,tableName,keyId,createBy,checkPerson,currentNode,departmentCode,statusId)
+				values('PDOut'+@ppId,@ppId,@periodStr,(select EmpFullName from tblEmployee where id=@Sess:UserId),(select DeptFullName from tblDepartment where deptCode = (select DepartmentCode from tblEmployee where id=@Sess:UserId)),'3A3C6485838645049F08C74777C2','PDOutMaterials',@ppId,'1',';1;','0',(select DepartmentCode from tblEmployee where id=@Sess:UserId),0)
+
+				insert into OAMyWorkFlowDet(id,f_ref,nodeID,checkPerson,nodeType,createBy,statusId)
+				values('PD'+substring(replace(newid(),'-',''),1,28),'PDOut'+@ppId,'0','1','transact','1',0)
+				
+					
+				update 	[PDOutMaterialsDet] set SourceID=b.id  from [PDOutMaterialsDet] a join PDWorkOrderDet b on a.PDWorkOrderID=b.f_ref and a.GoodsCode=b.GoodsCode where a.f_ref=@ppId		
+				
+					fetch ppCur into @workOrderId,@GoodsCode,@StockCode,@period,@periodYear,@CompanyCode,@WorkShop,@WOClassType,@prodQty,@BomId,@Qty,@BatchNo
+					
+				end
+				close ppCur
+				deallocate ppCur
+			</sql>
+		</exec>
+	</sql>
+</define>
+
+
+<define name="PDOutMaterials_Add">
+  	<sql type="condition"><!--提示录入大于0的数量-->
+		<condition><select>select b.GoodsFullName as GoodsQ,Qty from PDOutMaterialsDet a,tblGoods b where b.classCode=a.MGoodsCode and f_ref=@ValueofDB:id and isnull(a.Qty,0)&lt;0</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">				
+			<error>@SqlReturn:GoodsQ 的仓库出货数不能小于0</error>
+		</exec>
+	</sql>
+	
+	<sql type="condition"><!--提示录入大于0的数量-->
+		<condition><select>select b.GoodsFullName as GoodsQ,IssueQty from PDOutMaterialsDet a,tblGoods b where b.classCode=a.MGoodsCode and f_ref=@ValueofDB:id and isnull(a.IssueQty,0)&lt;=0</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">				
+			<error>@SqlReturn:GoodsQ 的发料数必须大于0</error>
+		</exec>
+	</sql>
+
+	<sql type="condition"><!--提示录入大于0的数量-->
+		<condition><select>select b.GoodsFullName as GoodsQ,DeQty from PDOutMaterialsDet a,tblGoods b where b.classCode=a.MGoodsCode and f_ref=@ValueofDB:id and isnull(a.DeQty,0)&lt;0</select></condition>
+		<exec condition="'@SqlReturn:GoodsQ' != 'null'">				
+			<error>@SqlReturn:GoodsQ 的扣欠料不能小于0</error>
+		</exec>
+	</sql>
+ 
+		
+	
+	<sql type="condition">
+		<condition>
+			<select>select Count(1)as Qty from PDOutMaterialsDet where f_ref=@ValueofDB:id and PDWorkOrderID=''</select>
+		</condition>
+		<exec condition=" @SqlReturn:Qty&gt;0">
+			<error>发料单必须引用工令单，不能发工令单以外的物料</error>
+		</exec>
+	</sql>
+	<sql type="condition"><!--明细表商品不是对应工令单商品-->
+		<condition><select>select top 1 GoodsNumber,GoodsFullName from PDOutMaterials a,PDOutMaterialsDet b,tblGoods c where a.id=b.f_ref and b.MGoodsCode=c.classCode and a.PDWorkOrderID!=b.PDWorkOrderID and a.id=@ValueofDB:id</select></condition>
+		<exec condition=" '@SqlReturn:GoodsFullName' != 'null' ">				
+			<error>@SqlReturn:GoodsNumber  @SqlReturn:GoodsFullName 所属工令单与当前单据不一致</error>
+		</exec>
+	</sql>
+	
+
+	<!--根据工令单对应的委外供应商，更新仓库和明细表商品  暂先取消该功能-->
+	<sql type="define">PDOutMaterials_Add_Stock</sql>
+	
+
+    <!--==========出库数量不能大于可用库存==========-->	
+    <!--
+	<sql type="condition">
+		<condition><select>select a.StockCode,isnull(c.GoodsFullName,'') as GoodsFullName,isnull(tblStock.StockFullName,'') as StockFullName,cast(case c.isCatalog when 0 then isnull(b.LastQty+b.inQtyNotAudit+b.SInQtyNotAudit-b.outQtyNotAudit-b.BOutQtyNotAudit,0) else -99999999 end - a.Qty as numeric(18,4)) as Qty,
+		 a.Qty as QtyA,
+		 cast(case c.isCatalog when 0 then isnull(b.LastQty+b.inQtyNotAudit+b.SInQtyNotAudit-b.outQtyNotAudit-b.BOutQtyNotAudit,0) else -99999999 end as numeric(18,4)) as QtyB
+	
+ from (select  GoodsCode,BatchNo,Hue,yearNO,Inch,Availably,ProDate,StockCode,SUM(Qty) as Qty from PDOutMaterialsDet where f_ref=@ValueofDB:PDOutMaterials_id  group by  GoodsCode,BatchNo,Hue,yearNO,Inch,Availably,ProDate,StockCode)a  left join tblStocks b on a.GoodsCode=b.GoodsCode and a.StockCode=b.StockCode and a.BatchNo=b.BatchNo and a.Hue=b.Hue and a.yearNO=b.yearNO and a.Inch=b.Inch and a.Availably=b.Availably and a.ProDate=b.ProDate left join tblStock on a.StockCode=tblStock.classCode left join tblGoods c on a.GoodsCode=c.classCode  where  a.Qty&gt;(case c.isCatalog when 0 then isnull(b.LastQty+b.inQtyNotAudit+b.SInQtyNotAudit-b.outQtyNotAudit-b.BOutQtyNotAudit,0) else -99999999 end)</select></condition>
+		<exec condition="'@SqlReturn:GoodsFullName' != 'null'">			
+			<error>common.VirtualStock.excess.error,@ValueofDB:PDOutMaterials_BillNo,@SqlReturn:GoodsFullName,@SqlReturn:Qty,@SqlReturn:StockFullName</error>       
+		</exec>
+	</sql>	
+	-->
+
+	
+	<!--发料数不能大于未发料数-->
+	<sql type="condition">
+		<condition>
+			<select>select GoodsNumber,GoodsFullName  from PDOutMaterialsDet a,PDWorkOrderDet b,tblGoods c where a.SourceID=b.id and a.GoodsCode=c.classCode and a.f_ref=@ValueofDB:id and a.OutQty&gt;b.SendQtyExt</select>
+		</condition>
+		<exec condition=" '@SqlReturn:GoodsFullName'!='null' ">
+			<error>@SqlReturn:GoodsNumber @SqlReturn:GoodsFullName 实发数已经超出工令单需求数 </error>
+		</exec>
+	</sql>		
+	
+	
+	<!--欠料余量和扣欠量差异提示-->
+	<sql type="condition">
+		<condition>
+			<select>select GoodsNumber,GoodsFullName,a.IssueQty,ISNULL(a.DeQty,0) as DeQty,ISNULL(b.OweQty,0) as OweQty from PDOutMaterialsDet a,tblStocks b,tblGoods c where a.GoodsCode=b.GoodsCode and a.InStockCode=b.StockCode and a.GoodsCode=c.classCode and a.f_ref=@ValueofDB:id and ISNULL(a.DeQty,0)!=ISNULL(b.OweQty,0) and ISNULL(a.DeQty,0)!=ISNULL(a.IssueQty,0)</select>
+		</condition>
+		<exec condition=" @SqlReturn:DeQty&gt;@SqlReturn:OweQty">
+			<error>@SqlReturn:GoodsNumber @SqlReturn:GoodsFullName 欠料余量不足！</error>
+		</exec>
+		<exec condition=" @SqlReturn:DeQty&lt;@SqlReturn:OweQty &amp;&amp; @SqlReturn:DeQty&lt;@SqlReturn:IssueQty ">
+			<error>@SqlReturn:GoodsNumber @SqlReturn:GoodsFullName 必须优先使用欠料余量！</error>
+		</exec>
+	</sql> 
+
+	<sql type="condition">
+		<condition>
+			<select>select GoodsNumber,GoodsFullName,reTimes from PDOutMaterialsDet a,tblGoods b where a.GoodsCode=b.classCode and a.Qty&gt;a.ShQty and a.f_ref=@ValueofDB:id</select>
+		</condition>
+		<!--补货倍量为1，仓库出货数不能大于仓库应发数-->
+		<exec condition=" '@SqlReturn:GoodsNumber'!='null' &amp;&amp; @SqlReturn:reTimes==1">
+			<error>物料 @SqlReturn:GoodsNumber @SqlReturn:GoodsFullName 补货倍量为1，仓库出货数不能大于仓库应发数 </error>
+		</exec>
+		<exec condition=" '@SqlReturn:GoodsNumber'!='null' ">
+			<confirm yesDefine="Borrow_Materials" noDefine=""> 存在仓库出货数多于仓库应发数的记录将会产生欠料单，是否继续保存？ </confirm>
+		</exec>
+	</sql>	
+	
+	<!--=========如果启用审核流，则新增保存时更新分仓库存未审核字段===========-->
+	<!-- 
+	<sql type="define">PDOutMaterials_updateStocksNotAudit</sql>
+	-->
+	<!--回填默认仓库（若仓库为空）-->
+	<sql>update PDOutMaterialsDet set StockCode = tblgoods.StockCode from PDOutMaterialsDet join tblgoods on PDOutMaterialsDet.GoodsCode = tblgoods.classCode where (PDOutMaterialsDet.StockCode is null or  PDOutMaterialsDet.StockCode = '') and PDOutMaterialsDet.f_ref = @ValueofDB:id</sql>
+	
+	<sql type="condition">
+		<exec condition="'@MEM:PDOutMaterials_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">PDOutMaterials_Add_One</sql>
+		</exec>
+	</sql> 
+	
+</define>
+  
+	<!--==========根据工令单对应的委外供应商，更新仓库==========-->
+<define name="PDOutMaterials_Add_Stock">	
+	<sql type="condition">
+		<condition>
+			<select>select PDWorkOrder.WOClassType,PDWorkOrder.CompanyCode,c.ComName,isnull(d.classCode,'') as stock ,isnull(e.classCode,'') as Shopstock 
+						from PDOutMaterials a
+						left join PDWorkOrder on PDWorkOrder.id=a.PDWorkOrderID
+						left join tblCompany c on PDWorkOrder.CompanyCode=c.classCode
+						left join tblStock d on PDWorkOrder.CompanyCode=d.CompanyCode
+						left join tblStock e on e.WorkShop=PDWorkOrder.WorkShop
+						 where a.id=@ValueofDB:id </select>
+						 
+		</condition>
+		<!--对应工令单对应的采购订单的供应商没有委外仓库时报错-->
+		<exec condition=" '@SqlReturn:WOClassType'=='1' &amp;&amp; '@SqlReturn:stock'==''">
+			<error>供应商 @SqlReturn:ComName 没有对应的委外仓库 </error>
+		</exec>
+		<!--更新工令单对应的采购订单的供应商的委外仓库为当前入库仓库和供应商-->
+		<exec condition=" '@SqlReturn:WOClassType'=='1' &amp;&amp; '@SqlReturn:stock'!=''">
+			<sql>update PDOutMaterials set InStockCode=@SqlReturn:stock where id=@ValueofDB:id</sql>
+			<!--更新明细表上的仓库值=主表仓库-->
+			<sql>update PDOutMaterialsDet set InStockCode=a.InStockCode from PDOutMaterials a where a.id=PDOutMaterialsDet.f_ref and  PDOutMaterialsDet.f_ref=@ValueofDB:id</sql>
+		</exec>			
+		<!--对应工令单对应的车间，没有对应的仓库时报错-->
+		<exec condition=" '@SqlReturn:WOClassType'=='2' &amp;&amp; '@SqlReturn:Shopstock'==''">
+			<error>生产车间没有对应仓库 </error>
+		</exec>
+		<!--更新生产车间对应的仓库-->
+		<exec condition=" '@SqlReturn:WOClassType'=='2' &amp;&amp; '@SqlReturn:Shopstock'!=''">
+			<sql>update PDOutMaterials set InStockCode=@SqlReturn:Shopstock where id=@ValueofDB:id</sql>
+			<!--更新明细表上的仓库值=主表仓库-->
+			<sql>update PDOutMaterialsDet set InStockCode=a.InStockCode from PDOutMaterials a where a.id=PDOutMaterialsDet.f_ref and  PDOutMaterialsDet.f_ref=@ValueofDB:id</sql>
+		</exec>			
+	</sql>
+	<!--更新明细表上的商品值，有替换料时更新替换料-->
+	<sql>update PDOutMaterialsDet set GoodsCode=(case when RGoodsCode!='' then RGoodsCode else MGoodsCode end) where f_ref=@ValueofDB:id</sql>
+	
+</define>	
+  
+    <!--=========如果启用审核流，则新增保存时更新分仓库存未审核字段===========-->
+<define name="PDOutMaterials_updateStocksNotAudit">			
+	<sql type="condition">	
+		<exec condition="'@MEM:PDOutMaterials_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=PDOutMaterialsDet.GoodsCode,@StockCode=PDOutMaterialsDet.StockCode,@BillType=PDOutMaterials,@InstoreQty=0,@OutstoreQty=PDOutMaterialsDet.Qty,@from=PDOutMaterialsDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=PDOutMaterialsDet.GoodsCode,@StockCode=PDOutMaterialsDet.InStockCode,@BillType=PDOutMaterials,@InstoreQty=PDOutMaterialsDet.Qty,@OutstoreQty=0,@from=PDOutMaterialsDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+	</sql>	
+</define>  
+
+
+
+<define name="PDOutMaterials_Add_One">
+	<sql type="condition">
+		<condition><select> select GoodsNumber noStGoods  from PDOutMaterialsDet a join tblGoods b  on a.GoodsCode=b.classCode  where f_ref=@ValueofDB:id and isnull(a.StockCode,'')=''  </select></condition>
+		<exec condition=" '@SqlReturn:noStGoods' != 'null' ">
+			<error>料件 @SqlReturn:noStGoods 请选择出库仓库</error>
+		</exec>
+	</sql>
+	<!--从调出仓库中，出明细中商品-->
+	<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:PDOutMaterials_Period,@PeriodYear=@ValueofDB:PDOutMaterials_PeriodYear,@PeriodMonth=@ValueofDB:PDOutMaterials_PeriodMonth,@GoodsCode=PDOutMaterialsDet.GoodsCode,@StockCode=PDOutMaterialsDet.StockCode,@BillID=@ValueofDB:PDOutMaterials_id,@BillType=PDOutMaterials,@BillDate=@ValueofDB:PDOutMaterials_BillDate,@BillNo=@ValueofDB:PDOutMaterials_BillNo,@OutstoreQty=PDOutMaterialsDet.Qty,@OutstorePrice=PDOutMaterialsDet.Price,@OutstoreAmount=PDOutMaterialsDet.Amt,@createBy=@ValueofDB:PDOutMaterials_createBy,@lastUpdateBy=@ValueofDB:PDOutMaterials_lastUpdateBy,@createTime=@ValueofDB:PDOutMaterials_finishTime,@lastUpdateTime=@ValueofDB:PDOutMaterials_lastUpdateTime,@SCompanyID=@ValueofDB:PDOutMaterials_SCompanyID,@SourceID=PDOutMaterialsDet.id,@EmployeeID=@ValueofDB:PDOutMaterials_EmployeeID,@DepartmentCode=@ValueofDB:PDOutMaterials_DepartmentCode,@TrackNo=@ValueofDB:PDOutMaterials_TrackNo,@MRemark=@ValueofDB:PDOutMaterials_Remark,@DRemark=PDOutMaterialsDet.Remark,@from=PDOutMaterialsDet,@where=f_ref='@ValueofDB:id' and PDOutMaterialsDet.Qty&gt;0,@retCode=retCode,@retVal=retVal)}</sql>
+	<!--将明细中所有商品入库到调入仓库-->
+	<sql type="procedure">{call proc_insertStockDetGM(@Period=@ValueofDB:PDOutMaterials_Period,@PeriodYear=@ValueofDB:PDOutMaterials_PeriodYear,@PeriodMonth=@ValueofDB:PDOutMaterials_PeriodMonth,@GoodsCode=PDOutMaterialsDet.GoodsCode,@StockCode=PDOutMaterialsDet.InStockCode,@BillID=@ValueofDB:PDOutMaterials_id,@BillType=PDOutMaterials,@BillDate=@ValueofDB:PDOutMaterials_BillDate,@BillNo=@ValueofDB:PDOutMaterials_BillNo,@InstoreQty=PDOutMaterialsDet.Qty,@InstorePrice=PDOutMaterialsDet.Price,@InstoreAmount=PDOutMaterialsDet.Amt,@createBy=@ValueofDB:PDOutMaterials_createBy,@lastUpdateBy=@ValueofDB:PDOutMaterials_lastUpdateBy,@createTime=@ValueofDB:PDOutMaterials_finishTime,@lastUpdateTime=@ValueofDB:PDOutMaterials_lastUpdateTime,@SCompanyID=@ValueofDB:PDOutMaterials_SCompanyID,@SourceID=PDOutMaterialsDet.id,@EmployeeID=@ValueofDB:PDOutMaterials_EmployeeID,@DepartmentCode=@ValueofDB:PDOutMaterials_DepartmentCode,@TrackNo=@ValueofDB:PDOutMaterials_TrackNo,@MRemark=@ValueofDB:PDOutMaterials_Remark,@DRemark=PDOutMaterialsDet.Remark,@from=PDOutMaterialsDet,@where=f_ref='@ValueofDB:id' and PDOutMaterialsDet.Qty&gt;0,@retCode=retCode,@retVal=retVal)}</sql>
+	<!--负库存判断-->
+	<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+	
+	<sql type="condition">
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<!-- 
+		<exec condition="'@MEM:PDOutMaterials_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=PDOutMaterialsDet.GoodsCode,@StockCode=PDOutMaterialsDet.StockCode,@BillType=PDOutMaterials,@InstoreQty=0,@OutstoreQty=-1*PDOutMaterialsDet.Qty,@from=PDOutMaterialsDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=PDOutMaterialsDet.GoodsCode,@StockCode=PDOutMaterialsDet.InStockCode,@BillType=PDOutMaterials,@InstoreQty=-1*PDOutMaterialsDet.Qty,@OutstoreQty=0,@from=PDOutMaterialsDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>	
+		-->	
+	</sql>
+
+
+	<!-- 更新对应的工令单的已发料数和未发料数-->
+	<sql>update PDWorkOrderDet set SendQty=SendQty+Det.OutQty,SendQtyExt=SendQtyExt-Det.OutQty from(select PDWorkOrderID,GoodsCode,SUM(OutQty) as OutQty from PDOutMaterialsDet where f_ref=@ValueofDB:id group by PDWorkOrderID,GoodsCode)Det where PDWorkOrderDet.f_ref=Det.PDWorkOrderID and PDWorkOrderDet.GoodsCode=Det.GoodsCode</sql>
+  	<!-- 更新对应订单的物料需求表 -->
+	<sql type="condition">
+		<condition>
+			<select> select PDWorkOrder.tblSalesOrderID,PDWorkOrder.PDProduceRequireID,PDWorkOrder.MrpId from PDWorkOrder where id=@ValueofDB:PDWorkOrderID </select>
+		</condition>
+		<exec condition=" true">
+			<sql>
+update PDMRPReqDet set OutQty=isnull(a.OutQty,0)+ b.OutQty  from	PDMRP join PDMRPReqDet a on PDMRP.id=a.f_ref join PDOutMaterialsDet b on b.f_ref=@ValueofDB:id and  a.GoodsCode=b.MGoodsCode  and (case a.clientSupper when 'isClient' then 1 else 2 end)=b.isClient and isnull(a.BatchNo,'')=isnull(b.BatchNo,'') and isnull(a.Inch,'')=isnull(b.Inch,'') and isnull(a.Hue,'')=isnull(b.Hue,'') and isnull(a.yearNO,'')=isnull(b.yearNO,'') and isnull(a.ProDate,'')=isnull(b.ProDate,'') and isnull(a.Availably,'')=isnull(b.Availably,'')  and isnull(a.color,'')=isnull(b.color,'') 
+ where PDMRP.id=@SqlReturn:MrpId  
+			</sql>
+		</exec>
+	</sql>
+	
+
+	<!--扣欠料余量：明细中扣欠料大于0时，向借料单中插入借料记录,并更新分仓库存中的借料余量-->
+	<sql type="condition">
+		<condition>
+			<select>select GoodsCode from PDOutMaterialsDet where f_ref=@ValueofDB:id and DeQty&gt;0</select>
+		</condition>
+		<exec condition=" '@SqlReturn:GoodsCode'!='null' ">
+			<sql>insert into PDOweMaterials( id ,BillNo,BillDate,StockCode,InStockCode,DepartmentCode ,EmployeeID ,PDWorkOrderID  ,GoodsCode ,Qty ,BillID,SourceID,createBy,createTime,CompanyCode,WorkShop,OweType,BillType )select LEFT(REPLACE(newid(),'-',''),30) ,BillNo,BillDate,b.StockCode,b.InStockCode,DepartmentCode ,EmployeeID ,a.PDWorkOrderID  ,b.GoodsCode ,(-b.DeQty) ,f_ref as BillID,b.id as SourceID,createBy,finishTime,CompanyCode,WorkShop,'DeOwe','PDOutMaterials' from PDOutMaterials a,PDOutMaterialsDet b where a.id=b.f_ref and b.DeQty&gt;0 and a.id=@ValueofDB:id </sql>
+				
+		</exec>
+	</sql> 
+	<!--==========向借料单中插入借料记录,并更新分仓库存中的借料余量==========-->
+	<sql type="condition">
+		<condition>
+			<select>select IsOwe from PDOutMaterials where id=@ValueofDB:id</select>
+		</condition>
+		<exec condition=" '@SqlReturn:IsOwe'=='1' "><!-- 主表生成借料单标识为是，生成借料单-->
+			<sql>insert into PDOweMaterials( id ,BillNo,BillDate,StockCode,InStockCode,DepartmentCode ,EmployeeID ,PDWorkOrderID  ,GoodsCode ,Qty ,BillID,SourceID,createBy,createTime,CompanyCode,WorkShop,OweType,BillType )select LEFT(REPLACE(newid(),'-',''),30) ,BillNo,BillDate,b.StockCode,b.InStockCode,DepartmentCode ,EmployeeID ,a.PDWorkOrderID ,b.GoodsCode ,(b.Qty-b.ShQty) ,f_ref as BillID,b.id as SourceID,createBy,finishTime,CompanyCode,WorkShop,'Owe','PDOutMaterials' from PDOutMaterials a,PDOutMaterialsDet b where a.id=b.f_ref and b.Qty&gt;b.ShQty and a.id=@ValueofDB:id </sql>
+	
+		</exec>
+	</sql>		
+
+ 	<!--更新分仓库存中的借料余量 -->
+	<sql>update tblStocks set OweQty=isnull(OweQty,0)+a.Qty from(select InStockCode,GoodsCode,sum(Qty) as Qty from PDOweMaterials where BillID=@ValueofDB:id group by InStockCode,GoodsCode)a where a.InStockCode=tblStocks.StockCode and a.GoodsCode=tblStocks.GoodsCode</sql>
+ 
+</define>
+ 
+  
+  
+  
+    <!--==========向借料单中插入借料记录,并更新分仓库存中的借料余量==========-->
+<define name="Borrow_Materials">		
+	<!-- 更新主表生成借料单标识-->
+	<sql>update PDOutMaterials set IsOwe=1 where id=@ValueofDB:id</sql>
+	
+	<!--根据工令单对应的委外供应商，更新仓库-->
+	<sql type="define">PDOutMaterials_Add_Stock</sql>
+	
+	<!--=========如果启用审核流，则新增保存时更新分仓库存未审核字段===========-->
+	<sql type="define">PDOutMaterials_updateStocksNotAudit</sql>
+	
+	<sql type="condition">
+		<exec condition="'@MEM:PDOutMaterials_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">PDOutMaterials_Add_One</sql>
+		</exec>
+	</sql> 
+</define>
+
+  
+
+  
+
+
+  
+<define name="PDOutMaterials_Delete">
+	
+	<sql type="condition">
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<!--
+		<exec condition="'@MEM:PDOutMaterials_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=PDOutMaterialsDet.GoodsCode,@StockCode=PDOutMaterialsDet.StockCode,@BillType=PDOutMaterials,@InstoreQty=0,@OutstoreQty=-1*PDOutMaterialsDet.Qty,@from=PDOutMaterialsDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=PDOutMaterialsDet.GoodsCode,@StockCode=PDOutMaterialsDet.InStockCode,@BillType=PDOutMaterials,@InstoreQty=-1*PDOutMaterialsDet.Qty,@OutstoreQty=0,@from=PDOutMaterialsDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		 -->
+		<exec condition="'@MEM:PDOutMaterials_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+			<sql type="define">PDOutMaterials_Delete_One</sql>
+		</exec>
+	</sql>
+</define>
+  
+<define name="PDOutMaterials_Delete_One">
+  	<!--删除库存记录-->
+	<sql type="procedure">{call proc_delStockDet(@ValueofDB:PDOutMaterials_id,PDOutMaterials,1,retCode,retVal)}</sql>
+	<sql type="condition">
+		<!--删除，反审核时判断负库存-->
+		<exec condition="'@Sess:BillOper' != 'update'">
+			<sql type="procedure">{call proc_negativeStock(@Sess:Local,@ValueofDB:id,@Sess:SCompanyID,@Sess:UserId,NegativeCode,NegativeBillNo)}</sql>
+		</exec>
+		<!--如果启用审核流，则新增保存时更新分仓库存未审核字段-->
+		<!-- 
+		<exec condition="'@MEM:PDOutMaterials_IsStatart' != '0'">
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=PDOutMaterialsDet.GoodsCode,@StockCode=PDOutMaterialsDet.StockCode,@BillType=PDOutMaterials,@InstoreQty=0,@OutstoreQty=PDOutMaterialsDet.Qty,@from=PDOutMaterialsDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+			<sql type="procedure">{call proc_updateStocksNotAudit(@GoodsCode=PDOutMaterialsDet.GoodsCode,@StockCode=PDOutMaterialsDet.InStockCode,@BillType=PDOutMaterials,@InstoreQty=PDOutMaterialsDet.Qty,@OutstoreQty=0,@from=PDOutMaterialsDet,@where=f_ref='@ValueofDB:id',@retCode=retCode,@retVal=retVal)}</sql>
+		</exec>
+		-->
+	</sql>
+	<!-- 更新对应订单的物料需求表 -->
+	<sql type="condition">
+		<condition>
+			<select> select PDWorkOrder.tblSalesOrderID,PDWorkOrder.PDProduceRequireID,PDWorkOrder.MrpId from PDWorkOrder where id=@ValueofDB:PDWorkOrderID </select>
+		</condition>
+		<exec condition=" true">
+			<sql>
+				update PDMRPReqDet set OutQty=isnull(a.OutQty,0)- b.OutQty  from	PDMRP join PDMRPReqDet a on PDMRP.id=a.f_ref join PDOutMaterialsDet b on b.f_ref=@ValueofDB:id and  a.GoodsCode=b.MGoodsCode and (case a.clientSupper when 'isClient' then 1 else 2 end)=b.isClient and isnull(a.BatchNo,'')=isnull(b.BatchNo,'') and isnull(a.Inch,'')=isnull(b.Inch,'') and isnull(a.Hue,'')=isnull(b.Hue,'') and isnull(a.yearNO,'')=isnull(b.yearNO,'') and isnull(a.ProDate,'')=isnull(b.ProDate,'') and isnull(a.Availably,'')=isnull(b.Availably,'')  and isnull(a.color,'')=isnull(b.color,'') 
+ where PDMRP.id=@SqlReturn:MrpId 
+			</sql>
+		</exec>
+	</sql>
+	<!-- 更新对应的工令单的已发料数和未发料数-->
+	<sql>update PDWorkOrderDet set SendQty=SendQty-Det.OutQty,SendQtyExt=SendQtyExt+Det.OutQty from(select PDWorkOrderID,GoodsCode,SUM(OutQty) as OutQty from PDOutMaterialsDet where f_ref=@ValueofDB:id group by PDWorkOrderID,GoodsCode)Det where PDWorkOrderDet.f_ref=Det.PDWorkOrderID and PDWorkOrderDet.GoodsCode=Det.GoodsCode</sql>
+
+	
+	<sql type="condition">
+		<condition>
+			<select>select GoodsCode from PDOweMaterials where BillID=@ValueofDB:id</select>
+		</condition>
+		<!--删除对应产生的借料单并更新对应分仓库存中的借料余量-->
+		<exec condition=" '@SqlReturn:GoodsCode'!='null' ">
+			<sql>update tblStocks set OweQty=isnull(OweQty,0)-a.Qty from(select InStockCode,GoodsCode,sum(Qty) as Qty from PDOweMaterials where BillID=@ValueofDB:id group by InStockCode,GoodsCode)a where a.InStockCode=tblStocks.StockCode and a.GoodsCode=tblStocks.GoodsCode</sql>
+			
+			<sql>delete from PDOweMaterials where BillID=@ValueofDB:id</sql>
+		</exec>
+	</sql>
+		
+	<sql type="condition">
+		<condition>
+			<select>select GoodsNumber,GoodsFullName from PDOutMaterialsDet a,tblStocks b,tblGoods c where a.GoodsCode=b.GoodsCode and a.InStockCode=b.StockCode and b.OweQty&lt;0 and a.f_ref=@ValueofDB:id</select>
+		</condition>
+		<!--删除对应产生的借料单并更新对应分仓库存中的借料余量-->
+		<exec condition=" '@SqlReturn:GoodsNumber'!='null' ">
+			<error>物料 @SqlReturn:GoodsNumber @SqlReturn:GoodsFullName 所产生的欠料已经被其他单据所用，不允许修改删除 </error>
+		</exec>
+	</sql>
+    
+</define> 
+  
+  
+</defineSqls>

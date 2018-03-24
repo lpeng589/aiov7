@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="BankTransDetAcc"  type="checkBox" > 
+		<classCode>tblAccTypeInfo.classCode</classCode>
+		<defParentCode>00001</defParentCode>
+		<orderBy>tblAccTypeInfo.AccNumber,tblAccTypeInfo.AccName</orderBy>
+		<forwardModel>tblAccTypeInfo</forwardModel>
+		<defineSQL>
+from tblAccTypeInfo
+		</defineSQL>
+		<changeCond>tblAccTypeInfo.statusId!='-1' and tblAccTypeInfo.AccNumber not in ('1122','1123','2202','2203') and isnull(tblAccTypeInfo.isCalculate,'')!='1'</changeCond>
+		<displayFields>
+			<field name="tblAccTypeInfo.AccNumber" parentDisplay="false" width="100" searchType="match" defaultValue="100" keySearch="true" />
+			<field name="tblAccTypeInfo.AccName" asName="tblAccTypeInfo.AccFullName" display="@TABLENAME.ReceiveBankNo" parentDisplay="true" width="150" searchType="match" keySearch="true" />
+		</displayFields>
+		<saveFields>
+			<field name="tblAccTypeInfo.AccNumber" parentName="@TABLENAME.ReceiveBankNo" hidden="true" relationKey="true" width="0" />
+		</saveFields>
+	</select>
+</popupSelect>

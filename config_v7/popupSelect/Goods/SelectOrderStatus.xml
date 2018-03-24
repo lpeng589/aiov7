@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="SelectOrderStatus">
+     <table>tblEBStatus</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblEBStatus.OrderStaID f1,
+      tblEBStatus.StatusName f2
+from tblEBStatus
+     </defineSQL>
+     <classCode></classCode>
+     <remark></remark>
+     <condition></condition>
+     <changeCond></changeCond>
+     <orderBy>tblEBStatus.OrderStaID</orderBy>
+     <displayFields>
+          <field name="tblEBStatus.OrderStaID" width="200" searchType="match" keySearch="true" parentDisplay="true" display="tblEBStatus.StatusName" orderBy="升" />
+          <field name="tblEBStatus.StatusName" width="180" searchType="match" keySearch="true" parentDisplay="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblEBStatus.OrderStaID" parentName="@TABLENAME.OrderStaID" display="tblEBStatus.StatusName" relationKey="true" hidden="false" orderBy="升" />
+     </saveFields>
+</select>
+</popupSelect>

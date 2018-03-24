@@ -1,0 +1,264 @@
+	/*----------------------控件提供商提供*/
+
+	putValidateItem("unitName","$text.get('unit.lb.name')","any",false,0,10);
+	putValidateItem("remark","$text.get('unit.lb.remark')","any",true,1,99 );
+	
+	function beforSubmit(form){   
+		if(!validate(form))return false;
+		disableForm(form);
+		return true;
+	}	
+	/*----------------------控件提供商提供*/
+
+	/*打开页面时自动连接来电服务器*/
+	function callRun(){
+		var callEnable = document.getElementById("callEnable").value;
+		myLbxMonitorCh = document.getElementById("myLbxMonitorCh").value;
+		if(callEnable!="true"||myLbxMonitorCh==-1)return false;
+		jtdrv1.attachEvent("OnCallIn",OnCallIn); 
+  		jtdrv1.attachEvent("OnCallOut",OnCallOut);
+  		jtdrv1.attachEvent("OnDisConnect",OnDisConnect);
+  		jtdrv1.attachEvent("OnConnect",OnConnect);
+  		jtdrv1.attachEvent("OnHookOff",OnHookOff);
+  		jtdrv1.attachEvent("OnNoAnswer",OnNoAnswer);
+  		jtdrv1.attachEvent("OnHookOn",OnHookOn);
+		ec_Connect();		
+	}
+	window.attachEvent("onload",callRun);//将来电弹屏系统函数绑定到系统登录后的窗体加载事件中
+
+	/*连接*/
+	function ec_Connect()
+	{	 
+		var ip = document.getElementById("txtHost").value;	
+	  	jtdrv1.EC_Connect(ip);
+	  	
+	}
+	/*断开*/
+	function ec_DisConnect()
+	{
+	  jtdrv1.EC_DisConnect();
+	}
+	function OnDisConnect(sHost)
+	{
+	  alert("$text.get('call.js.connectFalse')("+sHost+")");
+	}
+	function OnConnect(sHost)
+	{
+	 // alert("$text.get('common.msg.connectSucceed')"+sHost);
+	}
+	
+	////////////////////////事件与消息/////////////////////////
+	
+
+
+	//打入电话*/
+	function OnCallIn(s1,s2)
+	{	 
+	  /*打开客户业务信息*/
+	  if(s1==myLbxMonitorCh){//如果来电拨打的是系统设置的监听线路
+
+	  	findClientByTel(s1,s2);  //查找来电的客户是否有相应的历史记录 
+ 
+	  }	  	
+	} 
+	var lastTime=0;/*上一次按键时间*/
+	var k;
+	var myLbxMonitorCh;//我的标识
+	var timeOutFlag;
+	var w,iw;
+	
+	function OnHookOff(sLocalNum,sTime){/*本地电话摘机时*/
+		
+		clearStatus();
+	}
+	
+	function OnHookOn(sLocalNum,sTime){/*本地电话挂机时*/
+	
+		clearStatus();
+	}
+
+	function OnNoAnswer(sLocalNum,sCallID){/*无应答*/
+	
+		clearStatus();
+	}
+	function clearStatus(){//状态清除
+
+		k = w = iw = timeOutFlag = void(0);
+		lastTime = 0;
+	}
+
+	/*拨出电话号*/
+	function OnCallOut(s1,s2)
+	{
+		if(myLbxMonitorCh!=s1)return;//不是本机号
+
+		lastTime = new Date().getTime();
+		k=""+s2;
+		if("#" == s2.substr(k.length-1)){
+			if(!timeOutFlag)window.clearTimeout(timeOutFlag);
+			findClientByTel(s1,k);
+		}
+	}
+
+	/*每过2秒检查一次*/
+/*
+	function callTest(s1,s2){
+		
+		var now = new Date().getTime();
+		var c = now-lastTime;//通话时间
+
+		if(!timeOutFlag)window.clearTimeout(timeOutFlag);//如果有上次事件存在，则移除
+
+		if(c>3000){//两次拨打号码的时间间隔超过3秒钟,超过三秒则认定用户拨号完毕
+
+			findClientByTel(s1,k);		//拨号完毕则查询与拨打号码有关的客户信息	
+
+		}else{
+			timeOutFlag = setTimeout("callTest('"+s1+"','"+k+"')",3000);//3秒后重新检测是否有按键
+			
+		}		
+	}*/
+	
+	
+	/*查找客户资料,s1*/
+	function findClientByTel(s1,s2){
+		
+	 	if(myLbxMonitorCh!=s1){//判断来电或拨出电话的线路是不是被系统监听的电话线路
+		
+	 		return false;//若不是则返回false,不需要去查找了
+
+	 	}
+	 	if(!isExistCom(s2)){//如果被监听线路的来电或拨出号码对应的客户没有历史记录则直接返回
+			
+	 		window.open("/vm/call/callMessage.jsp",null,"Width=720px;Height=450px;status=yes");
+	 		return false;
+	 	}
+	 	//弹出模式对话框提示用户,与该来电或拨出电话号码的客户的有关历史记录
+		
+		var retval = window.open("/Client.do?type=1&pageNo=1&txtLocal="+s1,null,"Width=720px;Height=450px;status=yes");
+		retval.focus();//获取模式窗口的焦点
+
+	}
+	
+	/*通过ajax异步请求判断电话号码是否存在，存在返回true，若不存在则返回false*/
+	function isExistCom(tel){
+		var urls = "/UtilServlet?operation=comTel&tel="+tel;//异步请求路径
+		var flag = false;//判断是否存电话的初始化Boolean变量
+	//发送ajax的异步请求
+
+		new Ajax.Request( urls,
+		{
+			 method:'post',//发送请求的方法为post
+			//参数设置
+			 parameters: {},
+			 //是否是异步请求
+
+			 asynchronous:false,
+			 //请求成功
+			 onSuccess: function(transport){
+				 var msg = transport.responseText;
+				 if(msg=="true"){
+				 	flag = true;
+				 }
+			 },
+			 //请求失败
+			onFailure: function(){ 
+				alert("connect faulse!");
+			}
+		 });
+	 	return flag;
+	}
+	//以下用于测试---------------------------测试-----------------------------------
+	/**/
+	//myLbxMonitorCh =2;
+	//OnHookOff();//摘机时清除状态
+
+	//OnHookOn();//挂机时清除状态
+
+	//OnNoAnswer()//无应答时时清除状态
+
+	
+	//拨入测试
+	
+	//OnCallIn(2,'15012653301');//手机来电(不管是本地还是异地)
+	//OnCallIn(2,'01087542650');//北京座机来电
+	//OnCallIn(2,'075226456213');//异地座机来电
+	//OnCallIn(2,"88888801");//本地座机来电
+	
+	//-----------说明:其中带区号和有前缀的号码是在服务器的系统参数以及系统用户管理中配置的,不是在此配置
+	/*拨出测试,拨打本地座机
+	OnCallOut(2,'8');
+	OnCallOut(2,'88');
+	OnCallOut(2,'888');
+	OnCallOut(2,'8888');
+	OnCallOut(2,'88888');
+	OnCallOut(2,'888888');
+	OnCallOut(2,'8888880');
+	OnCallOut(2,'88888801');//拨打本地座机
+	OnCallOut(2,'88888801#');//末尾带#号的
+	*/
+	
+	/*拨出测试,拨打异地座机	
+	OnCallOut(2,'0');
+	OnCallOut(2,'07');
+	OnCallOut(2,'075');
+	OnCallOut(2,'0752');
+	OnCallOut(2,'07522');
+	OnCallOut(2,'075226');
+	OnCallOut(2,'0752264');
+	OnCallOut(2,'07522645');
+	OnCallOut(2,'075226456');
+	OnCallOut(2,'0752264562');
+	OnCallOut(2,'07522645621');
+	OnCallOut(2,'075226456213');//拨打异地座机
+	OnCallOut(2,'075226456213#');//末尾带#号的
+	*/
+	
+	/*北京座机打过来的
+	OnCallOut(2,'0');
+	OnCallOut(2,'01');
+	OnCallOut(2,'010');
+	OnCallOut(2,'0102');
+	OnCallOut(2,'01023');
+	OnCallOut(2,'010235');
+	OnCallOut(2,'0102354');
+	OnCallOut(2,'01023548');
+	OnCallOut(2,'010235487');
+	OnCallOut(2,'0102354876');
+	OnCallOut(2,'01023548760');
+	*/
+	
+	//拨打本地手机
+	/* 
+	OnCallOut(2,'1');
+	OnCallOut(2,'15');
+	OnCallOut(2,'150');
+	OnCallOut(2,'1501');
+	OnCallOut(2,'15012');
+	OnCallOut(2,'150126');
+	OnCallOut(2,'1501265');
+	OnCallOut(2,'15012653');
+	OnCallOut(2,'150126533');
+	OnCallOut(2,'1501265330');
+	OnCallOut(2,'15012653301');
+	OnCallOut(2,'15012653301#');
+	*/
+	
+	
+	//拨打异地手机：加0、加#
+	//OnCallOut(2,'015012653301');
+	/*
+	OnCallOut(2,'0');
+	OnCallOut(2,'01');
+	OnCallOut(2,'015');
+	OnCallOut(2,'0150');
+	OnCallOut(2,'01501');
+	OnCallOut(2,'015012');
+	OnCallOut(2,'0150126');
+	OnCallOut(2,'01501265');
+	OnCallOut(2,'015012653');
+	OnCallOut(2,'0150126533');
+	OnCallOut(2,'01501265330');
+	OnCallOut(2,'015012653301');
+	OnCallOut(2,'015012653301#');
+	*/

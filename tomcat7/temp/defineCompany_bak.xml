@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+<!--如果要在Company_Add中添加新的操作，需考虑往来单位导入时是否也同样需要，如果需要请同时更新往来导入的define(CompanyExport)--> 		
+<define name="Company_Add">
+	<sql type="condition"><!--如果当前往来存在父级，判断父级是否存在数据-->
+		<condition>
+			<select>select classCode oldclassCode,ComNumber as Number,ComFullName as FullName from tblCompany where @Sess:BillOper='add' and classCode=subString(@ValueofDB:tblCompany_classCode,1,len(@ValueofDB:tblCompany_classCode)-5) and (select count(0) from tblCompany where classCode like subString(@ValueofDB:tblCompany_classCode,1,len(@ValueofDB:tblCompany_classCode)-5)+'_____')=1</select>
+		</condition>
+		<exec condition=" '@ValueofDB:InVoiceType'=='3' &amp;&amp; @ValueofDB:taxRate &gt;0  ">
+			<error> 收据凭证不可以录入税率 </error>
+		</exec>
+		<exec condition="  @ValueofDB:taxRate &lt; 0  ">
+			<error> 税率不可以为负数 </error>
+		</exec>
+		<!--<exec condition="  '@ValueofDB:InVoiceType'=='2' &amp;&amp; @ValueofDB:taxRate &lt;=0  ">
+			<error> 发票类型增值税，税率大于零 </error>
+		</exec>-->
+		<exec condition="'@SqlReturn:oldclassCode'!='null'&amp;&amp;'@SqlReturn:oldclassCode'.length&gt;0">
+			<sql type="procedure">{call proc_BaseInfoUse(CompanyCode,@SqlReturn:oldclassCode,@Sess:Local,errorCode,errorVal)}</sql>
+		</exec>		
+		<exec condition="'@ProcReturn:errorCode'=='-2222'"> 					
+			<error>BaseInfo.add.error,@SqlReturn:Number,@SqlReturn:FullName,@ProcReturn:errorVal</error>
+		</exec>
+	</sql>
+	
+	<sql type="condition">
+		<condition>
+			<select>select ComNumber as SComNumber,isNull(ClientFlag,0) as SClientFlagA from tblCompany where ComNumber=@ValueofDB:tblCompany_ComNumber and ClientFlag=1 and id!=@ValueofDB:tblCompany_id</select>
+			<select>select ComFullName as SComFullName,isNull(ClientFlag,0) as SClientFlagB from tblCompany where ComFullName=@ValueofDB:tblCompany_ComFullName and ClientFlag=1 and id!=@ValueofDB:tblCompany_id</select>
+			<select>select ComNumber as CComNumber,isNull(ClientFlag,0) as CClientFlagA from tblCompany where ComNumber=@ValueofDB:tblCompany_ComNumber and ClientFlag=2 and id!=@ValueofDB:tblCompany_id</select>
+			<select>select ComFullName as CComFullName,isNull(ClientFlag,0) as CClientFlagB from tblCompany where ComFullName=@ValueofDB:tblCompany_ComFullName and ClientFlag=2 and id!=@ValueofDB:tblCompany_id</select>
+			<select>select ComNumber as SCComNumber,isNull(ClientFlag,0) as SCClientFlagA from tblCompany where ComNumber=@ValueofDB:tblCompany_ComNumber and ClientFlag=3 and id!=@ValueofDB:tblCompany_id</select>
+			<select>select ComFullName as SCComFullName,isNull(ClientFlag,0) as SCClientFlagB from tblCompany where ComFullName=@ValueofDB:tblCompany_ComFullName and ClientFlag=3 and id!=@ValueofDB:tblCompany_id</select>
+		</condition>
+		<!--供应商编号不能重复-->
+		<exec condition="'@SqlReturn:SComNumber'!='null'&amp;&amp;@SqlReturn:SClientFlagA==@ValueofDB:tblCompany_ClientFlag &amp;&amp; '@MEM:ComNoUnique'=='true'">
+		<error>tblCompany.add.error.ComNumber</error>
+		</exec>
+		<!--供应商名称不能重复-->
+		<exec condition="'@SqlReturn:SComFullName'!='null'&amp;&amp;@SqlReturn:SClientFlagB==@ValueofDB:tblCompany_ClientFlag &amp;&amp; '@MEM:ComNameUnique'=='true'">
+		<error>tblCompany.add.error.ComFullName</error>
+		</exec>
+		<!--客户编号不能重复-->
+		<exec condition="'@SqlReturn:CComNumber'!='null'&amp;&amp;@SqlReturn:CClientFlagA==@ValueofDB:tblCompany_ClientFlag &amp;&amp; '@MEM:ComNoUnique'=='true'">
+			<error>tblCompany.add.error.ComNumber</error>
+		</exec>
+		<!--客户名称不能重复-->
+		<exec condition="'@SqlReturn:CComFullName'!='null'&amp;&amp;@SqlReturn:CClientFlagB==@ValueofDB:tblCompany_ClientFlag &amp;&amp; '@MEM:ComNameUnique'=='true'">
+		<error>tblCompany.add.error.ComFullName</error>
+		</exec>
+		<!--客户供应商编号不能重复-->
+		<exec condition="'@SqlReturn:SCComNumber'!='null'&amp;&amp;@SqlReturn:SCClientFlagA==@ValueofDB:tblCompany_ClientFlag &amp;&amp; '@MEM:ComNoUnique'=='true'">
+			<error>tblCompany.add.error.ComNumber</error>
+		</exec>
+		<!--客户供应商名称不能重复-->
+		<exec condition="'@SqlReturn:SCComFullName'!='null'&amp;&amp;@SqlReturn:SCClientFlagB==@ValueofDB:tblCompany_ClientFlag &amp;&amp; '@MEM:ComNameUnique'=='true'">
+			<error>tblCompany.add.error.ComFullName</error>
+		</exec>
+		<!--信用额度不能小于0-->
+		<exec condition="@ValueofDB:tblCompany_Credit &lt;0">
+			<error>tblcompany.credit.error</error>
+		</exec>
+	</sql>
+	<sql type="condition">
+		<condition><select>select SettleCys from tblCompany where id=@ValueofDB:tblCompany_id and len(SettleCys)&gt;0</select></condition>
+		<!--往来单位带有结算账期时，更新该客户的销售出库单中没有收款日期的单据-->	
+		<exec condition="'@Sess:BillOper'=='update'&amp;&amp;'@SqlReturn:SettleCys' !=null">
+			<sql>update tblSalesOutStock set AcceptDate=convert(varchar(10),DATEADD(DAY,tblCompany.SettleCys,BillDate),121) from tblCompany where tblSalesOutStock.CompanyCode=tblCompany.classCode and tblCompany.id=@ValueofDB:tblCompany_id and len(AcceptDate)=0</sql>
+		</exec>
+		<!--修改往来单位的原classCode-->
+		<sql>update tblCompany set OldclassCode=classCode,moduleType=ClientFlag where id=@ValueofDB:tblCompany_id</sql>
+		<exec condition=" '@Sess:BillOper'=='update'"><!-- 改名后，自动修改核算科目的名称 -->
+			<sql type="procedure">{call UpdateAccName(CompanyCode,@ValueofDB:classCode,errorCode,errorVal)}</sql>
+		</exec>
+	</sql>
+</define>
+
+
+
+
+
+  <define name="HF_Company_Add">			
+	<sql type="condition"> 	
+		<condition><select>select ClientFlag,ISNULL(fxAgentID,'') as fxAgentID,Province from tblCompany left join tblDistrict on TblCompany.District=tblDistrict.classCode  where tblCompany.id=@ValueofDB:id</select></condition>
+		<!-- 新增记录到分销系统-->
+		<exec condition="'@SqlReturn:ClientFlag'=='2'&amp;&amp;'@SqlReturn:fxAgentID'==''">  
+			<sql>update tblCompany set fxAgentID=LEFT(REPLACE(NEWID(),'-',''),30) where id=@ValueofDB:id</sql>
+				
+		</exec>
+		<!-- 修改记录到分销系统-->
+		<exec condition="'@SqlReturn:ClientFlag'=='2'&amp;&amp;'@SqlReturn:fxAgentID'!=''">  
+					
+		</exec>		
+	</sql>
+	
+  </define>
+  
+    <define name="HF_Company_Del">			
+ 	 <exec condition="'@ValueofDB:fxAgentID'!='null' &amp;&amp; '@ValueofDB:fxAgentID'!=''">
+		<error>已产生下级经销商，不支持此操作</error>
+	</exec>
+  </define>
+
+
+
+
+</defineSqls>

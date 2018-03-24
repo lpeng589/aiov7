@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="CurrencySetAccInfo">
+     <table>tblAccPeriod</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblAccPeriod.AccPeriod f1,
+      tblAccPeriod.AccYear f2,
+      tblAccPeriod.AccMonth f3
+  from tblAccPeriod
+     </defineSQL>
+     <classCode></classCode>
+     <remark></remark>
+     <condition>statusId != 2</condition>
+     <changeCond></changeCond>
+     <orderBy>tblAccPeriod.AccYear,tblAccPeriod.AccMonth,tblAccPeriod.AccPeriod</orderBy>
+     <displayFields>
+          <field name="tblAccPeriod.AccMonth" width="100" searchType="match" parentDisplay="true" orderBy="升" />
+          <field name="tblAccPeriod.AccPeriod" width="100" searchType="match" parentDisplay="true" display="tblSetExchange.Period" orderBy="升" />
+          <field name="tblAccPeriod.AccYear" width="100" searchType="match" parentDisplay="true" display="tblSetExchange.PeriodYear" orderBy="升" />
+     </displayFields>
+     <saveFields>
+          <field name="tblAccPeriod.AccPeriod" parentName="@TABLENAME.Period" display="tblSetExchange.Period" relationKey="true" hidden="false" orderBy="升" />
+          <field name="tblAccPeriod.AccYear" parentName="@TABLENAME.PeriodYear" display="tblSetExchange.PeriodYear" relationKey="false" hidden="false" orderBy="升" />
+     </saveFields>
+</select>
+</popupSelect>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect><select name="model_clientList"  desc="手机端客户列表"  belongTableName="tblCompany" > 
+		<defineSQL>
+from tblCompany
+where isCatalog = 0 and ClientFlag = 2
+		</defineSQL>
+		<displayFields>
+			<field name="tblCompany.classCode" asName="CompanyCode" parentDisplay="false" width="0" />
+			<field name="tblCompany.ComNumber" asName="ComNumber" parentDisplay="false" width="0" />
+			<field name="tblCompany.ComFullName" asName="ComFullName" parentDisplay="false" width="0" />
+			<field name="tblCompany.ComFullNamePYM" asName="ComFullNamePYM" parentDisplay="false" width="0" />
+		</displayFields>
+		<saveFields>
+		</saveFields>
+	</select>
+</popupSelect>

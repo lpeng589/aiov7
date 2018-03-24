@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="quote_tblAllotApplicationDet">
+     <table>tblAllotApplicationDet</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblAllotApplicationDet.id f1,
+      tblGoods.GoodsNumber f2,
+      tblGoods.GoodsFullName f3,
+      tblGoods.GoodsSpec f4,
+      tblGoods.GoodsFullNamePYM f5,
+      tblGoods.Spec1 f6,
+      tblGoods.Spec2 f7,
+      tblGoods.Spec3 f8,
+      tblAllotApplicationDet.BatchNo f9,
+      tblAllotApplicationDet.Inch f10,
+      tblAllotApplicationDet.Hue f11,
+      tblAllotApplicationDet.yearNO f12,
+      tblAllotApplicationDet.ProDate f13,
+      tblAllotApplicationDet.Availably f14,
+      tblAllotApplicationDet.Qty f15,
+      tblAllotApplicationDet.Price f16,
+      tblAllotApplicationDet.AllotQty f17,
+      tblAllotApplicationDet.NotAllotQty f18
+  from tblAllotApplicationDet
+	  join tblGoods on tblAllotApplicationDet.GoodsCode=tblGoods.classCode
+     </defineSQL>
+     <classCode></classCode>
+     <remark>同价调拨明细引用调拨申请明细</remark>
+     <condition>(tblAllotApplicationDet.FinishStatus=0) and tblGoods.workFlowNodeName='finish'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoods.GoodsNumber,tblGoods.GoodsFullName</orderBy>
+     <displayFields>
+          <field name="tblGoods.[tblGoods]" width="120"  parentDisplay="true" orderBy="升" />
+          <field name="tblAllotApplicationDet.BatchNo" width="120" parentDisplay="false" />
+          <field name="tblAllotApplicationDet.Inch" width="70"  parentDisplay="false" />
+          <field name="tblAllotApplicationDet.Hue" width="70"  parentDisplay="false" />
+          <field name="tblAllotApplicationDet.yearNO" width="70"  parentDisplay="false" />
+          <field name="tblAllotApplicationDet.ProDate" width="70"  parentDisplay="false" />
+          <field name="tblAllotApplicationDet.Availably" width="70"  parentDisplay="false" />
+          <field name="tblAllotApplicationDet.Qty" width="100" parentDisplay="false" />
+          <field name="tblAllotApplicationDet.Price" width="100" parentDisplay="false" />
+          <field name="tblAllotApplicationDet.AllotQty" width="100" parentDisplay="false" />
+          <field name="tblAllotApplicationDet.NotAllotQty" width="100" parentDisplay="false" />
+     </displayFields>
+     <saveFields>
+          <field name="tblAllotApplicationDet.id" parentName="@TABLENAME.SourceID" relationKey="true" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

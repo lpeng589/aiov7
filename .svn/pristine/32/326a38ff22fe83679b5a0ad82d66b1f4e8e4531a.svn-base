@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportSelectAllotType_v2" version="2">
+     <table>tblBillAccSetup</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblBillAccSetup.SubCode f1,
+      tblBillAccSetup.SubType f2
+  from tblBillAccSetup
+     </defineSQL>
+     <classCode></classCode>
+     <remark>显示名为“科目名称”,供其他入库明细、其他出库明细、存货调价明细、变价调拨明细报表使用</remark>
+     <condition>tblBillAccSetup.MainType like '%'+case when '@ValueofDB:reportNumber'='ReportOhterOut' then 'tblOtherOut' else REPLACE(REPLACE('@ValueofDB:reportNumber','Report',''),'det','') end+'%'</condition>
+     <changeCond></changeCond>
+     <orderBy>tblBillAccSetup.SubCode,tblBillAccSetup.SubType</orderBy>
+     <displayFields>
+          <field name="tblBillAccSetup.SubCode" width="70" searchType="match" keySearch="true" parentDisplay="false" display="tblAccTypeInfo.AccNumber" orderBy="升" />
+          <field name="tblBillAccSetup.SubType" width="150" searchType="match" keySearch="true" parentDisplay="true" display="tblAccTypeInfo.AccName" orderBy="升" />
+     </displayFields>
+     <saveFields>
+          <field name="tblBillAccSetup.SubCode" parentName="SubCode" display="tblAccTypeInfo.AccNumber" relationKey="false" hidden="true" orderBy="升" />
+     </saveFields>
+</select>
+</popupSelect>

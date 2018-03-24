@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="yearNO" type="checkBox">
+     <table>tblGoods,tblGoodsOfProp,tblGoodsOfPropDet</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select 
+      tblGoodsOfPropDet.languageId f1
+	from tblGoods,tblGoodsOfProp,tblGoodsOfPropDet
+     </defineSQL>
+     <classCode></classCode>
+     <remark>厚度</remark>
+     <condition>tblGoods.classCode='@ValueofDB:@TABLENAME_GoodsCode' and tblGoodsOfProp.id=tblGoodsOfPropDet.f_ref and tblGoodsOfProp.moduleType='yearNO' and tblGoodsOfProp.groupName=tblGoods.YearNoGroup</condition>
+     <changeCond></changeCond>
+     <orderBy>tblGoodsOfPropDet.languageId</orderBy>
+     <displayFields>
+          <field name="tblGoodsOfPropDet.languageId" width="80" searchType="match" parentDisplay="true" display="@TABLENAME.yearNO" orderBy="升" />
+     </displayFields>
+     <saveFields>
+          <field name="tblGoodsOfPropDet.languageId" parentName="@TABLENAME.yearNO" display="@TABLENAME.yearNO" relationKey="true" hidden="false" orderBy="升" />
+     </saveFields>
+</select>
+</popupSelect>

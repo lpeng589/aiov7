@@ -1,0 +1,70 @@
+body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,select,legend,button,input,textarea,th,td {margin:0;padding:0;}
+body,button,input,select,textarea {font:12px/1.5 Microsoft Yahei;color:#666;outline:0;}
+img{border:0;}
+em,i{font-style:normal;}
+b{font-weight:normal;}
+li{list-style:none;}
+.lf{float:left;display:inline-block;}
+.rf{float:right;display:inline-block;}
+.pr{position:relative;}
+.pa{position:absolute;}
+.clear{clear:both;}
+textarea{font-family:"微软雅黑","Microsoft YaHei";font-size:12px;}
+button{margin:0px;border:0;border:1px solid #1CA4FC;text-align:center;margin-right:5px;height:22px;line-height:16px;vertical-align:middle;font-size:12px;cursor:pointer;color:#02428A;width:auto;padding:2px 3px 0 3px;overflow:visible;background:url(../images/aiobg.gif) repeat-x left top;}
+.bu_02{background:url(../images/bu_02.gif);width:150px; height:24px;border:0;text-align:center;margin:0;padding:0;cursor:pointer;}
+input{background-color:transparent;width:auto;}
+.changeInput{border:1px solid #bbb;width:110px;}
+/*无宽度*/
+.changeInput2{border:1px solid #bbb;}
+.borderInput{border:1px solid #bbb;width:80px;border-right:0;float:left;}
+.countInput{border:1px solid #bbb;width: 45px;border-right:0;float:left;}
+/*无宽度*/
+.borderInput2{border:1px solid #bbb;border-right: 0;float: left;}
+.imgInput{border:1px solid #bbb;border-left:0;float: left;display:inline;}
+a:link {text-decoration:none;}
+.search {cursor:pointer;}
+.Heading {margin-top:5px;height:26px;width:100%;}
+.HeadingIcon{width:58px; float:left; height:26px;}
+.HeadingTitle{width:auto;padding-right:15px;font-weight:bolder;color:#666666;float:left;height:25px;line-height:25px;border-bottom:1px solid #81B2E3;padding-left:5px;text-align:left; }
+.listRange_1_photoAndDoc_1 li{list-style: none;}
+.HeadingButton{margin-top:6px;float:right;margin:0;padding:0;}
+.HeadingButton li{float:left;vertical-align:text-top;list-style: none;}
+#listRange_id {float:left;width:100%;overflow-y:auto;overflow-x:hidden;border-top:1px solid #ECECEC;}
+.listRange_1{float:left;height:auto;width:99%;margin-top:3px;margin-left:3px;text-align:left;padding:2px 0 2px 0;background: #FFFFFF url(../images/aiobg.gif) repeat-x left -221px;border:1px solid #A2CEF5;}
+.oa_signDocument1 {margin-top:1px;margin-bottom:3px;float:left;}
+.oa_signDocument_3 {height:20px;width:110px; vertical-align:middle;}
+.oa_signDocument1 select {border:1px solid #B4B4B4;width:110px;background:#F0F8FF;}
+.oa_signDocument2 {width:15px;float:left;margin-left:5px;margin-top:20px;}
+.oa_signDocument2 ul {padding:0;margin:0;}
+.oa_signDocument2 li {list-style-type:none;width:15px;float:left;}
+@media print {
+.Heading, .bu_02, .isPrint{display: none;}
+.listRange_1 {background: none;}
+.ke-toolbar{height:0;}
+}
+.ViewTable{border-top:1px #cdcdcd solid;border-left:1px #cdcdcd solid;margin:0 auto;width:825px;}
+.showFont{background-color: buttonface;}
+.ViewTable tr td{padding:0 5px 0 5px;height:28px; line-height:28px;border-bottom:1px #cdcdcd solid;border-right:1px #cdcdcd solid;}
+.ViewTable thead tr{background:url(../images/TheadBG.jpg) repeat-x 0 0; text-align:center;}
+.secondDiv{padding:0 0 0 0;overflow:hidden;margin:0 auto;}
+.thirdDiv{padding:0 0 0 0;overflow:hidden;display:inline-block;}
+.thirdDiv p{vertical-align:top;line-height:21px;}
+
+.delivers-view{padding:0 25px;}
+.view-ul-wp .t-p{border:1px solid #bbb;color:#000;font-size:12px;line-height:28px;padding:0 5px;height:28px;background:url(../images/TheadBG.jpg) repeat-x 0 0;}
+.view-ul{border:1px #bbb solid;border-top:0;}
+.view-ul .view-li{padding-left:170px;position:relative;min-height:50px;border-bottom:1px #A1AAAF solid;}
+.view-ul .view-li:hover{background:#f2f2f2;}
+.view-ul .view-li .d-pa{width:160px;position:absolute;left:5px;top:10px;}
+.d-pa .node-em{display:block;font-size:12px;font-weight:bold;color:#000;}
+.d-pa .check-person{display:block;text-align:center;font-size:16px;color:#0179bb;padding:5px 0;}
+.view-ul .view-li .d-dbk{padding:10px 0 15px 0;}
+.d-dbk .end-time{font-family:宋体;padding-bottom:5px;display:inline-block;width:100%;}
+.d-dbk .app-work-check{color:#333;font-size:14px;line-height:21px;}
+.d-dbk .node-type{font-family:宋体;padding-top:5px;display:inline-block;width:100%;}
+
+.btDisabled{color: #999}
+
+
+
+

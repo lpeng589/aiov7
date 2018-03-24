@@ -1,0 +1,90 @@
+/* CSS Document */
+body,ul,li,a,ol,div{ margin:0px; padding:0px; list-style:none; font-size:12px;}
+img{ border:0px;}
+.WP_query{height:35px;padding-top:3px;}
+.WP_query button{width:69px; height:22px; line-height:22px; border:0px; margin-left:15px; background:url(../plan/WP_query.gif) no-repeat;}
+.WP_qTJ{ width:100%; border:1px solid #C3C3C3;float:left; background:#F4F4F4 url(../plan/WP_qTJ_bg.gif); _background:#F4F4F4 url(../plan/WP_qTJ_bg_ofie6.gif); margin-bottom:15px;}
+.WP_qTJ li{ float:left; padding:5px 5px 5px 0px; width:189px;_width:192px;}
+.WP_qTJ li label{ width:75px; margin-right:5px; height:20px; line-height:20px; text-align:right; vertical-align:middle; float:left;}
+.WP_qTJ li input{ width:105px; border:1px solid #C3C3C3; height:20px; vertical-align:middle; line-height:20px;}
+.WP_qTList{ width:100%}
+.WP_qTList thead tr td,.WP_qTList tbody tr td,.WP_qTList tfoot tr td{ background:#EDEDED; height:32px; line-height:32px; text-align:center; border-right:1px solid #fff;}
+.WP_qTList tbody tr td{background:#FFFFE9; color:#024C80;}
+.WP_qTList tbody tr td a{ float:left; margin-left:20px;width:16px; height:16px; display:block; _display:inline;}
+.WP_qTlist_del{ background:url(../plan/del_icon_a.gif) no-repeat center;}
+.WP_qTlist_del:hover{ background:url(../plan/del_icon.gif) no-repeat center;}
+.WP_qTList tfoot tr td{ background:#fff; text-align:right; padding-right:20px;}
+.WP_qTList tfoot tr td input{border:1px solid #C3C3C3; height:20px; vertical-align:middle; line-height:20px; width:20px; text-align:center;}
+.WP_qTList tfoot tr td a,.dateShow a{color:#626262; text-decoration:none; margin-right:10px;}
+
+.WP_title{background:#F4F4F4; float:left; border:1px solid #C3C3C3; height:30px; line-height:30px; width:100%; }
+.WP_title a{ text-decoration:none; color:#000000; float:right; margin-right:10px;}
+.WP_title a img{ margin-top:6px;}
+.WP_title input { margin-left:5px}
+.WP_title a:hover{ text-decoration:none; color:#CE5C00;}
+.WP_title span{ float:left;margin-left:10px;} 
+.WP_addC{ vertical-align:top;}
+.WP_addCul,.WP_addCul li{ float:left; width:100%; margin-bottom:10px;}
+.WP_addCul li p{margin-left:20px; margin-top:10px;}
+
+.WP_addC_bg{background:#F3FAFF;border:1px solid #E5EAED;}
+
+.WP_addC_bg div{ width:98%; float:left; text-align:right; height:30px; line-height:30px;}
+.WP_addC_bg div img{ margin:5px 10px 0px 5px;}
+.WP_addT{ height:30px; line-height:30px; float:left; width:100%;}
+.WP_addT span{ margin-left:15px;}
+
+.WP_addButton{width:100%; text-align:right; float:left; margin-top:20px}
+
+.WP_addMsg{ background:none; border:0px;}
+.WP_addMsg ul{ width:70%; float:right; border:0px;}
+.WP_addMsg ul li{ background:#F3FAFF;border:1px solid #E5EAED;}
+
+.WP_addL{ width:150px; padding-left:15px; vertical-align:top;}
+.WP_addL div a{color:#CE5C00; float:left; margin:0px;}
+.WP_addL ul li{margin:0px 0px 0px 0px; height:25px; float:left; width:150px;overflow:hidden; text-overflow:ellipsis;white-space:nowrap;}
+.WP_addL ul li span{ height:25px; line-height:25px;margin-left:10px;cursor:hand;}
+.WP_addL ul li a{margin-top:5px; margin-left:10px; }
+.planGrade1{color:#ff0000}
+.planGrade2{color:#FF6600}
+.planGrade3{}
+.planGrade4{color:#666666}
+.tips_div{
+width:420px;
+height:167px;
+border:1px solid #C3C3C3;
+background-color:#ffffff;
+}
+.tips_title{
+height:28px;
+line-height:28px;
+vertical-align:middle;
+border:1px solid #C3C3C3;
+background-color:#F4F4F4;
+}
+
+.left_title{
+float:left;
+padding-left:10px;
+}
+
+.tips_close{
+padding-top:2px;
+padding-right:2px;
+float:right;
+}
+
+.tips_content{
+margin-top:0px;
+margin-left:5px;
+}
+.tips_textarea{
+	width:405px;
+	height:100px;
+}
+.tips_operate{
+width:100%;
+text-align:center;
+margin-top:5px;
+margin-bottom:10px;
+}

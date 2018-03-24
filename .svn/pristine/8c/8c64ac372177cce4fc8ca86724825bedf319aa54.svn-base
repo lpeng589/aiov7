@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="gb2312"?>
+<popupSelect>
+<select name="ReportBatchNo" type="checkBox" version="2" >
+     <table>tblStockDet</table>
+     <forwardModel></forwardModel>
+     <relation></relation>
+     <saveParentFlag></saveParentFlag>
+     <defineSQL>select tblStockDet.BatchNo from tblStockDet where len(isnull(BatchNo,''))&gt;0 group by BatchNo
+     </defineSQL>
+     <classCode></classCode>
+     <condition></condition>
+     <changeCond></changeCond>
+     <orderBy>tblStockDet.BatchNo</orderBy>
+     <displayFields>
+          <field name="tblStockDet.BatchNO" display="tblStockDet.BatchNo" width="120" searchType="match" parentDisplay="true" />
+     </displayFields>
+     <saveFields>
+          <field name="tblStockDet.BatchNo" parentName="BatchNo" relationKey="false" hidden="true" />
+     </saveFields>
+</select>
+</popupSelect>

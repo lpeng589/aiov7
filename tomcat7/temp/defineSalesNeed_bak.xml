@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="gb2312"?>
+<defineSqls>
+
+  <define name="PDProduceRequire_Add">
+    <sql type="condition">
+	<exec condition=" true ">
+		<sql>update tblSalesOrderDet set NoWorkOrderQty=Qty-isnull(WorkOrderQty,0) where f_ref=@ValueofDB:id</sql>
+	</exec> 
+      <exec condition="'@MEM:PDProduceRequire_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+        <sql type="define">PDProduceRequire_Add_One</sql>
+      </exec>
+    </sql>
+    
+    <sql>update PDProduceRequireDet set NoPDInQty=Qty where f_ref=@ValueofDB:id</sql>
+  </define>
+  <define name="PDProduceRequire_Add_One">
+
+  </define>
+
+  <define name="PDProduceRequire_Delete">
+    <sql type="condition">
+      <exec condition="'@MEM:PDProduceRequire_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+        <sql type="define">PDProduceRequire_Delete_One</sql>
+      </exec>
+    </sql>
+  </define>
+  <define name="PDProduceRequire_Delete_One">
+	<sql type="condition">
+		<condition>
+			<select>select '1' mrpqty from PDProduceRequire a join PDProduceRequireDet b on a.id=b.f_ref where a.id=@ValueofDB:id and mrpQty&gt;0 </select>
+		</condition>
+		<exec condition=" '@SqlReturn:mrpqty' == '1' ">
+			<error> 制造需求单已运算物料不可反审核修改 </error>
+		</exec>
+	</sql>
+    <sql type="condition">
+      <condition>
+        <select>select BillNo from PDProduceRequirefinish where ProduceRequireID=@ValueofDB:id</select>
+      </condition>
+      <exec condition=" '@SqlReturn:BillNo'!='null'">
+        <error>该单已经被制造需求强结单 @SqlReturn:BillNo 引用，不允许修改删除！</error>
+      </exec>
+    </sql>
+    <sql type="condition">
+      <condition>
+        <select>select BillNo from PDWorkOrder where PDProduceRequireID=@ValueofDB:id</select>
+      </condition>
+      <exec condition=" '@SqlReturn:BillNo'!='null'">
+        <error>该单已经被工令单 @SqlReturn:BillNo 引用，不允许修改删除！</error>
+      </exec>
+    </sql>  
+  </define>
+  
+  
+<!--制造需求强结单-->
+  <define name="PDProduceRequirefinish_Add">
+    <sql type="condition">
+      <exec condition="'@MEM:PDProduceRequirefinish_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+        <sql type="define">PDProduceRequirefinish_Add_One</sql>
+      </exec>
+    </sql>
+  </define>
+  <define name="PDProduceRequirefinish_Add_One">
+    <sql>update PDProduceRequire set statusId='2' from PDProduceRequirefinish a where a.id=@ValueofDB:id and a.ProduceRequireID=PDProduceRequire.id</sql>
+  </define>
+
+  <define name="PDProduceRequirefinish_Delete">
+    <sql type="condition">
+      <exec condition="'@MEM:PDProduceRequirefinish_IsStatart' == '0' &amp;&amp; @MEM:OpenInvoice==false">
+        <sql type="define">PDProduceRequirefinish_Delete_One</sql>
+      </exec>
+    </sql>
+  </define>
+  <define name="PDProduceRequirefinish_Delete_One">
+    <sql>update PDProduceRequire set statusId='0' from PDProduceRequirefinish a where a.id=@ValueofDB:id and a.ProduceRequireID=PDProduceRequire.id</sql>
+  </define>
+
+  <!--手动强结制造需求-->
+  <define name="SalesNeed_finish">
+    <sql type="condition">
+      <condition>
+        <select>select statusId from PDProduceRequire where id=@ValueofDB:id </select>
+      </condition>
+      <exec condition="'@SqlReturn:statusId' == '0'">
+        <error>未审核完毕，不允许强结</error>
+      </exec>
+      <exec condition="'@SqlReturn:statusId' == '-1'">
+        <error>已结案，不能再次强结</error>
+      </exec>
+      <exec condition="'@SqlReturn:statusId' == '1'">
+        <sql>insert into PDProduceRequirefinish (id,BillDate,BillNo,DepartmentCode,EmployeeID,createBy,createTime,lastUpdateBy,lastUpdateTime,SCompanyID,workFlowNodeName,workFlowNode,checkPersons,ProduceRequireID,Remark)select '0'+@ValueofDB:PDProduceRequire_id,BillDate,@CODE:[PDProduceRequirefinish_BillNo],DepartmentCode,EmployeeID,@Sess:UserId,convert(varchar(19),getdate(),21),'','',SCompanyID,'notApprove','0','',@ValueofDB:PDProduceRequire_id,'强结需求' from PDProduceRequire where id=@ValueofDB:PDProduceRequire_id  </sql>
+        <sql>update PDProduceRequire set statusId='-1' where id=@ValueofDB:id </sql>
+      </exec>
+    </sql>
+  </define>
+	
+	<!--  ==================以上代码：销售订单增加自定义控制============================-->
+
+
+</defineSqls>
