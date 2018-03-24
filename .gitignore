@@ -1,4 +1,5 @@
 .idea/
 .svn/
 自动升级控件/
-..settings/
+.settings/
+apache-tomcat-7.0.68/
